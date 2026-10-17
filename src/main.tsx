@@ -211,6 +211,7 @@ function App() {
                     <p>{book.future}</p>
                   </div>
                 )}
+                {book.Intro && <book.Intro />}
                 <section className="chapter-list">
                   <h2>지금 읽을 수 있는 장</h2>
                   {bookChapters.map((c) => (

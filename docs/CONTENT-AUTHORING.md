@@ -105,3 +105,9 @@ MDX 문법과 import를 검사한다. MDX 내부의 모든 컴포넌트 prop이 
    모바일·키보드·일시정지·초기화·reduced-motion에서도 같은 설명을 전달하는지 확인한다.
 
 참고: https://mdxjs.com/packages/rollup/ · https://mdxjs.com/docs/getting-started/
+
+
+MDX의 `<p>` 안에 줄바꿈으로 일반 텍스트를 쓰면 Markdown이 또 다른 문단을 만들어
+`<p><p>…</p></p>`가 될 수 있습니다. 도입 문장은 `<p className="lead">짧은 문장</p>`처럼
+한 줄에 쓰거나 JSX 문자열 표현식을 사용합니다. 빌드 성공만으로 HTML 중첩까지 검증되지 않으므로
+개발 모드의 React 콘솔 경고도 확인합니다.

@@ -1,3 +1,7 @@
+import MoneyIntro from "./content/money/Intro.mdx";
+import MoneyMap from "./content/money/Map.mdx";
+import MoneyFlows from "./content/money/Flows.mdx";
+import MoneyBudget from "./content/money/Budget.mdx";
 import Parallel from "./content/computer/Parallel";
 import Memory from "./content/computer/Memory";
 import Packets from "./content/network/Packets";
@@ -198,8 +202,51 @@ export const chapters: Chapter[] = [
     description: "네 가지 짧은 사례에서 다음 확인 위치를 고릅니다.",
     Content: Diagnosis,
   },
+  {
+    id: "map",
+    bookId: "money",
+    readId: "money/map",
+    number: "01",
+    title: "우리 집 돈의 지도",
+    heading: "우리 집 돈은 어디에 있을까?",
+    description:
+      "자산·부채·순자산을 그림으로 연결하고 빌린 돈의 의미를 살펴봅니다.",
+    Content: MoneyMap,
+  },
+  {
+    id: "flows",
+    bookId: "money",
+    readId: "money/flows",
+    number: "02",
+    title: "들어오고 나가는 돈",
+    heading: "같은 출금, 다른 이야기",
+    description:
+      "이체·카드 구매와 결제·대출 원금과 이자를 단계별로 따라갑니다.",
+    Content: MoneyFlows,
+  },
+  {
+    id: "budget",
+    bookId: "money",
+    readId: "money/budget",
+    number: "03",
+    title: "예산과 목적별 돈",
+    heading: "필요한 그날, 돈이 있을까?",
+    description:
+      "달력과 잔액 그래프를 연결해 비정기 지출과 목적 적립을 실험합니다.",
+    Content: MoneyBudget,
+  },
 ];
-export const books = [
+type Book = {
+  id: string;
+  title: string;
+  category: string;
+  cover: string;
+  description: string;
+  overview: string;
+  future: string;
+  Intro?: ComponentType;
+};
+export const books: Book[] = [
   {
     id: "computer",
     title: "컴퓨터의 작동 원리",
@@ -221,6 +268,19 @@ export const books = [
       "웹앱을 만들고 서버를 운영하다가 막혔던 네트워크를 기초부터 이해하는 책입니다. 먼저 쉽게 읽고, 필요한 곳에서 예측하고 조작한 뒤, 내 상황에 적용합니다.",
     future:
       "01~15장 공개 · k3s는 네트워크 개념을 연결하는 짧은 입문입니다. 본격적인 클러스터 구축·운영은 별도 쿠버네티스 교재에서 다룹니다.",
+  },
+  {
+    id: "money",
+    title: "돈의 기초와 우리 집 재무",
+    category: "돈 · 생활 재무",
+    cover: "MONEY & EVERYDAY LIFE",
+    description:
+      "돈의 지도, 거래의 순간, 지출의 달력. 보고 움직이며 우리 집 재무의 원리를 이해합니다.",
+    overview:
+      "가상의 가정과 함께 자산·부채·현금흐름을 연결합니다. 그림을 보고 예측한 다음 직접 조건을 바꿔 보세요.",
+    future:
+      "01~03장 공개 · 물가·복리·신용과 다른 금융 분야는 후속 배치에서 다룹니다.",
+    Intro: MoneyIntro,
   },
 ];
 export const chapterHref = (c: Chapter) => `#/${c.bookId}/${c.id}`;
