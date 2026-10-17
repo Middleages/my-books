@@ -1,0 +1,237 @@
+import { Check, Sources } from "./shared";
+import {
+  CertificateJourney,
+  BundleExplorer,
+} from "../../components/network/CertificateVisuals";
+
+<p className="lead">{"인증서를 받았는데 cert.pem, chain.pem, fullchain.pem, privkey.pem이 함께 왔습니다. 어느 것을 서버에 넣고 어느 것을 내 PC에 넣어야 할까요? 먼저 “인증서 한 장”과 “여러 장을 담은 파일”을 나누어 보면 훨씬 명확해집니다."}</p>
+<div className="learning-goals">
+  <strong>이 장을 읽고 나면</strong>
+  <ul>
+    <li>인증서·개인키·데이터 암호화 키를 구분합니다.</li>
+    <li>leaf·중간 CA·루트 CA와 fullchain의 관계를 설명합니다.</li>
+    <li>서버의 인증서 묶음과 클라이언트의 신뢰 목록을 구분합니다.</li>
+  </ul>
+</div>
+<section className="prose">
+
+## 1. 암호화된 연결, 그런데 누구와 연결했을까?
+
+HTTPS는 HTTP 통신을 TLS로 보호합니다. 전송 내용을 엿보거나 몰래 바꾸기 어렵게 만드는 것에 더해, 클라이언트가 의도한 이름의 서버와 통신하는지 확인해야 합니다. 가짜 상대와 비밀 대화를 해도 내 정보는 그 상대에게 보이기 때문입니다.
+
+인증서는 <strong>이름 등의 정보와 공개키를 묶어 발급자가 서명한 문서</strong> 입니다. 서버는 인증서를 보여 주고 대응하는 개인키를 가지고 있음을 TLS 핸드셰이크에서 증명합니다. 공개된 인증서 파일을 복사하는 것만으로 그 서버 역할을 할 수는 없습니다.
+
+이 장은 인증서 기반 TLS 1.3의 일반적인 새 연결을 다룹니다. 키 교환으로 공유 비밀을 마련하고 그 비밀에서 통신용 키를 도출합니다. 인증서의 개인키는 신원 증명에 쓰이고, 실제 데이터는 대칭키로 보호합니다. “인증서 공개키로 세션키를 암호화해 서버에 보낸다”는 옛 RSA 키 교환 설명을 TLS 1.3에 적용하지 않습니다.
+
+## 2. 인증서 안에는 무엇이 있을까?
+
+| 정보        | 질문                                          |
+| ----------- | --------------------------------------------- |
+| SAN         | 어떤 DNS 이름이나 IP를 대상으로 발급됐나?     |
+| 공개키      | 서버의 개인키 소유 증명을 확인할 공개 정보는? |
+| 유효기간    | 언제부터 언제까지 유효한가?                   |
+| 발급자·서명 | 누가 발급했고 내용을 검증할 수 있는가?        |
+
+<strong>SAN(Subject Alternative Name)</strong>은 인증서의 대상 이름을 담는
+항목입니다. app.example.test 인증서가 같은 IP의 other.example.test까지 자동으로
+보증하지는 않습니다. IP로 직접 접속하면 그 IP를 대상으로 한 SAN이 필요합니다.
+DNS 이름 SAN만으로 IP 이름 검증을 대신할 수 없습니다.
+
+이름이나 유효기간을 텍스트 편집기로 바꾸면 기존 서명과 맞지 않습니다. 새 이름을 추가하려면 그 이름이 포함된 인증서를 발급받아야 합니다. 여러 서버 인증서 파일을 이어 붙이는 것만으로 모든 도메인에 유효한 새 인증서가 되지는 않습니다.
+
+## 3. 보증서를 발급한 사람도 확인한다
+
+서버가 자기 이름을 주장하는 것만으로는 부족합니다. <strong>CA(인증기관)</strong>가 서버 인증서를 발급하고 서명합니다. 그런데 그 CA를 왜 믿을까요? 흔한 구조에서는 중간 CA의 인증서를 다른 CA가 발급하고, 마지막에는 클라이언트가 이미 신뢰하기로 한 루트 CA에 이릅니다.
+
+<ol className="dns-flow">
+  <li>
+    <strong>서버 인증서 · leaf</strong>
+    <span>app.example.test의 공개키와 이름. Issuing CA A가 서명.</span>
+  </li>
+  <li>
+    <strong>중간 CA 인증서</strong>
+    <span>Issuing CA A의 공개키. Root CA A가 서명.</span>
+  </li>
+  <li>
+    <strong>루트 CA · 신뢰 기준</strong>
+    <span>클라이언트가 별도 경로로 신뢰하도록 설정한 출발점.</span>
+  </li>
+</ol>
+
+“서버의 보증서 → 발급자의 보증서 → 내가 신뢰하는 기관”을 따라가는 셈입니다. 실제 검증은 단순히 발급자 이름 문자열만 비교하는 것이 아니라 서명·용도·제약조건 등을 확인합니다. 루트가 흔히 자기 자신에게 서명했다고 해서 저절로 신뢰가 생기는 것은 아닙니다. <strong>신뢰는 클라이언트 쪽의 결정</strong>입니다.
+
+</section>
+
+<CertificateJourney />
+
+<section className="prose">
+
+## 4. fullchain은 새 인증서가 아니라 서류 묶음
+
+PEM 형식의 인증서는 보통 <code>BEGIN CERTIFICATE</code>와 <code>END CERTIFICATE</code> 사이에 인코딩된 데이터를 담습니다. 이런 블록 여러 개를 파일 하나에 차례로 넣을 수 있습니다. 이때 파일은 하나지만, 안의 인증서는 각각 별개의 서명된 문서로 남습니다.
+
+  <div className="note">
+    <strong>fullchain.pem의 모양 · 실행용 인증서가 아닌 개념 예시</strong>
+
+```text
+-----BEGIN CERTIFICATE-----
+[서버 인증서의 인코딩된 데이터]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[그 서버를 발급한 중간 CA 인증서 데이터]
+-----END CERTIFICATE-----
+```
+
+두 인증서가 녹아서 하나가 된 것이 아닙니다. 종이 두 장을 같은 봉투에 넣었다고 생각하세요. 중간 CA가 더 있으면 발급 경로에 맞춰 뒤에 이어집니다.
+
+  </div>
+
+**Certbot에서 사용하는 파일 이름의 예**
+
+| 파일          | 내용                    | 주요 역할                          |
+| ------------- | ----------------------- | ---------------------------------- |
+| cert.pem      | 서버 인증서 한 장       | 내 서비스의 이름·공개키            |
+| chain.pem     | 필요한 중간 CA 인증서들 | 발급 경로를 이어 줌                |
+| fullchain.pem | cert.pem 뒤에 chain.pem | 서버가 클라이언트에 보낼 묶음      |
+| privkey.pem   | 서버 개인키             | 서버가 소유 증명에 사용. 비밀 유지 |
+
+이 이름은 널리 쓰이는 관례이지 파일명만으로 보장되는 규격은 아닙니다. .crt·.cer·.pem 확장자만 보고 내부 내용과 용도를 단정하지 마세요. 프로그램이 어떤 형식과 순서를 요구하는지 확인해야 합니다.
+
+NGINX의 서버 인증서 파일에서는 <strong>서버 인증서가 먼저, 이어서 중간 CA 인증서</strong>가 옵니다. 이미 올바른 파일이 있을 때 묶음을 만드는 개념은 다음과 같습니다. 명령은 새 인증서를 발급하거나 서명을 바꾸지 않습니다.
+
+```sh
+cat server-cert.pem intermediate-chain.pem > fullchain.pem
+```
+
+입력 파일은 해당 서버 인증서와 실제로 이어지는 발급 경로여야 합니다. 아무 CA 인증서나 붙여서 경로를 만들 수는 없습니다. 일반적으로 루트 인증서는 서버 묶음에서 생략합니다. 클라이언트가 신뢰할 루트를 이미 독립적으로 가지고 있어야 하기 때문입니다.
+
+## 5. CA bundle은 왜 또 따로 있을까?
+
+<strong>서버 fullchain</strong>은 “이 서비스의 인증 경로를 보여 주는
+자료”입니다. <strong>클라이언트 CA bundle</strong>은 “내가 검증할 때 사용하는 CA
+인증서 모음”입니다. CA bundle에는 서로 다른 기관의 인증서가 여러 개 들어갈 수
+있어 한 서비스의 발급 사슬과 다릅니다. 정확한 신뢰 처리 방식은 도구와 설정에
+따릅니다.
+
+서버가 fullchain에 루트를 추가해 보낸다고 클라이언트의 신뢰 목록이 자동으로 바뀌지 않습니다. 중간 인증서가 빠진 문제는 서버의 묶음을 고치고, 사내 루트를 모르는 문제는 해당 클라이언트의 신뢰 설정을 확인해야 합니다.
+
+  <div className="note">
+    <strong>개인키는 어느 묶음에 들어갈까?</strong>
+
+이 장의 fullchain과 CA bundle에는 개인키를 넣지 않습니다. 서버 개인키는 서버가 따로 보관합니다. PFX/P12(PKCS#12)처럼 인증서·체인과 개인키까지 담을 수 있는 컨테이너 형식도 있지만, 그것은 다른 용도의 포장입니다. “인증서 파일”이라고 들었다면 공개 인증서만인지 개인키도 포함했는지 먼저 구분하세요.
+
+  </div>
+
+</section>
+<BundleExplorer />
+
+<section className="prose">
+
+## 한 PEM 파일로 여러 서버를 검증하는 경우
+
+예를 들어 보고서 서버는 회사 CA A가, 자료 서버는 회사 CA B가 발급했다고 해 봅시다. 클라이언트가 두 CA를 모두 신뢰해야 한다면 승인된 두 CA 인증서를 하나의 PEM 파일에 모아 사용할 수 있습니다. 이것이 “PEM에 내용을 추가하니 여러 곳에서 된다”는 상황의 한 가지 대표적인 예입니다.
+
+```sh
+cat approved-root-a.pem approved-root-b.pem > company-ca-bundle.pem
+```
+
+| 같은 클라이언트의 CA 파일 | reports.example.test · CA A 발급 | files.example.test · CA B 발급 |
+| ------------------------- | -------------------------------- | ------------------------------ |
+| CA A만 포함               | 신뢰 경로 가능                   | CA B 신뢰 없음                 |
+| CA A와 CA B 포함          | 신뢰 경로 가능                   | 신뢰 경로 가능                 |
+
+이 비교는 두 서버가 올바른 중간 인증서를 보내고, 이름·기간 등 다른 검증 조건도 충족한다고 가정합니다. 파일 하나가 두 서버의 인증서로 변신한 것이 아니라, <strong>클라이언트가 신뢰하는 발급자 목록이 늘어난 것</strong>입니다. CA를 하나 신뢰하면 그 CA의 유효한 경로로 검증되는 여러 서버를 신뢰할 수 있으므로 추가 대상은 승인된 CA여야 합니다.
+
+```python
+for url in [
+    "https://reports.example.test/",
+    "https://files.example.test/",
+]:
+    requests.get(url, verify="company-ca-bundle.pem", timeout=10)
+```
+
+Python Requests 사용 예시이며 앞에서 <code>import requests</code>가 필요합니다. 이 파일을 명시하면 그 파일을 기준으로 검증합니다. 기본 공개 CA 모음을 자동으로 합쳐 쓴다고 가정하지 마세요. 기존에 접속하던 공개 사이트도 필요하다면 관리 정책에 맞는 CA 모음을 준비해야 합니다.
+
+**“인증서를 합친다”라는 말에서 구분할 세 가지**
+
+| 하려는 일                      | 실제로 바뀌는 것                                                   |
+| ------------------------------ | ------------------------------------------------------------------ |
+| 서버 fullchain 만들기          | 한 서비스가 보여 줄 leaf와 발급 경로를 같은 파일에 담음            |
+| 클라이언트 CA bundle 만들기    | 여러 발급자를 검증에 사용할 CA 모음을 만듦                         |
+| 인증서 하나로 여러 도메인 제공 | 여러 SAN이 들어간 인증서를 발급받음. 단순 파일 연결로 만들 수 없음 |
+
+어느 경우인지 보려면 <strong>그 PEM을 어디에 지정했는지</strong> 확인하세요. Requests의 verify나 curl의 --cacert라면 클라이언트 CA 모음일 가능성이 있고, NGINX의 ssl_certificate라면 서버가 제시할 인증서 묶음입니다. 클라이언트 인증(mTLS)용 인증서·개인키는 또 다른 용도이며 이번 예제에는 포함하지 않습니다.
+
+</section>
+
+<section className="prose">
+
+## 6. DNS·SNI·Host는 이름이 같아 보여도 역할이 다르다
+
+DNS는 주소를 찾습니다. TLS의 <strong>SNI</strong>는 클라이언트가 어떤 서버 이름을 요청하는지 전달해 서버가 인증서를 선택하는 데 도움을 줍니다. 이후 HTTP의 <strong>Host/authority</strong>는 웹 요청의 대상을 식별합니다. SNI 자체가 신뢰를 만드는 것은 아닙니다.
+
+일반적인 도메인 URL에서는 같은 이름이 여러 단계에 쓰여 차이를 놓치기 쉽습니다. 진단 도구에서 IP로 접속한 뒤 Host만 도메인으로 바꾸면, 인증서 이름 검증 대상까지 바뀌지는 않습니다. 다음 장에서 URL 이름을 유지하면서 연결 IP만 지정하는 방법을 살펴봅니다.
+
+## 7. 실제 설정에서 두 파일의 역할 읽기
+
+```text
+ssl_certificate     /etc/nginx/tls/fullchain.pem;
+ssl_certificate_key /etc/nginx/tls/privkey.pem;
+```
+
+NGINX 설정의 일부 예시입니다. 첫 줄은 상대에게 보여 줄 인증서 묶음, 둘째 줄은 서버만 사용하는 개인키입니다. 실제 적용에는 해당 인증서와 맞는 개인키, 파일 권한, 전체 서버 설정과 설정 검증이 필요합니다. 이 교과서는 서버 설정을 변경하지 않습니다.
+
+HTTPS는 통신 상대와 전송 구간의 보호를 다룹니다. 그 사이트의 모든 내용이 정직하다는 보증이나 로그인 권한을 대신하지는 않습니다. 프록시가 TLS를 끝내고 다른 서버에 다시 연결하면 그 다음 구간의 보호와 검증은 별도로 판단합니다.
+
+## 확인해 보기
+
+<Check
+  question="fullchain.pem에 인증서 두 개를 넣으면 인증서 한 개로 합쳐지나요?"
+  children="아닙니다. 파일 하나에 별개의 인증서 블록 두 개를 순서대로 담습니다. 각각의 내용과 서명은 그대로입니다."
+/>
+<Check
+  question="서버가 루트까지 보내면 클라이언트가 자동으로 믿나요?"
+  children="아닙니다. 서버의 전송 자료와 클라이언트의 신뢰 결정은 별개입니다. 승인된 경로로 받은 CA를 올바른 환경에 설정해야 합니다."
+/>
+<Check
+  question="app 인증서와 other 인증서를 붙이면 두 도메인에 유효해지나요?"
+  children="단순 연결은 SAN을 바꾸지 않습니다. 필요한 이름을 포함해 발급받거나 서버의 이름별 인증서 선택을 구성해야 합니다."
+/>
+<Sources
+  items={[
+    [
+      "RFC 7468 §2·5 — PEM 인증서 블록 경계",
+      "https://www.rfc-editor.org/rfc/rfc7468.html",
+    ],
+    [
+      "RFC 9846 §2·4.5·7 — TLS 1.3, 인증서와 개인키 소유 증명",
+      "https://www.rfc-editor.org/rfc/rfc9846.html",
+    ],
+    [
+      "RFC 5280 — X.509 인증서와 경로 검증",
+      "https://www.rfc-editor.org/rfc/rfc5280.html",
+    ],
+    [
+      "RFC 9525 — SAN과 서비스 이름 검증",
+      "https://www.rfc-editor.org/rfc/rfc9525.html",
+    ],
+    [
+      "Certbot — cert, chain, fullchain, privkey 파일",
+      "https://eff-certbot.readthedocs.io/en/stable/using.html#where-are-my-certificates",
+    ],
+    [
+      "NGINX — 인증서 체인과 개인키 설정",
+      "https://nginx.org/en/docs/http/configuring_https_servers.html",
+    ],
+    [
+      "OpenSSL PKCS#12 — 인증서와 키를 담는 형식",
+      "https://docs.openssl.org/master/man1/openssl-pkcs12/",
+    ],
+    [
+      "학습 구성 참고: NetworkBook · 네트워크 보안",
+      "https://networkbook.euiyun.com/chapters/security.html",
+    ],
+  ]}
+/>
+
+</section>

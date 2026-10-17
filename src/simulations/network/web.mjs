@@ -21,21 +21,29 @@ export function certificateResult({
   rootSent = false,
   trusted = true,
   cachedIntermediate = false,
+  certificate = null,
 }) {
-  const name = sni === "app" ? "app.example.test" : "other.example.test";
+  const name =
+    certificate?.name ??
+    (sni === "app" ? "app.example.test" : "other.example.test");
+  const sans = certificate?.sans ?? [name];
+  const issuer = certificate?.issuer ?? "Demo Issuing CA";
+  const root = certificate?.root ?? "Demo Root CA";
+  const notBefore = certificate?.notBefore ?? "2026-01-01";
+  const notAfter = certificate?.notAfter ?? "2026-12-31";
   const checks = [
     {
       id: "name",
       label: "접속 이름과 SAN",
-      ok: target === name,
-      evidence: `접속 ${target} / SAN DNS:${name}`,
+      ok: sans.includes(target),
+      evidence: `접속 ${target} / SAN ${sans.map((n) => `DNS:${n}`).join(", ")}`,
       fix: "의도한 서비스 이름으로 접속하거나, 그 이름을 포함한 인증서를 발급·설정합니다. HTTP Host만 바꾸거나 CA를 추가해도 이름 불일치는 남습니다.",
     },
     {
       id: "time",
       label: "유효기간",
-      ok: date >= "2026-01-01" && date <= "2026-12-31",
-      evidence: `가상 시각 ${date} / leaf 유효기간 2026-01-01~12-31 (UTC)`,
+      ok: date >= notBefore && date <= notAfter,
+      evidence: `가상 시각 ${date} / leaf 유효기간 ${notBefore}~${notAfter} (UTC)`,
       fix: "실제 시계가 맞는지 확인하고, 만료 또는 아직 유효하지 않은 인증서는 적절히 갱신·교체합니다. 검증 통과를 위해 시계를 거짓으로 바꾸지 않습니다.",
     },
     {
@@ -43,10 +51,10 @@ export function certificateResult({
       label: "중간 CA로 이어지는 경로",
       ok: intermediate || cachedIntermediate,
       evidence: intermediate
-        ? "서버가 Demo Issuing CA를 함께 보냄"
+        ? `서버가 ${issuer}를 함께 보냄`
         : cachedIntermediate
-          ? "서버에서 누락됐지만 이 클라이언트의 중간 CA 캐시에 있음"
-          : "Demo Issuing CA를 찾을 수 없음",
+          ? `${issuer}: 서버에서 누락됐지만 이 클라이언트의 중간 CA 캐시에 있음`
+          : `${issuer}를 찾을 수 없음`,
       fix: "서버의 fullchain에 올바른 중간 CA 인증서를 leaf 뒤에 포함합니다. 이 사례에서는 루트만 보내도 중간의 빈칸은 채워지지 않습니다.",
     },
     {
@@ -54,8 +62,8 @@ export function certificateResult({
       label: "현재 클라이언트의 신뢰 기준",
       ok: trusted,
       evidence: trusted
-        ? "이 클라이언트가 Demo Root CA를 신뢰함"
-        : `이 클라이언트의 신뢰 목록에 Demo Root CA 없음${rootSent ? " · 서버가 루트를 보내도 신뢰는 생기지 않음" : ""}`,
+        ? `이 클라이언트가 ${root}를 신뢰함`
+        : `이 클라이언트의 신뢰 목록에 ${root} 없음${rootSent ? " · 서버가 루트를 보내도 신뢰는 생기지 않음" : ""}`,
       fix: "검증된 관리 경로로 받은 CA를 해당 클라이언트가 실제 사용하는 trust store 또는 CA bundle에 설정합니다.",
     },
   ];
@@ -66,8 +74,8 @@ export function certificateResult({
     first: checks.find((c) => !c.ok)?.id ?? "success",
     bundle: [
       name,
-      ...(intermediate ? ["Demo Issuing CA"] : []),
-      ...(rootSent ? ["Demo Root CA"] : []),
+      ...(intermediate ? [issuer] : []),
+      ...(rootSent ? [root] : []),
     ],
   };
 }
