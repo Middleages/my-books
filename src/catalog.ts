@@ -12,6 +12,9 @@ import Verify from "./content/network/Verify";
 import Proxy from "./content/network/Proxy.mdx";
 import Docker from "./content/network/Docker.mdx";
 import Browser from "./content/network/Browser.mdx";
+import ClusterInternal from "./content/network/ClusterInternal.mdx";
+import ClusterExternal from "./content/network/ClusterExternal.mdx";
+import Diagnosis from "./content/network/Diagnosis.mdx";
 import type { ComponentType } from "react";
 export type Chapter = {
   id: string;
@@ -165,6 +168,36 @@ export const chapters: Chapter[] = [
     description: "origin·CORS·preflight·mixed content를 구분합니다.",
     Content: Browser,
   },
+  {
+    id: "cluster-internal",
+    bookId: "network",
+    readId: "network/cluster-internal",
+    number: "13",
+    title: "k3s 내부 연결",
+    heading: "Pod가 바뀌어도 같은 이름으로 찾으려면?",
+    description: "Pod·Service·port·targetPort만 짧게 연결합니다.",
+    Content: ClusterInternal,
+  },
+  {
+    id: "cluster-external",
+    bookId: "network",
+    readId: "network/cluster-external",
+    number: "14",
+    title: "k3s 외부 연결",
+    heading: "외부 443은 누가 맡을까?",
+    description: "Ingress 규칙과 controller, 기존 프록시의 역할을 구분합니다.",
+    Content: ClusterExternal,
+  },
+  {
+    id: "diagnosis",
+    bookId: "network",
+    readId: "network/diagnosis",
+    number: "15",
+    title: "증거로 고치기",
+    heading: "어디까지 확인했는가?",
+    description: "네 가지 짧은 사례에서 다음 확인 위치를 고릅니다.",
+    Content: Diagnosis,
+  },
 ];
 export const books = [
   {
@@ -187,7 +220,7 @@ export const books = [
     overview:
       "웹앱을 만들고 서버를 운영하다가 막혔던 네트워크를 기초부터 이해하는 책입니다. 먼저 쉽게 읽고, 필요한 곳에서 예측하고 조작한 뒤, 내 상황에 적용합니다.",
     future:
-      "현재 01~12장 공개 · 다음 배치: k3s 내부 연결 → k3s 외부 연결 → 증거로 고치기.",
+      "01~15장 공개 · k3s는 네트워크 개념을 연결하는 짧은 입문입니다. 본격적인 클러스터 구축·운영은 별도 쿠버네티스 교재에서 다룹니다.",
   },
 ];
 export const chapterHref = (c: Chapter) => `#/${c.bookId}/${c.id}`;

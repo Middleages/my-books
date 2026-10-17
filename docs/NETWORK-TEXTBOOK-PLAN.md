@@ -2,7 +2,7 @@
 
 작성일: 2026-10-17 (KST)
 개정: 기초 개념을 먼저 쌓고 웹·VM·Docker·k3s로 확장하는 학습 순서로 변경.
-상태: 01~12 본문과 기초·웹·인증서·프록시·Docker·브라우저 정책 실험 구현. 신규 본문은 MDX로 작성한다. 아래 조사·설계 기준을 유지하며 실제 서버 설정은 변경하지 않는다.
+상태: 01~15 본문 구현. 13~14는 네트워크 개념을 연결하는 짧은 k3s 입문, 15는 종합 복습이다. 신규 본문은 MDX로 작성한다. 아래 조사·설계 기준을 유지하며 실제 서버 설정은 변경하지 않는다.
 가제: **웹 개발자를 위한 네트워크 — 요청의 길을 이해하고 고치기**
 
 ## 1. 목표와 대상
@@ -84,7 +84,7 @@ k3s 기본 Traefik LoadBalancer Service는 80/443을 사용하고 ServiceLB는 �
 
 ## 3. 제안 목차
 
-각 장은 10~20분 분량을 목표로 하되 시간은 제작 후 검증한다. 기초 감각 → 웹 요청과 신뢰 → 운영 환경 → 종합 진단 순서다. 01의 전체 경로는 예고편이며 DNS·TCP·TLS 용어를 한 번에 숙달하도록 요구하지 않는다.
+01~12는 10~20분 분량을 목표로 하되 시간은 제작 후 검증한다. 사용자 요청에 따라 13~14는 짧은 연결 설명, 15는 짧은 종합 복습으로 축소한다. 읽기 시간은 실측하지 않았다. 기초 감각 → 웹 요청과 신뢰 → 운영 환경 → 종합 진단 순서다. 01의 전체 경로는 예고편이며 DNS·TCP·TLS 용어를 한 번에 숙달하도록 요구하지 않는다.
 
 | 부 | 장 | 핵심 질문과 개념 | 설명·실험 방향 |
 |---|---|---|---|
@@ -100,9 +100,9 @@ k3s 기본 Traefik LoadBalancer Service는 80/443을 사용하고 ServiceLB는 �
 | 운영 환경 | 10 리버스 프록시 | 같은 IP:443에서 여러 앱을 어떻게 서비스하나? 라우팅, TLS 종료, upstream, 헤더 | 도메인별 분배와 구간별 TLS; 502/504 관찰 |
 | 운영 환경 | 11 VM·Docker 네트워크 | 여러 컨테이너가 같은 8000을 어떻게 쓰나? namespace, bridge, publish, expose | 호스트 프록시/컨테이너 프록시/원격 VM 비교 후 Compose 설정 읽기 |
 | 운영 환경 | 12 브라우저만 실패 | curl은 되는데 왜 프론트는 안 되나? origin, CORS, preflight, mixed content | 서버 처리와 브라우저 JS 접근 허용을 구분 |
-| 운영 환경 | 13 k3s 내부 연결 | Pod가 바뀌어도 어떻게 찾나? Service, selector, EndpointSlice, CoreDNS | Pod 교체·selector·targetPort 실험 |
-| 운영 환경 | 14 k3s 외부 연결 | 외부 443은 누가 맡나? Traefik, Ingress, Service 유형, TLS Secret | 기존 Nginx와 포트 소유권·공존 비교 |
-| 종합 진단 | 15 증거로 고치기 | 무엇부터 확인할까? 관측 위치, 구간별 증거, 최소 변경 | SSL verify, 연결 거부, timeout, 502 등 사례별 미션 |
+| 운영 환경 | 13 k3s 내부 연결 | Pod가 바뀌어도 어떻게 찾나? Service, selector, EndpointSlice, CoreDNS | 단일 Service 실험으로 Pod 교체·selector·targetPort만 확인 |
+| 운영 환경 | 14 k3s 외부 연결 | 외부 443은 누가 맡나? Traefik, Ingress, Service 유형, TLS Secret | 짧은 비교표로 기존 Nginx와 443 소유권 구분; 설치 지침 제외 |
+| 종합 진단 | 15 증거로 고치기 | 무엇부터 확인할까? 관측 위치, 구간별 증거, 최소 변경 | TLS 이름·프록시 localhost·CORS·targetPort 네 사례를 답 펼치기로 복습 |
 
 입문 범위에서 제외: BGP 운영, 상세 서브넷 계산 반복, 패킷 헤더 비트 암기, TLS 암호 수학, 서비스 메시, 멀티클러스터 구축. 무선·광통신·통신 반도체는 요청 경로 이해에 필요한 짧은 소개만 두고 별도 확장으로 남긴다.
 
@@ -164,11 +164,12 @@ k3s 기본 Traefik LoadBalancer Service는 80/443을 사용하고 ServiceLB는 �
 
 설정 변화마다 결과를 예측하게 한 뒤 실행한다. 성공 후 실제 개념과 Compose/Nginx 설정의 대응표를 보여준다. 복잡한 전체 설정 생성기는 후순위다.
 
-### D. k3s 연결 지도
+### D. k3s 연결 설명 — 축소된 최종 범위
 
-Node·Pod 네트워크 경계를 표시하고 Service 규칙, EndpointSlice 대상, controller 진입점을 구분한다. 앱의 containerPort 선언은 프로세스를 listen시키거나 외부에 공개하는 동작이 아님을 설명한다.
-
-공존 비교: (1) 기존 Nginx를 외부 443 진입점으로 유지하고 명시적으로 노출한 클러스터 진입점으로 전달, (2) Traefik이 외부 443을 소유하도록 이전. 이는 비교 시나리오이며 운영 환경에 바로 적용할 설정은 아니다. 한 VM에서 양쪽이 같은 주소:443을 무조건 공유할 수 있다고 그리지 않는다.
+13장의 단일 Service 실험: selector 일치·Ready·targetPort·Pod 교체 후의 새 연결만 비교한다.
+14장은 Ingress 규칙과 controller, 외부 443 소유권을 비교표로 설명한다. Pod 배치·Ingress 경로 변경 등
+별도 대형 시뮬레이터는 만들지 않는다. 기존 Nginx 유지/Traefik 이전은 개념 비교이며 실제 설치 설정은 제공하지 않는다.
+쿠버네티스의 본격적인 구축·배포·운영은 별도 교재로 분리한다.
 
 ## 5. 진단 도구를 가르치는 방식
 
@@ -220,9 +221,12 @@ kubectl get endpointslices -n demo
 
 ## 7. 구현 범위와 현재 다음 배치
 
-현재 01~12가 완료됐다. 다음은 **13 k3s 내부 연결, 14 k3s 외부 연결,
-15 증거로 고치기**다. 새 본문은 MDX로 작성하고 실험 UI/모델은 별도 React/모델
-파일로 유지한다. [콘텐츠 작성 기준](CONTENT-AUTHORING.md)을 따른다.
+현재 01~15가 완료됐다. **사용자 요청(2026-10-17): 본격적인 내용은 별도 쿠버네티스 교재로 분리한다.**
+13~14는 Docker·프록시에서 Pod·Service·Ingress로 개념을 이어 주는 짧은 설명이다.
+13의 단일 Service 실험만 유지하고, 14는 정적 설명·비교표, 15는 네 가지 진단 복습으로 마무리한다.
+설치, Helm, Deployment·probe 작성, CNI·NetworkPolicy 심화, 스토리지·RBAC·운영·업그레이드는
+이 네트워크 교재의 추가 구현 범위에 넣지 않는다. 별도 교재의 세부 범위는 착수할 때 정한다.
+새 본문은 계속 MDX이며 [콘텐츠 작성 기준](CONTENT-AUTHORING.md)을 따른다.
 아래 첫 배치 절차는 이력으로 남긴다.
 
 첫 배치는 **01 연결과 패킷, 02 IP와 같은 네트워크, 03 라우터·게이트웨이·NAT**의 완성된 본문과 기초 경로 실험이다. 이전 계획의 01~03(요청의 여행/주소·포트·경계/HTTP와 도메인)과 다르므로 이전 목차로 구현하지 않는다. TLS·프록시·Docker·k3s는 후속 배치다.
@@ -288,7 +292,7 @@ kubectl get endpointslices -n demo
 
 ## 10. 다음 세션 시작 문장
 
-> Middleages/my-books의 최신 main, docs/NETWORK-TEXTBOOK-PLAN.md와 docs/CONTENT-AUTHORING.md를 읽고 이어서 개발하자. 01~12는 배포됐다. 다음은 13 k3s 내부 연결, 14 k3s 외부 연결, 15 증거로 고치기다. 신규 본문은 MDX, 실험 UI는 React/TypeScript, 판정은 별도 모델로 작성해줘. 쉽게 읽는 설명 → 필요한 예측·조작 → 실제 적용 순서를 지키고 기술적 사실은 공식 자료로 확인해줘. 기존 교과서·링크·읽음 기록을 유지하고 데스크톱·모바일 검증과 GitHub Pages 배포까지 진행해줘. 기존 호스트 Nginx와 k3s 진입점의 포트 소유권을 구분하고 실제 서버 설치·설정은 변경하지 말아줘.
+> Middleages/my-books의 최신 main, docs/NETWORK-TEXTBOOK-PLAN.md와 docs/CONTENT-AUTHORING.md를 먼저 읽어줘. 네트워크 교재 01~15는 배포됐다. 사용자 요청에 따라 13~14는 짧은 k3s 연결 설명, 15는 네 사례 복습으로 마무리했다. 본격적인 쿠버네티스 설치·Helm·배포·운영은 별도 교재로 분리하므로 네트워크 교재를 그 방향으로 확장하지 말아줘. 다음 작업은 사용자와 범위를 정한 뒤 시작하고, 신규 본문은 MDX, 실험 UI/모델은 분리하며 기존 링크·읽음 기록을 유지해줘.
 
 ## 11. 첫 배치 구현 기록 (2026-10-17)
 
@@ -437,3 +441,23 @@ Dockerfile EXPOSE·방화벽, WHATWG Fetch/HTML origin, W3C Mixed Content, RFC 9
 - 기존 컴퓨터 두 실험, NAT 왕복과 04~09 실험 회귀 확인. 기존 및 신규 읽음 표시 후 새로고침으로 보존 확인.
 - reduced-motion 환경을 사용했다. 실제 휴대폰 Safari·터치 기기 및 실제 Nginx/Docker 배포는 검증하지 않았다.
 - 연결 브라우저 localhost와 실행 환경이 다른 기존 제약으로 같은 프로세스의 HTTP 서버와 로컬 Chromium을 사용했다.
+
+
+## 15. 마지막 배치: 짧은 k3s 연결과 복습 (2026-10-17)
+
+- 기준 main `6a8d5ca`. 사용자 요청으로 쿠버네티스 범위를 축소했다. 신규 본문 모두 MDX.
+- 13: Pod·Service·CoreDNS, port/targetPort. 단일 실험으로 Pod 교체·대상 없음·포트 불일치를 비교.
+- 14: Ingress/controller와 Service 유형, 외부 443 소유권, 구간별 TLS. 정적 비교표와 확인 문제만 제공.
+- 15: 이름 검증·프록시 localhost·CORS·Service targetPort의 네 가지 짧은 진단 사례.
+- 설치·Helm·클러스터 운영은 별도 쿠버네티스 교재 범위로 남겼다. 실제 서버 설정은 변경하지 않았다.
+- Kubernetes Service/Ingress/Pod/EndpointSlice/DNS/Secret 및 K3s networking 공식 문서를 대조했다.
+- Service 모델은 하나의 Pod·정상 DNS/정책·EndpointSlice 반영 후 새 연결로 한정한다.
+  기존 연결 이전·스케줄링·실제 데이터 경로·동기화 지연을 재현하지 않는다.
+
+### 검증
+
+- 모델 테스트 39개, TypeScript 검사와 Vite production 빌드 통과.
+- Chromium 1440×900, 390×900, 320×900에서 새 3장과 기존 3장 링크·읽음 상태 확인.
+- Service 정상 연결·Pod IP 교체·selector 불일치·잘못된 targetPort·Ready 해제·초기화·키보드 실행 확인.
+- 네 가지 진단 답 펼침과 복습 링크, MDX 표·출처 렌더 확인. 새 읽음 추가 후 기존 기록과 함께 유지됨.
+- 가로 넘침·앱 콘솔 오류 없음. reduced-motion 환경 사용. 실제 모바일 Safari·터치 기기·실제 클러스터는 미검증.

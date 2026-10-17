@@ -48,7 +48,8 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 전달, 두 사설망 간 라우팅, 인터넷 출구 NAPT의 왕복, 존재하지 않는 게이트웨이를
 비교합니다. 실제 라우팅·방화벽·TCP 엔진이 아니며 가정과 한계를 본문에 표시합니다.
 
-현재 네트워크 01~12장을 공개합니다. 다음 배치는 13~15 k3s 내부 연결·외부 연결·종합 진단입니다. 전체 계획은
+현재 네트워크 01~15장을 공개합니다. 13~14는 짧은 k3s 연결 설명이며 15는 종합 복습입니다.
+본격적인 쿠버네티스 설치·Helm·클러스터 운영은 별도 교재에서 다룹니다. 전체 계획은
 [NETWORK-TEXTBOOK-PLAN.md](docs/NETWORK-TEXTBOOK-PLAN.md)를 참고하세요.
 
 ## 본문 작성 방식
@@ -67,3 +68,7 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 본문은 각각 `Proxy.mdx`, `Docker.mdx`, `Browser.mdx`이며, `OperationsLabs.tsx`와
 `simulations/network/operations.mjs`로 분기·연결·브라우저 정책 실험을 분리합니다.
 실제 Docker 명령이나 fetch를 실행하지 않는 교육용 시뮬레이션입니다.
+
+13~15 링크: `#/network/cluster-internal`, `#/network/cluster-external`,
+`#/network/diagnosis`. `ServiceLab.tsx`와 `simulations/network/cluster.mjs`는
+단일 Service의 대상 선택·포트·Pod 교체 후 새 연결만 보여 줍니다.

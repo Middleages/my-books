@@ -1,0 +1,71 @@
+import { Check, Sources } from "./shared";
+
+<p className="lead">클러스터 안의 api:80은 알겠습니다. 이제 브라우저의 HTTPS 요청은 어디로 들어올까요? 앞서 배운 리버스 프록시 앞뒤에 쿠버네티스의 이름을 붙여 보면 익숙한 구조가 보입니다.</p>
+<div className="learning-goals">
+
+**이 장의 목표:** Ingress 규칙과 실제 프록시를 구분하고, 외부 443의 주인을 정합니다.
+
+</div>
+<section className="prose">
+
+## 1. 규칙과 실행하는 프로그램을 나누자
+
+**Ingress**는 HTTP(S)의 도메인·경로를 어느 Service로 보낼지 적는 규칙입니다. **Ingress controller**는 그 규칙을 읽고 실제 분기를 구현합니다. k3s 기본 구성에서 자주 만나는 Traefik이 그 역할을 합니다. 규칙만 만들어도 프록시가 저절로 생기는 것은 아닙니다.
+
+| 연결을 읽는 순서            | 역할                                             |
+| --------------------------- | ------------------------------------------------ |
+| 브라우저 → 외부 진입점      | DNS가 안내한 주소의 443으로 HTTPS 연결           |
+| 진입점의 ingress controller | TLS를 종료하고 도메인·경로 규칙 적용             |
+| Service가 나타내는 대상     | 해당 Service의 준비된 Pod와 포트를 기준으로 전달 |
+| Pod 안의 앱                 | 실제 listen 포트에서 요청 처리                   |
+
+이 표는 논리적인 연결입니다. controller가 Service의 ClusterIP로 연결할지, 대상 Pod로 직접 연결할지는 구현·설정에 따라 다릅니다. Service를 독립된 중계 서버 한 대로 그려 놓고 외우지 않아도 됩니다.
+
+## 2. 이름이 비슷해도 외부 공개 방식은 다르다
+
+| 개념                 | 필요한 구분                                        |
+| -------------------- | -------------------------------------------------- |
+| ClusterIP Service    | 기본적으로 클러스터 내부 접점                      |
+| NodePort Service     | 노드 주소의 지정 포트를 통해 연결하는 방식         |
+| LoadBalancer Service | 연동 구현을 통해 외부 진입점을 마련하는 방식       |
+| Ingress              | HTTP(S) 도메인·경로 분기 규칙. Service 유형이 아님 |
+
+`LoadBalancer`라고 적었다고 어떤 VM에서나 공인 IP가 자동 발급되지는 않습니다. 이를 제공할 구현이 필요합니다. k3s의 ServiceLB는 사용할 수 있는 노드의 hostPort를 활용하는 구현입니다.
+
+## 3. 기존 Nginx가 443을 쓰고 있다면
+
+k3s의 기본 Traefik LoadBalancer Service는 80·443을 사용하며, ServiceLB가 이 포트를 노드에서 사용하게 될 수 있습니다. 기존 Nginx와 같은 주소:443을 아무 설계 없이 동시에 차지하게 하면 충돌합니다. **설치 전에 외부 진입점을 누가 맡을지** 먼저 정합니다.
+
+| 선택             | 연결 구조                                                 | 먼저 결정할 것                                |
+| ---------------- | --------------------------------------------------------- | --------------------------------------------- |
+| 기존 Nginx 유지  | 브라우저 → Nginx:443 → 별도로 도달 가능한 클러스터 진입점 | 내부 진입 주소·포트, TLS 구간, 허용 출발지    |
+| Traefik으로 이전 | 브라우저 → Traefik의 외부 진입점 → 앱                     | 기존 도메인·인증서·분기 이전, 443 소유권 전환 |
+
+이 두 줄은 배치 선택지이며 그대로 실행할 설치 지침은 아닙니다. Nginx를 유지하는 경우에도 k3s가 같은 443을 점유하지 않도록 별도 진입 구성 조정이 필요합니다. 구체적인 설치 옵션·이전 절차는 쿠버네티스 교재에서 다룹니다.
+
+## 4. 인증서 개념은 그대로 가져온다
+
+Ingress의 TLS 설정은 보통 인증서·개인키를 담은 **TLS Secret**을 참조하고 controller가 사용합니다. 이름이 Secret이라고 인증서 발급·갱신이나 클라이언트 신뢰가 자동 완성되는 것은 아닙니다. 인증서 SAN·기간·체인·신뢰는 8~9장에서 배운 대로 확인합니다.
+
+브라우저 → controller의 HTTPS와 controller → 앱의 HTTPS도 별개입니다. TLS Secret 하나로 내부 구간의 검증까지 끝났다고 판단하지 않습니다. 쿠버네티스 API 관리용 인증서도 사용자 웹앱 인증서와 용도가 다릅니다.
+
+실제 관찰은 context와 namespace를 확인한 뒤 `kubectl get ingress,svc,pods -n demo`로 규칙·접점·앱을 나누어 보는 데서 시작합니다. 실제 외부 도달성에는 DNS·노드 진입점·방화벽도 영향을 줍니다.
+
+<Check
+  question="Ingress를 만들었으니 외부 HTTPS 접속도 반드시 될까요?"
+  children="아닙니다. 이를 처리하는 controller, 도달 가능한 진입점, DNS·방화벽·인증서와 뒤쪽 앱 연결이 갖춰져야 합니다."
+/>
+<Check
+  question="Nginx와 Traefik이 같은 VM의 같은 주소:443을 동시에 맡아도 될까요?"
+  children="아무 조정 없이 두 독립 진입점이 같은 접점을 차지하게 할 수는 없습니다. 외부 443 소유자와 내부 전달 경로를 먼저 정합니다."
+/>
+
+여기까지가 네트워크 교재에서 필요한 연결입니다. Ingress API는 동결돼 있으며 새 기능은 Gateway API 쪽으로 발전하고 있습니다. 이는 Ingress가 당장 제거된다는 뜻은 아닙니다. Gateway API·Helm·배포·운영은 별도 쿠버네티스 교재로 넘깁니다.
+
+<Sources items={[
+['Kubernetes · Ingress와 controller, TLS','https://kubernetes.io/docs/concepts/services-networking/ingress/'],
+['Kubernetes · Service 유형','https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types'],
+['K3s · Traefik·ServiceLB·포트','https://docs.k3s.io/networking/networking-services'],
+['Kubernetes · TLS Secret','https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets']
+]} />
+</section>

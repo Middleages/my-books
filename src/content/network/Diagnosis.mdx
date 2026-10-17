@@ -1,0 +1,72 @@
+import { Check, Sources } from "./shared";
+
+<p className="lead">이제 새 용어를 더하기보다, “어디까지 확인했는가?”를 연습해 봅시다. 설정을 많이 바꾸는 대신 관측 위치와 실패 구간을 좁히면 다음 행동이 작아집니다.</p>
+<section className="prose">
+
+## 1. 세 줄로 상황을 적기
+
+| 적을 것         | 예시                                 |
+| --------------- | ------------------------------------ |
+| 어디에서 어디로 | 프록시 컨테이너 → app:8000           |
+| 무엇을 관찰했나 | 이름은 조회됨, TCP 연결은 거부됨     |
+| 아직 모르는 것  | 앱 실행 여부·실제 listen 주소와 포트 |
+
+DNS 성공은 TCP 성공이 아니고, TCP 성공은 TLS 검증 성공이 아닙니다. HTTP 응답을 받았어도 업무 성공이나 브라우저의 응답 읽기까지 보장하지는 않습니다. 아래 네 사례에서 **다음에 볼 곳을 먼저 생각한 뒤** 답을 펼쳐 보세요.
+
+## 2. 연습 A: CA 파일을 더했는데도 verify 실패
+
+같은 Python 환경에서 승인된 CA bundle을 지정했습니다. 서버 인증서는 `app.example.test`용인데 요청 URL은 IP 주소입니다. 관찰된 오류는 이름 불일치입니다.
+
+<Check
+  question="CA를 더 추가할까요, 접속 이름을 확인할까요?"
+  children="접속 이름과 인증서 SAN을 확인합니다. 이 사례는 신뢰 CA를 더해도 이름 불일치가 사라지지 않습니다. 의도한 서비스 이름으로 접속하고 그 이름의 DNS·경로를 확인합니다. verify를 끄지 않습니다."
+/>
+
+복습: [08 인증서 묶음](#/network/tls) · [09 verify 오류 진단](#/network/verify)
+
+## 3. 연습 B: 프록시를 컨테이너로 옮긴 뒤 502
+
+기존 호스트 Nginx는 `127.0.0.1:18001`로 앱에 연결했습니다. 이제 프록시와 앱은 같은 사용자 정의 bridge에 있습니다. upstream 설정은 여전히 `127.0.0.1:18001`이고, 프록시 로그에는 그 주소의 연결 거부가 기록됩니다.
+
+<Check
+  question="먼저 사용자망의 18001을 허용해야 할까요?"
+  children="이 사례에서는 프록시 컨테이너의 localhost로 접속한 것이 문제입니다. 같은 네트워크의 app:8000을 대상으로 삼고 앱의 listen을 확인합니다. 사용자망 방화벽을 넓히는 것으로 프록시 자신을 가리키는 주소가 고쳐지지는 않습니다."
+/>
+
+복습: [10 리버스 프록시](#/network/proxy) · [11 VM·Docker 네트워크](#/network/docker)
+
+## 4. 연습 C: 화면은 실패, 서버에는 성공 기록
+
+다른 origin으로 사전 확인이 필요 없는 GET을 보냈습니다. Network에서 본 응답은 200이고 서버 로그도 처리를 확인합니다. 응답에는 Allow-Origin이 없고, Console에 CORS 오류가 표시됩니다.
+
+<Check
+  question="API가 요청을 못 받았나요, JS가 응답을 못 읽었나요?"
+  children="이 증거에서는 서버가 처리했고 JS의 읽기가 차단됐습니다. 실제 응답의 CORS 공유 정책을 확인합니다. 모든 브라우저 실패를 미전송으로 해석하지 말고, 상태 변경 요청이라면 재전송 전 처리 여부부터 확인합니다."
+/>
+
+복습: [12 브라우저만 실패](#/network/browser)
+
+## 5. 연습 D: Service 이름은 나오지만 연결 실패
+
+같은 namespace의 `api:80`을 조회할 수 있습니다. Service selector와 Pod 라벨은 일치하고, Ready인 대상 Pod가 EndpointSlice에 있습니다. Service targetPort는 9000인데 앱은 8000에 listen합니다.
+
+<Check
+  question="DNS부터 다시 설정할까요?"
+  children="이 사례에서는 targetPort와 앱 listen의 불일치를 확인했습니다. 의도한 앱 포트에 맞추고 새 연결을 확인합니다. 대상이 아예 없는 경우라면 selector·라벨·Ready 상태를 먼저 보겠지만, 지금의 증거는 다릅니다."
+/>
+
+복습: [13 클러스터 내부 연결](#/network/cluster-internal)
+
+## 6. 실제 장애에서는 한 조건씩
+
+위 사례는 원인을 알도록 구성한 짧은 연습입니다. 실제 502·timeout·verify 오류는 여러 원인이 가능하고 동시에 발생할 수도 있습니다. **관찰 → 가설 → 한 조건 변경 → 같은 위치에서 재확인** 순서로 진행하세요. 변경 전후의 목적지·명령·결과를 남기면 다른 사람도 판단 과정을 따라갈 수 있습니다.
+
+이 책의 실험은 실제 네트워크를 검사하는 도구가 아닙니다. 배운 원리로 질문을 좁힌 다음 실제 환경에서 증거를 모으는 데 목적이 있습니다. 네트워크의 기초 연결은 여기서 마무리하고, 클러스터를 만들고 운영하는 방법은 별도 쿠버네티스 교재에서 이어갑니다.
+
+<Sources items={[
+['curl · 인증서 검증','https://curl.se/docs/sslcerts.html'],
+['Docker · bridge 네트워크','https://docs.docker.com/engine/network/drivers/bridge/'],
+['WHATWG Fetch · CORS','https://fetch.spec.whatwg.org/#http-cors-protocol'],
+['Kubernetes · Service 문제 진단','https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/']
+]} />
+</section>
