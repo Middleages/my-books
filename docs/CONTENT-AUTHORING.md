@@ -44,7 +44,8 @@
 MDX 안에 복잡한 상태 처리나 판정 함수를 넣지 않는다. 기존 TSX 본문은 그대로
 동작하며 대규모 일괄 전환은 하지 않는다. 본문을 크게 개정할 때 점진적으로 옮긴다.
 04장 `Ports.mdx`를 시범 전환했고, 시각 보강 배치 A에서 08·09도
-`Tls.mdx`·`Verify.mdx`로 전환했다. 07은 기존 TSX를 유지한다.
+`Tls.mdx`·`Verify.mdx`로 전환했다. 배치 B에서는 01~03을
+`Packets.mdx`·`Addressing.mdx`·`Routing.mdx`로 전환했다. 07은 기존 TSX를 유지한다.
 **이후 추가하는 본문은 MDX를 기본으로 사용한다.**
 
 ## 예시
@@ -116,3 +117,8 @@ MDX의 `<p>` 안에 줄바꿈으로 일반 텍스트를 쓰면 Markdown이 또 �
 04장 구매력 사례: `money/Inflation.mdx`와 `InflationLab.tsx`, `simulations/money/inflation.mjs`.
 동일 연도 프레임을 그림·가격표·수량·그래프·표에 재사용하고, 명목/실질은 기준 시점과 단위를 함께 적습니다.
 공식 교육자료의 단순 근사와 자체 모델의 정확식을 구분하며, 출처 확인일은 장별로 명시합니다.
+
+01~03 시각 보강 사례: `network/foundation-visual.mjs`가 기존 기초 모델을 관찰 프레임으로
+확장하고 `FoundationScene.tsx`의 경로·주소 전후·정적 단계가 같은 프레임을 읽습니다.
+포맷터가 `<p>`의 텍스트를 여러 줄로 바꿀 수 있으므로, 직접 쓴 문단 태그에는
+`<p className="model-note">{"출처 확인 문장"}</p>`처럼 JSX 문자열을 쓰면 중첩을 예방할 수 있습니다.

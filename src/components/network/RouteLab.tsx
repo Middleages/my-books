@@ -1,55 +1,99 @@
-import { useId, useState } from "react";
-import { hosts, traceRoute } from "../../simulations/network/model.mjs";
+import { useState } from "react";
+import { hosts } from "../../simulations/network/model.mjs";
+import { routeFrames } from "../../simulations/network/foundation-visual.mjs";
 import { scenarios } from "../../simulations/network/scenarios";
+import { Playback, useFoundationPlayback } from "./FoundationPlayback";
+import {
+  PathScene,
+  PacketFields,
+  StaticFrames,
+  FrameExplanation,
+} from "./FoundationScene";
+import "./foundation-visuals.css";
 
 export default function RouteLab({ nat = false }: { nat?: boolean }) {
-  const id = useId();
   const [source, setSource] = useState("a");
-  const [destination, setDestination] = useState("peer");
+  const [destination, setDestination] = useState(nat ? "server" : "peer");
   const [scenario, setScenario] = useState(nat ? "nat" : "routed");
-  const [index, setIndex] = useState(-1);
+  const [both, setBoth] = useState(true);
   const [prediction, setPrediction] = useState("");
-  const result = traceRoute({ source, destination, scenario });
-  const step = index < 0 ? null : result.steps[index];
-  const peer = source === "a" ? "b" : "a";
-  const correct =
-    destination === "peer"
-      ? "direct"
-      : scenario === "bad-gateway"
-        ? "blocked"
-        : "gateway";
-  function change(setter: (value: string) => void, value: string) {
-    setter(value);
-    setIndex(-1);
-    setPrediction("");
-  }
+  const r = routeFrames({ source, destination, scenario, both });
+  const player = useFoundationPlayback(r.frames.length);
+  const f = r.frames[player.index];
+  const currentSource = f.source === "b" ? "b" : "a";
+  const peer = currentSource === "a" ? "b" : "a";
+  const isNat = scenario === "nat" && !r.local;
   const nodes = [
-    { id: "a", name: "PC A", address: hosts.a.ip + "/24" },
-    { id: "b", name: "PC B", address: hosts.b.ip + "/24" },
     {
-      id: "router",
-      name: "라우터",
-      address: "LAN 192.168.10.1",
-      extra: scenario === "nat" ? "출구 203.0.113.5" : "반대쪽 192.168.20.1",
+      id: currentSource,
+      name: "대화를 시작한 PC " + currentSource.toUpperCase(),
+      address: hosts[currentSource].ip + "/24",
+      zone: "같은 LAN · 192.168.10.0/24",
     },
-    {
-      id: "server",
-      name: "외부 서버",
-      address: scenario === "nat" ? "198.51.100.20" : "192.168.20.20/24",
-    },
+    ...(r.local
+      ? []
+      : [
+          {
+            id: "router",
+            name: "라우터 · 네트워크 경계",
+            address:
+              scenario === "nat"
+                ? "안쪽 192.168.10.1 / 출구 203.0.113.5"
+                : "192.168.10.1 / 192.168.20.1",
+            zone:
+              scenario === "bad-gateway"
+                ? "설정 192.168.10.254 · 장비 없음"
+                : "기본 게이트웨이 192.168.10.1",
+          },
+        ]),
+    r.local
+      ? {
+          id: peer,
+          name: "상대 PC " + peer.toUpperCase(),
+          address: hosts[peer].ip + "/24",
+          zone: "같은 LAN · 라우터 경유 없음",
+        }
+      : {
+          id: "server",
+          name: "다른 망의 서버",
+          address:
+            scenario === "nat"
+              ? "198.51.100.20 : 8000"
+              : "192.168.20.20 : 8000",
+          zone:
+            scenario === "nat"
+              ? "인터넷 쪽 · 중간 홉 생략"
+              : "다른 사설망 · 192.168.20.0/24",
+        },
   ];
+  const change = () => {
+    player.reset();
+    setPrediction("");
+  };
+  const correct = r.local
+    ? "direct"
+    : r.outcome === "blocked"
+      ? "blocked"
+      : "gateway";
   return (
-    <section className="lab route-lab" aria-labelledby={id}>
-      <p className="eyebrow">직접 따라가기 · 교육용 시뮬레이션</p>
-      <h2 id={id}>패킷의 다음 목적지는 어디일까?</h2>
-      <p>먼저 경로를 예상하고, 한 단계씩 보낸 뒤 응답까지 확인하세요.</p>
-      <div className="route-controls">
+    <section className="fv-lab" aria-label="라우팅과 NAT 시각 실험">
+      <p className="fv-eyebrow">03 · 길 선택과 주소 변환</p>
+      <h2>지금 패킷은 어디에, 어떤 주소로 있을까?</h2>
+      <p>
+        같은 LAN 왕복, NAT 없는 두 사설망, NAPT 출구, 잘못된 게이트웨이를
+        비교하세요. 선 위의 ▣는 현재 단계에서 이동한 IP 패킷입니다.
+      </p>
+      <div className="fv-controls">
         <label>
           출발지
           <select
             aria-label="출발지"
+            disabled={both && isNat}
             value={source}
-            onChange={(e) => change(setSource, e.target.value)}
+            onChange={(e) => {
+              setSource(e.target.value);
+              change();
+            }}
           >
             <option value="a">PC A</option>
             <option value="b">PC B</option>
@@ -60,11 +104,12 @@ export default function RouteLab({ nat = false }: { nat?: boolean }) {
           <select
             aria-label="목적지"
             value={destination}
-            onChange={(e) => change(setDestination, e.target.value)}
+            onChange={(e) => {
+              setDestination(e.target.value);
+              change();
+            }}
           >
-            <option value="peer">
-              같은 망의 {peer === "a" ? "PC A" : "PC B"}
-            </option>
+            <option value="peer">같은 망의 다른 PC</option>
             <option value="server">외부 서버</option>
           </select>
         </label>
@@ -73,7 +118,10 @@ export default function RouteLab({ nat = false }: { nat?: boolean }) {
           <select
             aria-label="경로 사례"
             value={scenario}
-            onChange={(e) => change(setScenario, e.target.value)}
+            onChange={(e) => {
+              setScenario(e.target.value);
+              change();
+            }}
           >
             {scenarios
               .filter((s) => nat || s.id !== "nat")
@@ -85,175 +133,172 @@ export default function RouteLab({ nat = false }: { nat?: boolean }) {
           </select>
         </label>
       </div>
-      <p className="model-note">
-        {scenarios.find((s) => s.id === scenario)?.description}
-      </p>
-      <div className="network-map" aria-label="네트워크 지도">
-        <div className="lan-boundary">
-          <small>같은 LAN · 192.168.10.0/24</small>
-          <div className="pc-pair">
-            {nodes.slice(0, 2).map((n) => (
+      <p>{scenarios.find((s) => s.id === scenario)?.description}</p>
+      {isNat && (
+        <>
+          <label className="fv-toggle">
+            <input
+              type="checkbox"
+              checked={both}
+              onChange={(e) => {
+                setBoth(e.target.checked);
+                change();
+              }}
+            />
+            두 PC 함께 · A/B 요청 후 B/A 응답
+          </label>
+          <div className="fv-hosts" aria-label="출구를 공유하는 두 PC">
+            {(["a", "b"] as const).map((key) => (
               <div
-                key={n.id}
-                className={`network-node ${step?.node === n.id ? "active" : ""}`}
+                key={key}
+                className={currentSource === key ? "fv-current" : ""}
               >
-                <b>{n.name}</b>
-                <code>{n.address}</code>
-                {step?.node === n.id && <span>● 현재 위치</span>}
+                <b>PC {key.toUpperCase()}</b>
+                <code>{hosts[key].ip} : 51000</code>
+                <span>
+                  {currentSource === key
+                    ? "● 지금 따라가는 대화"
+                    : "별도의 대화"}
+                </span>
               </div>
             ))}
           </div>
-          <span className="map-caption">스위치 / AP로 연결</span>
-        </div>
-        <span className="map-link" aria-hidden="true">
-          ↔
-        </span>
-        {nodes.slice(2).map((n, i) => (
-          <div
-            className={`network-node ${step?.node === n.id ? "active" : ""}`}
-            key={n.id}
-          >
-            <small>{i === 0 ? "네트워크의 경계" : "다른 네트워크"}</small>
-            <b>{n.name}</b>
-            <code>{n.address}</code>
-            {n.extra && <code>{n.extra}</code>}
-            {step?.node === n.id && <span>● 현재 위치</span>}
-          </div>
-        ))}
-      </div>
-      <p className="model-note">
-        연결 관계: 두 PC ↔ 스위치/AP ↔ 라우터 ↔ 외부 서버. 같은 LAN의 전달에는
-        라우터를 거치지 않습니다.
-      </p>
-      <fieldset className="prediction" disabled={index >= 0}>
-        <legend>예측 · 첫 전달은 어떻게 될까요?</legend>
-        {[
-          ["direct", "같은 망에 직접 전달"],
-          ["gateway", "게이트웨이로 전달"],
-          ["blocked", "다음 홉을 찾지 못함"],
-        ].map(([v, label]) => (
-          <label key={v}>
-            <input
-              type="radio"
-              name={id + "predict"}
-              value={v}
-              checked={prediction === v}
-              onChange={() => setPrediction(v)}
-            />
-            {label}
-          </label>
-        ))}
-      </fieldset>
-      <div className="lab-actions">
-        <button
-          className="primary"
-          disabled={!prediction || index === result.steps.length - 1}
-          onClick={() => setIndex((i) => i + 1)}
-        >
-          한 단계 진행
-        </button>
-        <button
-          className="secondary"
-          onClick={() => {
-            setIndex(-1);
-            setPrediction("");
-          }}
-        >
-          처음부터
-        </button>
-        <span>
-          {index < 0
-            ? "예측을 선택하면 시작할 수 있어요"
-            : `${index + 1} / ${result.steps.length} 단계`}
-        </span>
-      </div>
-      <div className="route-evidence" aria-live="polite" aria-atomic="true">
-        {step ? (
-          <>
-            <p className="prediction-result">
-              {prediction === correct
-                ? "예측과 일치합니다."
-                : "예측과 다른 이유를 확인해 보세요."}
-            </p>
-            <h3>
-              {index + 1}. {step.title}
-            </h3>
-            <p>{step.detail}</p>
-            <dl className="packet-fields">
-              <div>
-                <dt>출발지 {nat ? "IP : 포트" : "IP"}</dt>
-                <dd>
-                  {step.packet.src}
-                  {nat && ` : ${step.packet.sport}`}
-                </dd>
-              </div>
-              <div>
-                <dt>목적지 {nat ? "IP : 포트" : "IP"}</dt>
-                <dd>
-                  {step.packet.dst}
-                  {nat && ` : ${step.packet.dport}`}
-                </dd>
-              </div>
-            </dl>
-            {index === result.steps.length - 1 && (
-              <strong>
-                {result.outcome === "delivered"
-                  ? "✓ 왕복 완료"
-                  : "! 다음 홉에서 중단"}
-              </strong>
-            )}
-          </>
-        ) : (
-          <p>
-            아직 패킷을 보내지 않았습니다. 지도와 주소를 보고 예측해 보세요.
+          <p className="fv-note">
+            두 PC는 같은 LAN에서 같은 라우터 출구를 공유합니다. 아래 경로는 현재
+            따라가는 PC를 확대합니다. 두 PC 함께 모드에서는 출발지 선택과
+            무관하게 A → B 순서로 요청합니다.
           </p>
-        )}
+        </>
+      )}
+      <PathScene
+        nodes={nodes}
+        frame={f}
+        playing={player.playing}
+        frameKey={player.index}
+      />
+      <Playback
+        player={player}
+        count={r.frames.length}
+        reset={() => {
+          setSource("a");
+          setDestination(nat ? "server" : "peer");
+          setScenario(nat ? "nat" : "routed");
+          setBoth(true);
+          change();
+        }}
+      />
+      <FrameExplanation
+        frame={f}
+        index={player.index}
+        final={player.index === r.frames.length - 1}
+        outcome={r.outcome}
+      />
+      <div className="fv-comparison" aria-label="현재 구간의 주소 전후 비교">
+        <h3>
+          {f.change === "source"
+            ? "출구에서 요청 출발지 변환"
+            : f.change === "destination"
+              ? "안쪽으로 보내기 전 응답 목적지 복원"
+              : "이 단계에서는 IP·포트 변환 없음"}
+        </h3>
+        <div className="fv-layer-pair">
+          <PacketFields packet={f.before} label="변환 전 / 유지 확인" />
+          <PacketFields packet={f.packet} label="변환 후 / 현재" />
+        </div>
+        <p>
+          {f.change
+            ? "바뀐 쪽: " +
+              (f.change === "source"
+                ? "출발지 IP·포트. 목적지는 그대로."
+                : "목적지 IP·포트. 출발지는 그대로.")
+            : "요청과 응답은 서로 반대 방향의 별도 패킷입니다. 응답 생성 시 주소·포트가 뒤집히는 것은 NAT 변환이 아닙니다."}
+        </p>
       </div>
       {nat && (
-        <div className="nat-mapping">
-          <h3>출구의 변환 기록 · TCP</h3>
-          {result.mapping && index >= 2 ? (
-            <dl>
-              <dt>안쪽 주소 : 포트</dt>
-              <dd>
-                {result.mapping.internalIp} : {result.mapping.internalPort}
-              </dd>
-              <dt>바깥쪽 주소 : 포트</dt>
-              <dd>
-                {result.mapping.externalIp} : {result.mapping.externalPort}
-              </dd>
-            </dl>
+        <div className="fv-mappings">
+          <h3>출구 매핑 · TCP</h3>
+          <p>안쪽 주소:포트 ↔ 출구 주소:포트</p>
+          {f.mappings.length ? (
+            f.mappings.map((m) => (
+              <div
+                key={m.internalIp}
+                className={
+                  f.source && m.internalIp === hosts[currentSource].ip
+                    ? "fv-current"
+                    : ""
+                }
+              >
+                <b>PC {m.internalIp === hosts.a.ip ? "A" : "B"}</b>
+                <code>
+                  {m.internalIp} : {m.internalPort}
+                </code>
+                <span>↔</span>
+                <code>
+                  {m.externalIp} : {m.externalPort}
+                </code>
+                <small>
+                  {f.change === "destination" &&
+                  f.before.dport === m.externalPort
+                    ? "✓ 이 응답과 일치 · 원래 PC로"
+                    : "이 대화의 매핑"}
+                </small>
+              </div>
+            ))
           ) : (
             <p>
-              {destination === "peer"
-                ? "같은 LAN의 전달에는 NAT 매핑이 필요하지 않습니다."
-                : "아직 만들어진 매핑이 없습니다."}
+              {r.local
+                ? "같은 LAN에서는 NAT를 사용하지 않습니다."
+                : isNat
+                  ? "아직 출구 변환 전 · 만들어진 매핑 없음"
+                  : "NAT 없는 경로 · 매핑 없음"}
             </p>
           )}
-          <p>
-            포트는 여기서 왕복 대화를 구분하는 숫자로만 봅니다. 기존 매핑과 맞는
-            응답을 돌려주는 사례이며 외부의 임의 신규 연결을 허용한다는 뜻은
-            아닙니다.
-          </p>
         </div>
       )}
-      {index >= 0 && (
-        <details>
-          <summary>지나온 단계 · 텍스트로 읽기</summary>
-          <ol>
-            {result.steps.slice(0, index + 1).map((s, i) => (
-              <li key={i}>
-                <strong>{s.title}</strong>
-                <p>{s.detail}</p>
-              </li>
-            ))}
-          </ol>
-        </details>
+      <label className="fv-prediction">
+        첫 전달 예측
+        <select
+          aria-label="첫 전달 예측"
+          value={prediction}
+          onChange={(e) => setPrediction(e.target.value)}
+        >
+          <option value="">선택 없이도 관찰 가능</option>
+          <option value="direct">같은 망에 직접 전달</option>
+          <option value="gateway">게이트웨이로 전달</option>
+          <option value="blocked">다음 홉을 찾지 못함</option>
+        </select>
+      </label>
+      {prediction && player.index > 0 && (
+        <p>
+          {prediction === correct
+            ? "✓ 예측과 일치합니다."
+            : "예측과 다릅니다. 현재 경로와 중단 사유를 확인하세요."}
+        </p>
       )}
-      <p className="model-note">
-        가정: IPv4, 고정된 /24 LAN, 정상 링크와 응답하는 서버. ARP 탐색·중간
-        홉·TCP 연결 설정·방화벽·시간·손실은 생략합니다. 외부 주소는 문서용
-        예시이며 실제 진단이나 통신을 하지 않습니다.
+      <StaticFrames frames={r.frames} />
+      <div className="fv-roles">
+        <div>
+          <b>라우팅</b>
+          <p>어느 다음 홉으로 보낼지 고릅니다.</p>
+        </div>
+        <div>
+          <b>NAT / NAPT</b>
+          <p>주소를 변환합니다. NAPT는 포트도 매핑합니다.</p>
+        </div>
+        <div>
+          <b>방화벽</b>
+          <p>
+            정책으로 허용·차단합니다. 이 실험은 정상 트래픽 허용을 가정합니다.
+          </p>
+        </div>
+      </div>
+      <p className="fv-note">
+        가정: IPv4/TCP, /24 LAN, 정상 링크·서버·반환 경로. 잘못된 게이트웨이는
+        .254에 응답할 장비가 없는 고정 사례입니다. ARP·MAC 헤더·TTL·체크섬
+        갱신·중간 홉·TCP 연결 설정·손실·매핑 만료는 생략합니다. 두 PC 매핑은 이
+        가상 출구가 선택한 서로 다른 포트이며 모든 NAT의 할당 규칙이 아닙니다.
+        기존 매핑에 맞는 응답만 다루며 외부 임의 신규 연결 허용을 뜻하지
+        않습니다. 문서용 외부 IP로 실제 통신을 하지 않습니다.
       </p>
     </section>
   );
