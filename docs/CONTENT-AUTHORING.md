@@ -124,3 +124,9 @@ MDX의 `<p>` 안에 줄바꿈으로 일반 텍스트를 쓰면 Markdown이 또 �
 확장하고 `FoundationScene.tsx`의 경로·주소 전후·정적 단계가 같은 프레임을 읽습니다.
 포맷터가 `<p>`의 텍스트를 여러 줄로 바꿀 수 있으므로, 직접 쓴 문단 태그에는
 `<p className="model-note">{"출처 확인 문장"}</p>`처럼 JSX 문자열을 쓰면 중첩을 예방할 수 있습니다.
+
+
+05장 이자 사례: `money/Interest.mdx`와 `InterestPrimer.tsx`·`InterestLab.tsx`,
+`simulations/money/interest.mjs`·`interest.d.mts`. 관계 그림과 직접 조작을 같은 모델로 계산하며
+월중 단계와 월말 확정 값을 구분합니다. 구성 막대의 라벨은 모바일에서 SVG와 함께 축소되지 않도록
+HTML로 표시합니다. 원금·납입·수익·비용의 보존 관계를 모든 관찰 단계에서 검사합니다.

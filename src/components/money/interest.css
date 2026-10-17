@@ -1,0 +1,209 @@
+.interest-lab {
+  min-width: 0;
+}
+.interest-comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.interest-comparison > section {
+  border: 1px solid #bacfc0;
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  min-width: 0;
+}
+.interest-comparison h3 {
+  font-size: 17px;
+  line-height: 1.6;
+  margin-top: 0;
+}
+.interest-pools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.interest-pools > div {
+  border: 2px solid #617e70;
+  padding: 12px 6px;
+  background: #eef5ef;
+  text-align: center;
+  border-radius: 0 0 12px 12px;
+}
+.interest-pools > div:last-child {
+  border-style: dashed;
+  background: #f4f0fa;
+}
+.interest-pools strong,
+.interest-pools small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.interest-pools small {
+  font-size: 12px;
+}
+.interest-formula {
+  border-left: 3px solid #44755c;
+  padding: 10px;
+  background: #f0f6f2;
+  font-size: 14px;
+}
+.interest-decomposition svg,
+.interest-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.interest-decomposition text,
+.interest-chart text {
+  font:
+    12px system-ui,
+    sans-serif;
+  fill: #263e34;
+}
+.interest-decomposition figcaption,
+.interest-chart figcaption {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #42554a;
+}
+.interest-chart {
+  max-width: 650px;
+  margin: 24px auto !important;
+}
+.interest-chart figcaption span {
+  display: inline-block;
+  margin-right: 12px;
+}
+.interest-stages {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  gap: 6px;
+}
+.interest-stages li {
+  flex: 1 1 120px;
+}
+.interest-stages button {
+  width: 100%;
+  height: 100%;
+}
+.interest-month-jump input {
+  width: 100%;
+  accent-color: #266349;
+}
+.interest-lab .money-table table {
+  min-width: 1050px;
+}
+.interest-lab tr[aria-current="true"] {
+  background: #e5f2e8;
+}
+@media (max-width: 700px) {
+  .interest-comparison {
+    grid-template-columns: 1fr;
+  }
+  .interest-lab .money-select select {
+    max-width: 100%;
+  }
+  .interest-lab .money-table {
+    max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .interest-lab *,
+  .interest-lab *::before,
+  .interest-lab *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+.interest-primer {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid #c2d4c7;
+  border-radius: 12px;
+  background: #f1f6f0;
+}
+.interest-primer figcaption {
+  font-size: 14px;
+  color: #405547;
+}
+.interest-primer-start {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+  padding: 20px 10px;
+}
+.interest-primer-branches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.interest-primer-branches section {
+  background: white;
+  padding: 16px;
+  border: 1px solid #a9c3b1;
+  border-radius: 10px;
+}
+.interest-primer h3 {
+  font-size: 17px;
+  margin: 0;
+}
+.interest-primer p {
+  font-size: 14px;
+}
+.interest-reserve {
+  padding: 10px;
+  border: 2px dashed #927ca8;
+}
+.interest-reinvest {
+  padding: 10px;
+  border: 2px solid #337756;
+}
+@media (max-width: 700px) {
+  .interest-primer-branches {
+    grid-template-columns: 1fr;
+  }
+  .interest-primer {
+    padding: 14px;
+  }
+}
+.interest-bars {
+  padding: 12px 0;
+}
+.interest-bar-row {
+  margin: 16px 0;
+}
+.interest-bar-label {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.interest-bar-label strong {
+  font-weight: 500;
+}
+.interest-bar-track {
+  position: relative;
+  height: 26px;
+  margin-top: 5px;
+}
+.interest-bar-track i {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #778a80;
+}
+.interest-bar-track span {
+  position: absolute;
+  top: 5px;
+  height: 16px;
+}

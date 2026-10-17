@@ -1,3 +1,4 @@
+import MoneyInterest from "./content/money/Interest.mdx";
 import MoneyInflation from "./content/money/Inflation.mdx";
 import MoneyIntro from "./content/money/Intro.mdx";
 import MoneyMap from "./content/money/Map.mdx";
@@ -247,6 +248,17 @@ export const chapters: Chapter[] = [
       "장바구니 가격과 구매량을 연결해 명목 잔액과 실질 구매력을 비교합니다.",
     Content: MoneyInflation,
   },
+  {
+    id: "interest",
+    bookId: "money",
+    readId: "money/interest",
+    number: "05",
+    title: "이자와 복리",
+    heading: "같은 돈, 같은 기간인데 결과는 왜 다를까?",
+    description:
+      "이자의 재투자와 납입·비용을 단계별로 따라가며 단리와 복리를 비교합니다.",
+    Content: MoneyInterest,
+  },
 ];
 type Book = {
   id: string;
@@ -291,7 +303,7 @@ export const books: Book[] = [
     overview:
       "가상의 가정과 함께 자산·부채·현금흐름을 연결합니다. 그림을 보고 예측한 다음 직접 조건을 바꿔 보세요.",
     future:
-      "01~04장 공개 · 복리·신용과 다른 금융 분야는 후속 배치에서 다룹니다.",
+      "01~05장 공개 · 저축·신용과 다른 금융 분야는 후속 배치에서 다룹니다.",
     Intro: MoneyIntro,
   },
 ];
