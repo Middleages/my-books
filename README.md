@@ -19,18 +19,32 @@ npm run build
 
 GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. main push 시 테스트와 빌드 후 자동 배포됩니다. PR에서는 빌드만 실행합니다.
 
-예정 주소: https://middleages.github.io/my-books/
+배포 주소: https://middleages.github.io/my-books/
 
 프로젝트 하위 경로는 vite.config.ts의 base에서 설정합니다. 해시 라우팅을 사용하므로 챕터 링크를 직접 열거나 새로고침해도 Pages의 404 문제를 피합니다.
 
 ## 콘텐츠 구성
 
-- src/catalog.ts: 챕터 목록과 소개
-- src/main.tsx: 책 목록, 본문, 읽기 기록
-- src/Labs.tsx: 실험 UI
-- src/models.mjs: 화면과 분리한 계산 모델
-- tests/models.test.mjs: 계산 가정과 단위 검증
+- `src/catalog.ts`: bookId/chapterId 기반 책·챕터 목록과 본문 연결
+- `src/main.tsx`: 책장·책 소개·읽기 화면
+- `src/content/computer/`: 기존 컴퓨터 교과서 2장
+- `src/content/network/`: 연결과 패킷 / IP와 같은 네트워크 / 라우터·게이트웨이·NAT
+- `src/components/network/RouteLab.tsx`: 예측 → 한 단계 진행 → 증거 확인
+- `src/simulations/network/`: UI와 분리한 IPv4 경로·NAT 교육 모델과 사례
+- `src/reading.mjs`: 기존 localStorage 키와 컴퓨터 읽음 ID 유지
+- `src/Labs.tsx`, `src/models.mjs`: 기존 컴퓨터 실험·계산 모델
+- `tests/`: 기존 계산, 서브넷 경계, 로컬/원격 경로, NAT 왕복, 읽음 데이터 호환 검증
 
-첫 책은 컴퓨터의 작동 원리이며 CPU/GPU 병렬화와 데이터 전송의 두 챕터를 제공합니다. 시뮬레이션은 교육용 이상 모델이며 실제 장비 성능을 예측하지 않습니다. 각 본문에 가정과 참고 자료를 표시합니다.
+기존 `#/computer/parallel`, `#/computer/memory` 링크는 그대로 동작합니다.
+책 소개는 `#/computer`, `#/network`, 새 장은 `#/network/packets`,
+`#/network/addressing`, `#/network/routing`입니다. 읽음 기록의 저장 키
+`my-books:read:v1`과 기존 `parallel`, `memory` 값은 유지하며 네트워크 장은
+`network/packets`처럼 책 이름을 포함합니다. 알 수 없는 기존 문자열도 버리지 않습니다.
 
-본문이 늘어나면 MDX 기반 챕터 파일로 분리할 수 있습니다. 사용자 데이터 동기화나 서버 기능은 현재 포함하지 않습니다.
+네트워크 실험은 실제 요청을 보내지 않는 고정 IPv4 교육 모델입니다. 같은 LAN의
+전달, 두 사설망 간 라우팅, 인터넷 출구 NAPT의 왕복, 존재하지 않는 게이트웨이를
+비교합니다. 실제 라우팅·방화벽·TCP 엔진이 아니며 가정과 한계를 본문에 표시합니다.
+
+현재 네트워크 01~03장만 공개합니다. 04~06 연결·DNS·TCP가 다음 배치이며,
+TLS·프록시·Docker·k3s는 후속 범위입니다. 전체 계획은
+[NETWORK-TEXTBOOK-PLAN.md](docs/NETWORK-TEXTBOOK-PLAN.md)를 참고하세요.

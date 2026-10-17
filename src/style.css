@@ -647,3 +647,370 @@ details p {
     scroll-behavior: auto !important;
   }
 }
+/* Reading-first network chapters; diagrams change only on an explicit step. */
+.book + .book {
+  margin-top: 24px;
+}
+.learning-goals {
+  background: #f8faff;
+  padding: 20px 24px;
+  border-radius: 8px;
+  max-width: 850px;
+}
+.learning-goals ul {
+  margin-bottom: 0;
+  padding-left: 22px;
+}
+.prose code {
+  background: #f1f4fa;
+  padding: 2px 4px;
+  border-radius: 3px;
+  overflow-wrap: anywhere;
+  font-size: 0.9em;
+}
+.prose li {
+  color: #465269;
+  margin: 8px 0;
+}
+.packet-figure {
+  margin: 28px 0;
+  padding: 24px;
+  background: #f5f8ff;
+  border: 1px solid #dbe5f6;
+  border-radius: 8px;
+}
+.message-box {
+  padding: 16px;
+  background: #e1eaff;
+  border-left: 4px solid var(--blue);
+  font-weight: 600;
+}
+.packet-figure > p {
+  margin: 16px 0;
+  font-size: 14px;
+}
+.packet-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.packet-row > div {
+  border: 1px solid #9bb1eb;
+  border-radius: 5px;
+  overflow: hidden;
+  background: white;
+}
+.packet-row b,
+.packet-row span {
+  display: block;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+.packet-row b {
+  background: #e1eaff;
+  color: #2245b5;
+}
+figcaption {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 16px;
+}
+.table-wrap {
+  overflow-wrap: anywhere;
+  margin: 24px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  table-layout: fixed;
+}
+caption {
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+th,
+td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #dde5f0;
+  vertical-align: top;
+}
+th {
+  background: #f1f5fd;
+}
+.sources {
+  border-top: 1px solid var(--line);
+  margin-top: 36px;
+}
+.sources a {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sources li {
+  font-size: 14px;
+}
+.eyebrow {
+  font-size: 12px !important;
+  color: #315bea !important;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.route-lab {
+  margin: 36px 0;
+}
+.route-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 16px;
+  margin: 24px 0 12px;
+}
+.route-controls label {
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 0;
+}
+select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  background: white;
+  color: #101b35;
+  border: 1px solid #b8c9e5;
+  border-radius: 5px;
+  font: inherit;
+  min-height: 44px;
+}
+select:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+.network-map {
+  display: grid;
+  grid-template-columns: 1.6fr 24px 1fr 1fr;
+  align-items: stretch;
+  gap: 12px;
+  margin: 24px 0 12px;
+}
+.lan-boundary {
+  border: 1px dashed #92aadc;
+  padding: 12px;
+  border-radius: 8px;
+}
+.lan-boundary > small {
+  display: block;
+  margin-bottom: 10px;
+  color: #3d5784;
+}
+.pc-pair {
+  display: grid;
+  gap: 8px;
+}
+.network-node {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 14px 10px;
+  border: 1px solid #ccd7e8;
+  border-radius: 6px;
+  background: white;
+  min-width: 0;
+}
+.network-node code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.network-node small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.network-node.active {
+  border: 2px solid #315bea;
+  background: #e4edff;
+  padding: 13px 9px;
+}
+.network-node span {
+  font-size: 11px;
+  color: #2245b5;
+  margin-top: 4px;
+}
+.map-link {
+  align-self: center;
+  text-align: center;
+}
+.map-caption {
+  display: block;
+  font-size: 11px;
+  margin-top: 8px;
+}
+.model-note {
+  font-size: 12px !important;
+  line-height: 1.8;
+  color: #59677f;
+}
+.prediction {
+  border: 0;
+  border-top: 1px solid #ccd7e8;
+  padding: 16px 0;
+  margin: 24px 0 8px;
+}
+.prediction legend {
+  font-weight: 600;
+  font-size: 14px;
+  padding-right: 10px;
+}
+.prediction label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 20px;
+  min-height: 44px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.prediction input {
+  accent-color: var(--blue);
+  width: 18px;
+  height: 18px;
+}
+.lab-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.lab-actions > span {
+  font-size: 12px;
+  color: #59677f;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.route-evidence {
+  background: white;
+  padding: 24px;
+  margin: 20px 0;
+  border-radius: 6px;
+  border: 1px solid #d8e2f2;
+}
+.route-evidence p {
+  margin: 12px 0;
+  font-size: 14px;
+}
+.route-evidence .prediction-result {
+  color: #315bea;
+  font-size: 12px;
+  margin-top: 0;
+}
+.packet-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+dd {
+  margin: 4px 0 12px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.nat-mapping {
+  border-left: 3px solid #315bea;
+  padding: 12px 20px;
+  margin: 20px 0;
+  background: #f8faff;
+}
+.nat-mapping p,
+.route-lab details p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+.route-lab ol {
+  padding-left: 24px;
+}
+.chapter-list small {
+  color: var(--muted);
+  font-size: 11px;
+}
+@media (max-width: 1100px) {
+  .network-map {
+    grid-template-columns: 1fr 1fr;
+  }
+  .map-link {
+    display: none;
+  }
+  .lan-boundary {
+    grid-column: 1/-1;
+  }
+  .pc-pair {
+    grid-template-columns: 1fr 1fr;
+  }
+  .route-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+  .route-controls label:last-child {
+    grid-column: 1/-1;
+  }
+}
+@media (max-width: 620px) {
+  aside nav {
+    flex-wrap: wrap;
+  }
+  aside nav a {
+    flex: auto;
+  }
+  .route-controls {
+    grid-template-columns: 1fr;
+  }
+  .network-map {
+    grid-template-columns: 1fr;
+  }
+  .network-node {
+    padding: 14px;
+  }
+  .network-node.active {
+    padding: 13px;
+  }
+  .packet-fields {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .packet-row {
+    grid-template-columns: 1fr;
+  }
+  .packet-figure {
+    padding: 16px;
+  }
+  .route-evidence {
+    padding: 16px;
+  }
+  .pc-pair {
+    grid-template-columns: 1fr;
+  }
+  th,
+  td {
+    padding: 8px 5px;
+    font-size: 12px;
+  }
+  .book {
+    gap: 14px;
+    padding: 18px;
+  }
+  .cover {
+    width: 85px;
+  }
+  .cover-grid {
+    width: 55px;
+  }
+  .book-content {
+    min-width: 0;
+  }
+}
