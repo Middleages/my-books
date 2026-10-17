@@ -4,6 +4,12 @@
 
 React + TypeScript + Vite 기반의 GitHub Pages 정적 웹사이트입니다. 로그인이나 서버 없이 실행되며 읽음 기록은 현재 브라우저의 localStorage에 저장됩니다.
 
+## 작성·개발 지침
+
+새 작업은 루트 [AGENTS.md](AGENTS.md)의 전역 지침과
+[콘텐츠 작성 기준](docs/CONTENT-AUTHORING.md), 해당 교과서의 계획·구현 상태를 먼저 확인합니다.
+전역 지침은 모든 교과서와 관련 계획·검증 문서에 적용합니다.
+
 ## 개발
 
 Node.js 22 이상에서:
