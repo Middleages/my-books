@@ -1098,3 +1098,80 @@ dd {
     grid-template-columns: 1fr;
   }
 }
+.certificate-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+.certificate-panels > section {
+  border: 1px solid #cdd9ef;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f8faff;
+  min-width: 0;
+}
+.certificate-panels p {
+  font-size: 14px;
+  line-height: 1.8;
+}
+.certificate-panels select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font: inherit;
+  border: 1px solid #bbcbea;
+  border-radius: 4px;
+  background: white;
+}
+.check-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin: 12px 0;
+  font-size: 14px;
+}
+.check-control input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--blue);
+}
+.cert-stack {
+  padding-left: 24px;
+}
+.cert-stack li {
+  margin: 10px 0;
+  padding: 12px;
+  background: white;
+  border: 1px solid #d8e2f2;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+.cert-stack span {
+  display: block;
+  font-size: 13px;
+  margin-top: 6px;
+}
+.validation-list {
+  padding: 0;
+  list-style: none;
+}
+.validation-list li {
+  border-top: 1px solid #d8e2f2;
+  padding: 14px 0;
+}
+.route-evidence pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+@media (max-width: 700px) {
+  .certificate-panels {
+    grid-template-columns: 1fr;
+  }
+  .certificate-panels > section {
+    padding: 14px;
+  }
+}

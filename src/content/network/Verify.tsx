@@ -1,0 +1,239 @@
+import { Check, Sources } from "./shared";
+import { CertificateLab } from "../../components/network/WebLabs";
+export default function Verify() {
+  return (
+    <>
+      <p className="lead">
+        브라우저에서는 잘 열리는데 Python에서는 SSL verify 오류가 납니다. 서버
+        인증서를 다시 발급해야 할까요? 먼저 실패한 클라이언트가 무엇을 검증하다
+        멈췄는지 확인합니다. fullchain과 신뢰 목록을 구분하면 수정할 위치도
+        좁혀집니다.
+      </p>
+      <div className="learning-goals">
+        <strong>이 장을 읽고 나면</strong>
+        <ul>
+          <li>이름·시간·중간 인증서·신뢰 CA 문제를 구분합니다.</li>
+          <li>브라우저와 Python·컨테이너의 차이를 관찰합니다.</li>
+          <li>검증을 유지하면서 필요한 증거를 수집합니다.</li>
+        </ul>
+      </div>
+      <section className="prose">
+        <h2>1. verify 오류는 아직 HTTP 응답이 아니다</h2>
+        <p>
+          인증서 검증 실패는 TLS 단계의 문제입니다. 기본적인 새 HTTPS 연결에서는
+          HTTP 요청과 응답을 주고받기 전에 중단합니다. 따라서 먼저 오류를 낸
+          도구, 실행 위치, URL, 정확한 메시지를 기록합니다. “SSL 에러”라는
+          말만으로는 이름 불일치인지 신뢰 경로 문제인지 알 수 없습니다.
+        </p>
+        <p>
+          같은 계열의 오류라도 라이브러리와 버전에 따라 문구나 처음 보고하는
+          실패가 다를 수 있습니다. 여러 문제가 동시에 있으면 하나를 고친 뒤 다른
+          오류가 드러나기도 합니다. 아래 표는 대표적인 단서이며 문구 하나로 모든
+          원인을 확정하는 표는 아닙니다.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>관찰할 단서</th>
+              <th>확인할 곳</th>
+              <th>수정 방향</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>이름 불일치</td>
+              <td>URL의 이름, SAN, 선택된 인증서</td>
+              <td>의도한 이름으로 접속하거나 인증서·SNI 설정 교정</td>
+            </tr>
+            <tr>
+              <td>만료·시작 전</td>
+              <td>현재 시각, 인증서 유효기간</td>
+              <td>실제 시계 오류 확인, 적절한 갱신·교체</td>
+            </tr>
+            <tr>
+              <td>발급자 경로를 못 찾음</td>
+              <td>서버가 보낸 중간 인증서, 클라이언트 신뢰 목록</td>
+              <td>서버 fullchain 또는 클라이언트 CA 설정 확인</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          중간 CA 누락과 신뢰 루트 누락은 비슷한 검증 오류로 보일 수 있습니다.
+          “unable to get local issuer certificate”라는 예시 문구만 보고 무조건
+          CA를 설치하거나 무조건 fullchain을 바꾸지 않습니다. 양쪽 자료를
+          비교해야 합니다.
+        </p>
+        <h2>2. 브라우저에서 성공한 것은 그 환경의 증거</h2>
+        <p>
+          브라우저, 호스트의 curl, Python Requests, 컨테이너 앱은 서로 다른 신뢰
+          설정을 사용할 수 있습니다. 어떤 curl은 OS의 저장소를 사용하고 어떤
+          빌드는 파일 기반 CA 모음을 사용합니다. Requests는 일반적으로 certifi의
+          CA 모음을 사용하며 별도의 경로를 지정할 수도 있습니다. 실제
+          설치·배포판·옵션을 확인해야 합니다.
+        </p>
+        <p>
+          브라우저에 중간 인증서 캐시가 있어 서버의 누락이 드러나지 않는 경우도
+          있습니다. 다른 클라이언트가 같은 자료를 갖고 있다고 가정하면 안
+          됩니다. 따라서 브라우저 성공만으로 서버가 올바른 체인 전체를 보낸다고
+          결론 내릴 수 없습니다.
+        </p>
+        <p>
+          컨테이너는 호스트에 설치한 CA를 자동으로 모두 물려받지 않습니다. 그
+          이미지와 앱이 실제로 어떤 CA 파일을 사용하는지 확인해야 합니다. 이번
+          장은 이런 경계만 설명하고 이미지 생성·배포 방법은 Docker 장에서
+          이어갑니다.
+        </p>
+      </section>
+      <CertificateLab advanced />
+      <section className="prose">
+        <h2>3. 실험에서 네 번만 비교해 보기</h2>
+        <ol>
+          <li>
+            <strong>중간 CA 누락:</strong> 서버에서 루트만 추가해 보세요. 중간
+            경로의 빈칸은 그대로입니다. 올바른 중간 CA를 포함해야 합니다.
+          </li>
+          <li>
+            <strong>Python에 신뢰 CA 없음:</strong> 서버 묶음이 정상이어도
+            실패합니다. 현재 Python 환경의 신뢰 목록을 바꾸면 다른 환경의 설정은
+            그대로입니다.
+          </li>
+          <li>
+            <strong>도메인 인증서에 IP 접속:</strong> CA를 신뢰해도 이름
+            불일치는 남습니다. 접속 대상 이름과 SAN을 맞춰야 합니다.
+          </li>
+          <li>
+            <strong>복합 실패:</strong> 이름·체인·신뢰를 하나씩 고쳐 보세요.
+            어떤 항목이 통과하고 무엇이 남는지 확인합니다.
+          </li>
+        </ol>
+        <p>
+          실험의 “중간 CA 캐시”는 서버 누락이 특정 클라이언트에서 가려지는
+          상황을 보여 줍니다. 캐시에 기대는 것을 서버 수정의 대안으로 삼지는
+          않습니다. 모든 조작은 가상 상태이며 실제 신뢰 저장소를 수정하지
+          않습니다.
+        </p>
+        <h2>4. 어디서 무엇을 관찰하는 명령일까?</h2>
+        <p>
+          다음은 가상 도메인과 문서용 IP를 사용하는 진단 예시입니다. 실패하는
+          클라이언트와 같은 위치에서 실행해야 비교가 의미 있습니다. 실제
+          토큰이나 쿠키가 담긴 상세 로그는 공유 전에 가립니다. 명령은 이
+          페이지에서 실행되지 않습니다.
+        </p>
+        <div className="note">
+          <strong>클라이언트에서 · URL 이름을 유지하고 연결 IP만 지정</strong>
+          <pre>
+            <code>
+              {
+                "curl -v --connect-timeout 5 \\\n  --resolve app.example.test:443:192.0.2.10 \\\n  --cacert ./approved-root-ca.pem \\\n  https://app.example.test/report"
+              }
+            </code>
+          </pre>
+          <p>
+            직접 접속 기준입니다. URL의 이름을 유지하므로 SNI와 인증서 이름
+            검증도 그 이름을 사용하면서 DNS 주소 선택만 지정할 수 있습니다. Host
+            헤더만 바꾸는 것과 다릅니다. HTTP(S)_PROXY 등 프록시가 개입하면
+            경로가 달라질 수 있으니 환경도 함께 확인하세요.
+          </p>
+        </div>
+        <div className="note">
+          <strong>클라이언트에서 · 서버가 보낸 인증서와 검증 결과 관찰</strong>
+          <pre>
+            <code>
+              {
+                "openssl s_client -connect 192.0.2.10:443 \\\n  -servername app.example.test \\\n  -verify_hostname app.example.test \\\n  -verify_return_error \\\n  -CAfile ./approved-root-ca.pem -showcerts </dev/null"
+              }
+            </code>
+          </pre>
+          <p>
+            <code>-servername</code>은 SNI, <code>-verify_hostname</code>은
+            기대한 이름 검증입니다. <code>-showcerts</code>는 서버가 보낸 인증서
+            목록을 보여 주며 그 자체로 검증 완료된 체인이라는 뜻은 아닙니다.
+            CONNECTED만 보지 말고 검증 결과와 종료 상태를 확인하세요.
+          </p>
+        </div>
+        <p>
+          <code>approved-root-ca.pem</code>은 승인된 관리 경로로 받은 CA를
+          가리키는 예시 파일명입니다. 실패한 서버에서 추출한 인증서를 출처 확인
+          없이 신뢰 기준으로 넣는 절차가 아닙니다.
+        </p>
+        <h2>5. Requests의 CA 설정은 Requests에서 확인</h2>
+        <pre>
+          <code>
+            {
+              'import requests\n\nresponse = requests.get(\n    "https://app.example.test/report",\n    verify="/path/to/approved-ca-bundle.pem",\n    timeout=(5, 30),\n)'
+            }
+          </code>
+        </pre>
+        <p>
+          예시의 verify 경로는 서버의 개인키나 서버 fullchain 파일을 넣는 자리가
+          아닙니다. 이 클라이언트가 검증에 사용할 CA 모음을 지정합니다.
+          명시적으로 파일을 지정하면 해당 호출이 그 모음을 사용하므로 필요한
+          신뢰 CA가 포함되어 있는지 확인합니다. 환경 변수{" "}
+          <code>REQUESTS_CA_BUNDLE</code>도 사용할 수 있지만 앱의 호출 방식과
+          설정 반영 여부를 확인해야 합니다.
+        </p>
+        <p>
+          <code>verify=False</code>나 curl의 <code>-k</code>는 검증 문제의
+          해결이 아닙니다. 상대의 신원을 검증하는 보호를 생략하여 오류가 보이지
+          않게 만드는 것입니다. 이 교과서는 이를 통과 버튼으로 제공하지
+          않습니다.
+        </p>
+        <h2>6. 브라우저 → 프록시 → 앱: 검증하는 사람이 바뀐다</h2>
+        <p>
+          브라우저가 프록시의 인증서를 검증하는 구간과, 프록시가 HTTPS 백엔드의
+          인증서를 검증하는 구간은 별개입니다. 두 번째 구간의 클라이언트는
+          프록시입니다. 브라우저에 CA를 설치해도 프록시의 upstream 신뢰 설정이
+          바뀌지 않습니다.
+        </p>
+        <p>
+          NGINX에서는 <code>proxy_pass https://...</code>만으로 upstream 인증서
+          검증까지 켜졌다고 볼 수 없습니다. 공식 문서상{" "}
+          <code>proxy_ssl_verify</code>의 기본값은 off입니다. 검증 활성화, 신뢰
+          CA, upstream SNI와 검증 이름을 함께 설계해야 합니다. 다음 리버스
+          프록시 장에서 전체 배치와 설정으로 연결합니다.
+        </p>
+        <h2>확인해 보기</h2>
+        <Check question="루트 CA를 신뢰하도록 추가했는데 hostname mismatch가 남습니다. 왜일까요?">
+          발급자를 신뢰하는 것과 접속 이름이 인증서 SAN과 맞는 것은 별개의
+          조건입니다. 이름을 포함한 올바른 인증서 또는 접속 이름을 확인합니다.
+        </Check>
+        <Check question="브라우저에서는 되니 fullchain은 반드시 정상인가요?">
+          그렇지 않습니다. 해당 브라우저의 캐시나 신뢰 설정이 다를 수 있습니다.
+          서버가 실제로 보낸 인증서와 실패 환경의 자료를 비교합니다.
+        </Check>
+        <Check question="호스트에 CA를 설치하면 컨테이너 Python도 자동으로 되나요?">
+          보장되지 않습니다. 컨테이너 이미지와 Python이 사용하는 CA 모음을 따로
+          확인해야 합니다.
+        </Check>
+        <Sources
+          items={[
+            [
+              "curl — 인증서 검증과 CA store",
+              "https://curl.se/docs/sslcerts.html",
+            ],
+            [
+              "curl — --resolve 및 --cacert",
+              "https://curl.se/docs/manpage.html",
+            ],
+            [
+              "Requests — SSL 인증서 검증과 CA bundle",
+              "https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification",
+            ],
+            [
+              "OpenSSL s_client — showcerts와 검증 옵션",
+              "https://docs.openssl.org/master/man1/openssl-s_client/",
+            ],
+            [
+              "NGINX — upstream TLS 검증 설정",
+              "https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ssl_verify",
+            ],
+            [
+              "Docker — 호스트와 컨테이너의 CA 인증서",
+              "https://docs.docker.com/engine/network/ca-certs/",
+            ],
+          ]}
+        />
+      </section>
+    </>
+  );
+}

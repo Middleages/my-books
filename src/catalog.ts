@@ -3,9 +3,12 @@ import Memory from "./content/computer/Memory";
 import Packets from "./content/network/Packets";
 import Addressing from "./content/network/Addressing";
 import Routing from "./content/network/Routing";
-import Ports from "./content/network/Ports";
+import Ports from "./content/network/Ports.mdx";
 import Dns from "./content/network/Dns";
 import Transport from "./content/network/Transport";
+import Http from "./content/network/Http";
+import Tls from "./content/network/Tls";
+import Verify from "./content/network/Verify";
 import type { ComponentType } from "react";
 export type Chapter = {
   id: string;
@@ -98,6 +101,36 @@ export const chapters: Chapter[] = [
     description: "ACK·재전송과 지연·대역폭의 차이를 실험합니다.",
     Content: Transport,
   },
+  {
+    id: "http",
+    bookId: "network",
+    readId: "network/http",
+    number: "07",
+    title: "HTTP 요청의 여행",
+    heading: "주소창에서 응답까지, 어디까지 왔을까?",
+    description: "URL·메서드·Host·상태 코드를 읽고 요청의 길을 추적합니다.",
+    Content: Http,
+  },
+  {
+    id: "tls",
+    bookId: "network",
+    readId: "network/tls",
+    number: "08",
+    title: "HTTPS·TLS·인증서",
+    heading: "fullchain은 인증서를 합친 것일까?",
+    description: "서버 인증서 묶음과 클라이언트의 신뢰 목록을 구분합니다.",
+    Content: Tls,
+  },
+  {
+    id: "verify",
+    bookId: "network",
+    readId: "network/verify",
+    number: "09",
+    title: "verify 오류 진단",
+    heading: "왜 브라우저에서는 되고 Python에서는 실패할까?",
+    description: "이름·시간·체인·신뢰를 나누어 실패한 환경에서 확인합니다.",
+    Content: Verify,
+  },
 ];
 export const books = [
   {
@@ -120,7 +153,7 @@ export const books = [
     overview:
       "웹앱을 만들고 서버를 운영하다가 막혔던 네트워크를 기초부터 이해하는 책입니다. 먼저 쉽게 읽고, 필요한 곳에서 예측하고 조작한 뒤, 내 상황에 적용합니다.",
     future:
-      "현재 01~06장 공개 · 다음 배치: HTTP 요청의 여행 → HTTPS·TLS·인증서 → verify 오류 진단. Docker·k3s는 이후에 이어집니다.",
+      "현재 01~09장 공개 · 다음 배치: 리버스 프록시 → VM·Docker 네트워크 → 브라우저만 실패. k3s는 이후에 이어집니다.",
   },
 ];
 export const chapterHref = (c: Chapter) => `#/${c.bookId}/${c.id}`;

@@ -48,6 +48,18 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 전달, 두 사설망 간 라우팅, 인터넷 출구 NAPT의 왕복, 존재하지 않는 게이트웨이를
 비교합니다. 실제 라우팅·방화벽·TCP 엔진이 아니며 가정과 한계를 본문에 표시합니다.
 
-현재 네트워크 01~06장을 공개합니다. 07~09 HTTP·TLS·verify가 다음 배치이며,
-TLS·프록시·Docker·k3s는 후속 범위입니다. 전체 계획은
+현재 네트워크 01~09장을 공개합니다. 10~12 리버스 프록시·VM/Docker·브라우저 정책이
+다음 배치이며 k3s는 후속 범위입니다. 전체 계획은
 [NETWORK-TEXTBOOK-PLAN.md](docs/NETWORK-TEXTBOOK-PLAN.md)를 참고하세요.
+
+## 본문 작성 방식
+
+이후 신규 본문은 **MDX**, 실험 UI와 동작은 React/TypeScript로 작성합니다.
+기존 04장은 `Ports.mdx`로 시범 전환했고 주소와 읽음 ID는 유지했습니다.
+기존 TSX는 대규모 개정 시 점진적으로 전환합니다.
+[콘텐츠 작성 기준](docs/CONTENT-AUTHORING.md)을 먼저 읽어 주세요.
+
+07~09 링크: `#/network/http`, `#/network/tls`, `#/network/verify`.
+`WebLabs.tsx`는 요청 추적과 fullchain/클라이언트 신뢰 목록 실험을 제공하고,
+`simulations/network/web.mjs`는 제한된 교육 모델을 구현합니다. 실제 인증서나 개인키를
+입력받거나 TLS 검증을 수행하지 않습니다.
