@@ -1,5 +1,5 @@
 import { Check, Sources } from "./shared";
-import { DockerLab } from "../../components/network/OperationsLabs";
+import { DockerVisualLab } from "../../components/network/OperationVisuals";
 
 <p className="lead">호스트에서는 열리던 주소가 컨테이너 안에서는 실패합니다. 앱마다 8000을 썼는데 충돌하지 않기도 합니다. 이상한 예외를 외우기 전에 “누구의 주소와 포트인가?”를 물어보면 이해하기 쉬워집니다.</p>
 <div className="learning-goals">
@@ -51,7 +51,7 @@ VM은 가상 하드웨어 위에서 별도 운영체제를 실행합니다. Linu
 핵심은 포트 숫자를 아끼는 일이 아닙니다. **외부에서 직접 들어올 필요가 없는 앱에 사용자망의 접근을 허용했는가**를 판단하는 일입니다. 호스트 Nginx가 앱을 부르기 위한 loopback publish는 필요한 내부 접점일 수 있습니다.
 
 </section>
-<DockerLab />
+<DockerVisualLab />
 <section className="prose">
 
 ## 5. 실제 적용 A: 호스트 Nginx와 앱 컨테이너
@@ -117,6 +117,7 @@ Docker가 만드는 NAT·필터 규칙은 호스트 방화벽과 상호작용합
 
 <Check question="같은 bridge의 프록시와 앱이 통신하려면 app의 ports를 꼭 적어야 할까요?" children="아닙니다. app:컨테이너포트로 직접 연결할 수 있습니다. 공유 네트워크와 앱의 listen 조건을 확인합니다." />
 <Check question="앱을 0.0.0.0:8000에 띄우면 자동으로 사용자망에 공개될까요?" children="그 자체로는 아닙니다. 컨테이너 공간의 listen이고, 외부 도달성은 네트워크 방식·publish·라우팅·방화벽에 달려 있습니다." />
+<p className="model-note">{"공식 자료 확인: 2026-10-18. Linux Docker Engine 28.0.0 이상·IPv4 사용자 정의 bridge·기본 NAT를 기준으로 합니다. 그림은 논리 연결 경로이며 veth·실제 netfilter hook 순서와 userland-proxy·hairpin NAT의 출발지 변환은 생략합니다. Desktop·rootless·직접 라우팅은 이 모델 밖입니다."}</p>
 <Sources items={[
 ['Docker · 포트 publish와 버전 예외','https://docs.docker.com/engine/network/port-publishing/'],
 ['Docker · 사용자 정의 bridge','https://docs.docker.com/engine/network/drivers/bridge/'],

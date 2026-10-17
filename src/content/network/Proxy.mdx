@@ -1,5 +1,5 @@
 import { Check, Sources } from "./shared";
-import { ProxyLab } from "../../components/network/OperationsLabs";
+import { ProxyVisualLab } from "../../components/network/OperationVisuals";
 
 <p className="lead">앱이 세 개 늘었습니다. 사용자에게 18001, 18002, 18003을 각각 알려 줘야 할까요? 웹 요청을 먼저 받는 프록시가 있으면 사용자는 익숙한 HTTPS 주소로 들어오고, 프록시가 알맞은 앱에 연결할 수 있습니다.</p>
 <div className="learning-goals">
@@ -53,7 +53,7 @@ DNS가 `/api/`를 보고 API 앱으로 보내는 것은 아닙니다. 인증서�
 같은 VM 안에서 HTTP를 쓰는 선택도 가능하지만, 이는 그 구간을 TLS로 암호화하지 않는다는 선택입니다. VM 사이의 통신이나 보안 정책에 따라 HTTPS가 필요할 수 있습니다. 내부라는 말만으로 안전을 보장하지 않습니다.
 
 </section>
-<ProxyLab />
+<ProxyVisualLab />
 <section className="prose">
 
 ## 4. 실제 적용: 먼저 분기와 경로를 읽자
@@ -115,6 +115,7 @@ proxy_ssl_verify_depth 2;
 
 <Check question="브라우저가 프록시 인증서를 신뢰하면 내부 HTTPS 앱도 신뢰할까요?" children="아닙니다. 내부 연결의 클라이언트인 프록시가 별도로 이름·체인·신뢰 등을 검증해야 합니다." />
 <Check question="/api/items가 앱까지 갔지만 앱에는 /items만 있다면 어디를 볼까요?" children="proxy_pass의 URI 부분과 앱의 라우트를 비교합니다. 방화벽을 열어도 경로 불일치는 고쳐지지 않습니다." />
+<p className="model-note">{"공식 자료 확인: 2026-10-18. 실험은 단순 prefix location과 정상 외부 경로를 가정합니다. SNI는 TLS 인증서 선택, Host/authority와 path는 HTTP 분기에 쓰입니다. 관찰 단계는 설명 순서이며 모든 내부 처리 순서를 재현하지 않습니다."}</p>
 <Sources items={[
 ['NGINX · 요청과 server/location 선택','https://nginx.org/en/docs/http/request_processing.html'],
 ['NGINX · proxy_pass, 전달 헤더, upstream TLS','https://nginx.org/en/docs/http/ngx_http_proxy_module.html'],

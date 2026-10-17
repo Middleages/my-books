@@ -1,7 +1,7 @@
 # 네트워크 교재 시각 설명 보강 계획
 
 작성일: 2026-10-17 (KST)
-상태: **배치 A(08~09)·B(01~03) 구현·검증 완료. 다음은 배치 C(10~11).**
+상태: **배치 A(08~09)·B(01~03)·C(10~11) 구현·검증 완료. 다음은 배치 D(04~07·12 중 보강 대상).**
 
 ## 1. 목적과 범위
 
@@ -225,7 +225,89 @@ TLS 1.3을 서버 공개키로 세션키를 암호화해 전달하는 구식 RSA
 - **미검증:** 실제 휴대폰 Safari·터치 하드웨어·스크린리더 낭독, 실제 네트워크 장비/연결.
   브라우저 모바일 폭과 reduced-motion 검증을 실제 기기 검증으로 간주하지 않는다.
 
-### 다음 배치
+### 배치 B 종료 시 다음 범위 (기록)
 
 배치 C는 기존 계획의 **10 리버스 프록시·11 VM/Docker 네트워크** 시각 보강이다.
 이번 변경에는 구현하지 않았다. 13~14 k3s의 짧은 입문 범위도 그대로다.
+
+## 10. 배치 C 구현 기록 (2026-10-18)
+
+- 기준 main `e95c015`. 돈 04장·전역 작성 지침과 배치 A/B를 포함한 최신 소스에서 시작했다.
+  대상은 **10 리버스 프록시·11 VM/Docker 네트워크만**이다. 기존 MDX 본문·설정 예시·퀴즈·출처를
+  보존하고 두 실험의 import를 교체했다. catalog·URL·chapterId·readId·읽음 키는 변경하지 않았다.
+- `operations-visual.mjs`는 기존 `proxyResult`·`dockerResult` 판정을 재사용하는 관찰 프레임이다.
+  기존 판정 조합과 새 프레임 결과를 비교한다. 외부 TLS의 신뢰/이름 실패를 추가했으며
+  실패하면 HTTP 분기·upstream 연결 프레임을 만들지 않는다. 오류 코드의 원인은 고정 사례 안에서만 설명한다.
+- 10: 두 도메인의 동일 IP 안내, SNI 인증서 선택, Host/authority+path 앱 분기를 분리한다.
+  외부 연결 A와 내부 연결 B의 출발지/목적지 주소·임시 포트·HTTP/HTTPS·경로를 따로 표시한다.
+  API·화면·보고서 앱의 분기선과 이동 점, 독립적인 두 CA 검증 조건, URI 유무 전후 비교를 제공한다.
+  404는 이 사례의 앱 HTTP 응답, 502는 연결 거부 또는 upstream TLS, 504는 연결 후 응답 대기로 표시한다.
+  본문은 다른 발생 원인도 가능하며 코드 하나로 단정할 수 없음을 유지한다.
+- 11: 별도 VM A와 앱 VM B, 호스트 namespace, 사용자 정의 bridge, 각 컨테이너 namespace를
+  중첩 테두리로 그린다. 같은 bridge의 직접 경로, host publish 경로, 다른 VM의 publish 경로를 비교한다.
+  localhost 오지정은 요청 출발 공간에 머물며, 컨테이너 loopback bind와 호스트 loopback publish를
+  다른 중단 위치로 표시한다. 네트워크를 분리하면 별도 bridge 테두리와 끊긴 직접 경로를 보여 준다.
+  EXPOSE 조작은 설명 정보만 바꾸고 연결 판정에는 관여하지 않는다. 필요한 publish를 무조건 없애도록 유도하지 않는다.
+- `OperationScene.tsx`의 선·현재 위치·이동과 주소·판정·정적 단계는 같은 프레임을 읽는다.
+  선은 실제 배치된 카드의 좌표에서 생성해 모바일 재배치와 일치한다. 회색은 비교 후보 경로이고
+  초록은 현재 관찰 구간이다. 점의 속도는 실제 네트워크 지연이 아니다.
+- 01~03장의 `FoundationPlayback`을 재사용해 재생·정지·이전·한 단계 진행·다시 보기·초기화를 제공한다.
+  설정 변경 시 재생/단계/예측을 초기화한다. 정지 시 이동 노드를 제거하며 장 이동 시 timeout을 정리한다.
+  재생 조작은 스크롤 중에도 보인다. 모바일은 VM/앱 패널을 세로로 재배치하며 큰 그림을 축소하지 않는다.
+  reduced-motion은 이동 점을 숨기고 고정 강조·주소·단계를 유지한다. 모든 단계를 펼쳐 움직임 없이 읽을 수 있다.
+- `.ov-lab` 전용 CSS를 사용해 기존 prose·dl·code와 다른 교재의 시각 컴포넌트를 분리했다.
+  직접 작성한 MDX 문단은 JSX 문자열로 고정해 포맷터의 중첩 문단을 예방한다.
+- 병합 전 리뷰에서 localhost 오지정의 첫 프레임 출발지 불일치와 HTTP 분기 전의 upstream 선택 라벨을
+  발견해 수정했다. 첫 프레임부터 loopback 주소를 사용하도록 회귀 테스트를 추가했고,
+  앱 라벨은 실제 전달 완료가 아닌 **현재 조건의 전달 후보**임을 명시했다.
+
+### 공식 근거와 모델 경계
+
+- 2026-10-18 확인: NGINX request processing·configuring HTTPS servers·proxy module의
+  `proxy_pass`, `proxy_bind`, `proxy_ssl_verify`, `proxy_ssl_name`, `proxy_ssl_server_name`,
+  `proxy_ssl_trusted_certificate`, `proxy_read_timeout`; Docker port publishing·bridge·EXPOSE·packet filtering 문서.
+  링크는 두 장의 기존 출처 목록에 유지하며 확인일·가정을 추가했다.
+- 프록시는 IPv4/TCP·고정 도메인·단순 prefix location·새 연결 A/B만 다룬다.
+  B는 올바른 내부 SNI/이름·체인·기간과 명시적 검증 on을 가정한다. 외부 인증서 SAN은 선택한 한 이름이다.
+  Host/authority 변경은 진단용 가상 요청이며 두 server의 SNI/Host 불일치 거부 정책은 없다고 가정한다.
+  실제 브라우저 fetch에서 Host를 임의 변경하는 기능이 아니다. 재시도·캐시·keepalive·정규식·rewrite·
+  변수·인코딩된 URI·쿼리·인증은 생략한다. 관찰 순서는 설명 순서이며 NGINX 내부 처리를 전부 재현하지 않는다.
+- Docker는 **Linux Engine 28.0.0 이상·IPv4 사용자 정의 bridge·기본 NAT**를 가정한다.
+  host network·직접 라우팅·IPv6·rootless·Swarm·Docker Desktop·Pod 네트워크 공유는 모델 밖이다.
+  28 미만 localhost publish의 같은 L2 망 예외는 기존 본문에 유지한다.
+  veth·netfilter hook과 userland-proxy/hairpin NAT에 따른 출발지 변환을 재현하지 않는다.
+  publish 진입 전의 주소와 컨테이너 목적지의 변환은 표시하되 변환 뒤 출발지 주소는 구현별임을 명시한다.
+  원격 허용 체크는 실제 Docker 정책까지 반영한 결과를 가정하며 ufw INPUT만으로 판정하지 않는다.
+  호스트의 컨테이너 IP 직접 접근을 불가능하다고 설명하지 않는다.
+
+### 배치 C 검증
+
+- 신규 관찰 모델 테스트 **7개**, 기존·돈 교재 포함 전체 `npm test` **73개 통과**.
+  기존 판정의 프록시 96조합·Docker 216조합과 새 프레임 결과를 비교하고, 별도 외부 TLS·EXPOSE·
+  loopback 첫 단계 주소·publish 전후·중단 뒤 HTTP 미전송을 검사했다.
+- TypeScript·Vite production 빌드 통과. 기존 500 kB 이상 청크 안내 경고는 남아 있으며 번들 재구성은 범위 밖이다.
+- production Chromium **1440×1000·390×1000·320×1000**에서 새 두 장의 그림·선·주소·모든 정적 단계·
+  URI 유무·도메인/SNI/Host 독립성·두 TLS 신뢰·HTTP 200/404/502/504와 외부 TLS 중단을 조작했다.
+  Docker 세 출발 위치·localhost·publish 없음/loopback/all·앱 bind·공유 bridge·원격 정책·EXPOSE를 비교했다.
+- 정지 후 시간 경과·재생 중 설정 변경·다시 보기·초기화·마지막 자동 정지·이전 단계·장 이동의
+  timeout 정리를 확인했다. 정지 후 이동 노드 없음, 키보드 Enter 진행, reduced-motion의 이동 점 숨김,
+  정적 설명의 동일 주소를 확인했다. 앱 콘솔 오류·경고는 0개다.
+- 전체 **21개 장 × 1440·390·320px**에서 의미 있는 제목·가로 넘침·중첩 문단을 검사했다.
+  좁은 화면 전체 순회에서는 QA 환경의 한글 글꼴을 주입하지 않은 320px 기존 08장에서 넘침이 감지돼,
+  한글 글꼴을 로드한 새 세션에서 21개 장을 다시 실행해 통과했다. 글꼴·QA 브라우저는 배포물에 추가하지 않았다.
+- 배치 B의 패킷 손실/버퍼/복구, /16·/24·/25, 잘못된 게이트웨이, 두 PC NAPT의 B/A 역순 응답,
+  NAT 없는 경로·LAN 성공·B 단독 요청·기존 재생 정지/설정 변경/장 이동도 회귀 확인했다.
+- 기존 컴퓨터 두 슬라이더, 포트 거부/복구, DNS 캐시/만료, TCP 손실 복구, 08 중간 CA 제거/복구,
+  09 환경별 신뢰 복구, Service 대상 없음, 돈 04 마지막 연도/초기화를 production 화면에서 회귀 확인했다.
+- `parallel`·`network/tls`·`money/inflation`·미지의 미래 읽음 ID를 저장한 상태에서
+  `network/docker`를 추가한 뒤 새로고침해 기존 키와 모든 기록의 보존을 확인했다.
+- Browser 플러그인 실행 도구가 노출되지 않았고 cloud browser의 작업 환경 localhost 접근은
+  `ERR_CONNECTION_REFUSED`였다. 같은 실행 환경의 HTTP 서버와 로컬 Chromium으로 검증했다.
+  QA 초기 제목/링크 선택자와 화면 전환 대기 문제를 고친 뒤 전체 목표 조작을 다시 통과했다.
+- **미검증:** 실제 휴대폰 Safari·터치 하드웨어·스크린리더 낭독, 실제 NGINX/Docker/네트워크 장비.
+  모바일 폭·reduced-motion·가상 시나리오 검증을 실기기나 실제 네트워크 검증으로 간주하지 않는다.
+
+### 다음 범위
+
+배치 D는 **04~07·12 중 시각 설명 보강이 필요한 장**이다. 이번에는 구현하지 않았다.
+13~14 k3s는 기존의 짧은 연결 입문을 유지한다.

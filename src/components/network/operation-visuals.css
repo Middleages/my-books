@@ -1,0 +1,482 @@
+/* Batch C only. Keep global prose/dl/svg/section rules outside these spatial scenes. */
+.ov-lab {
+  margin: 2.5rem 0;
+  padding: clamp(0.85rem, 2.7vw, 1.8rem);
+  border: 1px solid #b7cbd9;
+  border-radius: 20px;
+  background: #f4f8fa;
+  color: #243949;
+  min-width: 0;
+}
+.ov-lab *,
+.ov-lab *::before,
+.ov-lab *::after {
+  box-sizing: border-box;
+}
+.ov-lab h2 {
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  line-height: 1.4;
+  margin: 0.3rem 0 1rem;
+}
+.ov-lab h3 {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 0.6rem;
+}
+.ov-lab p {
+  line-height: 1.8;
+  margin: 0.7rem 0;
+}
+.ov-lab code {
+  font-family: ui-monospace, "Noto Sans KR", monospace;
+  font-size: 0.82rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+.ov-lab .ov-eyebrow {
+  color: #287166;
+  font-size: 0.77rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+.ov-lab .ov-note {
+  font-size: 0.8rem;
+  color: #4b6071;
+}
+.ov-dns,
+.ov-localhost {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #e7f2ee;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 0.86rem;
+}
+.ov-map {
+  position: relative;
+  isolation: isolate;
+  margin: 1.2rem 0;
+  min-width: 0;
+}
+.ov-wires {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+  max-width: none !important;
+}
+.ov-wire,
+.ov-active-wire {
+  stroke: #9ab2c2;
+  stroke-width: 2;
+  fill: none;
+  stroke-linejoin: round;
+}
+.ov-active-wire {
+  stroke: #147b70;
+  stroke-width: 4;
+}
+.ov-moving-dot {
+  fill: #d27b11;
+  stroke: white;
+  stroke-width: 2;
+}
+.ov-static-dot {
+  fill: #147b70;
+  stroke: white;
+  stroke-width: 2;
+}
+.ov-node {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  background: white;
+  border: 1px solid #adc2d2;
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  box-shadow: 0 3px 8px #23495b08;
+}
+.ov-node > b {
+  font-size: 0.95rem;
+}
+.ov-node small {
+  color: #526778;
+  font-size: 0.72rem;
+}
+.ov-node > span {
+  font-size: 0.73rem;
+}
+.ov-node > strong {
+  color: #146858;
+  font-size: 0.75rem;
+}
+.ov-current {
+  outline: 3px solid #208479;
+  outline-offset: -2px;
+  background: #e8f7f1;
+}
+.ov-boundary {
+  border: 2px dashed #a8bac9;
+  border-radius: 15px;
+  padding: 1rem;
+  min-width: 0;
+  background: #eaf0f440;
+}
+.ov-boundary > small,
+.ov-boundary > b {
+  display: block;
+  margin-bottom: 0.8rem;
+  position: relative;
+  z-index: 2;
+  background: #f4f8fa;
+  font-size: 0.77rem;
+  color: #466073;
+}
+.ov-proxy {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 3rem;
+  align-items: center;
+}
+.ov-user-zone {
+  min-width: 0;
+}
+.ov-proxy-zone {
+  background: #e9f0f9;
+}
+.ov-rule {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  margin-top: 0.8rem;
+}
+.ov-rule > b:nth-of-type(2) {
+  margin-top: 0.6rem;
+}
+.ov-app-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #edf4ee;
+}
+.ov-app-zone > small {
+  margin: 0;
+}
+.ov-tls-pair,
+.ov-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.ov-tls-pair > div,
+.ov-compare > div,
+.ov-roles > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem;
+  min-width: 0;
+  background: white;
+  border: 1px solid #bdced9;
+  border-radius: 12px;
+  font-size: 0.83rem;
+}
+.ov-tls-pair strong {
+  color: #146a5c;
+}
+.ov-compare .ov-selected {
+  border: 2px solid #208479;
+  background: #e9f5f1;
+}
+.ov-compare small {
+  font-size: 0.73rem;
+  color: #53677b;
+  line-height: 1.6;
+}
+.ov-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 1.5rem 0 1rem;
+}
+.ov-controls label,
+.ov-prediction label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1 1 180px;
+  min-width: 0;
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+.ov-lab select {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  background: white;
+  color: #253e4e;
+  border: 1px solid #9fb8c9;
+  border-radius: 8px;
+  padding: 0.7rem 0.5rem;
+}
+.ov-lab .ov-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+.ov-toggle input {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+}
+.ov-lab button {
+  background: white;
+  border: 1px solid #9fb9c9;
+  color: #166557;
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  min-height: 44px;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.ov-lab button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ov-lab button:first-child {
+  background: #176c60;
+  color: white;
+}
+.ov-lab .fv-playback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.1rem 0;
+}
+.ov-lab .fv-playback span {
+  font-size: 0.78rem;
+  margin-left: auto;
+}
+.ov-lab :focus-visible {
+  outline: 3px solid #ca780d;
+  outline-offset: 3px;
+}
+.ov-explanation {
+  background: #e8f2f6;
+  border-left: 4px solid #1c7b70;
+  border-radius: 0 12px 12px 0;
+  padding: 1rem;
+}
+.ov-fields {
+  background: white;
+  border: 1px solid #c5d5df;
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin: 0.7rem 0;
+  font-size: 0.82rem;
+}
+.ov-fields > b,
+.ov-fields > span {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.ov-fields dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin: 0;
+}
+.ov-fields dl div {
+  display: block;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+}
+.ov-fields dl div:last-child {
+  grid-column: 1/-1;
+}
+.ov-fields dt {
+  font-size: 0.72rem;
+  color: #597082;
+  margin: 0;
+}
+.ov-fields dd {
+  margin: 0.25rem 0 0;
+  font-weight: 650;
+}
+.ov-verdict {
+  display: block;
+  padding: 0.5rem 0;
+  color: #125d52;
+}
+.ov-lab details {
+  background: white;
+  border: 1px solid #c0d1dc;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+.ov-lab summary {
+  cursor: pointer;
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+.ov-lab details ol {
+  padding-left: 1.2rem;
+}
+.ov-lab details li {
+  margin: 1rem 0;
+  font-size: 0.86rem;
+}
+.ov-docker {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 2fr);
+  gap: 3rem;
+  align-items: start;
+}
+.ov-remote-zone {
+  margin-top: 2.5rem;
+}
+.ov-vm-zone {
+  background: #edf1f9;
+  padding: 1rem;
+}
+.ov-host-zone {
+  max-width: 70%;
+  margin: 1rem auto 4rem;
+}
+.ov-bridge-zone {
+  background: #e8f3eb;
+  border-color: #83b4a2;
+}
+.ov-bridge-zone > span {
+  display: block;
+  font-size: 0.74rem;
+  margin: 0.5rem 0 1rem;
+}
+.ov-containers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem;
+  align-items: start;
+}
+.ov-roles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.ov-roles strong {
+  font-size: 0.85rem;
+  color: #166557;
+}
+.ov-roles span {
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+@media (max-width: 900px) {
+  .ov-proxy {
+    gap: 1.8rem;
+  }
+  .ov-boundary {
+    padding: 0.7rem;
+  }
+  .ov-docker {
+    gap: 2rem;
+  }
+  .ov-containers {
+    gap: 1.8rem;
+  }
+  .ov-host-zone {
+    max-width: 90%;
+  }
+}
+@media (max-width: 650px) {
+  .ov-proxy,
+  .ov-docker {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .ov-proxy-zone,
+  .ov-app-zone {
+    padding: 0.85rem;
+  }
+  .ov-user-zone {
+    padding: 0 0.85rem;
+  }
+  .ov-app-zone {
+    gap: 1.3rem;
+  }
+  .ov-tls-pair,
+  .ov-compare,
+  .ov-roles {
+    grid-template-columns: 1fr;
+  }
+  .ov-containers {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .ov-remote-zone {
+    margin: 0;
+  }
+  .ov-vm-zone {
+    padding: 0.7rem;
+  }
+  .ov-host-zone {
+    max-width: 100%;
+    margin: 0.7rem 0 3.5rem;
+  }
+  .ov-fields dl {
+    grid-template-columns: 1fr;
+  }
+  .ov-lab .fv-playback span {
+    flex-basis: 100%;
+    margin: 0;
+  }
+  .ov-bridge-zone {
+    padding: 0.7rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ov-lab *,
+  .ov-lab *::before,
+  .ov-lab *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ov-moving-dot {
+    display: none;
+  }
+}
+
+.ov-lab > .fv-playback {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 5;
+  background: #f4f8faf5;
+  padding: 0.7rem;
+  border: 1px solid #c1d4de;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px #24394910;
+}
