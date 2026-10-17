@@ -1,0 +1,125 @@
+import { Check, Sources } from "./shared";
+import { ProxyLab } from "../../components/network/OperationsLabs";
+
+<p className="lead">앱이 세 개 늘었습니다. 사용자에게 18001, 18002, 18003을 각각 알려 줘야 할까요? 웹 요청을 먼저 받는 프록시가 있으면 사용자는 익숙한 HTTPS 주소로 들어오고, 프록시가 알맞은 앱에 연결할 수 있습니다.</p>
+<div className="learning-goals">
+
+**이 장을 읽고 나면**
+
+- 외부 443과 앱의 내부 리스너를 다른 접점으로 설명합니다.
+- DNS·SNI·HTTP 분기와 upstream 연결을 구분합니다.
+- 404·502·504를 보고 다음에 관찰할 구간을 고릅니다.
+
+</div>
+<section className="prose">
+
+## 1. 앞에서 받고, 뒤로 다시 요청한다
+
+**리버스 프록시**는 서버 쪽 앞단에서 요청을 받고 다른 서버에 전달하는 프로그램입니다. Nginx가 대표적인 예입니다. 프록시가 요청을 보내는 뒤쪽 서버를 **upstream**이라고 부릅니다. 사용자 입장에서는 프록시가 서버이고, 앱 입장에서는 프록시가 클라이언트입니다.
+
+안내 데스크가 방문 목적에 맞는 담당 부서에 일을 넘기는 모습을 떠올려 보세요. 다만 웹 프록시는 주소만 알려 주고 끝내는 것이 아니라, 보통 자신이 앱으로 연결하고 응답을 받아 사용자에게 돌려줍니다. 브라우저를 다른 URL로 이동시키는 **리다이렉트**와 다릅니다.
+
+| 연결 구간       | 클라이언트 | 서버의 접점         |
+| --------------- | ---------- | ------------------- |
+| 사용자 → 프록시 | 브라우저   | VM의 443            |
+| 프록시 → API    | Nginx      | API의 8000 등       |
+| 프록시 → 보고서 | Nginx      | 보고서 앱의 8000 등 |
+
+프록시는 앱 포트를 없애 주지 않습니다. 앱마다 필요한 **사용자망의 진입점**을 줄여 줍니다. 같은 VM의 호스트 프로그램들이 같은 주소·TCP 포트를 동시에 독립 리스너로 차지할 수는 없지만, 별도 컨테이너의 8000은 서로 다른 네트워크 공간에 속할 수 있습니다. 다음 장에서 이 차이를 실험합니다.
+
+## 2. 같은 IP:443인데 어떻게 구별할까?
+
+`portal.example.test`와 `reports.example.test`가 둘 다 같은 VM IP를 가리킨다고 합시다. DNS는 두 이름을 같은 목적지로 안내합니다. 그다음 TLS 연결을 시작하며 보낸 **SNI**가 인증서 선택 등에 쓰이고, HTTPS를 해독한 뒤에는 HTTP의 **Host/authority와 경로**로 앱을 고를 수 있습니다.
+
+| 요청                          | 이 책의 분기 규칙   | 뒤쪽 앱   |
+| ----------------------------- | ------------------- | --------- |
+| portal.example.test/          | portal의 일반 경로  | 화면 앱   |
+| portal.example.test/api/items | portal의 /api/ 경로 | API 앱    |
+| reports.example.test/         | reports 도메인      | 보고서 앱 |
+
+DNS가 `/api/`를 보고 API 앱으로 보내는 것은 아닙니다. 인증서는 해당 이름을 포함해야 하고, HTTP 분기 규칙도 별도로 있어야 합니다. 인증서 설정만으로 앱 분기가 완성되지는 않습니다. 여기서는 HTTP를 해독하는 프록시를 다루며, TLS를 해독하지 않는 TCP 통과 구성은 제외합니다.
+
+## 3. HTTPS가 두 번이면 검증도 두 번이다
+
+브라우저와 프록시 사이에서 TLS가 끝나는 것을 **TLS 종료**라고 합니다. 암호화가 없어졌다는 뜻이 아니라 그 TLS 연결의 끝이 프록시라는 뜻입니다. 프록시가 뒤쪽 앱에 HTTPS로 연결하면 새로운 TLS 연결이 생깁니다.
+
+| 구간              | 누구의 인증서를 보나? | 누가 신뢰 CA를 갖나? |
+| ----------------- | --------------------- | -------------------- |
+| 브라우저 → 프록시 | 외부 서비스 인증서    | 브라우저 쪽          |
+| 프록시 → HTTPS 앱 | upstream 인증서       | 프록시 쪽            |
+
+브라우저에 자물쇠가 보여도 upstream 신뢰까지 확인된 것은 아닙니다. Nginx는 `proxy_pass https://...`만 적으면 upstream 인증서 검증이 기본으로 켜지는 것도 아닙니다. `proxy_ssl_verify` 기본값은 `off`이므로 검증과 신뢰 CA를 명시해야 합니다.
+
+같은 VM 안에서 HTTP를 쓰는 선택도 가능하지만, 이는 그 구간을 TLS로 암호화하지 않는다는 선택입니다. VM 사이의 통신이나 보안 정책에 따라 HTTPS가 필요할 수 있습니다. 내부라는 말만으로 안전을 보장하지 않습니다.
+
+</section>
+<ProxyLab />
+<section className="prose">
+
+## 4. 실제 적용: 먼저 분기와 경로를 읽자
+
+아래는 **호스트 Nginx의 server 블록 안에 넣는 설명용 일부 설정**입니다. 인증서 경로는 준비한 fullchain과 개인키로 바꾸고, 앱의 실제 라우트를 먼저 확인해야 합니다. 전체 운영 설정을 대신하지 않습니다.
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name portal.example.test;
+    ssl_certificate     /etc/nginx/tls/portal-fullchain.pem;
+    ssl_certificate_key /etc/nginx/tls/portal-key.pem;
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:18001/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+}
+```
+
+이 예에서는 `/api/items`를 받아 `/items`로 전달합니다. `proxy_pass` 끝의 `/`는 URI 부분이며, 일치한 `/api/`를 `/`로 치환합니다. 끝에 URI 없이 `http://127.0.0.1:18001`로 쓰면 이 단순한 예에서는 `/api/items`를 유지합니다. **슬래시가 달라지면 앱이 보는 경로도 달라질 수 있습니다.** 정규식 location·rewrite·변수 사용은 추가 규칙이 있으므로 이 한 예를 모든 설정에 일반화하지 마세요.
+
+도메인별 분기는 별도 `server` 블록에서 `server_name reports.example.test`와 적절한 인증서·upstream을 지정할 수 있습니다. 모르는 이름을 기본 앱으로 무조건 보내는 대신 기본 서버의 처리 정책도 정합니다. Nginx는 먼저 listen 주소·포트와 서버 이름을 바탕으로 설정을 선택하며, 위 표는 학습을 위한 단순한 규칙입니다.
+
+## 5. 헤더는 앱이 원래 요청을 이해하도록 돕는다
+
+TLS를 종료한 뒤 앱에 HTTP로 요청하면, 앱은 자기 연결만 보고 “사용자가 HTTP로 왔구나”라고 판단할 수 있습니다. 그러면 로그인 후 이동 주소가 `http://...`가 되는 등의 문제가 생길 수 있습니다. `X-Forwarded-Proto`는 원래 스킴을 전달하는 데 쓰입니다. `Host`는 앱이 외부 이름을 필요로 할 때 명시적으로 전달합니다. Nginx의 기본 upstream Host는 외부 Host를 그대로 보존하는 값이 아닙니다.
+
+위 예는 **인터넷에서 직접 요청을 받는 단일 프록시**여서 `X-Forwarded-For`를 관측한 상대 주소로 덮어씁니다. 여러 신뢰 프록시가 이어지는 구성은 체인 처리 기준을 따로 정해야 합니다. 앱은 신뢰한 프록시에서 받은 헤더만 신뢰하도록 설정합니다. 사용자가 임의로 보낸 헤더를 곧바로 실제 접속 정보로 믿으면 안 됩니다.
+
+## 6. upstream HTTPS 설정을 따로 읽기
+
+다음은 위 `location`의 전달 설정을 HTTPS 앱으로 바꾼 별도 예입니다. 프록시 환경에서 `api.internal.example.test`의 DNS가 동작하고, 앱 인증서 SAN에 그 이름이 있어야 합니다.
+
+```nginx
+proxy_pass https://api.internal.example.test:8443;
+proxy_ssl_server_name on;
+proxy_ssl_name api.internal.example.test;
+proxy_ssl_verify on;
+proxy_ssl_trusted_certificate /etc/nginx/trust/upstream-ca-bundle.pem;
+proxy_ssl_verify_depth 2;
+```
+
+`proxy_ssl_server_name`은 upstream에 SNI를 보내도록 하고, `proxy_ssl_name`은 SNI와 인증서 이름 검증에 쓸 이름을 정합니다. `proxy_ssl_trusted_certificate`는 **프록시가 서버를 검증할 CA bundle**입니다. 외부 사용자에게 제공할 fullchain과 용도가 다릅니다. 검증 깊이 2는 예시이며 실제 체인에 맞춰 정합니다. 위 예에는 URI 부분이 없으므로 경로를 제거하지 않습니다.
+
+## 7. 장애는 코드와 로그를 함께 읽는다
+
+| 관찰                | 알 수 있는 것                                    | 다음 확인                                         |
+| ------------------- | ------------------------------------------------ | ------------------------------------------------- |
+| 앱이 반환한 404     | HTTP 요청이 앱에 도착했으나 해당 리소스가 없음   | 앱 라우트와 전달 URI                              |
+| 프록시가 반환한 502 | 프록시가 upstream과 정상 응답 교환에 실패한 단서 | 연결 거부·TLS 검증·잘못된 응답 등 error log       |
+| 프록시가 반환한 504 | gateway가 upstream 응답을 제때 받지 못함         | 연결/응답 대기 중 어느 구간인지, 앱 시간·네트워크 |
+
+404도 프록시가 직접 반환할 수 있습니다. 502 하나만 보고 앱 중지라고 단정하거나 504마다 timeout을 늘리지 마세요. upstream 주소·상태·응답 시간, 프록시 error log와 앱 로그를 같은 요청 기준으로 비교합니다. 프록시까지 HTTPS로 접속한 성공과 앱까지의 성공은 별개입니다.
+
+호스트 프록시면 호스트에서, 컨테이너 프록시면 해당 네트워크 공간에서 upstream을 관찰하세요. `nginx -t`는 설정 문법과 참조 파일 등을 검사하지만 upstream의 업무 정상 동작까지 확인하지는 않습니다.
+
+<Check question="브라우저가 프록시 인증서를 신뢰하면 내부 HTTPS 앱도 신뢰할까요?" children="아닙니다. 내부 연결의 클라이언트인 프록시가 별도로 이름·체인·신뢰 등을 검증해야 합니다." />
+<Check question="/api/items가 앱까지 갔지만 앱에는 /items만 있다면 어디를 볼까요?" children="proxy_pass의 URI 부분과 앱의 라우트를 비교합니다. 방화벽을 열어도 경로 불일치는 고쳐지지 않습니다." />
+<Sources items={[
+['NGINX · 요청과 server/location 선택','https://nginx.org/en/docs/http/request_processing.html'],
+['NGINX · proxy_pass, 전달 헤더, upstream TLS','https://nginx.org/en/docs/http/ngx_http_proxy_module.html'],
+['NGINX · HTTPS와 SNI','https://nginx.org/en/docs/http/configuring_https_servers.html'],
+['RFC 9110 §15 · HTTP 상태 코드','https://www.rfc-editor.org/rfc/rfc9110.html#name-status-codes'],
+['학습 구성 참고 · NetworkBook 응용 계층','https://networkbook.euiyun.com/chapters/apps.html']
+]} />
+</section>

@@ -1175,3 +1175,30 @@ dd {
     padding: 14px;
   }
 }
+
+.operation-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+.operations-lab .lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+.operations-lab > label {
+  display: block;
+  margin: 14px 0;
+}
+.operations-lab > .check-control {
+  display: flex;
+}
+.prose pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 16px;
+  background: #f3f6fa;
+  font-size: 14px;
+  line-height: 1.7;
+}

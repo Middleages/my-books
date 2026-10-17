@@ -1,0 +1,136 @@
+import { Check, Sources } from "./shared";
+import { CorsLab } from "../../components/network/OperationsLabs";
+
+<p className="lead">터미널의 curl에서는 API가 잘 되는데 웹 화면에서는 실패합니다. 네트워크가 변덕스러운 걸까요? 브라우저는 다른 사이트가 내 정보를 마음대로 읽지 못하도록 요청과 응답에 추가 규칙을 적용합니다.</p>
+<div className="learning-goals">
+
+**이 장을 읽고 나면**
+
+- 같은 origin인지 스킴·호스트·포트로 판단합니다.
+- 본 요청 전 차단과 서버 처리 후 응답 읽기 차단을 구분합니다.
+- CORS·mixed content·TLS·로그인 문제의 수정 위치를 구별합니다.
+
+</div>
+<section className="prose">
+
+## 1. 브라우저의 요청에는 페이지의 출신이 있다
+
+주소창에서 `https://portal.example.test`를 열었다고 합시다. 그 페이지의 JavaScript가 데이터를 읽으려고 API를 부릅니다. 브라우저는 요청 목적지뿐 아니라 **어느 origin의 페이지가 읽으려는가**도 봅니다.
+
+일반적인 HTTP(S) origin은 **스킴 + 호스트 + 유효 포트**의 조합입니다. 경로는 포함하지 않습니다. 기본 HTTPS 포트는 443이므로 생략한 주소와 명시한 주소는 같은 origin입니다.
+
+| 페이지 기준: https://portal.example.test  | 같은 origin? | 이유             |
+| ----------------------------------------- | ------------ | ---------------- |
+| https://portal.example.test/api/items     | 예           | 경로만 다름      |
+| https://portal.example.test:443/api/items | 예           | 기본 포트와 같음 |
+| https://api.example.test/items            | 아니요       | 호스트가 다름    |
+| https://portal.example.test:8443/items    | 아니요       | 포트가 다름      |
+| http://portal.example.test/items          | 아니요       | 스킴이 다름      |
+
+두 도메인이 같은 IP를 가리켜도 origin은 다릅니다. 반대로 `/api/`가 내부적으로 다른 VM으로 프록시돼도 브라우저가 보는 URL이 같은 origin이면 같은 origin 요청입니다. 이 구분은 IP나 서버 대수가 아니라 브라우저의 URL 기준입니다.
+
+## 2. CORS는 다른 origin의 응답을 읽는 약속이다
+
+**CORS**는 서버가 응답 헤더로 어떤 origin에 응답을 공유할지 알리고, 브라우저가 이를 검사하는 체계입니다. 서버는 `Access-Control-Allow-Origin` 같은 헤더로 허용 대상을 표시합니다. 프론트 코드에 이 헤더를 붙여서 스스로 허가를 얻는 방식이 아닙니다.
+
+중요한 것은 **요청이 서버에 도착한 것과 JavaScript가 응답을 읽는 것이 별개**라는 점입니다. CORS는 API 사용자 인증이나 네트워크 방화벽을 대체하지 않습니다. curl 같은 일반 HTTP 클라이언트는 브라우저의 CORS 읽기 제한을 적용하지 않습니다.
+
+## 3. 사전 확인 없이 가는 요청도 있다
+
+추가 헤더가 없는 일반적인 GET처럼 CORS safelist 조건을 충족하는 요청은 사전 확인 없이 서버로 갈 수 있습니다. 서버가 처리하고 응답했어도 허용 origin 헤더가 없으면 브라우저는 JavaScript에 응답 내용을 주지 않습니다.
+
+“화면에서 에러가 났으니 서버도 처리하지 않았겠지”라고 생각해 반복 전송하면 위험할 수 있습니다. 이 장의 GET은 조회지만, safelist 조건을 충족하는 일부 POST도 같은 원리로 사전 확인 없이 전송될 수 있습니다. 서버 로그와 처리 결과를 먼저 확인하세요. CORS는 CSRF 방어를 대신하지 않으므로 상태 변경 요청에는 별도의 보호가 필요합니다.
+
+## 4. JSON POST는 먼저 허락을 묻는다
+
+다른 origin으로 `Content-Type: application/json`인 POST를 보내면 보통 **preflight**, 즉 사전 확인이 필요합니다. 브라우저가 OPTIONS 요청을 보내 POST 메서드와 Content-Type 헤더를 사용할 수 있는지 묻습니다. Authorization 같은 safelist 밖의 헤더도 사전 확인을 유발할 수 있습니다.
+
+사전 확인이 실패하면 그 시도의 **본 POST를 보내지 않습니다.** 서버에 OPTIONS 로그는 있고 POST 로그는 없을 수 있습니다. 캐시된 허용 정보가 있으면 OPTIONS를 매번 새로 보내지는 않습니다. OPTIONS가 보이지 않는다고 언제나 CORS와 무관한 것은 아닙니다.
+
+| 단계                | 브라우저의 질문                        | 실패하면                       |
+| ------------------- | -------------------------------------- | ------------------------------ |
+| 필요한 경우 OPTIONS | 이 origin·메서드·헤더로 요청해도 되나? | 본 요청 전송 안 함             |
+| 본 요청의 응답      | 이 응답을 페이지에 공유해도 되나?      | 서버 처리 후 JS 읽기 차단 가능 |
+
+OPTIONS만 허용하고 실제 응답에 CORS 헤더를 빼먹어도 실패할 수 있습니다. 반대로 실제 응답 헤더가 완벽해도 OPTIONS가 로그인 화면으로 이동하거나 허용 조건을 충족하지 못하면 본 요청까지 가지 못합니다.
+
+</section>
+<CorsLab />
+<section className="prose">
+
+## 5. 실제 적용: 요청과 응답을 나란히 읽기
+
+다음은 다른 origin으로 JSON을 보내는 예입니다. URL은 설명용이며 실험은 실제 요청을 보내지 않습니다.
+
+```js
+fetch("https://api.example.test/items", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ title: "연결 확인" }),
+});
+```
+
+브라우저의 사전 확인 요청에는 다음과 같은 정보가 담깁니다.
+
+```http
+OPTIONS /items HTTP/1.1
+Origin: https://portal.example.test
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: content-type
+```
+
+서버의 허용 응답 예입니다. 실제로 허용할 origin·메서드·헤더만 설정합니다.
+
+```http
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://portal.example.test
+Access-Control-Allow-Methods: POST
+Access-Control-Allow-Headers: Content-Type
+Vary: Origin
+```
+
+본 POST 응답에도 적절한 `Access-Control-Allow-Origin`이 있어야 합니다. `Vary: Origin`은 Origin에 따라 응답을 다르게 만드는 경우 캐시가 서로 다른 응답을 섞지 않도록 돕습니다. **들어온 Origin을 아무 검증 없이 그대로 반사하지 말고**, 허용 목록과 대조해야 합니다.
+
+## 6. 쿠키와 함께 요청하면 별도 조건이 있다
+
+다른 origin에 쿠키를 포함하려는 fetch는 `credentials: 'include'` 등을 사용합니다. 이때 서버는 정확한 origin을 허용하고 `Access-Control-Allow-Credentials: true`로 자격 증명을 포함한 응답 공유를 허용해야 합니다. `Access-Control-Allow-Origin: *`와 include 조합으로는 읽기를 허용할 수 없습니다. 실제 쿠키가 없더라도 요청의 credentials 모드가 기준입니다.
+
+| 설정                               | 뜻                                   |
+| ---------------------------------- | ------------------------------------ |
+| fetch `credentials: 'include'`     | 자격 증명을 포함하는 요청 모드       |
+| 정확한 Allow-Origin                | 어느 페이지에 공유할지 지정          |
+| Allow-Credentials: true            | 자격 증명 모드에서 응답 공유 허용    |
+| 쿠키 SameSite·Secure·브라우저 정책 | 실제 쿠키 전송 가능 여부의 별도 조건 |
+
+사전 확인 OPTIONS에는 일반적으로 본 요청의 쿠키를 싣지 않습니다. OPTIONS 자체에 로그인 쿠키를 요구하는 구성 때문에 본 요청이 막힐 수 있습니다. 그렇다고 실제 API의 인증·권한 검사를 제거하면 안 됩니다. 사전 확인과 실제 업무 요청을 구별하세요. CORS를 고쳤는데도 401이라면 쿠키 전송과 로그인·권한 문제를 다음으로 확인합니다.
+
+## 7. mixed content는 CORS보다 앞에서 막힐 수 있다
+
+HTTPS 페이지가 일반적인 원격 `http://api.example.test`로 fetch하면 **mixed content**, 혼합 콘텐츠로 차단될 수 있습니다. 안전하게 받은 페이지가 암호화되지 않은 API 데이터에 의존하게 되기 때문입니다. 이 장의 일반 HTTP API fetch는 차단 대상으로 모델링합니다.
+
+이때 Allow-Origin을 추가해도 해결되지 않습니다. API도 HTTPS로 제공하거나, 브라우저가 같은 HTTPS origin의 `/api/`를 부르고 서버 쪽 프록시가 뒤쪽에 연결하게 합니다. 후자의 내부 구간도 별도로 TLS·보안 정책을 판단해야 합니다. 브라우저의 자물쇠가 내부 평문까지 보호하지는 않습니다.
+
+이미지의 자동 HTTPS 업그레이드, loopback처럼 잠재적으로 신뢰 가능한 주소, 브라우저별 로컬 네트워크 접근 정책 등은 조건이 다릅니다. “HTTPS 페이지의 모든 HTTP URL이 똑같이 처리된다”는 규칙으로 외우지 마세요.
+
+## 8. curl 성공과 브라우저 실패를 조사하는 순서
+
+1. **같은 요청인지 비교합니다.** URL·메서드·헤더·본문·쿠키와 실행 위치를 확인합니다. 서버 VM의 curl과 사용자 PC 브라우저는 DNS·프록시·신뢰 CA도 다를 수 있습니다.
+2. **개발자 도구의 Network와 Console을 함께 봅니다.** mixed content인지, TLS나 DNS 실패인지, OPTIONS가 실패했는지, 본 응답의 CORS 헤더가 없는지 구분합니다.
+3. **서버 로그를 대조합니다.** OPTIONS만 도착했는지, 본 요청까지 처리됐는지 확인합니다. CORS 문구 뒤에 프록시 502 응답의 헤더 누락이 숨어 있을 수도 있습니다.
+4. **문제가 있는 구간을 고칩니다.** API 또는 프록시 중 한 곳에서 일관되게 CORS를 관리하고, 중복·충돌 헤더를 피합니다. 4xx·5xx 응답에서도 의도한 공유 정책이 적용되는지 확인합니다.
+
+`mode: 'no-cors'`는 일반적인 JSON API 해결책이 아닙니다. 허용되는 요청 형태가 제한되고 응답이 opaque여서 JavaScript로 본문과 상태를 일반 응답처럼 읽을 수 없습니다. 브라우저 보안 기능을 끄는 대신 목적지와 공유 정책을 맞춥니다.
+
+프론트와 API를 같은 origin의 `/api/`로 구성하면 브라우저와 API 사이의 CORS 설정 부담을 줄일 수 있습니다. 그렇더라도 사용자 인증·권한·CSRF 보호·프록시 연결과 인증서 검증은 계속 필요합니다.
+
+<Check question="CORS 에러가 보이면 서버는 요청을 처리하지 않았다고 봐도 될까요?" children="아닙니다. 본 요청이 처리된 뒤 응답 읽기만 차단됐을 수 있습니다. OPTIONS와 본 요청, 서버 로그를 나누어 확인합니다." />
+<Check question="curl이 성공하면 TLS와 네트워크가 브라우저에서도 정상이라는 뜻일까요?" children="실행 위치·신뢰 저장소·프록시·요청 내용이 다를 수 있어 단정할 수 없습니다. 같은 조건인지 먼저 비교합니다." />
+<Check question="같은 origin의 /api/가 다른 VM으로 전달되면 브라우저 기준 다른 origin일까요?" children="아닙니다. 브라우저가 사용하는 URL의 스킴·호스트·포트로 판단합니다. 내부 upstream 주소는 별도의 서버 간 연결입니다." />
+<Sources items={[
+['WHATWG Fetch · CORS 프로토콜과 preflight','https://fetch.spec.whatwg.org/#http-cors-protocol'],
+['WHATWG Fetch · credentials와 와일드카드','https://fetch.spec.whatwg.org/#cors-protocol-and-credentials'],
+['WHATWG HTML · origin','https://html.spec.whatwg.org/multipage/browsers.html#origin'],
+['W3C · Mixed Content','https://www.w3.org/TR/mixed-content/'],
+['MDN · CORS 설명과 예시','https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS']
+]} />
+</section>

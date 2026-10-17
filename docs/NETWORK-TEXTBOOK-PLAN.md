@@ -2,7 +2,7 @@
 
 작성일: 2026-10-17 (KST)
 개정: 기초 개념을 먼저 쌓고 웹·VM·Docker·k3s로 확장하는 학습 순서로 변경.
-상태: 01~09 본문·경로·포트·DNS·TCP·HTTP·인증서 실험 구현. 신규 본문은 MDX로 작성한다. 아래 조사·설계 기준을 유지하며 실제 서버 설정은 변경하지 않는다.
+상태: 01~12 본문과 기초·웹·인증서·프록시·Docker·브라우저 정책 실험 구현. 신규 본문은 MDX로 작성한다. 아래 조사·설계 기준을 유지하며 실제 서버 설정은 변경하지 않는다.
 가제: **웹 개발자를 위한 네트워크 — 요청의 길을 이해하고 고치기**
 
 ## 1. 목표와 대상
@@ -220,8 +220,8 @@ kubectl get endpointslices -n demo
 
 ## 7. 구현 범위와 현재 다음 배치
 
-현재 01~09가 완료됐다. 다음은 **10 리버스 프록시, 11 VM·Docker 네트워크,
-12 브라우저만 실패**다. 새 본문은 MDX로 작성하고 실험 UI/모델은 별도 React/모델
+현재 01~12가 완료됐다. 다음은 **13 k3s 내부 연결, 14 k3s 외부 연결,
+15 증거로 고치기**다. 새 본문은 MDX로 작성하고 실험 UI/모델은 별도 React/모델
 파일로 유지한다. [콘텐츠 작성 기준](CONTENT-AUTHORING.md)을 따른다.
 아래 첫 배치 절차는 이력으로 남긴다.
 
@@ -288,7 +288,7 @@ kubectl get endpointslices -n demo
 
 ## 10. 다음 세션 시작 문장
 
-> Middleages/my-books의 최신 main, docs/NETWORK-TEXTBOOK-PLAN.md와 docs/CONTENT-AUTHORING.md를 읽고 이어서 개발하자. 01~09는 배포됐다. 다음은 10 리버스 프록시, 11 VM·Docker 네트워크, 12 브라우저만 실패다. 신규 본문은 MDX, 실험 UI는 React/TypeScript, 판정은 별도 모델로 작성해줘. 쉽게 읽는 설명 → 필요한 예측·조작 → 실제 적용 순서를 지키고 기술적 사실은 공식 자료로 확인해줘. 기존 교과서·링크·읽음 기록을 유지하고 데스크톱·모바일 검증과 GitHub Pages 배포까지 진행해줘. k3s는 후속 배치로 남겨줘.
+> Middleages/my-books의 최신 main, docs/NETWORK-TEXTBOOK-PLAN.md와 docs/CONTENT-AUTHORING.md를 읽고 이어서 개발하자. 01~12는 배포됐다. 다음은 13 k3s 내부 연결, 14 k3s 외부 연결, 15 증거로 고치기다. 신규 본문은 MDX, 실험 UI는 React/TypeScript, 판정은 별도 모델로 작성해줘. 쉽게 읽는 설명 → 필요한 예측·조작 → 실제 적용 순서를 지키고 기술적 사실은 공식 자료로 확인해줘. 기존 교과서·링크·읽음 기록을 유지하고 데스크톱·모바일 검증과 GitHub Pages 배포까지 진행해줘. 기존 호스트 Nginx와 k3s 진입점의 포트 소유권을 구분하고 실제 서버 설치·설정은 변경하지 말아줘.
 
 ## 11. 첫 배치 구현 기록 (2026-10-17)
 
@@ -400,3 +400,40 @@ RFC 9293(TCP), 768(UDP), 1034/1035(DNS), 3596(AAAA), 2308(음성 캐시),
 - 기존 컴퓨터 실험, NAT 왕복, 04~06 실험을 회귀 확인. reduced-motion 사용.
 - 연결 브라우저의 localhost가 작업 환경과 다른 기존 제약에 따라 로컬 production 빌드로 검증했다.
   실제 모바일 Safari·터치 기기는 미검증이다. MDX는 빌드 시 컴파일하므로 브라우저 런타임 의존성은 추가하지 않았다.
+
+
+## 14. 네 번째 배치: 운영 환경 (2026-10-17)
+
+- 기준 main: `df7c3ab`. 신규 10~12 본문을 모두 MDX로 작성했다.
+- 10 리버스 프록시: 외부/내부 접점, DNS/SNI/HTTP 분기, URI 치환,
+  upstream TLS의 별도 CA 신뢰와 헤더 신뢰 경계. 도메인·경로·리스너·응답 지연·내부 TLS 조건 실험.
+- 11 VM·Docker: namespace·bridge·localhost, listen/publish/방화벽/expose 구분.
+  호스트 프록시·같은 bridge 프록시·원격 VM의 경로 비교. 설명용 Compose 예시와 읽기 전용 관찰 명령.
+- 12 브라우저만 실패: origin, CORS와 사전 확인, credentials와 와일드카드,
+  mixed content. 본 요청 전송과 JS 응답 읽기를 분리하는 실험. 쿠키 정책·인증은 별도 조건.
+- `OperationsLabs.tsx`는 UI, `operations.mjs`는 판정 모델. 예측 후 실행하며 조건 변경 시
+  결과와 예측을 초기화한다. 자동 재생·실제 네트워크 요청·Docker 실행은 없다.
+- Docker는 Linux Engine 28 이상, IPv4 사용자 정의 bridge/NAT를 기본 모델로 한정했다.
+  host network·직접 라우팅·Docker Desktop은 범위 밖. Docker 28 미만 localhost publish 예외를 설명했다.
+- CORS는 정상 연결, 캐시 없는 새 요청, OPTIONS/본 응답의 일관된 정책을 가정한다.
+  CSP·쿠키 전송 정책·리다이렉트·서비스 워커·로컬 네트워크 접근 정책은 모델 밖이다.
+- 기존 장의 route/readId/storage 키를 변경하지 않았다. 다음 배치는 13~15이며 신규 본문은 계속 MDX.
+
+### 확인한 자료
+
+NetworkBook `chapters/apps.html`의 응용 계층 설명을 참고하고 문장·코드를 자체 작성했다.
+NGINX 요청 처리·proxy 모듈, Docker port publishing·bridge·Compose services/networking·
+Dockerfile EXPOSE·방화벽, WHATWG Fetch/HTML origin, W3C Mixed Content, RFC 9110을 대조했다.
+검색 도구로 열리지 않은 페이지는 직접 HTTP로 본문을 확인했다. 장별 출처 링크를 제공한다.
+
+### 검증
+
+- 판정 모델과 기존 모델 테스트: 36개 통과. TypeScript 및 Vite production 빌드 통과.
+- production 빌드를 Chromium 1440×900, 390×900, 320×900에서 검증했다. 기존 포함 16개 경로의 가로 넘침·앱 콘솔 오류 없음.
+- 프록시 도메인/경로 분기, 404/502/504, upstream CA 신뢰와 HTTP/HTTPS 전환 확인.
+- Docker 세 배치의 publish 없음/loopback/전체 주소, 앱 bind, 공유 네트워크, 원격 허용 실패·복구 확인.
+- CORS GET의 처리 후 읽기 차단, JSON preflight, credentials+와일드카드, same-origin,
+  mixed content, 조건 변경/초기화와 키보드 실행 확인. MDX 표·코드·출처·퀴즈 렌더 확인.
+- 기존 컴퓨터 두 실험, NAT 왕복과 04~09 실험 회귀 확인. 기존 및 신규 읽음 표시 후 새로고침으로 보존 확인.
+- reduced-motion 환경을 사용했다. 실제 휴대폰 Safari·터치 기기 및 실제 Nginx/Docker 배포는 검증하지 않았다.
+- 연결 브라우저 localhost와 실행 환경이 다른 기존 제약으로 같은 프로세스의 HTTP 서버와 로컬 Chromium을 사용했다.

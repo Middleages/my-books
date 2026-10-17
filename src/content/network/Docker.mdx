@@ -1,0 +1,129 @@
+import { Check, Sources } from "./shared";
+import { DockerLab } from "../../components/network/OperationsLabs";
+
+<p className="lead">호스트에서는 열리던 주소가 컨테이너 안에서는 실패합니다. 앱마다 8000을 썼는데 충돌하지 않기도 합니다. 이상한 예외를 외우기 전에 “누구의 주소와 포트인가?”를 물어보면 이해하기 쉬워집니다.</p>
+<div className="learning-goals">
+
+**이 장을 읽고 나면**
+
+- 호스트와 컨테이너의 localhost를 구분합니다.
+- listen·publish·방화벽·expose의 역할을 설명합니다.
+- 프록시 배치에 따라 앱의 publish가 필요한지 판단합니다.
+
+</div>
+<section className="prose">
+
+## 1. 컨테이너마다 작은 주소 공간이 있다
+
+VM은 가상 하드웨어 위에서 별도 운영체제를 실행합니다. Linux 컨테이너는 호스트 커널을 공유하면서 프로세스와 자원의 보이는 범위를 나눕니다. 그중 **네트워크 namespace**는 인터페이스·주소·라우팅·포트 공간 등을 분리합니다.
+
+기본 bridge 컨테이너 A의 `127.0.0.1:8000`과 B의 `127.0.0.1:8000`은 서로 다른 접점입니다. 각자 자기 방 안의 문 번호를 쓰는 셈입니다. 같은 8000을 쓴다고 바로 충돌하지 않습니다. 반면 호스트의 **같은 주소:포트**를 두 컨테이너에 동시에 publish하려 하면 충돌할 수 있습니다.
+
+`localhost`는 “이 물리 서버 전체”가 아닙니다. **지금 요청하는 프로그램의 네트워크 공간 자신**입니다. 프록시 컨테이너에서 localhost를 쓰면 프록시 자신으로 갑니다. `network_mode: host`나 네트워크 공간 공유는 이 기본 모델과 다릅니다. 나중에 배울 같은 Pod의 컨테이너들도 네트워크 공간을 공유합니다.
+
+## 2. bridge는 같은 네트워크의 컨테이너를 잇는다
+
+사용자 정의 bridge에 프록시와 앱이 함께 붙어 있으면 `app:8000`처럼 서비스 이름과 컨테이너 포트로 통신할 수 있습니다. Docker의 이름 해석과 네트워크가 이를 돕습니다. Compose는 보통 프로젝트의 기본 네트워크를 만들고 서비스 이름으로 찾게 합니다. **서로 다른 Compose 프로젝트는 자동으로 같은 네트워크가 되지 않습니다.**
+
+이 경로에서는 호스트의 18001을 거칠 이유가 없습니다. 앱이 자기 컨테이너 인터페이스에서 listen하면 됩니다. `0.0.0.0:8000`은 모든 로컬 IPv4 인터페이스에서 받는 예시이며 접속 대상 이름은 계속 `app`입니다.
+
+## 3. 네 가지 설정을 섞지 말자
+
+| 설정                        | 무엇을 하나?                          | 무엇을 하지 않나?                   |
+| --------------------------- | ------------------------------------- | ----------------------------------- |
+| 앱 listen                   | 앱이 특정 주소·포트에서 연결을 기다림 | 방화벽이나 publish를 만들지 않음    |
+| `ports` / publish           | 호스트 접점을 컨테이너 포트에 연결    | 앱 프로세스를 listen시키지 않음     |
+| 방화벽 허용                 | 정해진 출발지·목적지의 트래픽 통과    | 앱을 실행하지 않음                  |
+| `EXPOSE` / Compose `expose` | 의도한 컨테이너 포트 정보를 표현      | 호스트 publish나 방화벽 허용이 아님 |
+
+같은 bridge의 컨테이너 간 통신은 `expose` 목록만 허용하는 방화벽으로 제한되지 않습니다. `expose: [8000]`을 적지 않아도 앱이 listen하고 네트워크가 연결돼 있으면 통신할 수 있습니다. Dockerfile `EXPOSE` 정보는 `docker run -P` 같은 자동 publish 기능에 활용될 수 있지만, 그 지시어 자체가 호스트 포트를 여는 것은 아닙니다.
+
+## 4. 프록시 위치에 따라 답이 달라진다
+
+| 프록시 위치            | 앱으로 가는 대표 경로                    | 앱 publish                          |
+| ---------------------- | ---------------------------------------- | ----------------------------------- |
+| 같은 VM의 호스트 Nginx | 127.0.0.1:18001 → 앱:8000                | 이 구성에서는 loopback publish 사용 |
+| 같은 bridge의 컨테이너 | app:8000                                 | 불필요                              |
+| 다른 VM                | 앱 VM의 도달 가능한 주소:18001 → 앱:8000 | 원격에서 도달 가능한 주소에 필요    |
+
+이 표는 기본 NAT bridge에서 쓰기 편한 대표 구성입니다. Linux 호스트의 bridge IP 직접 접근 등 다른 경로도 있지만 여기서는 주소 변경과 운영 편의성을 고려해 publish 경로를 사용합니다. “호스트는 컨테이너 IP에 절대 접근 못 한다”는 뜻이 아닙니다.
+
+핵심은 포트 숫자를 아끼는 일이 아닙니다. **외부에서 직접 들어올 필요가 없는 앱에 사용자망의 접근을 허용했는가**를 판단하는 일입니다. 호스트 Nginx가 앱을 부르기 위한 loopback publish는 필요한 내부 접점일 수 있습니다.
+
+</section>
+<DockerLab />
+<section className="prose">
+
+## 5. 실제 적용 A: 호스트 Nginx와 앱 컨테이너
+
+아래는 Compose의 설명용 일부입니다. `example-app:local`은 준비했다고 가정한 이미지 이름이며, 실제 실행 가능한 공용 이미지가 아닙니다. 앱 자체는 `0.0.0.0:8000`에 listen하도록 별도 설정돼 있어야 합니다.
+
+```yaml
+services:
+  app:
+    image: example-app:local
+    ports:
+      - "127.0.0.1:18001:8000"
+```
+
+왼쪽은 **호스트 주소와 포트**, 오른쪽은 **컨테이너 포트**입니다. 호스트 Nginx의 upstream은 `http://127.0.0.1:18001`입니다. 사용자에게 18001을 열어 줄 필요는 없습니다.
+
+`"18001:8000"`처럼 호스트 주소를 생략하면 기본적으로 모든 호스트 주소에 publish됩니다. 다른 PC의 실제 접근 가능성은 라우팅과 방화벽에도 의존하지만, 필요 이상으로 넓은 접점이 될 수 있습니다. Docker 28.0.0 미만에는 같은 L2 망에서 localhost publish에 접근할 수 있었던 예외가 있으므로 버전도 확인합니다.
+
+## 6. 실제 적용 B: 프록시도 컨테이너라면
+
+```yaml
+services:
+  proxy:
+    image: example-proxy:local
+    ports:
+      - "443:443"
+    networks: [web]
+  app:
+    image: example-app:local
+    networks: [web]
+networks:
+  web:
+    driver: bridge
+```
+
+두 이미지는 인증서·프록시 설정과 앱이 준비됐다고 가정한 설명용 이름입니다. 이 경우 프록시 upstream은 `http://app:8000`이며 **앱에는 ports가 없습니다.** 프록시의 443 리스너와 TLS 설정은 별도로 준비해야 합니다. networks 선언이 인증서나 앱 실행을 대신하지 않습니다.
+
+앱에 `127.0.0.1:8000`으로 listen하도록 설정하면 같은 bridge의 프록시에서도 접근하지 못합니다. 앱 컨테이너의 loopback으로만 받기 때문입니다. publish를 추가해도 이 listen 문제는 해결되지 않습니다.
+
+## 7. 실제 적용 C: 다른 VM이면 loopback을 벗어난다
+
+프록시 VM A에서 `127.0.0.1:18001`을 쓰면 VM A 자신을 봅니다. 앱 VM B의 loopback publish에도 원격으로 들어갈 수 없습니다. B의 도달 가능한 주소에 publish하고 A에서 B까지 경로·정책을 확인해야 합니다.
+
+예를 들어 B에 실제로 할당된 주소가 문서용 `192.0.2.20`이라고 가정하면 `"192.0.2.20:18001:8000"`처럼 인터페이스를 제한하는 구성을 생각할 수 있습니다. 실제 설정에는 실제 주소가 필요합니다. 외부 전체 대신 프록시 출발지의 접근만 허용하는 정책과 구간별 TLS 요구사항을 함께 검토하세요.
+
+Docker가 만드는 NAT·필터 규칙은 호스트 방화벽과 상호작용합니다. 특히 Docker publish 트래픽은 일반적인 ufw INPUT 규칙만 보고 차단됐다고 판단할 수 없습니다. Docker의 방화벽 문서와 실제 패킷 경로를 확인합니다. 이 실험의 “허용” 체크는 그 정책이 올바르게 적용됐다고 가정한 조건입니다.
+
+## 8. 관찰 순서: 컨테이너 안에서 밖으로
+
+```sh
+# Docker 호스트: 실제 publish 목록
+ docker ps --format 'table {{.Names}}\t{{.Ports}}'
+ docker port app
+# Compose 프로젝트 폴더: 서비스와 네트워크 설정 확인
+ docker compose config
+# Docker 호스트: 지정한 네트워크의 구성원 확인
+ docker network inspect 프로젝트명_web
+```
+
+먼저 앱의 listen 주소·포트를 로그나 컨테이너 내부 도구로 확인합니다. 작은 이미지에는 `ss`나 `curl`이 없을 수 있습니다. 이어서 **프록시가 실행되는 공간에서** 목적지 이름과 포트를 시험합니다. 호스트에서 성공했다는 결과를 프록시 컨테이너의 성공으로 바꿔 읽지 마세요.
+
+`docker compose config`는 환경 변수 치환 결과를 포함할 수 있으므로 출력 공유 전 비밀 값을 가립니다. 진단을 위해 모든 포트를 publish하는 대신, 현재 경로에서 실패한 한 조건을 찾습니다.
+
+<Check question="같은 bridge의 프록시와 앱이 통신하려면 app의 ports를 꼭 적어야 할까요?" children="아닙니다. app:컨테이너포트로 직접 연결할 수 있습니다. 공유 네트워크와 앱의 listen 조건을 확인합니다." />
+<Check question="앱을 0.0.0.0:8000에 띄우면 자동으로 사용자망에 공개될까요?" children="그 자체로는 아닙니다. 컨테이너 공간의 listen이고, 외부 도달성은 네트워크 방식·publish·라우팅·방화벽에 달려 있습니다." />
+<Sources items={[
+['Docker · 포트 publish와 버전 예외','https://docs.docker.com/engine/network/port-publishing/'],
+['Docker · 사용자 정의 bridge','https://docs.docker.com/engine/network/drivers/bridge/'],
+['Docker · Compose 네트워크','https://docs.docker.com/compose/how-tos/networking/'],
+['Docker · Compose services의 ports와 expose','https://docs.docker.com/reference/compose-file/services/'],
+['Docker · Dockerfile EXPOSE','https://docs.docker.com/reference/dockerfile/#expose'],
+['Docker · 패킷 필터와 방화벽','https://docs.docker.com/engine/network/packet-filtering-firewalls/'],
+['Linux · network namespaces','https://man7.org/linux/man-pages/man7/network_namespaces.7.html']
+]} />
+</section>

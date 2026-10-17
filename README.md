@@ -48,8 +48,7 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 전달, 두 사설망 간 라우팅, 인터넷 출구 NAPT의 왕복, 존재하지 않는 게이트웨이를
 비교합니다. 실제 라우팅·방화벽·TCP 엔진이 아니며 가정과 한계를 본문에 표시합니다.
 
-현재 네트워크 01~09장을 공개합니다. 10~12 리버스 프록시·VM/Docker·브라우저 정책이
-다음 배치이며 k3s는 후속 범위입니다. 전체 계획은
+현재 네트워크 01~12장을 공개합니다. 다음 배치는 13~15 k3s 내부 연결·외부 연결·종합 진단입니다. 전체 계획은
 [NETWORK-TEXTBOOK-PLAN.md](docs/NETWORK-TEXTBOOK-PLAN.md)를 참고하세요.
 
 ## 본문 작성 방식
@@ -63,3 +62,8 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 `WebLabs.tsx`는 요청 추적과 fullchain/클라이언트 신뢰 목록 실험을 제공하고,
 `simulations/network/web.mjs`는 제한된 교육 모델을 구현합니다. 실제 인증서나 개인키를
 입력받거나 TLS 검증을 수행하지 않습니다.
+
+10~12 링크: `#/network/proxy`, `#/network/docker`, `#/network/browser`.
+본문은 각각 `Proxy.mdx`, `Docker.mdx`, `Browser.mdx`이며, `OperationsLabs.tsx`와
+`simulations/network/operations.mjs`로 분기·연결·브라우저 정책 실험을 분리합니다.
+실제 Docker 명령이나 fetch를 실행하지 않는 교육용 시뮬레이션입니다.

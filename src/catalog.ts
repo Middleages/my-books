@@ -9,6 +9,9 @@ import Transport from "./content/network/Transport";
 import Http from "./content/network/Http";
 import Tls from "./content/network/Tls";
 import Verify from "./content/network/Verify";
+import Proxy from "./content/network/Proxy.mdx";
+import Docker from "./content/network/Docker.mdx";
+import Browser from "./content/network/Browser.mdx";
 import type { ComponentType } from "react";
 export type Chapter = {
   id: string;
@@ -131,6 +134,37 @@ export const chapters: Chapter[] = [
     description: "이름·시간·체인·신뢰를 나누어 실패한 환경에서 확인합니다.",
     Content: Verify,
   },
+  {
+    id: "proxy",
+    bookId: "network",
+    readId: "network/proxy",
+    number: "10",
+    title: "리버스 프록시",
+    heading: "같은 443으로 여러 앱을 연결하려면?",
+    description: "도메인·경로 분기와 구간별 TLS, upstream 오류를 구분합니다.",
+    Content: Proxy,
+  },
+  {
+    id: "docker",
+    bookId: "network",
+    readId: "network/docker",
+    number: "11",
+    title: "VM·Docker 네트워크",
+    heading: "이 localhost는 누구 자신일까?",
+    description:
+      "프록시 위치에 따라 listen·publish·방화벽을 나누어 판단합니다.",
+    Content: Docker,
+  },
+  {
+    id: "browser",
+    bookId: "network",
+    readId: "network/browser",
+    number: "12",
+    title: "브라우저만 실패",
+    heading: "요청은 갔는데 왜 응답을 못 읽을까?",
+    description: "origin·CORS·preflight·mixed content를 구분합니다.",
+    Content: Browser,
+  },
 ];
 export const books = [
   {
@@ -153,7 +187,7 @@ export const books = [
     overview:
       "웹앱을 만들고 서버를 운영하다가 막혔던 네트워크를 기초부터 이해하는 책입니다. 먼저 쉽게 읽고, 필요한 곳에서 예측하고 조작한 뒤, 내 상황에 적용합니다.",
     future:
-      "현재 01~09장 공개 · 다음 배치: 리버스 프록시 → VM·Docker 네트워크 → 브라우저만 실패. k3s는 이후에 이어집니다.",
+      "현재 01~12장 공개 · 다음 배치: k3s 내부 연결 → k3s 외부 연결 → 증거로 고치기.",
   },
 ];
 export const chapterHref = (c: Chapter) => `#/${c.bookId}/${c.id}`;
