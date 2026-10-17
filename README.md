@@ -72,3 +72,9 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 13~15 링크: `#/network/cluster-internal`, `#/network/cluster-external`,
 `#/network/diagnosis`. `ServiceLab.tsx`와 `simulations/network/cluster.mjs`는
 단일 Service의 대상 선택·포트·Pod 교체 후 새 연결만 보여 줍니다.
+
+## 다음 콘텐츠 계획
+
+[돈·경제 교과서 시리즈 제작 계획](docs/MONEY-TEXTBOOK-PLAN.md)에 기본 6권과
+회계·확률/의사결정 추가 주제, 첫 권 ‘돈의 기초와 우리 집 재무’의 목차와 배치를 정리했습니다.
+현재는 기획만 완료했으며 첫 구현은 01~03장입니다. 문서 끝에 다음 세션 시작 프롬프트가 있습니다.
