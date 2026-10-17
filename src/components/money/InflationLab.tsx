@@ -46,7 +46,15 @@ function Control({
     </label>
   );
 }
-function Basket({ count, label }: { count: number; label: string }) {
+function Basket({
+  count,
+  label,
+  unit,
+}: {
+  count: number;
+  label: string;
+  unit: number;
+}) {
   return (
     <figure className="power-basket">
       <figcaption>
@@ -58,7 +66,7 @@ function Basket({ count, label }: { count: number; label: string }) {
           <span key={i} className="power-goods-slot">
             <span
               style={{
-                clipPath: `inset(0 ${100 - Math.min(1, Math.max(0, count - i)) * 100}% 0 0)`,
+                clipPath: `inset(0 ${100 - Math.min(1, Math.max(0, count / unit - i)) * 100}% 0 0)`,
               }}
             >
               <svg viewBox="0 0 32 28">
@@ -82,9 +90,8 @@ function Basket({ count, label }: { count: number; label: string }) {
         />
       </svg>
       <p>
-        채운 기호 1개 = 1바구니.
-        <br />
-        10개 초과분은 숫자로 표시합니다.
+        채운 기호 1개 = {unit}바구니.
+        <br />두 그림·모든 연도에 같은 눈금을 씁니다.
       </p>
     </figure>
   );
@@ -106,6 +113,12 @@ export function InflationLab() {
     predict("");
     set({ ...inflationDefaults });
   };
+  const basketUnit = Math.max(
+    1,
+    Math.ceil(
+      Math.max(...frames.flatMap((a) => [a.fixedBaskets, a.baskets])) / 10 - 1e-10,
+    ),
+  );
   const max = Math.max(100000, ...frames.flatMap((a) => [a.nominal, a.real]));
   const x = (year: number) => 48 + (year / Math.max(1, p.years)) * 302,
     y = (v: number) => 185 - (v / max) * 145;
@@ -192,8 +205,16 @@ export function InflationLab() {
         </p>
       </div>
       <div className="power-baskets">
-        <Basket count={f.fixedBaskets} label="① 현금 10만원 그대로" />
-        <Basket count={f.baskets} label={`② 예금 잔액 ${won(f.nominal)}`} />
+        <Basket
+          unit={basketUnit}
+          count={f.fixedBaskets}
+          label="① 현금 10만원 그대로"
+        />
+        <Basket
+          unit={basketUnit}
+          count={f.baskets}
+          label={`② 예금 잔액 ${won(f.nominal)}`}
+        />
       </div>
       <p className="money-status" role="status">
         {f.year}년 후 · 예금 잔액 {won(f.nominal)}, 0년 가격으로 환산하면{" "}
@@ -225,7 +246,7 @@ export function InflationLab() {
             <g key={v}>
               <line x1="48" x2="350" y1={y(v)} y2={y(v)} stroke="#cad5cf" />
               <text x="44" y={y(v) + 4} textAnchor="end">
-                {Math.round(v / 10000)}만
+                {num(v / 10000)}만
               </text>
             </g>
           ))}
