@@ -1014,3 +1014,87 @@ dd {
     min-width: 0;
   }
 }
+
+.lab-predict {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+  font-size: 14px;
+}
+.lab-predict select {
+  padding: 12px;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid #bac9df;
+  border-radius: 5px;
+  background: white;
+  font: inherit;
+}
+.dns-flow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+}
+.dns-flow li {
+  padding: 18px;
+  border: 1px solid #d8e2f2;
+  border-radius: 6px;
+  background: #f8faff;
+}
+.dns-flow span {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+}
+.prose pre {
+  overflow-x: auto;
+  padding: 14px;
+  background: #f2f5fa;
+  font-size: 13px;
+}
+.prose code {
+  overflow-wrap: anywhere;
+}
+.prose caption {
+  text-align: left;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+@media (max-width: 620px) {
+  .dns-flow {
+    grid-template-columns: 1fr;
+  }
+}
+.byte-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 20px 0;
+}
+.byte-strip > div {
+  border: 1px solid #d8e2f2;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 12px;
+  background: #f8faff;
+}
+.byte-strip span {
+  display: block;
+  margin-top: 6px;
+}
+.byte-strip [data-state="빈 구간"] {
+  border: 2px dashed #9a6420;
+  background: #fff8eb;
+}
+.byte-strip [data-state="전달 완료"] {
+  border-color: #315bea;
+  background: #eef3ff;
+}
+@media (max-width: 620px) {
+  .byte-strip {
+    grid-template-columns: 1fr;
+  }
+}

@@ -3,6 +3,9 @@ import Memory from "./content/computer/Memory";
 import Packets from "./content/network/Packets";
 import Addressing from "./content/network/Addressing";
 import Routing from "./content/network/Routing";
+import Ports from "./content/network/Ports";
+import Dns from "./content/network/Dns";
+import Transport from "./content/network/Transport";
 import type { ComponentType } from "react";
 export type Chapter = {
   id: string;
@@ -65,6 +68,36 @@ export const chapters: Chapter[] = [
     description: "다음 홉과 주소 변환을 나누어 보고 왕복 경로를 따라갑니다.",
     Content: Routing,
   },
+  {
+    id: "ports",
+    bookId: "network",
+    readId: "network/ports",
+    number: "04",
+    title: "포트와 연결",
+    heading: "같은 서버에서 앱을 어떻게 찾을까?",
+    description: "관측 위치를 바꾸며 bind·listen·방화벽을 구분합니다.",
+    Content: Ports,
+  },
+  {
+    id: "dns",
+    bookId: "network",
+    readId: "network/dns",
+    number: "05",
+    title: "이름과 DNS",
+    heading: "이름을 찾았으면 연결도 될까?",
+    description: "주소 조회와 캐시, 앱 접속을 분리해서 관찰합니다.",
+    Content: Dns,
+  },
+  {
+    id: "transport",
+    bookId: "network",
+    readId: "network/transport",
+    number: "06",
+    title: "TCP와 전송 성능",
+    heading: "누락을 고치고, 기다림을 이해하기",
+    description: "ACK·재전송과 지연·대역폭의 차이를 실험합니다.",
+    Content: Transport,
+  },
 ];
 export const books = [
   {
@@ -87,7 +120,7 @@ export const books = [
     overview:
       "웹앱을 만들고 서버를 운영하다가 막혔던 네트워크를 기초부터 이해하는 책입니다. 먼저 쉽게 읽고, 필요한 곳에서 예측하고 조작한 뒤, 내 상황에 적용합니다.",
     future:
-      "현재 01~03장 공개 · 다음 배치: 포트와 연결 → 이름과 DNS → TCP와 전송 성능. 웹·TLS·Docker·k3s는 이후에 이어집니다.",
+      "현재 01~06장 공개 · 다음 배치: HTTP 요청의 여행 → HTTPS·TLS·인증서 → verify 오류 진단. Docker·k3s는 이후에 이어집니다.",
   },
 ];
 export const chapterHref = (c: Chapter) => `#/${c.bookId}/${c.id}`;

@@ -1,0 +1,207 @@
+import { Check, Sources } from "./shared";
+import { DnsLab } from "../../components/network/FoundationLabs";
+export default function Dns() {
+  return (
+    <>
+      <p className="lead">
+        서버 IP를 외우지 않고 이름으로 접속하고 싶습니다. 그런데 이름이 올바른
+        주소로 바뀌었다고 앱까지 정상인 것은 아닙니다. 이름을 찾는 일과 그
+        주소에 연결하는 일을 나누어 봅시다.
+      </p>
+      <div className="learning-goals">
+        <strong>이 장을 읽고 나면</strong>
+        <ul>
+          <li>리졸버와 권한 서버의 역할을 구분합니다.</li>
+          <li>A·AAAA와 TTL을 읽고 캐시의 영향을 설명합니다.</li>
+          <li>DNS 조회 성공을 앱 접속 성공으로 오해하지 않습니다.</li>
+        </ul>
+      </div>
+      <section className="prose">
+        <h2>1. 이름은 주소를 찾는 출발점</h2>
+        <p>
+          <code>http://app.example.test:8000/report</code>를 읽어 봅시다. 이름은
+          app.example.test, 포트는 8000, 경로는 /report입니다. DNS는 이 중
+          이름에 관한 정보를 조회하는 분산된 시스템입니다. 일반적인 주소 조회가
+          포트나 웹 경로를 읽어서 앱을 골라 주는 것은 아닙니다.
+        </p>
+        <p>
+          이름의 담당 서버는 <strong>레코드</strong>라는 형식으로 정보를
+          제공합니다. A 레코드는 IPv4 주소를, AAAA 레코드는 IPv6 주소를
+          담습니다. 한 이름에 여러 주소가 있을 수도 있습니다. CNAME처럼 다른
+          이름을 가리키는 레코드도 있으므로 DNS를 단순한 한 줄짜리
+          전화번호부로만 생각하면 부족합니다.
+        </p>
+        <table>
+          <caption>이름 조회에서 보이는 정보</caption>
+          <thead>
+            <tr>
+              <th>레코드</th>
+              <th>예시 값</th>
+              <th>의미</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A</td>
+              <td>192.0.2.20</td>
+              <td>IPv4 주소</td>
+            </tr>
+            <tr>
+              <td>AAAA</td>
+              <td>2001:db8::20</td>
+              <td>IPv6 주소</td>
+            </tr>
+            <tr>
+              <td>CNAME</td>
+              <td>web.example.test</td>
+              <td>다른 이름을 가리킴</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          모두 문서용 예시입니다. 여기의 .test 이름이나 IP로 실제 접속을 시도할
+          필요는 없습니다. DNS에는 서비스 관련 다른 레코드도 있지만, 이 장은
+          일반적인 A·AAAA 주소 조회에 범위를 한정합니다.
+        </p>
+        <h2>2. 누구에게 이름을 물을까?</h2>
+        <p>
+          앱이 이름 해석을 요청하면 운영체제나 앱의 해석 기능을 거쳐 보통{" "}
+          <strong>재귀 리졸버</strong>에 질문합니다. 리졸버는 캐시에 답이 있으면
+          재사용하고, 없으면 필요한 서버들을 찾아 질의합니다. 회사에서 지정한
+          DNS 서버나 공유기 뒤의 DNS 서비스가 이 역할을 할 수 있습니다.
+        </p>
+        <p>
+          <strong>권한 서버</strong>는 자신이 담당하는 영역의 공식 레코드를
+          제공합니다. 리졸버와 같은 역할이 아닙니다. 리졸버는 루트에서 상위
+          영역, 담당 영역으로 이어지는 위임 정보를 이용해 답을 찾을 수 있습니다.
+          매번 모든 서버를 처음부터 거치는 것은 아닙니다. 레코드뿐 아니라
+          찾아가는 데 필요한 정보도 캐시할 수 있기 때문입니다.
+        </p>
+        <ol className="dns-flow">
+          <li>
+            <strong>앱</strong>
+            <span>이 이름의 주소가 필요하다.</span>
+          </li>
+          <li>
+            <strong>재귀 리졸버</strong>
+            <span>유효한 캐시를 찾거나 담당 서버에 질문한다.</span>
+          </li>
+          <li>
+            <strong>권한 서버</strong>
+            <span>담당 영역의 레코드나 이름 없음 응답을 준다.</span>
+          </li>
+          <li>
+            <strong>앱의 다음 단계</strong>
+            <span>얻은 주소 중 목적지를 선택해 연결한다.</span>
+          </li>
+        </ol>
+        <p>
+          운영체제의 hosts 파일이나 브라우저 자체 DNS 설정이 개입할 수도
+          있습니다. 그래서 서로 다른 실행 환경이 항상 같은 이름 해석 경로를 쓰는
+          것은 아닙니다. 이 그림은 대표적인 흐름이며 모든 조회의 실제 호출
+          순서를 보장하지 않습니다.
+        </p>
+        <h2>3. 캐시는 답을 잠시 기억한다</h2>
+        <p>
+          매번 멀리 물어보면 느리고 서버에도 부담이 됩니다. DNS 응답에는 캐시에
+          보관할 수 있는 시간인 <strong>TTL</strong>이 초 단위로 들어갑니다. TTL
+          60초인 응답을 저장한 뒤 30초가 지났다면 일반적인 캐시에서는 약 30초의
+          유효 시간이 남습니다.
+        </p>
+        <p>
+          권한 서버에서 IP를 바꿔도 이미 받은 캐시를 모두 즉시 바꾸는 방송이
+          나가는 것은 아닙니다. 아직 유효한 이전 응답을 가진 리졸버는 이전
+          주소를 줄 수 있습니다. 변경 직전에 TTL을 줄여도 기존에 저장된 긴
+          TTL까지 소급해서 줄어드는 것은 아닙니다.
+        </p>
+        <p>
+          실제 환경에는 OS·브라우저·리졸버 등 여러 캐시가 있습니다. 이름 없음
+          응답도 일정 조건에서 캐시될 수 있습니다. 만료된 답을 예외적으로
+          제공하는 정책도 있으므로 “TTL만큼 기다리면 모든 곳이 동시에
+          바뀐다”라고 단정하지 않습니다.
+        </p>
+      </section>
+      <DnsLab />
+      <section className="prose">
+        <h2>4. DNS가 성공했는데 사이트가 안 열린다면</h2>
+        <p>
+          조회 결과로 IP를 얻었다는 것은 이름 해석 단계의 성공입니다. 그 IP로
+          가는 경로, 연결할 포트, 앱의 리스너와 방화벽은 여전히 확인해야 합니다.
+          IPv4·IPv6 주소를 함께 받은 경우 어떤 주소로 연결했는지도 관찰
+          대상입니다.
+        </p>
+        <p>
+          반대로 <strong>NXDOMAIN</strong>은 질의한 이름이 존재하지 않는다는
+          응답입니다. 리졸버에 닿지 않아 조회가 시간 초과된 것과 다릅니다.
+          이름은 있지만 요청한 종류의 레코드가 없는 경우도 NXDOMAIN과
+          구분합니다. 오류 이름부터 분리하면 다음 확인 위치가 좁혀집니다.
+        </p>
+        <div className="note">
+          <strong>읽기 전용 관찰 · Linux 클라이언트에서</strong>
+          <pre>
+            <code>
+              {
+                "getent ahosts app.example.test\ndig app.example.test A\ndig app.example.test AAAA"
+              }
+            </code>
+          </pre>
+          <p>
+            getent는 시스템에 설정된 이름 해석 경로를 사용하고, dig는 DNS 응답을
+            직접 관찰하는 도구입니다. dig가 설치되어 있어야 합니다. 응답의
+            상태·주소·TTL·질의 서버를 보세요. hosts 파일이나 브라우저 자체 설정
+            때문에 두 결과가 다를 수 있습니다. 이 이름은 예시이므로 실제 확인은
+            관리 중인 이름으로 수행합니다.
+          </p>
+        </div>
+        <p>
+          “내 PC의 어떤 리졸버가 어떤 주소를 줬고, 그 주소의 어느 포트에
+          연결했는가?”를 한 줄로 남겨 보세요. 사내 이름이 외부 DNS에서는 없을 수
+          있습니다. 이를 곧바로 공용 DNS로 바꾸어 해결하려 하기보다 현재 환경이
+          사용해야 하는 DNS와 담당 영역을 확인합니다.
+        </p>
+        <h2>확인해 보기</h2>
+        <Check question="DNS A 조회가 성공하면 TCP 8000 연결도 성공할까요?">
+          아닙니다. A 레코드는 주소 정보입니다. 경로·방화벽·리스너의 정상 여부는
+          연결 단계에서 따로 관찰합니다.
+        </Check>
+        <Check question="권한 서버에서 주소를 지웠는데 이전 주소가 조회됩니다. 가능한가요?">
+          아직 유효한 캐시가 남아 있다면 가능합니다. 어떤 리졸버의 응답인지와
+          남은 TTL을 확인합니다.
+        </Check>
+        <Check question="/report를 /admin으로 바꾸면 A 레코드 조회도 달라질까요?">
+          같은 호스트 이름이라면 일반적인 A 조회에는 그 경로가 들어가지
+          않습니다. 경로에 따른 요청 처리는 웹 계층의 역할입니다.
+        </Check>
+        <Sources
+          items={[
+ ["학습 구성 참고: NetworkBook · 응용 계층의 DNS 설명", "https://networkbook.euiyun.com/chapters/apps.html"],
+            [
+              "RFC 1034 §3·4·5 — 이름 공간, 캐시, 서버와 리졸버",
+              "https://www.rfc-editor.org/rfc/rfc1034.html",
+            ],
+            [
+              "RFC 1035 §3.2.1·3.4.1·4.1.1 — TTL, A, 응답 코드",
+              "https://www.rfc-editor.org/rfc/rfc1035.html",
+            ],
+            [
+              "RFC 3596 §2 — AAAA 레코드",
+              "https://www.rfc-editor.org/rfc/rfc3596.html",
+            ],
+            [
+              "RFC 2308 — 이름 없음과 음성 캐시",
+              "https://www.rfc-editor.org/rfc/rfc2308.html",
+            ],
+            [
+              "RFC 8767 — 만료 데이터 제공의 예외 정책",
+              "https://www.rfc-editor.org/rfc/rfc8767.html",
+            ],
+            [
+              "ISC BIND dig — DNS 질의 도구",
+              "https://bind9.readthedocs.io/en/latest/manpages.html#dig-dns-lookup-utility",
+            ],
+          ]}
+        />
+      </section>
+    </>
+  );
+}
