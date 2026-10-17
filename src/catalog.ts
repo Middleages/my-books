@@ -1,3 +1,4 @@
+import MoneyInflation from "./content/money/Inflation.mdx";
 import MoneyIntro from "./content/money/Intro.mdx";
 import MoneyMap from "./content/money/Map.mdx";
 import MoneyFlows from "./content/money/Flows.mdx";
@@ -235,6 +236,17 @@ export const chapters: Chapter[] = [
       "달력과 잔액 그래프를 연결해 비정기 지출과 목적 적립을 실험합니다.",
     Content: MoneyBudget,
   },
+  {
+    id: "inflation",
+    bookId: "money",
+    readId: "money/inflation",
+    number: "04",
+    title: "물가와 구매력",
+    heading: "잔액은 늘었는데 살 수 있는 것은 줄어들 수 있을까?",
+    description:
+      "장바구니 가격과 구매량을 연결해 명목 잔액과 실질 구매력을 비교합니다.",
+    Content: MoneyInflation,
+  },
 ];
 type Book = {
   id: string;
@@ -279,7 +291,7 @@ export const books: Book[] = [
     overview:
       "가상의 가정과 함께 자산·부채·현금흐름을 연결합니다. 그림을 보고 예측한 다음 직접 조건을 바꿔 보세요.",
     future:
-      "01~03장 공개 · 물가·복리·신용과 다른 금융 분야는 후속 배치에서 다룹니다.",
+      "01~04장 공개 · 복리·신용과 다른 금융 분야는 후속 배치에서 다룹니다.",
     Intro: MoneyIntro,
   },
 ];
