@@ -74,4 +74,17 @@ reduced-motion 에뮬레이션을 보완한다. 실제 휴대기기 터치·모�
 
 ## main·배포
 
-아래 배포 기록은 main push와 Actions/실제 게시 확인 후 추가한다. 구현 검증과 배포 성공은 별도로 기록한다.
+- 구현 main 커밋: `90d95ecb07f60d419be4e61f598b1c557f46f652`.
+- GitHub Actions [run 39080691489](https://github.com/Middleages/my-books/actions/runs/39080691489): build/deploy 성공.
+- 로컬 git push는 인증정보 부재로 실패했으며, 연결된 GitHub API로 동일 트리
+  `b383a919714e1ead0a95ca20492afbdbede4298f`를 게시했다. main의 예상 SHA를 확인하는 ref 갱신으로 병행 변경을 보호했다.
+- 실제 게시 주소: https://middleages.github.io/my-books/#/money/interest
+- 게시 페이지를 새로고침해 제목·실험 렌더 및 JS `index-1UOQ8_zO.js`, CSS `index-DIK1kaRQ.css`가
+  로컬 최신 통합 빌드와 정확히 일치함을 확인했다.
+- cloud Chrome desktop 1363px에서 문서 scrollWidth 1348px로 가로 넘침 없음.
+- 실제 게시 UI에서 무납입 → 1개월 월말 → 2개월 수익 반영:
+  단리 기준 100,000원/수익 1,000원/총액 102,000원,
+  복리 기준 101,000원/수익 1,010원/총액 102,010원, 보관금·구성 막대와 일치.
+- cloud 콘솔에는 확장 프로그램 metadata 전송 오류만 있었고 앱 오류·React 경고는 없었다.
+- 본 배포 기록을 추가하는 후속 문서 커밋은 위 구현과 동일한 JS/CSS를 사용한다.
+  이 문서는 확인된 구현 배포를 기록하며, 후속 문서 커밋의 Actions 결과는 별도로 확인한다.
