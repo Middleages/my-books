@@ -45,3 +45,21 @@ E: 09 살아 있음과 준비됨, 10 교체하면서 배포하기. D 배포 결�
 ## 반영 직전 병행 작업 통합
 
 main이 돈 교재 전체 점검 `a4438856810c80b22ffbe260e9ba9d320d23619e`로 이동해 첫 expected-SHA 갱신이 반영되지 않았음을 확인했다. 최신 main 위로 rebase하고 해당 본문·UI·전역 CSS·작성 기준을 모두 보존했다. 추가 작성 기준(물결표 취소선·스크롤 표)을 확인했다. 통합 후 전체 **198/198**, production 빌드·diff check 통과. 앱 자산은 `index-CteZwFPH.js`, `index-Bt6budlj.css`.
+
+## 실제 게시 확인
+
+- 구현 main: `dfec0bc44be02a7dd26c3c3ef31bd4924959008a`. 로컬 검증 tree와 원격 tree `87528a55da6953ccbf58ce9f9c0c5dfa9de900ed` 일치. expected SHA + 비강제 갱신으로 반영.
+- [Actions 39094949521](https://github.com/Middleages/my-books/actions/runs/39094949521): completed / success, build·deploy 성공. 실제 Pages script `index-CteZwFPH.js`가 통합 production 자산과 일치.
+- Cloud Chromium **1363×936**에서 07·08 본문·그림·막대·범례·경계·해설 렌더 확인. 두 장 각각 중첩 `p p` 0, 의도하지 않은 `del` 0, 페이지 가로 넘침 없음. 스크린샷으로 저장 경계/파일 상태와 CPU·메모리 막대 가독성 확인. 지정 1440/390/320px는 이 관측으로 대체하지 않는다.
+- 07 Enter 한 단계 진행, 컨테이너 재시작 후 같은 Pod/new container·emptyDir/PVC 유지, Pod 교체 후 /data만 유지, 노드 접근 불가와 영구 상실 해설 구분 확인.
+- PVC 삭제 요청 중 보호, Retain 완료 뒤 Released·메모 존재·PVC 참조 끊김·마운트 해제·앱 접근 불가, Delete 완료 뒤 제거 확인.
+- 07 읽음 표시→reload→‘✓ 읽음 · 표시 취소’ 유지 확인 후 테스트 표시 취소. 재생/즉시 정지 후 다음 관측에서도 1/4 유지. 재생 중 08 이동 후 1/5 유지 확인.
+- 08 기본 CPU Pending, 키보드 Home으로 기존 requests 500m 선택, quota 750m 생성 거절, quota 1000m에서 CPU throttling·수요1500/사용1000 확인. 메모리 압박 4단계와 OOM 5단계의 다른 판정 확인.
+- 예측 선택 후 조건 변경 시 예측 비움·1/5 초기화. 메모리 1900Mi 요청 부족의 전체 자동재생이 5/5에서 정지하고 재생 disabled 확인. 이전·다시 보기·초기화·정적 단계 펼치기 확인.
+- 기존 06 일반 볼륨 전파 후 파일v2/앱v1 → 재읽기 후 앱v2 회귀 확인. 기존 저장 키/홈·네트워크·돈 코드는 본 배치에서 변경하지 않았다. 홈 4권/35장, 컴퓨터2·네트워크15·돈10·쿠버네티스8 확인.
+- 콘솔에서 chrome-extension metadata 전송 오류가 관측됐다. 확인한 로그의 교재 앱 출처 오류는 없었으며 확장 오류와 구분한다.
+- 실제 화면에서 괄호로 끝나는 강조 용어 5곳의 별표가 문자로 노출되는 문제를 발견했다. Storage/Resources의 해당 표기만 `<strong>`으로 바꾸고 production 빌드를 재확인. 후속 자산은 `index-QM3DrYsx.js`, CSS는 동일. 후속 배포는 별도 기록한다.
+
+**07~08 구현·main·Actions·게시 핵심 조작 확인 완료.** 지정 폭·reduced-motion media·임의 읽음 ID 브라우저 삽입·Safari/터치/스크린리더·실제 클러스터는 앞서 적은 대로 미검증/미실행이다.
+
+후속 반영 직전 돈 교재 강조 수정·검증 문서 `ce1bcda`/`8cb5c81`도 보존해 rebase했다. 통합 후 198/198·production 빌드 재통과, 최종 앱 자산 `index-BUbRUylC.js`, CSS `index-Bt6budlj.css`. 앞의 QM3DrYsx는 통합 전 로컬 빌드이며 최종 게시 자산이 아니다.

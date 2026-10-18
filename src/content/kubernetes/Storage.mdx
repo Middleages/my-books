@@ -32,7 +32,7 @@ import { StorageLab } from '../../components/kubernetes/DataResourceLabs';
 
 ## 2. PVC와 PV는 파일의 위치를 연결한다
 
-**PVC(PersistentVolumeClaim)**는 앱이 필요한 저장 공간을 요청하는 namespace 안의 객체입니다. **PV(PersistentVolume)**는 제공된 저장 자원을 나타내는 클러스터 범위의 객체입니다. PVC가 PV와 연결되는 상태를 **Bound**라고 부릅니다. Pod는 PVC를 참조해 자신의 경로에 볼륨을 마운트합니다. 마운트는 그 저장 공간을 앱의 파일 경로로 사용할 수 있게 연결하는 일입니다.
+<strong>PVC(PersistentVolumeClaim)</strong>는 앱이 필요한 저장 공간을 요청하는 namespace 안의 객체입니다. <strong>PV(PersistentVolume)</strong>는 제공된 저장 자원을 나타내는 클러스터 범위의 객체입니다. PVC가 PV와 연결되는 상태를 **Bound**라고 부릅니다. Pod는 PVC를 참조해 자신의 경로에 볼륨을 마운트합니다. 마운트는 그 저장 공간을 앱의 파일 경로로 사용할 수 있게 연결하는 일입니다.
 
 그림의 점선 API 상자에는 연결 정보가 있고, 디스크 상자에 파일 바이트가 있습니다. PVC 객체를 백업했다고 파일 내용까지 백업되는 것은 아닙니다. 반대로 디스크에 파일이 남아 있어도 알맞은 PV/PVC·마운트와 앱 설정이 없으면 앱이 읽지 못합니다.
 
@@ -56,7 +56,7 @@ import { StorageLab } from '../../components/kubernetes/DataResourceLabs';
 
 ## 4. Delete와 Retain은 백업 정책이 아니다
 
-**reclaim policy(회수 정책)**는 PVC 사용이 끝난 뒤 PV와 연결된 저장 자원을 어떻게 처리할지 정합니다. 일반적인 local-path 기본 설정은 Delete이지만, 실제 운영에서는 **해당 PV의** `persistentVolumeReclaimPolicy`를 읽어 확인해야 합니다. StorageClass 설정만 바꿨다고 이미 생성된 모든 PV가 함께 바뀌었다고 가정하지 않습니다.
+<strong>reclaim policy(회수 정책)</strong>는 PVC 사용이 끝난 뒤 PV와 연결된 저장 자원을 어떻게 처리할지 정합니다. 일반적인 local-path 기본 설정은 Delete이지만, 실제 운영에서는 **해당 PV의** `persistentVolumeReclaimPolicy`를 읽어 확인해야 합니다. StorageClass 설정만 바꿨다고 이미 생성된 모든 PV가 함께 바뀌었다고 가정하지 않습니다.
 
 - **Delete:** provisioner가 정상적으로 정리를 끝내면 PV와 연결된 저장 공간이 삭제됩니다. 실험의 마지막 단계는 정리 성공 후입니다. 삭제 요청과 물리적 삭제 완료는 같은 순간이 아닙니다.
 - **Retain:** PVC가 사라져도 PV와 데이터는 남습니다. PV는 Released 상태가 되고 관리자가 내용을 확인해 재사용·정리할 수 있습니다. 앱이 자동으로 재연결되거나 백업에서 복원된 상태가 아닙니다.
