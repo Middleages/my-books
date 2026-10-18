@@ -1,5 +1,5 @@
 import { Check, Sources } from "./shared";
-import { CorsLab } from "../../components/network/OperationsLabs";
+import { CorsVisual } from "../../components/network/BrowserVisuals";
 
 <p className="lead">터미널의 curl에서는 API가 잘 되는데 웹 화면에서는 실패합니다. 네트워크가 변덕스러운 걸까요? 브라우저는 다른 사이트가 내 정보를 마음대로 읽지 못하도록 요청과 응답에 추가 규칙을 적용합니다.</p>
 <div className="learning-goals">
@@ -35,6 +35,12 @@ import { CorsLab } from "../../components/network/OperationsLabs";
 
 중요한 것은 **요청이 서버에 도착한 것과 JavaScript가 응답을 읽는 것이 별개**라는 점입니다. CORS는 API 사용자 인증이나 네트워크 방화벽을 대체하지 않습니다. curl 같은 일반 HTTP 클라이언트는 브라우저의 CORS 읽기 제한을 적용하지 않습니다.
 
+</section>
+
+<CorsVisual />
+
+<section className="prose">
+
 ## 3. 사전 확인 없이 가는 요청도 있다
 
 추가 헤더가 없는 일반적인 GET처럼 CORS safelist 조건을 충족하는 요청은 사전 확인 없이 서버로 갈 수 있습니다. 서버가 처리하고 응답했어도 허용 origin 헤더가 없으면 브라우저는 JavaScript에 응답 내용을 주지 않습니다.
@@ -55,7 +61,6 @@ import { CorsLab } from "../../components/network/OperationsLabs";
 OPTIONS만 허용하고 실제 응답에 CORS 헤더를 빼먹어도 실패할 수 있습니다. 반대로 실제 응답 헤더가 완벽해도 OPTIONS가 로그인 화면으로 이동하거나 허용 조건을 충족하지 못하면 본 요청까지 가지 못합니다.
 
 </section>
-<CorsLab />
 <section className="prose">
 
 ## 5. 실제 적용: 요청과 응답을 나란히 읽기
@@ -123,9 +128,24 @@ HTTPS 페이지가 일반적인 원격 `http://api.example.test`로 fetch하면 
 
 프론트와 API를 같은 origin의 `/api/`로 구성하면 브라우저와 API 사이의 CORS 설정 부담을 줄일 수 있습니다. 그렇더라도 사용자 인증·권한·CSRF 보호·프록시 연결과 인증서 검증은 계속 필요합니다.
 
-<Check question="CORS 에러가 보이면 서버는 요청을 처리하지 않았다고 봐도 될까요?" children="아닙니다. 본 요청이 처리된 뒤 응답 읽기만 차단됐을 수 있습니다. OPTIONS와 본 요청, 서버 로그를 나누어 확인합니다." />
-<Check question="curl이 성공하면 TLS와 네트워크가 브라우저에서도 정상이라는 뜻일까요?" children="실행 위치·신뢰 저장소·프록시·요청 내용이 다를 수 있어 단정할 수 없습니다. 같은 조건인지 먼저 비교합니다." />
-<Check question="같은 origin의 /api/가 다른 VM으로 전달되면 브라우저 기준 다른 origin일까요?" children="아닙니다. 브라우저가 사용하는 URL의 스킴·호스트·포트로 판단합니다. 내부 upstream 주소는 별도의 서버 간 연결입니다." />
+<Check
+  question="CORS 에러가 보이면 서버는 요청을 처리하지 않았다고 봐도 될까요?"
+  children="아닙니다. 본 요청이 처리된 뒤 응답 읽기만 차단됐을 수 있습니다. OPTIONS와 본 요청, 서버 로그를 나누어 확인합니다."
+/>
+<Check
+  question="curl이 성공하면 TLS와 네트워크가 브라우저에서도 정상이라는 뜻일까요?"
+  children="실행 위치·신뢰 저장소·프록시·요청 내용이 다를 수 있어 단정할 수 없습니다. 같은 조건인지 먼저 비교합니다."
+/>
+<Check
+  question="같은 origin의 /api/가 다른 VM으로 전달되면 브라우저 기준 다른 origin일까요?"
+  children="아닙니다. 브라우저가 사용하는 URL의 스킴·호스트·포트로 판단합니다. 내부 upstream 주소는 별도의 서버 간 연결입니다."
+/>
+<p className="model-note">
+  {
+    "시각 보강 근거 재확인: 2026-10-18. WHATWG Fetch의 CORS protocol / CORS-preflight fetch / CORS check와 HTML origin, W3C Mixed Content를 대조했습니다. OPTIONS와 본 응답의 공유 정책을 독립적으로 비교합니다."
+  }
+</p>
+
 <Sources items={[
 ['WHATWG Fetch · CORS 프로토콜과 preflight','https://fetch.spec.whatwg.org/#http-cors-protocol'],
 ['WHATWG Fetch · credentials와 와일드카드','https://fetch.spec.whatwg.org/#cors-protocol-and-credentials'],

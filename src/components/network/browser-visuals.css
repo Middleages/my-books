@@ -1,0 +1,175 @@
+/* D2 scenes: keep readable labels independent of SVG geometry. */
+.bv-lab .bv-url {
+  display: block;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #173c50;
+  color: white;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+.bv-lab .bv-parts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+}
+.bv-lab .bv-parts > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  border: 1px solid #b2c6d2;
+  background: white;
+  padding: 0.7rem;
+  border-radius: 9px;
+  min-width: 0;
+}
+.bv-lab .bv-parts small {
+  font-size: 0.73rem;
+}
+.bv-lab .bv-highlight {
+  background: #d7f0e6 !important;
+  border-color: #168271 !important;
+  box-shadow: inset 0 0 0 1px #168271;
+}
+.bv-lab .bv-stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+.bv-lab .bv-stages li {
+  margin: 0;
+  border: 1px solid #a8bdcb;
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8rem;
+  background: white;
+}
+.bv-lab .ov-http,
+.bv-lab .ov-cors {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4rem;
+  align-items: center;
+}
+.bv-lab .bv-services {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.bv-lab .bv-client {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  background: #edf2fc;
+}
+.bv-lab .bv-client > b {
+  margin-bottom: -2rem;
+}
+.bv-lab .bv-api {
+  background: #e8f4ec;
+}
+.bv-lab .bv-evidence,
+.bv-lab .bv-origins {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.bv-lab .bv-evidence > div,
+.bv-lab .bv-origins > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid #b6c9d4;
+  border-radius: 10px;
+  background: #fff;
+}
+.bv-lab .bv-evidence p {
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.bv-lab .bv-origins small {
+  font-size: 0.73rem;
+  overflow-wrap: anywhere;
+}
+.bv-lab .bv-message {
+  background: #173c50;
+  color: white;
+  border-radius: 10px;
+  padding: 0.85rem;
+  min-width: 0;
+}
+.bv-lab pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.78rem;
+  line-height: 1.8;
+  max-width: 100%;
+  margin: 0.5rem 0;
+}
+.bv-lab .bv-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0.8rem 0;
+}
+.bv-lab .bv-facts > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  border: 1px solid #b6c9d4;
+  border-radius: 9px;
+  background: white;
+  font-size: 0.75rem;
+}
+.bv-lab .bv-facts strong {
+  color: #146858;
+  font-size: 0.85rem;
+}
+.bv-lab details > ol {
+  padding-left: 1.3rem;
+}
+.bv-lab details li {
+  margin: 1.3rem 0;
+}
+.bv-lab .ov-controls select {
+  width: 100%;
+  min-width: 0;
+}
+@media (max-width: 680px) {
+  .bv-lab .ov-http,
+  .bv-lab .ov-cors {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+  .bv-lab .bv-parts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bv-lab .bv-parts > div:last-child {
+    grid-column: 1/-1;
+  }
+  .bv-lab .bv-origins,
+  .bv-lab .bv-evidence {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bv-lab .bv-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bv-lab .bv-services {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 680px) {
+  .bv-lab .ov-http .bv-services {
+    padding-right: 1.7rem;
+  }
+}

@@ -108,6 +108,19 @@ export function OperationScene({
           const x = a.right - box.left - 18,
             y = a.top - box.top + 20;
           d = `M ${x} ${y} c 32 -30 32 54 0 24`;
+        } else if (
+          kind === "http" &&
+          from === "browser" &&
+          to === "server" &&
+          a.right > b.left
+        ) {
+          // D2 mobile: the app connection bypasses the separate DNS card.
+          const x = a.right - box.left,
+            y = a.top - box.top + a.height / 2,
+            tx = b.right - box.left,
+            ty = b.top - box.top + b.height / 2,
+            gutter = box.width - 4;
+          d = `M ${x} ${y} L ${gutter} ${y} L ${gutter} ${ty} L ${tx} ${ty}`;
         } else if (Math.abs(a.top - b.top) < Math.min(a.height, b.height) / 2) {
           const x = a.right - box.left,
             y = a.top - box.top + a.height / 2,

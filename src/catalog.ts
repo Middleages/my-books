@@ -13,7 +13,7 @@ import Routing from "./content/network/Routing.mdx";
 import Ports from "./content/network/Ports.mdx";
 import Dns from "./content/network/Dns.mdx";
 import Transport from "./content/network/Transport.mdx";
-import Http from "./content/network/Http";
+import Http from "./content/network/Http.mdx";
 import Tls from "./content/network/Tls.mdx";
 import Verify from "./content/network/Verify.mdx";
 import Proxy from "./content/network/Proxy.mdx";
