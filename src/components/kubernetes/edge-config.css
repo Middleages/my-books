@@ -1,0 +1,21 @@
+.k8c-lab code { white-space: normal; overflow-wrap: anywhere; }
+.k8c-rules { display:flex; flex-direction:column; gap:.45rem; padding:1rem; border:2px dashed #7886a5; background:#f0f0fa; border-radius:10px; margin:1rem 0; overflow-wrap:anywhere; }
+.k8c-route { list-style:none; padding:0; margin:1rem 0; display:grid; grid-template-columns:1fr; gap:1.5rem; }
+.k8c-hop { position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); gap:.35rem 1rem; padding:.85rem; border:2px dashed #a5b5bf; border-radius:10px; background:white; overflow-wrap:anywhere; }
+.k8c-hop small { grid-column:1/-1; }
+.k8c-hop span { grid-column:2; }
+.k8c-hop.k8c-done { border:2px solid #318169; background:#e8f6ef; }
+.k8c-hop.k8c-blocked { border:2px solid #a64d31; background:#fff0e6; }
+.k8c-down { position:absolute; bottom:-1.6rem; left:50%; color:#466879; font-size:1.3rem; }
+.k8c-tls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.7rem; }
+.k8c-tls>div,.k8c-value,.k8c-image { display:flex; flex-direction:column; gap:.45rem; background:white; border:1px solid #9ab4c3; border-radius:10px; padding:1rem; overflow-wrap:anywhere; }
+.k8c-tls small { font-size:.8rem; }.k8c-tls span {font-size:.85rem;}
+.k8c-image { border:2px dashed #667ea2; background:#edf0f8; margin:1rem 0; }
+.k8c-config-path { display:grid; grid-template-columns:minmax(0,1fr) 30px minmax(0,1.6fr); align-items:center; gap:.5rem; }
+.k8c-process { border:2px solid #6d8e8e; background:#eef7f3; border-radius:12px; padding:1rem; min-width:0; }
+.k8c-process h3 { margin-top:0; font-size:1rem; }.k8c-memory {border:2px solid #317d66;}
+.k8c-read { text-align:center; padding:.7rem 0; font-size:.85rem; }
+.k8c-arrow {text-align:center;font-size:1.5rem;}
+.k8c-secret { display:grid; grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr); gap:.6rem; align-items:center; margin:1.5rem 0; padding:1rem; background:#f1f5fa; border:1px solid #9caebc; border-radius:12px; }
+.k8c-secret>div { display:flex;flex-direction:column;gap:.5rem;min-width:0; }.k8c-secret code {overflow-wrap:anywhere;white-space:normal;}.k8c-secret figcaption {grid-column:1/-1;font-size:.9rem;}
+@media(max-width:650px){.k8c-hop,.k8c-tls,.k8c-config-path,.k8c-secret {grid-template-columns:1fr;}.k8c-hop span{grid-column:1;}.k8c-arrow{transform:rotate(90deg)}.k8c-process{padding:.7rem;}.k8c-secret{padding:.8rem;}.k8c-secret>div:nth-child(2){padding:.4rem 0;}}

@@ -158,7 +158,7 @@ Ingress를 기존 네트워크 교재와의 연결 및 k3s 사례로 설명하�
 | --- | --- | --- | --- | --- |
 | A | 소개·01~02 구현 | 134 테스트·빌드·게시 데스크톱 핵심 조작 통과 / 지정 폭·reduced-motion 미검증 | c34c1af · Actions/Pages 성공 | 미실행 (요청 범위) |
 | B | 03~04 구현 | 157 테스트·빌드·게시 데스크톱 주요 조작 통과 / 지정 폭·reduced-motion 미검증 | a8055a6 · Actions/Pages 성공 | 미실행 |
-| C | 미착수 | 미실행 | 미반영 | 미실행 |
+| C | 05~06 구현 | 모델·빌드 검증 / 화면 제한은 검증 문서 참조 | 반영·배포 대기 | 미실행 |
 | D | 미착수 | 미실행 | 미반영 | 미실행 |
 | E | 미착수 | 미실행 | 미반영 | 미실행 |
 | F | 미착수 | 미실행 | 미반영 | 미실행 |
@@ -167,3 +167,5 @@ Ingress를 기존 네트워크 교재와의 연결 및 k3s 사례로 설명하�
 배치 A의 상세 결과·환경 제한·게시 버전은 [배치 A 검증](KUBERNETES-BATCH-A-VERIFICATION.md), 선택 실습 계약은 [실습환경](KUBERNETES-LAB-ENVIRONMENT.md)에 기록한다.
 
 배치 B의 모델·실행 검증·게시 상태는 [배치 B 검증](KUBERNETES-BATCH-B-VERIFICATION.md)에 기록한다.
+
+배치 C의 상세 결과는 [배치 C 검증](KUBERNETES-BATCH-C-VERIFICATION.md)에 기록한다.

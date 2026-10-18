@@ -1,0 +1,105 @@
+import { ConfigurationLab, SecretPrimer } from '../../components/kubernetes/EdgeConfigLabs';
+import { Check } from '../network/shared';
+
+<p className="lead">안내 문구만 바꾸는데 이미지를 다시 만들어야 할까요? 코드는 이미지에, 실행 환경별 값은 설정 객체에 둘 수 있습니다. 하지만 객체를 수정한 순간 실행 중인 앱의 값까지 바뀌는 것은 아닙니다.</p>
+<div className="learning-goals">
+
+**학습 목표**
+- 이미지·ConfigMap·Secret·실행 프로세스가 가진 값을 분리합니다.
+- 환경변수와 일반 볼륨 파일, subPath의 갱신 차이를 설명합니다.
+- 파일 갱신·앱 재읽기·Pod 교체를 구분하고 Secret의 보호 조건을 판단합니다.
+
+</div>
+<section className="prose">
+
+## 1. 같은 코드, 다른 설정
+
+**이미지**에는 실행 코드와 기본 파일이 들어 있습니다. **ConfigMap**은 안내 문구·기능 설정처럼 비밀이 아닌 값을 키와 값으로 보관하는 API 객체입니다. **Secret**은 비밀번호·토큰·TLS 개인 키처럼 접근을 제한해야 하는 값을 위한 객체입니다. 둘 다 별도로 만들고 Pod가 참조할 수 있지만, 객체를 만들기만 해서는 앱이 읽지 않습니다.
+
+예를 들어 `APP_MESSAGE`를 환경변수로 전달하거나 `/config` 아래 파일로 마운트할 수 있습니다. **마운트**는 컨테이너의 특정 경로에서 해당 내용을 파일처럼 보이게 연결하는 것입니다. 앱 코드도 그 환경변수나 파일을 읽도록 작성돼 있어야 합니다. ConfigMap을 수정해도 이미지 안의 코드 자체가 바뀌는 것은 아닙니다.
+
+실험은 이미지 `study-web · v1`을 그대로 두고 설정만 v1에서 v2로 바꿉니다. 이 v1/v2는 값의 변경을 구분하는 학습 라벨이며 실제 배포 이미지 주소가 아닙니다. Secret 모드도 공개해도 되는 `demo-only` 가상 문자열만 사용합니다. 실제 앱의 응답·로그에 비밀값을 출력하는 예제가 아닙니다.
+
+</section>
+<ConfigurationLab />
+<section className="prose">
+
+## 2. 값이 지나야 할 세 경계
+
+첫째는 **API 객체**, 둘째는 **컨테이너에 전달된 환경변수나 파일**, 셋째는 **앱이 읽고 사용하는 값**입니다. 하나가 바뀌었다고 나머지를 이미 바뀐 것으로 표시하면 진단을 잘못하게 됩니다.
+
+**환경변수**는 실행 시작 시 전달됩니다. 기존 프로세스의 환경은 ConfigMap 수정으로 자동 갱신되지 않습니다. 앱이 같은 환경변수를 다시 읽어도 이전 값입니다. 이 실험은 새 Pod를 명시적으로 만들었을 때 새 값이 전달되는 경로를 보여 줍니다.
+
+**일반 ConfigMap·Secret 볼륨**의 파일은 변경 전파 후 갱신될 수 있습니다. 즉시 갱신이라는 뜻이 아니며 kubelet의 감지·캐시·동기화 지연이 있습니다. 그 다음 앱이 파일을 다시 읽어야 합니다. 시작 시 한 번 읽고 메모리에 보관한 앱은 파일만 바뀌어도 계속 이전 값을 쓸 수 있습니다.
+
+**subPath**는 볼륨 전체 대신 특정 하위 경로를 연결할 때 쓰지만, ConfigMap·Secret을 이 방식으로 마운트하면 기존 마운트에 자동 업데이트가 전달되지 않습니다. 파일 재읽기 버튼을 눌러도 새 값이 보이지 않는 반례를 확인하세요.
+
+<div className="k8-table" role="region" aria-label="설정 전달 방식 비교" tabIndex={0}>
+
+| 전달 방법 | 객체 수정 후 기존 전달 위치 | 앱 재읽기만으로 충분한가? | 이 실험의 확실한 새 시작 |
+| --- | --- | --- | --- |
+| 환경변수 | 이전 값 유지 | 아니오 | 전파 완료 후 새 Pod |
+| 일반 볼륨 파일 | 지연 후 새 값 | 파일을 다시 여는 기능이 있을 때 | 새 Pod도 가능 |
+| subPath 파일 | 이전 값 유지 | 아니오 | 새 Pod로 마운트 재구성 |
+
+</div>
+
+ConfigMap 수정 자체가 Deployment의 Pod 교체를 자동 실행하는 것은 아닙니다. 별도 자동화 도구가 있다면 그 동작을 구분해야 합니다. 이 장에서는 그런 도구를 가정하지 않습니다.
+
+## 3. ‘재시작’이라는 말의 범위를 정하자
+
+앱의 reload 함수 호출, 프로세스 재시작, 같은 Pod 안의 컨테이너 재시작, Pod 교체는 서로 다릅니다. 앱 함수가 다시 읽는 것은 이미 전달된 값이고, 새 Pod는 환경과 마운트를 다시 구성합니다. 같은 Pod의 컨테이너 재시작을 모든 설정 전달 방식의 확실한 갱신 절차로 일반화하지 않습니다. 특히 기존 subPath 마운트·앱의 열린 파일 핸들 같은 조건을 따로 확인해야 합니다.
+
+실험의 마지막 단계는 **Pod UID가 바뀌는 명시적 교체**입니다. 이미지 v1은 그대로인데 설정 v2를 읽은 새 프로세스가 생깁니다. 배포 시에는 새 Pod가 실제 설정을 읽었는지, 준비됐는지 관측해야 합니다. 다중 replica가 서로 다른 설정 버전을 잠시 사용하거나 잘못된 설정으로 새 실행이 실패하는 상황도 있을 수 있습니다. 변경과 복구 전략은 뒤의 배포 장에서 이어 갑니다.
+
+## 4. Secret은 왜 암호화와 다른가?
+
+</section>
+<SecretPrimer />
+<section className="prose">
+
+Secret의 YAML `data` 값에 쓰는 **base64**는 바이트를 문자열로 표현하는 인코딩입니다. 키 없이 되돌릴 수 있습니다. `stringData`로 평문을 작성할 수도 있지만 이것도 저장소에 비밀을 안전하게 올려도 된다는 뜻은 아닙니다. base64로 바꾼 자격 증명을 Git에 넣는 것은 원문 노출 위험을 해결하지 못합니다.
+
+Secret 객체를 사용하면 일반 설정과 분리해 접근·전달을 관리할 수 있습니다. 하지만 기밀 보호는 별도 조건입니다.
+
+- **API 접근 권한:** RBAC로 Secret 조회·목록·감시 권한을 최소화합니다. Pod나 Deployment를 만들 수 있는 권한도 Secret을 간접적으로 읽는 경로가 될 수 있습니다.
+- **저장 보호:** datastore의 저장 암호화 설정과 암호화 키·백업 접근을 확인합니다. Secret이라는 종류만으로 암호화가 보장되지 않습니다. 이 책의 단일 k3s 후보는 SQLite이므로 모든 환경을 etcd로 부르지 않습니다.
+- **전달 이후:** 필요한 컨테이너에만 제공하고 앱 로그·오류 출력·화면·덤프에 값을 남기지 않습니다. 만료·교체와 앱의 재읽기 경로도 설계합니다.
+
+TLS로 API에 전달하는 것, datastore에서 암호화해 저장하는 것, 앱이 값을 읽을 권한은 다른 층입니다. k3s에서는 secrets encryption 기능의 활성화와 운영 절차를 확인해야 합니다. 여기서는 실제 클러스터의 보호 설정을 변경하지 않습니다.
+
+## 5. 잘못된 값은 어디에서 찾을까?
+
+“ConfigMap은 바뀌었는데 화면은 그대로”라면 새 이미지를 만드는 것부터 시작하지 않습니다. 다음 순서로 같은 키를 비교합니다.
+
+1. 올바른 context·namespace·객체 이름을 변경했는지 확인합니다.
+2. Pod 명세의 `env`, `envFrom`, `volumes`, `volumeMounts`와 `subPath` 여부를 확인합니다.
+3. 환경변수인지 파일인지, 파일 전파가 끝났는지 확인합니다.
+4. 앱이 언제 값을 읽는지, 재읽기 기능이 있는지, 새 Pod가 실제로 생성됐는지 확인합니다.
+
+아래는 **비밀이 아닌 ConfigMap**을 보는 관리 터미널의 예시입니다. 실제 클러스터에서 실행하지 않았습니다.
+
+```sh
+kubectl config current-context
+kubectl get configmap study-web-config -n books-lab -o yaml
+kubectl get deployment study-web -n books-lab -o yaml
+kubectl get pods -n books-lab -o wide
+```
+
+Secret 진단에서 원문 전체를 터미널·채팅·공유 로그에 덤프하는 습관은 피합니다. 존재·참조 이름·변경 시점·권한·오류를 먼저 대조하고, 값 확인이 필요하면 권한 있는 운영 절차 안에서 수행합니다. 필요한 키가 없거나 조회·마운트가 실패하면 시작 자체가 막힐 수 있습니다. 이 장의 실험은 그런 실패를 모두 재현하는 모델이 아닙니다.
+
+<Check question="ConfigMap의 문구만 수정하면 이미지 digest도 바뀌나요?" children="아닙니다. 설정 객체와 이미지는 독립입니다. 앱에 전달되는 방법과 앱이 읽는 시점을 확인해야 합니다." />
+<Check question="파일에는 v2가 있는데 앱이 v1을 쓸 수 있나요?" children="그렇습니다. 시작 시 읽은 값을 메모리에 유지하는 앱은 파일 갱신만으로 바뀌지 않습니다. 지원하는 재읽기 기능이나 새 실행이 필요합니다." />
+<Check question="base64 Secret을 저장소에 올려도 비밀번호가 가려질까요?" children="아닙니다. base64는 키 없이 복원됩니다. Secret 접근 권한·저장 암호화·로그 노출·교체 절차는 별도로 관리해야 합니다." />
+
+## 근거와 모델의 경계
+
+공식 확인일 **2026-10-18**, Kubernetes **v1.35**. mutable 객체·존재하는 키·성공한 전파와 마운트만 관찰합니다. `immutable: true`는 내용을 수정할 수 없으므로 새 객체와 참조 교체가 필요합니다. 외부 Secret 저장소·CSI driver·환경별 우선순위·여러 파일의 원자적 앱 갱신·실제 암호화·자격 증명 연결은 생략합니다. 저장 데이터의 수명과 자원 한도 실험은 다음 배치 범위입니다.
+
+- [ConfigMap · env와 볼륨 갱신·subPath](https://v1-35.docs.kubernetes.io/docs/concepts/configuration/configmap/)
+- [Secret · 전달·보호·immutable](https://v1-35.docs.kubernetes.io/docs/concepts/configuration/secret/)
+- [ConfigMap 갱신 관측 예제](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/)
+- [Secret 보안 권장 사항](https://kubernetes.io/docs/concepts/security/secrets-good-practices/)
+- [K3s Secrets Encryption](https://docs.k3s.io/security/secrets-encryption)
+
+</section>

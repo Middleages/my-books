@@ -15,7 +15,7 @@
 | kubectl | k3s 동봉 kubectl v1.35.9 후보 | 실행 미검증 |
 | Helm CLI | 주요 버전 4 후보. 배치 F에서 patch 고정·렌더 검증 | 설치·실행하지 않음 |
 | Ingress controller | k3s 동봉 Traefik v3.7.13 후보 | 실행 미검증 |
-| Ingress chart | 동봉 Traefik chart 40.x 계열; 정확한 패키지 버전은 C에서 고정 | 설치 manifest 미확인 |
+| Ingress chart | 동봉 패키지 `40.1.5+up40.1.0` (upstream chart 40.1.0) | 태그의 manifest 정적 확인 / 설치 미검증 |
 | runtime | containerd v2.2.7-k3s1 후보 | 실행 미검증 |
 | CNI | Flannel v0.28.4 / 기본 VXLAN 후보 | 실행 미검증 |
 | 스토리지 | local-path-provisioner v0.0.37, 노드 로컬 디스크 | 실행 미검증·백업 아님 |
@@ -48,3 +48,13 @@ K3s 공식 v1.35 릴리스 표와 본문을 확인했다. 릴리스 본문에 �
 - https://docs.k3s.io/quick-start — 설치와 kubeconfig
 - https://helm.sh/docs/ — Helm 4 문서 경로; 이번 배치에서 CLI 미사용
 - https://v1-35.docs.kubernetes.io/docs/concepts/overview/components/ — 본문 개념 기준
+
+## 배치 C · 외부 진입·설정 계약 보완
+
+2026-10-18, k3s `v1.35.9+k3s1` 태그의 [manifests/traefik.yaml](https://github.com/k3s-io/k3s/blob/v1.35.9+k3s1/manifests/traefik.yaml)을 GitHub에서 읽어 Traefik·CRD 패키지 `40.1.5+up40.1.0`와 image tag `3.7.13`을 확인했다. 다운로드·설치·실행 검증은 아니다. A의 다른 후보는 유지한다.
+
+- 브라우저 가상 외부 주소 `192.0.2.10`, 도메인 `study.example.test`. Ingress는 `/` Exact, `/health` Prefix를 `study-web:80`에 연결. rewrite 없음.
+- 기본 경로는 ServiceLB의 외부 443 → controller TLS 종료 → backend HTTP. 기존 호스트 NGINX와의 공존 경로는 외부 443 유지 → controller용 NodePort 30080/30443 예시. 기본 80/443 hostPort 점유를 피하는 별도 설정을 전제하며 설치 기본값이라고 주장하지 않는다. NodePort 도달성·방화벽·노출 범위는 실제 관측 필요.
+- 공존 HTTPS 모델은 NGINX upstream 검증 활성화, 검증 이름/SNI/CA의 정상 설정을 전제로 성공·실패를 비교한다. 호스트 프록시 제거·기존 서버 변경은 미실행.
+- ConfigMap 이름 후보 `study-web-config`, 일반 키 `APP_MESSAGE`; Secret 문자열은 `demo-only-v1/v2`. 앱 코드·실제 이미지·Secret·YAML 배포는 아직 없음.
+- 06의 마지막 단계는 전파 완료 후 새 Pod 생성. 파일 재읽기·동일 Pod 컨테이너 재시작과 구분. 일반 볼륨 갱신과 subPath 예외만 모델링.
