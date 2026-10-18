@@ -1,5 +1,7 @@
 import Helm from "./content/kubernetes/Helm.mdx";
 import Troubleshooting from "./content/kubernetes/Troubleshooting.mdx";
+import OutputGrowth from "./content/economics/OutputGrowth.mdx";
+import Jobs from "./content/economics/Jobs.mdx";
 import EconomicsIntro from "./content/economics/Intro.mdx";
 import CircularFlow from "./content/economics/CircularFlow.mdx";
 import SupplyDemand from "./content/economics/SupplyDemand.mdx";
@@ -56,6 +58,8 @@ export type Chapter = {
 export const chapters: Chapter[] = [
   { id: "circular-flow", bookId: "economics", readId: "economics/circular-flow", number: "01", title: "경제는 서로 연결된 흐름", heading: "내가 쓴 돈은 누구의 소득이 되고, 무엇과 맞바뀔까?", description: "노동·임금·소비·판매의 방향과 흐름·잔액을 나눠 봅니다.", Content: CircularFlow },
   { id: "supply-demand", bookId: "economics", readId: "economics/supply-demand", number: "02", title: "수요·공급과 가격", heading: "가격이 올랐다는 사실만으로 원인을 알 수 있을까?", description: "곡선 위 이동과 곡선 이동, 같은 가격 상승의 다른 수량을 비교합니다.", Content: SupplyDemand },
+  { id: "output-growth", bookId: "economics", readId: "economics/output-growth", number: "03", title: "GDP와 성장률", heading: "돈으로 잰 생산이 늘면 실제 생산도 늘었을까?", description: "최종재·부가가치와 명목·실질 성장률을 같은 생산표로 비교합니다.", Content: OutputGrowth },
+  { id: "jobs", bookId: "economics", readId: "economics/jobs", number: "04", title: "고용과 실업", heading: "실업률이 낮아지면 일자리가 늘었을까?", description: "인구의 분류 이동과 실업률·고용률의 분모를 비교합니다.", Content: Jobs },
   {
     id: "why-kubernetes",
     bookId: "kubernetes",
@@ -387,7 +391,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–02장 공개 · 생산·고용·물가·정책 등 나머지 장은 제작 예정입니다.", Intro: EconomicsIntro },
+  { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–04장 공개 · 물가·금리·정책 등 나머지 장은 제작 예정입니다.", Intro: EconomicsIntro },
   {
     id: "computer",
     categoryId: "technology",

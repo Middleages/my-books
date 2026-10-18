@@ -1,0 +1,14 @@
+export type ProductionInput={quantity:number;price:number};
+export type Production={quantity:number;price:number;nominal:number;real:number;gross:number;stages:{name:string;quantity:number;price:number;output:number;input:number;valueAdded:number}[]};
+export const productionDefaults:Readonly<ProductionInput>;
+export function production(p:ProductionInput):Production;
+export function growth(current:number,base:number):number|null;
+export function output(base:ProductionInput,current:ProductionInput):{base:Production;current:Production;nominalGrowth:number|null;realGrowth:number|null;realDirection:string};
+export const transactions:readonly {id:string;label:string;included:boolean;reason:string}[];
+export type Population={employed:number;unemployed:number;inactive:number};
+export type Jobs=Population&{labourForce:number;population:number;unemploymentRate:number|null;employmentRate:number|null;participationRate:number|null};
+export type JobFrame=Jobs&{phase:number;explanation:string;moved:number;unfilled:number;employmentDirection:string};
+export const jobsDefaults:Readonly<Population>;
+export const jobActions:readonly {id:string;label:string;from:keyof Population;to:keyof Population;description:string}[];
+export function jobs(p:Population):Jobs;
+export function jobFrames(p:Population,action:string,count:number):JobFrame[];
