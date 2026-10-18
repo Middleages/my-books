@@ -88,5 +88,17 @@ URL·확인일(2026-10-18 KST)을 본문에 기록했다. 미국 점수 범위·
 
 ## main·배포
 
-아래에는 main 반영 후 실제 확인한 구현 커밋·Actions 결과·게시 파일을 기록한다.
-로컬 검증만으로 배포 성공을 기록하지 않는다.
+- 구현 main 커밋 `e29c195df322c94ac456b8a0aa53a3534ab6f062`.
+- [GitHub Actions run 39089812644](https://github.com/Middleages/my-books/actions/runs/39089812644)의 build/deploy 모두 success 확인.
+- 연결된 GitHub API로 로컬과 동일한 트리 `5c665af4a809ceb12bed01034e5c5560ae51467c`를 게시했다.
+  예상 main SHA를 검사하는 ref 갱신으로 병행 변경을 보호했다. 다른 책·홈 구현을 되돌린 파일 없음.
+- 실제 주소 https://middleages.github.io/my-books/#/money/credit 에서 제목·목차 7장·본문·실험 렌더 확인.
+- 게시 JS `index-D1bN62kl.js`, CSS `index-0PDd-3f5.css`가 로컬 최종 빌드와 정확히 일치.
+- Cloud Chrome의 페이지 폭/scrollWidth 모두 1348px로 가로 넘침 없음.
+- 실제 게시 UI: 부족 예측 → 변경 월 완성 보기 → 4개월 현금 135,000원,
+  예비여유 200,000원, 추가 여유 -65,000원 및 예측 일치.
+- 금리와 수입 감소 함께 → 변경 월 완성 보기 → 현금 -165,000원,
+  추가 여유 -365,000원, 월수입 자체의 부족으로 별도 해석.
+- Cloud 콘솔에는 확장 프로그램 metadata 전송 오류만 있었고 앱 오류·React 경고는 없었다.
+- 이 배포 기록을 더하는 후속 문서 커밋은 동일한 JS/CSS를 사용한다.
+  위는 직접 확인한 구현 배포 기록이며 후속 문서 커밋의 Actions 결과도 별도로 확인한다.
