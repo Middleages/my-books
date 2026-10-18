@@ -87,7 +87,8 @@ k apply -f examples/kubernetes/manifests/namespace.yaml
 k apply -f examples/kubernetes/manifests/app.yaml
 k rollout status deployment/study-web -n books-lab --timeout=120s
 k get pods,service,endpointslices -n books-lab -o wide
-# 별도 VM 터미널에서 실행하고 유지. 외부 노출 없이 localhost만 사용.
+# 별도 VM 터미널: 3절의 k 함수를 이 새 셸에도 정의한 뒤 실행.
+# 외부 노출 없이 localhost만 사용.
 k port-forward -n books-lab service/study-web 18080:80 --address 127.0.0.1
 # 또 다른 VM 터미널:
 curl -f http://127.0.0.1:18080/

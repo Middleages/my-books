@@ -91,7 +91,7 @@ k exec -n books-lab "$POD_NAME" -c web -- python -c \
 포트 전달은 별도 터널 확인이며 Service 데이터 경로의 대체 검증이 아니다.
 
 ```sh
-# 별도 VM 터미널에서 계속 실행
+# 별도 VM 터미널에서도 위 k 함수를 정의한 뒤 계속 실행
 k port-forward -n books-lab service/study-web 18080:80 --address 127.0.0.1
 # 또 다른 VM 터미널에서
 curl -f http://127.0.0.1:18080/
