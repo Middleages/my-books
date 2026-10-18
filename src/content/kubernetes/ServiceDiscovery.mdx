@@ -1,0 +1,98 @@
+import { ServiceDiscoveryLab } from '../../components/kubernetes/WorkloadLabs';
+import { Check } from '../network/shared';
+
+<p className="lead">Pod가 바뀔 때마다 호출하는 앱의 주소도 고쳐야 할까요? Service는 유지할 이름과 접점을 제공하고, 그 뒤의 대상 목록을 Pod 변화에 맞춰 갱신하게 합니다.</p>
+<div className="learning-goals">
+
+**학습 목표**
+- label·selector·EndpointSlice·ready의 관계를 설명합니다.
+- Service port와 앱의 listen 포트, targetPort를 구분합니다.
+- Pod 교체·namespace별 DNS·준비 대상 없음·포트 불일치를 서로 다른 관측으로 진단합니다.
+
+</div>
+<section className="prose">
+
+## 1. 이름을 유지하고 대상을 바꾼다
+
+03장에서 새 Pod는 새 UID를 갖는다는 것을 봤습니다. IP도 달라질 수 있습니다. 호출자가 특정 Pod IP에 의존하면 Pod 교체 뒤 접속 정보를 고쳐야 합니다. **Service**는 이런 실행 인스턴스들 앞에 논리적인 접점을 정의합니다.
+
+이 장은 가장 기본적인 **ClusterIP Service**를 다룹니다. 클러스터 안에서 사용하는 가상 IP와 포트가 있고, Service 이름을 DNS로 조회할 수 있습니다. Service가 유지되는 동안 Pod가 바뀌어도 그 이름과 가상 IP를 유지할 수 있습니다. Service 자체를 삭제·재생성한 뒤에도 같은 IP가 유지된다는 뜻은 아닙니다.
+
+Service는 앱 프로세스도, 자동 생성되는 전용 프록시 Pod도 아닙니다. 클러스터의 네트워크 구현이 Service와 대상 정보를 반영해 연결을 전달합니다. 흔한 kube-proxy 구성은 노드의 패킷 처리 규칙을 관리하고, 다른 구현도 가능합니다. 아래 그림은 그 구현을 하나의 **논리적 전달 관계**로 줄였습니다.
+
+## 2. 어떤 Pod를 고르는가?
+
+**label**은 `app=study-web`처럼 객체에 붙인 이름표입니다. **selector**는 그 이름표가 맞는 대상을 고르는 조건입니다. Service 이름과 Deployment 이름이 같아서 자동 연결되는 것이 아닙니다. 이 장의 Service는 같은 namespace 안에서 `app=study-web`인 Pod를 고릅니다. 다른 namespace의 같은 label을 가진 Pod는 선택하지 않습니다.
+
+**EndpointSlice**는 Service의 대상 주소와 포트·상태 등을 기록하는 API 객체입니다. 일반적인 selector 기반 Service에서는 관련 controller가 Pod 변화를 관찰해 이 정보를 관리합니다. EndpointSlice가 패킷을 받는 서버는 아닙니다.
+
+중요한 구분이 있습니다. **선택된 Pod가 EndpointSlice에 기록돼 있어도 ready=false이면 이 실험의 전달 후보에서 제외됩니다.** “목록에 있음”과 “새 연결을 받을 준비가 됨”을 같은 뜻으로 읽으면 안 됩니다. 아래에서는 그 두 목록을 나란히 볼 수 있습니다.
+
+## 3. 80으로 들어왔는데 왜 앱은 8080일까?
+
+`study-web` 앱은 8080에서 연결을 기다린다고 가정합니다. **listen**은 앱이 특정 주소·포트에서 연결을 받도록 열어 둔 상태입니다. Service의 `port: 80`은 호출자가 접속하는 접점이고, `targetPort: 8080`은 선택한 대상 Pod에 전달할 포트입니다.
+
+`targetPort`를 9090으로 바꿔도 앱이 9090에서 실행되도록 변경되지는 않습니다. Pod가 Ready이고 대상 목록도 있어도 실제 리스너가 다르면 연결은 실패할 수 있습니다. Pod YAML의 `containerPort` 선언 역시 앱 프로세스의 listen 설정을 대신하지 않습니다. 여기서는 숫자형 targetPort와 TCP 하나만 사용하며 이름 있는 포트는 생략합니다.
+
+</section>
+<ServiceDiscoveryLab />
+<section className="prose">
+
+## 4. 같은 이름인데 namespace에 따라 다르게 보인다
+
+이 실험의 호출자는 클러스터 안의 Pod이며 ClusterFirst DNS 설정을 사용합니다. 짧은 이름 `study-web`을 조회하면 호출 Pod의 namespace를 기준으로 찾습니다. `other`에서 조회하면 `books-lab`의 Service를 자동으로 찾는 것이 아닙니다.
+
+namespace를 포함한 `study-web.books-lab` 또는 전체 이름 `study-web.books-lab.svc.cluster.local`로 범위를 명시할 수 있습니다. `cluster.local`은 이 예시의 클러스터 DNS 도메인이며 실제 환경에서 다를 수 있습니다. 다른 namespace에 같은 이름의 Service가 있다면 짧은 이름은 그쪽을 가리킬 수도 있습니다. 이 실험의 `other`에는 같은 이름의 Service를 만들지 않았습니다.
+
+**비교해 보기:** 호출 namespace만 other로 바꾸면 이름을 찾지 못합니다. 그다음 조회 이름에 books-lab을 넣으면 다시 이름을 찾습니다. namespace를 명시하는 것은 접근 권한을 주는 기능이 아닙니다. NetworkPolicy나 방화벽이 허용하는지도 별도로 봐야 합니다.
+
+일반 ClusterIP Service의 DNS 응답은 Service 주소입니다. **DNS 응답이 있다고 Ready인 Pod까지 있다는 뜻은 아닙니다.** 앱 준비 조건을 실패로 바꿔도 Service 이름은 해석되고, 그 다음 전달 후보가 없어지는 것을 관찰하세요. 노트북이나 클러스터 밖 VM이 이 내부 이름을 기본적으로 해석하고 접속할 수 있다고 가정하지 않습니다. 외부 진입은 다음 배치에서 다룹니다.
+
+## 5. 주소가 바뀌어도 괜찮다는 말의 범위
+
+정상 조건에서 한 단계씩 진행해 A가 사라지고 C가 들어오는 모습을 보세요. C는 아직 준비 중일 때 목록에는 있으나 전달 후보가 아닙니다. 준비된 B가 남아 있으면 새 연결을 받을 수 있고 C가 준비되면 후보가 늘어납니다. Service 이름과 가상 주소는 이 과정에서 유지됩니다.
+
+다만 그림의 첫 번째 ready 대상을 고르는 규칙은 설명을 위한 선택입니다. 실제 연결이 A·B·C로 정확히 번갈아 가거나 같은 비율로 분배된다는 뜻은 아닙니다. 기존 TCP 연결이 새 Pod로 자동 이전되는 것도 아닙니다. 대상 정보의 전파 지연·진행 중 요청·연결 재시도·종료 처리 때문에 실제 교체 과정의 무중단은 별도 조건이 필요합니다.
+
+<div className="k8-table" role="region" aria-label="연결 실패 비교 표" tabIndex={0}>
+
+| 관찰 | 이번 모델의 원인 | 다음 확인 |
+| --- | --- | --- |
+| 이름을 찾지 못함 | 호출 namespace에 같은 Service 없음 | 호출 Pod의 DNS 설정·조회 이름·Service 존재 |
+| DNS 응답은 있지만 선택 주소 없음 | selector와 Pod label 불일치 | Service와 Pod의 namespace·label |
+| 선택 주소가 있으나 ready 후보 없음 | 준비 조건 실패 | EndpointSlice ready·Pod 상태 |
+| ready 후보는 있으나 앱에 연결 안 됨 | targetPort와 listen 포트 불일치 | Service 포트 매핑·앱 설정 |
+
+</div>
+
+실제 시스템에서는 이 표 밖의 CNI·NetworkPolicy·방화벽·DNS 장애도 가능합니다. 연결 실패 하나로 원인을 단정하지 않고 앞 단계의 증거부터 좁힙니다. [네트워크 교재의 Service 실험](#/network/cluster-internal)은 `api:80 → 8000` 사례이며, 이 교재의 `study-web:80 → 8080`과 앱 계약이 다릅니다.
+
+## 6. 실제로 관측하는 위치
+
+아래 명령은 올바른 kubeconfig와 조회 권한이 있는 **관리 터미널**에서 사용합니다. 제작 중 클러스터에 실행하지 않았습니다. 실제 IP는 출력에서 읽고 그림의 예시 IP를 고정값으로 복사하지 않습니다.
+
+```sh
+kubectl config current-context
+kubectl get service study-web -n books-lab -o yaml
+kubectl get pods -n books-lab --show-labels -o wide
+kubectl get endpointslice -n books-lab -l kubernetes.io/service-name=study-web -o yaml
+```
+
+Service에서 selector·port·targetPort, Pod에서 label·주소·준비 상태, EndpointSlice에서 addresses·ports·conditions.ready를 대조합니다. EndpointSlice는 여러 개일 수 있으므로 label로 찾은 전체 목록을 확인합니다. 준비되지 않은 주소도 기록될 수 있어 IP 줄 수만 세면 안 됩니다.
+
+DNS는 **실제로 호출하는 Pod 안**에서 관측해야 합니다. 진단 도구가 있는 기존 실습 Pod에서 `nslookup study-web`과 namespace를 포함한 이름을 비교할 수 있습니다. 도구가 없는 이미지도 있으므로 명령이 없다는 메시지를 DNS 장애로 해석하지 않습니다. 여기서는 도구 설치나 존재하지 않는 진단 이미지 실행을 요구하지 않습니다.
+
+<Check question="Service의 이름만 Deployment 이름과 같게 하면 연결되나요?" children="아닙니다. 이 모델은 같은 namespace의 Pod label과 Service selector가 일치해야 합니다. 준비된 대상과 올바른 targetPort도 필요합니다." />
+<Check question="EndpointSlice에 주소가 2개 있으니 둘 다 요청을 받을까요?" children="주소 개수만으로는 모릅니다. 이 실험에서는 ready=true인 대상만 새 연결 후보입니다. 종료 중 endpoint와 publishNotReadyAddresses 같은 예외는 별도 조건입니다." />
+<Check question="DNS는 성공했는데 ready 대상은 0개일 수 있나요?" children="그렇습니다. 일반 ClusterIP Service의 이름은 Service 주소를 가리킵니다. 그 뒤에서 준비된 대상이 있는지는 별도로 확인해야 합니다." />
+
+## 근거와 모델의 경계
+
+공식 문서 확인일 **2026-10-18**, Kubernetes **v1.35** 기준. selector 기반 일반 ClusterIP·TCP·IPv4, 정상 DNS와 네트워크, 갱신 완료 뒤 새 연결만 모델링합니다. **headless Service**는 DNS 응답 방식이 다르며, `publishNotReadyAddresses`, 종료 중 endpoint의 serving/terminating 상태, topology·session affinity 등은 이 실험 밖입니다. 준비 상태는 상세 probe 로직 없이 주어진 조건으로 사용합니다. 실제 설치·배포·외부 연결 검증은 수행하지 않았습니다.
+
+- [Service · selector와 port/targetPort](https://v1-35.docs.kubernetes.io/docs/concepts/services-networking/service/)
+- [EndpointSlice · 주소와 ready/serving/terminating](https://v1-35.docs.kubernetes.io/docs/concepts/services-networking/endpoint-slices/)
+- [Service와 Pod의 DNS · namespace와 ClusterIP](https://v1-35.docs.kubernetes.io/docs/concepts/services-networking/dns-pod-service/)
+- [가상 IP와 Service 프록시 구현](https://v1-35.docs.kubernetes.io/docs/reference/networking/virtual-ips/)
+
+</section>

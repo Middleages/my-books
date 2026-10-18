@@ -1,4 +1,6 @@
 import MoneyRisk from "./content/money/Risk.mdx";
+import DesiredState from "./content/kubernetes/DesiredState.mdx";
+import ServiceDiscovery from "./content/kubernetes/ServiceDiscovery.mdx";
 import KubernetesIntro from "./content/kubernetes/Intro.mdx";
 import WhyKubernetes from "./content/kubernetes/WhyKubernetes.mdx";
 import ClusterMap from "./content/kubernetes/ClusterMap.mdx";
@@ -60,6 +62,10 @@ export const chapters: Chapter[] = [
     description: "제어 경로와 HTTP 경로, context·namespace·권한을 구분합니다.",
     Content: ClusterMap,
   },
+  { id: "desired-state", bookId: "kubernetes", readId: "kubernetes/desired-state", number: "03", title: "원하는 상태와 Pod", heading: "하나를 지웠는데 왜 다시 생길까?", description: "소유 관계·UID·개수를 따라 컨테이너 재시작과 Pod 교체를 비교합니다.", Content: DesiredState },
+  { id: "service-discovery", bookId: "kubernetes", readId: "kubernetes/service-discovery", number: "04", title: "바뀌는 Pod와 고정된 입구", heading: "새 Pod를 어떻게 찾을까?", description: "selector·ready 대상·포트·DNS를 연결해 새 연결의 경로를 찾습니다.", Content: ServiceDiscovery },
+
+
   {
     id: "parallel",
     bookId: "computer",
@@ -397,7 +403,7 @@ export const books: Book[] = [
     overview:
       "작은 웹앱의 실행·연결·설정·데이터를 눈으로 이해하는 쿠버네티스 입문입니다.",
     future:
-      "소개·01~02장 공개 · Pod·Service 이후와 선택 실습 부록은 후속 배치입니다.",
+      "소개·01~04장 공개 · 외부 진입·설정 이후와 선택 실습 부록은 후속 배치입니다.",
     Intro: KubernetesIntro,
   },
 ];

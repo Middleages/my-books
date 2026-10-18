@@ -1,0 +1,79 @@
+import { DesiredStateLab } from '../../components/kubernetes/WorkloadLabs';
+import { Check } from '../network/shared';
+
+<p className="lead">앱을 줄이려고 Pod 하나를 지웠는데 새 Pod가 나타납니다. 삭제가 실패한 걸까요? “지금 있는 것”과 “계속 유지해 달라고 요청한 것”을 따로 보면 이유가 보입니다.</p>
+<div className="learning-goals">
+
+**학습 목표**
+- Deployment → ReplicaSet → Pod의 소유 관계를 설명합니다.
+- 원하는 수·현재 수·준비 수를 구분합니다.
+- 컨테이너 재시작과 새 UID의 Pod 교체를 구분하고, 복구가 멈추는 조건을 찾습니다.
+
+</div>
+<section className="prose">
+
+## 1. Pod를 지워도 요청은 남아 있다
+
+**원하는 상태(desired state)**는 운영자가 시스템에 유지해 달라고 선언한 목표입니다. `replicas: 2`는 “지금 두 개를 한 번 실행”하는 것에서 끝나지 않고, 두 개를 유지하도록 조정하는 기준이 됩니다. **replica**는 같은 실행 틀로 만든 복제본 하나를 뜻합니다. 데이터의 복제·백업을 뜻하지는 않습니다.
+
+**Deployment**는 배포할 앱의 틀과 원하는 개수를 관리합니다. **ReplicaSet**은 그 틀에 해당하는 Pod 개수를 유지합니다. **Pod**는 컨테이너를 실행하는 단위입니다. 여러 컨테이너가 한 Pod를 이룰 수도 있지만 이 장에서는 하나만 둡니다.
+
+아래 그림의 화살표는 **소유 관계**입니다. 실제 Pod의 `metadata.ownerReferences`에는 소유 ReplicaSet이, ReplicaSet에는 소유 Deployment가 기록됩니다. Service나 HTTP의 전달 경로가 아닙니다. 여기서는 버전을 바꾸지 않아 하나의 ReplicaSet만 관찰합니다.
+
+Pod 하나를 삭제하면 현재 수는 줄어도 Deployment의 목표는 남습니다. controller가 차이를 관찰하면 ReplicaSet이 새 Pod를 만듭니다. 계속 한 개만 유지하려면 Pod를 반복해서 지우는 대신 **Deployment의 replicas를 1로 변경**해야 합니다.
+
+## 2. 객체가 있다는 것과 요청을 받을 준비는 다르다
+
+세 숫자를 함께 읽어야 합니다. 원하는 수는 목표, 현재 수는 이 실험에 남아 있는 Pod 객체 수, 준비 수는 그중 Ready인 Pod 수입니다. **Ready**는 요청을 받을 준비가 됐다는 상태 조건입니다. 컨테이너가 실행됐다는 이유만으로 항상 Ready인 것은 아닙니다.
+
+새 Pod가 생성돼도 아직 노드 배정을 기다릴 수 있고, 실행된 뒤에도 준비 조건을 충족하지 못할 수 있습니다. 아래에서 “Pod 하나 삭제”를 한 단계씩 진행하면 `2 / 1 / 1`, `2 / 2 / 1`, `2 / 2 / 2`가 어떻게 다른지 볼 수 있습니다. 실제 `kubectl get deployment`의 READY 열은 준비 수/원하는 수이며, Pod 목록의 READY 열은 준비된 컨테이너 수/전체 컨테이너 수입니다. 서로 같은 표가 아닙니다.
+
+</section>
+<DesiredStateLab />
+<section className="prose">
+
+## 3. “다시 시작했다”를 두 가지로 나누기
+
+컨테이너만 종료되면 정상 노드의 kubelet이 재시작 정책에 따라 같은 Pod 안에서 컨테이너를 다시 시작할 수 있습니다. **UID**는 객체를 식별하는 고유값입니다. 이때 Pod UID는 유지되고 컨테이너 재시작 횟수가 증가합니다. 오류가 계속되면 재시도 간격이 늘어날 수 있으며 원인이 자동으로 고쳐진다는 뜻은 아닙니다.
+
+Pod 자체가 삭제되거나 교체되면 새 Pod의 UID는 다릅니다. 이전 Pod를 다른 노드로 옮기는 것이 아닙니다. 이름이 비슷해 보여도 UID와 생성 시각을 확인해야 합니다. 새 Pod의 IP도 달라질 수 있으므로 앱 연결에서 특정 Pod 주소를 오래 기억하는 방식은 불안정합니다. 다음 [Service 장](#/kubernetes/service-discovery)에서 이 문제를 이어 봅니다.
+
+**직접 비교:** 컨테이너 종료를 선택해 UID가 유지되는지 보세요. 이어 replicas를 0으로 바꾸세요. Pod 삭제 사례와 달리 마지막에 새 Pod를 만들 이유가 없어집니다. 설정을 바꿀 때마다 처음 장면과 예측을 함께 초기화합니다.
+
+## 4. “원함”이 “가능함”을 보장하지 않는다
+
+정상 사례는 이미지·노드·runtime·자원·준비 조건이 모두 충족된 결과입니다. 실제로는 이미지를 가져올 수 없거나 배치할 자원이 없어 목표 수에 도달하지 못할 수 있습니다. 현재 수만 보고 정상이라고 판단하지 말고 준비 수와 실패 증거를 함께 봅니다.
+
+실험의 **실행 노드 불가**는 control plane이 계속 동작하는 조건입니다. 장애 감지 이전에는 API 상태가 오래된 관측일 수 있습니다. 충분한 대기 후 퇴거·제거가 처리돼 대체 Pod가 생겨도, 사용할 실행 노드가 없다면 Pending에 머뭅니다. 실제 감지·퇴거 시점은 구성과 toleration 등에 따라 달라집니다.
+
+반면 **단일 VM 전체 종료**에서는 그 안의 API와 controller도 멈춥니다. 화면에 남은 수치는 장애 전 기록이며 새 Pod가 생기는 애니메이션을 진행하지 않습니다. 복제본을 같은 VM에 여러 개 둔 것만으로 VM 장애를 버티지 못한다는 01장의 경계를 떠올려 보세요.
+
+## 5. 실제 시스템에서 무엇을 확인할까?
+
+다음 명령은 kubeconfig와 조회 권한이 준비된 **관리 터미널**에서 실행합니다. 제작 중 실제 클러스터에서는 실행하지 않았습니다. `study-web`과 namespace는 학습용이며 리소스가 이미 존재할 때의 관찰 예입니다.
+
+```sh
+kubectl config current-context
+kubectl get deployment,replicaset,pods -n books-lab
+kubectl get pods -n books-lab -o wide
+kubectl get pods -n books-lab -o yaml
+kubectl describe deployment study-web -n books-lab
+kubectl get events -n books-lab --sort-by=.metadata.creationTimestamp
+```
+
+목록에서 원하는 수와 준비 수를 대조하고, Pod의 `metadata.uid`, `ownerReferences`, `status.containerStatuses`의 `restartCount`를 확인합니다. YAML에는 앱 설정 등이 포함될 수 있으므로 외부 공유 전에 확인합니다. `describe`와 Events는 생성·배치가 어디서 막혔는지 단서를 줍니다. API 연결 자체가 안 되면 “Pod가 0개”라고 판단하지 말고 API 경로와 VM 상태부터 구분하세요.
+
+<Check question="Pod를 지웠는데 다른 UID의 Pod가 생겼습니다. 삭제 실패인가요?" children="반드시 그렇지는 않습니다. 소유 ReplicaSet의 목표 수가 유지돼 새 Pod로 채웠을 수 있습니다. UID·소유 관계·Deployment의 replicas를 함께 확인합니다." />
+<Check question="현재 Pod가 2개면 웹 요청도 받을 수 있나요?" children="그 수만으로는 모릅니다. Pending이거나 준비 조건을 통과하지 못한 Pod가 있을 수 있습니다. Ready 상태와 실제 연결 조건까지 확인해야 합니다." />
+<Check question="Pod UID는 그대로인데 restartCount가 늘었다면?" children="같은 Pod 안의 컨테이너가 다시 시작됐다는 단서입니다. 새 Pod 교체와 구분하고 종료 원인과 이전 로그를 확인합니다." />
+
+## 근거와 모델의 경계
+
+공식 문서 확인일 **2026-10-18**, Kubernetes **v1.35** 기준입니다. 하나의 ReplicaSet, 단일 앱 컨테이너, 일회성 사건을 관찰합니다. 실제 controller 순서·status 갱신 지연·종료 유예·퇴거·backoff 시간·상세 probe·롤아웃은 재현하지 않습니다. current는 교육용 객체 수이며 모든 Deployment status 필드를 대신하지 않습니다. 본 실험은 서버를 설치하거나 삭제하지 않습니다.
+
+- [Deployment · 원하는 상태 관리](https://v1-35.docs.kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+- [ReplicaSet · 개수 유지와 ownerReferences](https://v1-35.docs.kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
+- [Pod 수명 · UID와 컨테이너 재시작](https://v1-35.docs.kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
+- [Node · 상태와 장애 처리](https://v1-35.docs.kubernetes.io/docs/concepts/architecture/nodes/)
+
+</section>
