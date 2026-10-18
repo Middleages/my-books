@@ -21,19 +21,19 @@ export function ConnectionFields({
           <span>{connection.protocol}</span>
           <dl>
             <div>
-              <dt>출발지 주소 : 포트</dt>
+              <dt>{connection.sourceLabel ?? "출발지 주소 : 포트"}</dt>
               <dd>
                 <code>{connection.src}</code>
               </dd>
             </div>
             <div>
-              <dt>목적지 주소 : 포트</dt>
+              <dt>{connection.destinationLabel ?? "목적지 주소 : 포트"}</dt>
               <dd>
                 <code>{connection.dst}</code>
               </dd>
             </div>
             <div>
-              <dt>요청 경로</dt>
+              <dt>{connection.pathLabel ?? "요청 경로"}</dt>
               <dd>
                 <code>{connection.path}</code>
               </dd>

@@ -1,0 +1,412 @@
+/* 04–06 additions; shared .ov-lab rules come from batch C and stay unchanged. */
+.pv-lab .ov-port-remote {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  align-items: center;
+  gap: 3rem;
+}
+.pv-port-vm,
+.pv-local-vm,
+.pv-dns-pc,
+.pv-dns-servers {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+.pv-port-vm > b,
+.pv-local-vm > b,
+.pv-dns-pc > b,
+.pv-dns-servers > b {
+  margin: 0;
+}
+.pv-local-vm {
+  max-width: 90%;
+  margin: auto;
+}
+.pv-listeners {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.pv-listeners > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 1px solid #bcceda;
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  min-width: 0;
+  font-size: 0.85rem;
+}
+.pv-listeners strong {
+  font-size: 0.76rem;
+  color: #285f55;
+}
+.pv-connection-pair {
+  background: #e8eef8;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.pv-connection-pair > code {
+  display: block;
+  padding: 0.6rem 0;
+  overflow-wrap: anywhere;
+}
+.pv-lab .pv-connection-pair p {
+  font-size: 0.8rem;
+}
+.pv-lab .ov-map.ov-dns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  background: transparent;
+  padding: 0;
+}
+.pv-dns-pc,
+.pv-dns-servers {
+  gap: 3rem;
+  background: #e9eff8;
+}
+.pv-dns-servers {
+  background: #edf3ec;
+}
+.pv-dns-app,
+.pv-app-bytes {
+  background: white;
+  border: 1px solid #bccfda;
+  padding: 1rem;
+  border-radius: 12px;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+.pv-dns-app > b {
+  display: block;
+  margin-bottom: 0.7rem;
+}
+.pv-app-route {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+.pv-app-route > span {
+  min-width: 0;
+}
+.pv-app-route .pv-app-active {
+  font-weight: 750;
+  color: #147b70;
+  border-bottom: 3px solid #147b70;
+}
+.pv-tcp {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(110px, 0.65fr) minmax(0, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+  align-items: center;
+}
+.pv-endpoint {
+  background: white;
+  border: 1px solid #afc5d5;
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  font-size: 0.82rem;
+}
+.pv-bytes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.pv-bytes > div {
+  background: #f0f3f6;
+  border: 1px dashed #bbc5d0;
+  padding: 0.65rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.77rem;
+}
+.pv-bytes [data-state="delivered"],
+.pv-bytes [data-state="confirmed"] {
+  background: #e0f4ed;
+  border-style: solid;
+  border-color: #82b9a8;
+}
+.pv-bytes [data-state="buffered"] {
+  background: #fff2da;
+  border-style: solid;
+  border-color: #cda751;
+}
+.pv-channel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  min-width: 0;
+}
+.pv-channel > small {
+  font-size: 0.72rem;
+  line-height: 1.7;
+  text-align: center;
+}
+.pv-lane > b {
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+.pv-track {
+  position: relative;
+  height: 48px;
+  min-width: 0;
+}
+.pv-track::before {
+  content: "";
+  height: 3px;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  background: #a6bece;
+}
+.pv-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #237c6b;
+  color: white;
+  padding: 0.3rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  z-index: 1;
+}
+.pv-back {
+  background: #395eab;
+}
+.pv-move {
+  animation: pv-travel 1.15s ease-in-out both;
+}
+.pv-back.pv-move {
+  animation-direction: reverse;
+}
+.pv-drop {
+  background: #925b30;
+}
+.pv-drop.pv-move {
+  animation-name: pv-travel-drop;
+}
+@keyframes pv-travel {
+  from {
+    left: 0%;
+  }
+  to {
+    left: 100%;
+  }
+}
+@keyframes pv-travel-drop {
+  from {
+    left: 0%;
+  }
+  to {
+    left: 50%;
+  }
+}
+.pv-byte-meter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+.pv-byte-meter > span {
+  padding: 0.65rem 0.4rem;
+  text-align: center;
+  border: 1px dashed #b1c2d0;
+  color: #526c7e;
+  border-radius: 8px;
+  font-size: 0.78rem;
+}
+.pv-byte-meter .pv-provided {
+  background: #cbece0;
+  border-style: solid;
+  color: #125849;
+}
+.pv-time-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin: 1.2rem 0 0.5rem;
+}
+.pv-timeline {
+  padding: 1rem 0;
+  border-bottom: 1px solid #c3d1dc;
+}
+.pv-timeline > b {
+  font-size: 0.9rem;
+}
+.pv-time-track {
+  position: relative;
+  display: flex;
+  background: #e3eaf1;
+  border: 1px solid #aec3d3;
+  height: 46px;
+  margin: 0.7rem 0;
+  border-radius: 6px;
+}
+.pv-time-segment {
+  height: 100%;
+  position: relative;
+  background: #d8e4f7;
+}
+.pv-time-segment.pv-data {
+  background: #deeee7;
+}
+.pv-time-segment > span {
+  display: block;
+  height: 100%;
+  background: #426fb6;
+}
+.pv-time-segment.pv-data > span {
+  background: #278371;
+}
+.pv-time-cursor {
+  height: calc(100% + 12px);
+  width: 2px;
+  background: #834a0e;
+  position: absolute;
+  top: -6px;
+  transform: translateX(-1px);
+}
+.pv-playing .pv-time-cursor,
+.pv-playing .pv-time-segment > span {
+  transition: all 0.7s linear;
+}
+.pv-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 0.8rem;
+}
+.pv-times strong {
+  flex-basis: 100%;
+  font-size: 0.84rem;
+}
+.pv-time-legend {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+}
+@media (max-width: 650px) {
+  .pv-lab .ov-port-remote,
+  .pv-lab .ov-map.ov-dns,
+  .pv-listeners {
+    grid-template-columns: 1fr;
+  }
+  .pv-port-vm,
+  .pv-local-vm,
+  .pv-dns-pc,
+  .pv-dns-servers {
+    gap: 3rem;
+  }
+  .pv-local-vm {
+    max-width: 100%;
+  }
+  .pv-tcp {
+    grid-template-columns: 1fr;
+  }
+  .pv-channel {
+    padding: 0.4rem 1rem;
+    gap: 0.8rem;
+  }
+  .pv-lane {
+    display: grid;
+    grid-template-columns: 75px 1fr;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .pv-app-route {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pv-app-route > span {
+    padding: 0.35rem;
+  }
+  .pv-endpoint {
+    padding: 0.85rem;
+  }
+  .pv-time-axis {
+    font-size: 0.75rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-lab *,
+  .pv-lab *::before,
+  .pv-lab *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.pv-dir-narrow {
+  display: none;
+}
+@media (max-width: 650px) {
+  .pv-dir-wide {
+    display: none;
+  }
+  .pv-dir-narrow {
+    display: inline;
+  }
+  .pv-channel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+    padding: 0.5rem 1rem;
+  }
+  .pv-lane {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .pv-track {
+    width: 100%;
+    height: 90px;
+  }
+  .pv-track::before {
+    width: 3px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+  }
+  .pv-channel > small {
+    grid-column: 1/-1;
+  }
+  .pv-move {
+    animation-name: pv-travel-vertical;
+  }
+  .pv-drop.pv-move {
+    animation-name: pv-travel-drop-vertical;
+  }
+  @keyframes pv-travel-vertical {
+    from {
+      top: 0%;
+    }
+    to {
+      top: 100%;
+    }
+  }
+  @keyframes pv-travel-drop-vertical {
+    from {
+      top: 0%;
+    }
+    to {
+      top: 50%;
+    }
+  }
+}

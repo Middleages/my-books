@@ -1,4 +1,7 @@
 export type Connection = {
+  sourceLabel?: string;
+  destinationLabel?: string;
+  pathLabel?: string;
   src: string;
   dst: string;
   protocol: string;
