@@ -46,7 +46,7 @@ head SHA·completed/success를 API에서 재확인했다. 게시 11장의 실제
 | production build | TypeScript·Vite 성공 | 기존 단일 번들 500kB 경고 유지 |
 | 실제 클러스터 실습 | **미실행** | Docker/k3s/kubectl 없음·PID1 supervisord·일회용 Linux VM 미제공 |
 | 실제 복원 | **미실행** | SQLite/etcd/PV/외부 DB 복원 성공 주장 없음 |
-| main·사이트 배포 | 대기 | 아래에 확인된 결과만 후속 기록 |
+| main·사이트 배포 | a29f628·3072b82 Actions/Pages 성공 | 게시 자산·반응형·조작 확인, 아래 기록 |
 
 Helm tar checksum은 LAB-ENVIRONMENT에 기록. 추출 시 ownership 매핑 오류 후
 `tar --no-same-owner`로 재추출하고 버전·lint·render 실행 성공. 바이너리 무결성과 chart 렌더를 구분했다.
@@ -55,14 +55,14 @@ Helm tar checksum은 LAB-ENVIRONMENT에 기록. 추출 시 ownership 매핑 오�
 
 Browser skill 사용. 연결 Edge가 제공되어 viewport 기능을 읽었다.
 로컬 127.0.0.1:4173 접속은 ERR_CONNECTION_REFUSED라 로컬 화면은 검증하지 못했다.
-배포 후 1440/390/320px의 소개·01–12·부록·핵심 조작·읽음 reload·키보드를 확인할 예정이다.
+배포 후 1440/390/320px의 소개·01–12·부록·핵심 조작·읽음 reload·키보드를 확인했다. 구체 범위와 제한은 아래 기록한다.
 reduced-motion media 변경·임의 localStorage 쓰기는 현재 Browser API에 없으므로
 그 실기와 알 수 없는 ID 브라우저 주입은 미검증이다. reading 모델 회귀·CSS 정적 대안과 구분한다.
 Safari·실제 터치·스크린리더 음성·클러스터 실습도 미검증/미실행이다.
 
 ## main 통합·배포·실제 게시
 
-대기. 구현 커밋·Actions·게시 자산·실측 UI 결과를 확인한 뒤 추가 기록한다.
+구현 커밋·Actions·게시 자산·실측 UI 결과는 아래 두 배포 기록을 기준으로 한다.
 
 ## 통합 리뷰 수정
 
@@ -112,3 +112,25 @@ SQLite 절차를 `INSTALL_K3S_SKIP_START=true`의 미기동 새 VM으로 바꿨�
 A–F의 지정 폭 미검증 기록을 과거 시점에서 고쳐 쓰지 않고 위 G 실측으로 보완한다.
 reduced-motion media 에뮬레이션·임의 기존 읽음 ID 브라우저 삽입·Safari·실제 터치·스크린리더 음성은 미검증이다.
 정적 전체 단계와 CSS motion 제거 규칙 검토·기존 reading 모델 통과를 해당 실기 통과로 바꾸지 않는다.
+
+## 후속 배포·최종 상태
+
+- 후속 main `3072b820009d7c6d350b29b5d5b90a0eb21698e8`,
+  [Actions 39125710877](https://github.com/Middleages/my-books/actions/runs/39125710877) completed/success.
+  로컬 검증 tree와 원격 tree `c09e5316e3ab70fdb181b5f2a12f7d14908c898d` 일치.
+- 실제 게시 JS `index-Dw-N0KKK.js`, CSS `index-DkD8yM1s.css` 확인.
+  02 재로드 후 320px에서 scrollWidth305(스크롤바 제외 client305), viewport320으로 넘침 해소.
+  390/1440도 넘침 없음. 320 스크린샷으로 지도 조작부·라벨 가독성 확인.
+  따라서 지정 세 폭의 16페이지 점검은 최종 수정 포함 모두 페이지 가로 넘침 없음이다.
+  표/코드의 의도된 내부 스크롤은 페이지 가로 넘침과 구분한다.
+- 복구 실험 정상 재생 끝에서 next/play disabled 확인, 재생 중03 이동 후
+  1/5 상태가 다음 관측에서도 유지됨을 추가 확인했다. 1440 폐쇄망 의존 카드6개 렌더 확인.
+  임시 viewport override는 해제했다.
+- 최종 텍스트 보완 뒤 npm test 252/252·production build·16페이지 SSR·diff check 재통과.
+  최종 본문·패키지의 내용 변경은 위 두 배포에 포함됐다. 이 최종 기록은 문서만 변경한다.
+
+**구현·브라우저 교육 모델/주요 조작·정적 manifest/실제 Helm 로컬 렌더·사이트 배포는 확인 완료.**
+**실제 k3s 설치·컨테이너 빌드/실행·클러스터 배포/rollback·SQLite/etcd/PV/외부 DB 복원은 미실행.**
+미검증: reduced-motion media 에뮬레이션, 임의 저장 ID 브라우저 주입, Safari·실제 터치·스크린리더 음성.
+동일 정보의 정적 단계는 실제 조작 확인했고 CSS motion 규칙/reading 모델은 별도 검사했다.
+다음 번호 장은 없다. 실제 VM 실습을 수행할 때 이 기록의 후보 버전·명령·기대 관측을 이어서 채운다.
