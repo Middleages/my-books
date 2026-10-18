@@ -30,4 +30,10 @@
 
 ## 게시 확인
 
-구현 검증 완료. main 반영·Actions·실제 게시 버전은 배포 후 별도 기록한다.
+- 구현 커밋: `89ad75ffbf6647d65f3602fd7942fd7cff843c3c` (최신 main `99915d8` 위 fast-forward).
+- Actions/Pages: [39092453525](https://github.com/Middleages/my-books/actions/runs/39092453525) completed/success.
+- 실제 게시 URL: https://middleages.github.io/my-books/#/money/risk
+- 게시 페이지 새로고침으로 JS `index-BVz_zEJl.js`, CSS `index-CvP8aKKw.css`가 로컬 최종 빌드와 같은 것을 확인.
+- 게시된 단계 버튼으로 기본 마지막 자산 290만원/580만원 확인. 지급 지연·매각 불가를 켠 경우 보험 있음 미충당 210만원, 도착 보험금 0원 확인.
+- 클라우드 브라우저 로그에 브라우저 확장 metadata 전송 오류가 있었으며 앱 소스 오류와 구분했다. 로컬 앱 콘솔은 오류 0.
+- 이 배포 증거 기록은 코드 자산을 바꾸지 않는 후속 문서 커밋이다.
