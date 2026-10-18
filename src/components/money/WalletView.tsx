@@ -97,7 +97,7 @@ export function WalletTable({
     ["누적 소비·이자 비용", before.spending, after.spending],
   ];
   return (
-    <div className="money-table">
+    <div className="money-table" tabIndex={0} role="region" aria-label="거래 전후 잔액 표, 가로 스크롤 가능">
       <table>
         <caption>거래 전과 현재 확정 잔액 · 단위: 만원</caption>
         <thead>

@@ -113,6 +113,7 @@ function Range({
         max={max}
         step={step}
         value={value}
+        aria-valuetext={unit === "원" ? won(value) : `${value}${unit}`}
         onChange={(e) => onChange(Number(e.target.value))}
       />
     </label>
@@ -404,7 +405,7 @@ export function PlanLab() {
       </fieldset>
       <label className="plan-select">
         관찰 경로{" "}
-        <select value={selected} onChange={(e) => S(e.target.value as PlanKey)}>
+        <select value={selected} onChange={(e) => { play.seek(play.step); S(e.target.value as PlanKey); }}>
           {planKeys.map((k) => (
             <option key={k} value={k}>
               {labels[k]}

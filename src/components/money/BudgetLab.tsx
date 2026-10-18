@@ -30,10 +30,11 @@ export function BudgetLab() {
     y = (n: number) => 190 - (150 * (n - min)) / (max - min);
   const points = (key: "total" | "living") =>
     days.map((d, i) => `${x(i)},${y(d[key])}`).join(" ");
-  const targetProgress = Math.min(
-    100,
-    (current.reserve / Math.max(1, p.annual)) * 100,
-  );
+  const reserveScale = Math.max(1, p.annual, ...r.months.map((m) => m.reserve));
+  const targetProgress = (current.reserve / reserveScale) * 100;
+  const schedule = selected.days.flatMap((d) =>
+    d.events.filter((e) => e.kind !== "transfer").map((e) => `${d.day}일 ${e.label}`),
+  ).join(" → ");
   return (
     <section className="money-lab" aria-label="예산과 목적별 돈 실험">
       <div className="money-lab-heading">
@@ -210,8 +211,7 @@ export function BudgetLab() {
             {selected.month}월 지출 달력 {play.step === 0 ? "· 미리 보기" : ""}
           </h3>
           <p>
-            {p.payday}일 월급 → 10일 생활비{" "}
-            {selected.month === p.dueMonth ? "→ 20일 비정기 지출" : ""}
+            {schedule}
           </p>
           <div
             className="money-calendar"
@@ -253,7 +253,8 @@ export function BudgetLab() {
             <strong>{money(current.reserve)}</strong>
           </div>
           <p>
-            목표 지출 {money(p.annual)}
+            용기 전체 눈금 {money(reserveScale)} · 모든 달 동일
+            <br />목표 지출 {money(p.annual)}
             <br />
             생활통장 {money(current.living)}
             <br />
@@ -357,8 +358,8 @@ export function BudgetLab() {
         </label>
       </div>
       <details>
-        <summary>선택 월의 실제 이동과 일별 잔액 보기</summary>
-        <div className="money-table">
+        <summary>선택 월의 계획 이동과 일별 잔액 보기</summary>
+        <div className="money-table" tabIndex={0} role="region" aria-label="선택 월 계획 이동 표, 가로 스크롤 가능">
           <table>
             <caption>
               {selected.month}월 · 만원 · 이체는 총현금에 영향 없음
@@ -394,7 +395,7 @@ export function BudgetLab() {
       </details>
       <details>
         <summary>12개월 월말 잔액 표</summary>
-        <div className="money-table">
+        <div className="money-table" tabIndex={0} role="region" aria-label="12개월 월말 잔액 표, 가로 스크롤 가능">
           <table>
             <caption>단위: 만원 · 표와 그래프는 같은 일별 모델</caption>
             <thead>

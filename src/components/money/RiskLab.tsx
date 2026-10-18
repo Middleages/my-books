@@ -71,6 +71,7 @@ function Range({
         max={max}
         step={step}
         value={value}
+        aria-valuetext={percent ? `${value}%` : won(value)}
         onChange={(e) => onChange(Number(e.target.value))}
       />
     </label>
@@ -363,7 +364,7 @@ export function ProtectionLab() {
       )}
       <details>
         <summary>전체 단계의 수치 표 보기</summary>
-        <div className="risk-table-scroll">
+        <div className="risk-table-scroll" tabIndex={0} role="region" aria-label="위험 대비 전체 단계 표, 가로 스크롤 가능">
           <table className="money-table">
             <caption>원 단위 · 각 단계 완료 시점</caption>
             <thead>

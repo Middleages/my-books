@@ -83,7 +83,7 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 
 [돈·경제 교과서 시리즈 제작 계획](docs/MONEY-TEXTBOOK-PLAN.md)에 기본 6권과
 회계·확률/의사결정 추가 주제, 첫 권 ‘돈의 기초와 우리 집 재무’의 목차와 배치를 정리했습니다.
-소개와 01~10장을 구현했습니다. 첫 권 전체 편집 점검은 신규 세션에서 진행하며 다른 권은 후속 배치입니다.
+소개와 01~10장을 구현했습니다. 첫 권 전체 편집 점검을 완료했으며 다른 권은 후속 배치입니다.
 
 신규 콘텐츠는 인터랙티브 시뮬레이션·설명용 애니메이션·그림을 적극적으로 활용합니다.
 핵심 개념의 구조·과정·조건 비교를 시각화하며, 모바일·키보드·정적 단계 대안을 함께 제공합니다.
@@ -159,4 +159,4 @@ context/namespace/권한을 그림과 단계 실험으로 비교합니다.
 
 10장은 소득·생활비·예정 상환·목표 적립을 24개월의 세 경로로 연결합니다.
 검증: [MONEY-10-VERIFICATION](docs/MONEY-10-VERIFICATION.md).
-다음 세션의 책 전체 점검: [MONEY-REVIEW-SESSION](docs/MONEY-REVIEW-SESSION.md).
+책 전체 점검 결과: [MONEY-BOOK-REVIEW](docs/MONEY-BOOK-REVIEW.md). 당시 작업 지시: [MONEY-REVIEW-SESSION](docs/MONEY-REVIEW-SESSION.md).

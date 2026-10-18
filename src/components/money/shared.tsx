@@ -78,6 +78,7 @@ export function Slider({
         max={max}
         step={step}
         value={value}
+        aria-valuetext={money(value)}
         onChange={(e) => onChange(Number(e.target.value))}
       />
     </label>

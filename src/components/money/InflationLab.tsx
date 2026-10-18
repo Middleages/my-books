@@ -409,7 +409,7 @@ export function InflationLab() {
             : `π는 직전 연도 대비 장바구니 물가 ${pct(f.annualInflation)}입니다.`}{" "}
           근사를 여러 해 누적한 값을 정확한 구매력으로 쓰지 않습니다.
         </p>
-        <div className="money-table">
+        <div className="money-table" tabIndex={0} role="region" aria-label="모든 연도 구매력 비교 표, 가로 스크롤 가능">
           <table>
             <caption>원 · 소수는 표시 때만 반올림 · 실질 기준은 0년</caption>
             <thead>

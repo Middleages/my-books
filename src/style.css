@@ -1977,3 +1977,10 @@ dd {
   margin: 0;
   color: #226953;
 }
+
+/* Money book review: readable explanatory captions and keyboard table scrolling. */
+.power-explainer > figcaption { color: #46544a; }
+.money-table:focus-visible, .risk-table-scroll:focus-visible {
+  outline: 3px solid #176553;
+  outline-offset: 3px;
+}
