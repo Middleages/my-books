@@ -63,3 +63,10 @@ main이 돈 교재 전체 점검 `a4438856810c80b22ffbe260e9ba9d320d23619e`로 �
 **07~08 구현·main·Actions·게시 핵심 조작 확인 완료.** 지정 폭·reduced-motion media·임의 읽음 ID 브라우저 삽입·Safari/터치/스크린리더·실제 클러스터는 앞서 적은 대로 미검증/미실행이다.
 
 후속 반영 직전 돈 교재 강조 수정·검증 문서 `ce1bcda`/`8cb5c81`도 보존해 rebase했다. 통합 후 198/198·production 빌드 재통과, 최종 앱 자산 `index-BUbRUylC.js`, CSS `index-Bt6budlj.css`. 앞의 QM3DrYsx는 통합 전 로컬 빌드이며 최종 게시 자산이 아니다.
+
+### 후속 수정 최종 배포
+
+- 강조 수정·검증 기록 main 커밋 `7b937e360f743e900dae4941fcc0cc74f22c0bd4`.
+- [Actions 39095231213](https://github.com/Middleages/my-books/actions/runs/39095231213): completed/success.
+- 실제 Pages reload 후 `index-BUbRUylC.js` 확인. 07의 PVC/PV/reclaim, 08의 throttling/eviction 다섯 용어가 strong으로 렌더됨. 두 장 본문에 노출된 `**` 없음, 중첩 문단 없음. 08 Enter 단계 진행도 재확인.
+- 이 아래 기록 갱신은 문서만 변경하며 앱 자산은 동일하다. 다음 세션은 07~08을 다시 구현하지 말고 E의 선행 조건으로 사용한다.
