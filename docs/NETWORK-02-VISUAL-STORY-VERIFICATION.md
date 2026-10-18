@@ -52,7 +52,16 @@ RFC 4632 §3.1의 prefix/마스크 및 RFC 1122 §3.3.1의 로컬/원격 판단�
 
 ## main 반영·배포
 
-구현 및 로컬 검증 완료. 자동 승인 검토가 이번 요청에 직접 공개·배포 승인이 없다는 이유로
-`main` push를 거절했다. `main`은 `2c00370`임을 다시 확인했으며 우회하지 않았다.
-안전한 대안으로 작업 브랜치와 검토 PR을 준비한다. 현재 서비스에는 아직 반영되지 않았다.
-main 통합·Pages 배포·실제 게시 확인은 사용자 승인 뒤 수행할 미완료 항목이다.
+- 2026-10-18 (KST): 사용자가 main 반영·사이트 배포를 승인했다.
+- [PR #1](https://github.com/Middleages/my-books/pull/1)을 squash merge했다.
+  구현 반영 커밋: `5208cd4054672db3dd346a79bc1e402019cf3d2c`.
+- PR 검증 [run 64](https://github.com/Middleages/my-books/actions/runs/39127748765): success.
+- main 검증·Pages 배포 [run 65](https://github.com/Middleages/my-books/actions/runs/39128227530):
+  build(설치·테스트·빌드·artifact) 및 deploy 성공.
+- 실제 게시 URL: https://middleages.github.io/my-books/#/network/addressing
+- cloud browser에서 새 비트 그림·주소 띠·PC/라우터 장면을 확인했다.
+  /25 선택 시 주소 블록 2개와 경계 판정, 한 단계 진행 시 게이트웨이 경유 및
+  최종 목적지 IP 192.168.10.150 유지가 실제 게시 DOM에 표시됨을 확인했다.
+- 게시 확인 중 앱 오류는 없었다. 브라우저 확장의 metadata 전송 오류는
+  chrome-extension 출처이며 앱 오류와 구분했다.
+- 이전 main 직접 push의 자동 승인 거절은 승인 전 기록이다. 승인 뒤 정상 PR merge로 반영했다.
