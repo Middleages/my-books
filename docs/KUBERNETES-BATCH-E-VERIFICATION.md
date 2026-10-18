@@ -50,3 +50,20 @@ Cloud Browser API에 viewport 변경·media emulation·임의 localStorage 쓰�
 ## 다음 범위
 
 F: 11 Helm, 12 증거 기반 종합 진단. E의 최종 배포 기록과 미검증 환경 제한을 먼저 확인하고, ready·requests·명시적 rollback·외부 데이터 복구 경계를 이어받는다.
+
+## main·배포·실제 게시 확인 (완료)
+
+- 구현 main `2483fc7e7203dc0960de1d563a5fb18e6821d870`. 로컬 검증 tree와 원격 tree `19050c188db0e65a5b1f9b177d40c6268c92244c` 일치. expected SHA를 사용한 비강제 ref 갱신으로 반영했다.
+- [Actions 39098731915](https://github.com/Middleages/my-books/actions/runs/39098731915): completed/success. Node 22의 test/build와 Pages deploy 각각 성공.
+- 실제 Pages reload의 script `index-DNose7zO.js`가 로컬 production 결과와 일치. CSS `index-BkFH8Alp.css`.
+- Cloud Chromium **1363×936** 관측. 09/10 모두 페이지 가로 넘침 없음, 중첩 p 0, 의도하지 않은 del 0, 리터럴 ** 없음. 스크린샷으로 probe 실패 칸·요청 후보 연결·두 ReplicaSet·CPU 요청 막대·포커스 가독성 확인. 지정 폭 통과로 대체하지 않는다.
+- 09: Enter 단계 진행, startup 실패 중 다른 검사 대기, readiness 2/2 실패로 요청 대상 0·container-1 재시작0, 회복 후 예측0/관측0 확인. DB 장애 지속 시 생존 의존성 제외는 재시작0, 포함은 container-2/재시작1·여전히 Not Ready 확인.
+- 09: 조건 변경 시 1단계 초기화, 다시 보기·재생/정지 확인. startup 실패 임계값1 자동재생은 3/3에서 정지·같은 pod-a의 container-2 확인. 재생 중 10장 이동 후 다음 관측에서도 1/11 유지.
+- 10: 초기 목표 v1 → 다음 단계 v2, 정상 마지막 v2 2 ready·v1 0 확인. v2 준비 실패는 v1 2 ready/v2 1 not ready에서 멈춤. 명시적 되돌리기 클릭 직후 이전 프레임 유지 → 다음 단계에 사용자 요청 → v1 2 ready/v2 0으로 완료 확인.
+- 10: 노드 requests 여유 없음은 v2 Pending·교체 정지. maxUnavailable=1로 조건 변경 후 교체 완료. 이전 단계, 다시 보기, 재생/즉시 정지 후 다음 관측에서도 1/11 유지, 정적 전체 단계 펼치기 확인.
+- 09와 10 각각 읽음 표시 → reload → ‘✓ 읽음 · 표시 취소’ 유지 확인 후 테스트 표시 취소. 알 수 없는 기존 ID 삽입은 실행하지 않았다.
+- 기존 08 기본 requests 부족 Pending과 namespace quota 사용 해설 회귀, 기존 04 준비 실패 선택 후 ready 대상0 회귀 확인. 홈 4권/37장, 컴퓨터2·네트워크15·돈10·쿠버네티스10 및 분야 버튼 유지 확인.
+- 콘솔 기록에는 chrome-extension metadata 전송 오류가 있었다. 확인한 로그에서 교재 앱 출처 오류는 발견하지 못했으며 확장 오류와 구분한다.
+
+**09–10 구현·main 반영·Actions·실제 게시 핵심 조작 확인 완료.** 지정 1440/390/320px, reduced-motion media 실기, 알 수 없는 ID 브라우저 주입, Safari/터치/스크린리더 및 실제 클러스터는 앞서 적은 대로 미검증/미실행이다.
+이 후속 기록 변경은 문서만 바꾸며 앱 자산은 동일하다.
