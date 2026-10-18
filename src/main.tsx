@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { books, chapters, chapterHref } from "./catalog";
 import { parseRead, storageKey } from "./reading.mjs";
 import "./style.css";
+import { Library } from "./components/Library";
 function App() {
   const [route, setRoute] = useState(location.hash.slice(1) || "/");
   const [read, setRead] = useState<string[]>(() => {
@@ -76,73 +77,7 @@ function App() {
         </nav>
       </header>
       {route === "/" ? (
-        <main id="main-content" tabIndex={-1} className="library">
-          <section className="intro">
-            <h1>
-              읽는 데서 한 걸음 더.
-              <br />
-              <span>직접 실험하며 이해하기.</span>
-            </h1>
-            <p>
-              궁금했던 원리를 나만의 속도로 탐색하는 교과서.
-              <br />
-              읽고, 예측하고, 이해한 것을 쌓아갑니다.
-            </p>
-          </section>
-          <div className="section-heading">
-            <h2>나의 교과서</h2>
-            <span>
-              {books.length}권 · {chapters.length}개 챕터
-            </span>
-          </div>
-          {books.map((b, i) => (
-            <a className="book" key={b.id} href={`#/${b.id}`}>
-              <div className="cover" aria-hidden="true">
-                <span>{b.cover}</span>
-                <div className="cover-grid">
-                  {Array.from({ length: 16 }, (_, j) => (
-                    <i key={j} />
-                  ))}
-                </div>
-                <b>0{i + 1}</b>
-              </div>
-              <div className="book-content">
-                <small>{b.category}</small>
-                <h2>{b.title}</h2>
-                <p>{b.description}</p>
-                <span className="progress-label">
-                  {count(b.id)} /{" "}
-                  {chapters.filter((c) => c.bookId === b.id).length} 챕터 읽음
-                </span>
-                <progress
-                  aria-label={`${b.title} 읽기 진행률`}
-                  value={count(b.id)}
-                  max={chapters.filter((c) => c.bookId === b.id).length}
-                />
-                <strong>교과서 펼치기 ↗</strong>
-              </div>
-            </a>
-          ))}
-          <section className="chapter-list">
-            <h2>어디부터 시작할까요?</h2>
-            {chapters.map((c) => (
-              <a key={c.readId} href={chapterHref(c)}>
-                <span className="chapter-number">{c.number}</span>
-                <div>
-                  <small>{books.find((b) => b.id === c.bookId)?.title}</small>
-                  <h3>{c.title}</h3>
-                  <p>{c.description}</p>
-                </div>
-                <span>{read.includes(c.readId) ? "읽음" : "읽기 →"}</span>
-              </a>
-            ))}
-          </section>
-          <footer>
-            작은 질문에서 시작해, 한 챕터씩 쌓아갑니다.
-            <br />
-            학습 기록은 현재 브라우저에만 저장됩니다.
-          </footer>
-        </main>
+        <Library read={read} />
       ) : book ? (
         <div className="reader">
           <aside>

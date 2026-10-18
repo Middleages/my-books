@@ -272,7 +272,14 @@ export const chapters: Chapter[] = [
     Content: MoneySavings,
   },
 ];
+export const bookCategories = [
+  { id: "technology", label: "IT·기술" },
+  { id: "money", label: "돈·경제" },
+] as const;
+export type BookCategory = (typeof bookCategories)[number]["id"];
+
 type Book = {
+  categoryId: BookCategory;
   id: string;
   title: string;
   category: string;
@@ -285,6 +292,7 @@ type Book = {
 export const books: Book[] = [
   {
     id: "computer",
+    categoryId: "technology",
     title: "컴퓨터의 작동 원리",
     category: "컴퓨터 · 하드웨어",
     cover: "COMPUTER SCIENCE",
@@ -295,6 +303,7 @@ export const books: Book[] = [
   },
   {
     id: "network",
+    categoryId: "technology",
     title: "웹 개발자를 위한 네트워크",
     category: "네트워크 · 기초부터 운영까지",
     cover: "NETWORK FUNDAMENTALS",
@@ -307,6 +316,7 @@ export const books: Book[] = [
   },
   {
     id: "money",
+    categoryId: "money",
     title: "돈의 기초와 우리 집 재무",
     category: "돈 · 생활 재무",
     cover: "MONEY & EVERYDAY LIFE",
