@@ -103,4 +103,11 @@ Chromium 153의 390×844·320×844 viewport와 미디어 에뮬레이션으로 �
 
 ### main 반영과 배포
 
-구현·로컬 검증 완료. main 반영·Pages 배포·실제 게시 확인 결과는 확인 후 추가한다.
+- 구현 커밋: `4d138684f937e9790f0578b85b57bea82edfcb0a`.
+- GitHub Actions [run 68](https://github.com/Middleages/my-books/actions/runs/39129377157):
+  main 테스트·빌드·Pages 배포 success.
+- 실제 게시: https://middleages.github.io/my-books/#/money/inflation
+- cloud browser에서 도입 0년/1년 전환과 구매량 10→약 9.52, 물가 5% 고정의 수익률
+  3/5/7% 비교를 조작했다. 기본 10년의 부족 28,498원·일치·여유 33,826원을 확인했다.
+- 게시 JS `index-Z4QP3oZb.js`가 로컬 검증 빌드와 일치했다. 앱 출처 콘솔 오류 없음.
+- 기존 URL과 읽음 저장 계약, 다른 교재 파일은 변경하지 않았다.
