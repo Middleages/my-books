@@ -1,3 +1,4 @@
+import MoneyCredit from "./content/money/Credit.mdx";
 import MoneySavings from "./content/money/Savings.mdx";
 import MoneyInterest from "./content/money/Interest.mdx";
 import MoneyInflation from "./content/money/Inflation.mdx";
@@ -271,6 +272,17 @@ export const chapters: Chapter[] = [
       "목표일과 사용 가능 시점을 타임라인에서 맞추며 금액 부족과 날짜 차이를 구분합니다.",
     Content: MoneySavings,
   },
+  {
+    id: "credit",
+    bookId: "money",
+    readId: "money/credit",
+    number: "07",
+    title: "신용과 대출",
+    heading: "빌릴 수 있는 돈과 감당할 돈은 같을까?",
+    description:
+      "월수입의 배분과 금리·수입 변화에서 납입 뒤 현금과 남길 여유를 비교합니다.",
+    Content: MoneyCredit,
+  },
 ];
 export const bookCategories = [
   { id: "technology", label: "IT·기술" },
@@ -325,7 +337,7 @@ export const books: Book[] = [
     overview:
       "가상의 가정과 함께 자산·부채·현금흐름을 연결합니다. 그림을 보고 예측한 다음 직접 조건을 바꿔 보세요.",
     future:
-      "01~06장 공개 · 신용·대출과 다른 금융 분야는 후속 배치에서 다룹니다.",
+      "01~07장 공개 · 상환 방식 비교·투자와 다른 금융 분야는 후속 배치에서 다룹니다.",
     Intro: MoneyIntro,
   },
 ];
