@@ -1,0 +1,111 @@
+import { Check } from '../network/shared';
+import { RolloutLab } from '../../components/kubernetes/HealthRolloutLabs';
+
+<section className="prose">
+
+<p className="lead">v1이 실행 중일 때 v2를 배포했습니다. 새 앱이 아직 준비되지 않았는데 기존 앱을 모두 지워도 될까요?</p>
+
+<div className="learning-goals">
+
+**이 장을 마치면**
+- Deployment가 두 ReplicaSet의 Pod 수를 바꾸며 버전을 교체하는 과정을 설명합니다.
+- maxSurge·maxUnavailable과 실제 노드 자원 여유를 구분합니다.
+- 준비 실패·Pending·명시적 rollback을 서로 다른 사건으로 판단합니다.
+
+</div>
+
+## 1. 한꺼번에 바꾸지 않고 새 자리를 확인하기
+
+03장에서 Deployment는 원하는 Pod 상태를 유지하는 역할로 등장했습니다. 이미지 같은 **Pod template**을 바꾸면 업데이트를 위한 ReplicaSet이 만들어지거나 기존에 일치하는 ReplicaSet이 사용됩니다. 기존 버전의 수를 줄이고 목표 버전의 수를 늘리며 교체합니다. 이 과정을 <strong>롤아웃(rollout)</strong>이라고 합니다.
+
+이 장은 `RollingUpdate` 전략과 무상태 `study-web`을 사용합니다. 데이터 저장용 `study-data`를 다중 replica로 늘리는 예가 아닙니다. Service의 라벨 선택은 두 버전 모두와 일치하며, 09장에서처럼 **준비된 Pod만** 새 요청 후보가 됩니다.
+
+그림의 v1·v2는 앱 버전을 구별하는 학습 라벨입니다. ReplicaSet 이름·이미지 태그·Deployment revision 번호가 서로 같은 값이라고 외우지 않습니다.
+
+## 2. 원하는 수는 2개, 교체 중에는 몇 개까지?
+
+두 정수로 먼저 생각해 봅시다.
+
+- **maxSurge=1:** 목표 2개에 더해 최대 1개를 추가로 만들 수 있습니다. 이 모델에서 교체 중 전체 Pod 상한은 3개입니다.
+- **maxUnavailable=0:** 배포 조정 과정에서 사용할 수 있는 Pod가 목표보다 부족해지는 것을 허용하지 않습니다. 새 Pod가 준비되기 전에는 준비된 기존 Pod를 줄이지 않습니다.
+
+`maxUnavailable=1`이면 최소 1개가 남도록 교체할 수 있습니다. 2이면 이 교육 조건에서는 0개까지 줄일 수 있으므로 실제로 요청 대상이 없는 장면을 관찰할 수 있습니다. 두 값이 동시에 0이면 추가 생성도 기존 감소도 허용하지 않아 유효한 설정이 아닙니다.
+
+실제 Deployment의 available 판정에는 `minReadySeconds`도 관계합니다. 이 장은 **minReadySeconds=0**, 일반 컨테이너 하나, 추가 readiness gate 없음으로 고정해 ready 수를 교체의 가용 수로 사용합니다. 실제 API의 여러 status 필드를 이 수 하나로 모두 대신하지 않습니다.
+
+**기본 조건을 끝까지 관찰하세요.** 새 v2 Pod는 Pending → Running → Ready를 거칩니다. v1과 v2 카드가 함께 있을 때 Service의 요청 후보 목록도 같이 바뀝니다.
+
+</section>
+<RolloutLab />
+<section className="prose">
+
+## 3. 추가 생성 허용과 실제 실행 자리는 다르다
+
+maxSurge는 새 Pod를 추가로 만들 수 있는 정책이지 CPU를 공급하는 기능이 아닙니다. 08장에서처럼 scheduler는 노드 allocatable과 이미 배치된 **requests**를 비교합니다.
+
+실험의 Pod 두 개는 각각 500m를 요청합니다. 기본 다른 앱 requests는 500m이므로 합계 1500m, 노드 allocatable은 2000m입니다. 새 Pod 하나가 들어갈 자리는 있습니다. 하지만 ‘노드 requests 여유 없음’에서는 다른 앱이 1000m를 요청해 기존 두 Pod와 합계가 이미 2000m입니다.
+
+이 조건에서 maxSurge=1이면 새 Pod 객체는 생겨도 **Pending**에 남을 수 있습니다. maxUnavailable=0이면 준비된 기존 Pod도 줄일 수 없어 진행이 멈춥니다. maxUnavailable=1로 바꾸면 기존 하나의 종료 뒤 requests 자리가 해제되어 새 Pod를 실행하는 경로를 관찰합니다. 그 대신 교체 도중 준비된 앱 수가 줄어듭니다.
+
+이는 모든 운영 상황에서 unavailable을 늘리라는 처방이 아닙니다. 용량 추가·requests의 근거 확인·교체 정책·트래픽 처리 능력을 함께 검토해야 합니다. quota 때문에 Pod 생성 자체가 거절되거나 이미지·볼륨 때문에 시작하지 못하는 경우도 있으며, 이 모델은 그 조건을 정상으로 고정했습니다.
+
+## 4. 실행은 됐지만 준비되지 않은 새 버전
+
+‘v2 준비 실패’를 선택하면 새 컨테이너는 Running이지만 ready=false입니다. 기본 maxUnavailable=0에서는 v1 두 개가 요청을 받는 동안 새 버전 교체가 멈춥니다. 이때 readiness 실패를 컨테이너 재시작이나 자동 rollback으로 표현하지 않습니다.
+
+실제 Deployment는 진행이 없으면 `progressDeadlineSeconds`에 따라 `ProgressDeadlineExceeded` 상태를 보고할 수 있습니다. **실패 보고와 자동 rollback은 다릅니다.** 내장 Deployment controller가 이 상태만으로 이전 버전 복원을 자동 실행한다고 기대하지 않습니다. 별도 배포 도구가 자동 정책을 제공한다면 그것은 그 도구의 설정과 책임입니다.
+
+실험의 ‘진행 멈춤’은 조건상 더 교체할 수 없다는 관찰이며 실제 600초를 기다렸다는 의미가 아닙니다. 실제 controller는 비동기적으로 재시도하므로 그림의 한 단계가 내부 API 호출 하나와 일치하지도 않습니다.
+
+## 5. 되돌리기도 또 하나의 배포다
+
+마지막 단계에서 <strong>‘명시적으로 v1 되돌리기’</strong>를 누른 뒤 한 단계씩 진행하세요. 목표 template이 v1으로 바뀌고 두 ReplicaSet의 수가 다시 조정됩니다. 이미 삭제된 Pod를 과거 UID로 되살리는 시간 여행이 아닙니다. 필요한 v1 Pod를 다시 생성할 수도 있습니다.
+
+Deployment rollback은 보존된 revision의 **Pod template**을 되돌리는 동작입니다. 다음 것까지 자동 복원하지 않습니다.
+
+- v2가 변경한 DB 스키마와 업무 데이터
+- PVC에 기록한 파일
+- 별도로 수정된 ConfigMap·Secret 객체의 내용과 외부 서비스 상태
+
+06장의 환경변수·마운트 파일 갱신도 기억하세요. template이 같은 설정 이름을 참조해도 설정 객체 내용이 이미 바뀌었다면 과거 값이 저절로 돌아오지 않습니다. 이전 앱이 현재 DB 구조와 호환되는지도 확인해야 합니다. Pod 교체 완료와 서비스 업무 복구 완료는 별도의 검증입니다.
+
+## 6. ‘무중단’이라고 쓰기 전에 확인할 것
+
+이 그림은 종료가 끝난 뒤 Pod와 requests를 제거하며 기존 연결의 마무리는 생략합니다. 실제로는 종료 중인 Pod가 남아 `replicas + maxSurge`보다 실제 Pod 수나 자원 사용이 일시적으로 커질 수 있습니다. 요청 drain·종료 유예·앱의 종료 처리와 프록시의 전달 규칙 반영 지연도 중요합니다.
+
+maxUnavailable=0이라도 노드 장애·앱 오류·부족한 처리 용량·기존 연결 종료까지 막지는 못합니다. 같은 VM 안의 replica들이 VM 장애를 함께 겪는다는 01장의 한계도 그대로입니다. 롤링 업데이트를 사용했다는 이유만으로 무중단을 보장하지 않습니다.
+
+## 7. 관리 터미널에서 보는 순서
+
+아래는 읽기 명령 예입니다. 이번 작업에서는 실제 클러스터에 실행하지 않았습니다.
+
+```sh
+kubectl config current-context
+kubectl get deployment,replicaset,pods -n books-lab
+kubectl rollout status deployment/study-web -n books-lab
+kubectl describe deployment study-web -n books-lab
+kubectl get events -n books-lab --sort-by=.metadata.creationTimestamp
+kubectl rollout history deployment/study-web -n books-lab
+```
+
+목표 template·replicas, 두 ReplicaSet의 수, 실제 Pod의 배정·Ready, 이벤트를 차례로 대조합니다. `rollout status`는 완료를 관찰하는 명령이며 실패 원인을 모두 설명하거나 되돌리는 명령이 아닙니다.
+
+아래 명령은 **실제 변경을 일으키는 별도 예시**입니다. 일회용 실습환경의 context/namespace와 보존된 revision을 확인하고, 이전 앱과 현재 데이터의 호환성을 판단한 뒤에만 사용합니다. 여기서는 실행하지 않았습니다.
+
+```sh
+kubectl rollout undo deployment/study-web -n books-lab
+```
+
+이 예는 직전 revision으로 되돌립니다. 특정 revision을 고르는 경우에는 history에서 실제 번호를 먼저 확인합니다. 단순 replicas 변경은 Pod template 변경과 달라 새 Deployment revision을 만드는 업데이트와 구분합니다.
+
+<Check question="maxSurge=1이면 새 Pod 한 개가 반드시 실행되나요?" children="아닙니다. 추가 생성 허용과 실제 배치 가능성은 다릅니다. requests 여유나 다른 조건 때문에 Pending에 남을 수 있습니다." />
+<Check question="v2가 준비되지 않으면 자동으로 v1으로 돌아가나요?" children="아닙니다. 진행이 멈추거나 실패 상태를 보고할 수 있지만, Deployment 자체가 그 사실만으로 자동 rollback하지는 않습니다. 실험에서도 명시적 되돌리기를 선택해야 합니다." />
+<Check question="rollback 완료가 v2가 쓴 DB 데이터까지 복원했다는 뜻인가요?" children="아닙니다. Deployment가 되돌리는 Pod template과 DB·PVC·외부 상태의 복구는 별도입니다. 이전 코드와 현재 데이터의 호환성도 확인해야 합니다." />
+
+## 근거와 모델의 경계
+
+공식 확인일 **2026-10-18**, Kubernetes **v1.35** [Deployment · RollingUpdate, rollback, progress deadline, minReadySeconds](https://v1-35.docs.kubernetes.io/docs/concepts/workloads/controllers/deployment/) 및 [자원 requests와 배치](https://v1-35.docs.kubernetes.io/docs/concepts/configuration/manage-resources-containers/) 기준입니다.
+
+비율 옵션의 반올림은 이번 실험에 넣지 않고 정수만 사용했습니다. 실제 controller 전체·HPA·종료 중 Pod·노드 장애·DB 마이그레이션을 모사하지 않습니다. 다음 배치는 Helm과 증거 기반 진단이며 아직 공개하지 않았습니다.
+
+</section>

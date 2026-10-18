@@ -99,7 +99,7 @@ kubectl top pods -n books-lab
 
 ## 근거와 모델의 경계
 
-공식 확인일 **2026-10-18**, Kubernetes **v1.35**. 노드 한 대·일반 컨테이너 하나·고정 배치 규칙의 교육 모델입니다. limits를 생략했을 때의 기본값, LimitRange, init/sidecar·Pod 수준 자원·선점·QoS·스왑·cgroup 세부 구현은 다루지 않습니다. 다음 배치에서는 살아 있음과 준비됨, 배포 중 교체를 다룹니다. 아직 공개된 장은 아닙니다.
+공식 확인일 **2026-10-18**, Kubernetes **v1.35**. 노드 한 대·일반 컨테이너 하나·고정 배치 규칙의 교육 모델입니다. limits를 생략했을 때의 기본값, LimitRange, init/sidecar·Pod 수준 자원·선점·QoS·스왑·cgroup 세부 구현은 다루지 않습니다. [09장](#/kubernetes/health-checks)에서는 살아 있음과 준비됨, [10장](#/kubernetes/rollout)에서는 배포 중 교체를 다룹니다.
 
 - [Resource Management · requests·limits·CPU·OOM](https://v1-35.docs.kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
 - [Resource Quotas · 생성 심사와 사용량](https://v1-35.docs.kubernetes.io/docs/concepts/policy/resource-quotas/)

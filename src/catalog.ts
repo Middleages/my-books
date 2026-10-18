@@ -1,3 +1,5 @@
+import HealthChecks from "./content/kubernetes/HealthChecks.mdx";
+import Rollout from "./content/kubernetes/Rollout.mdx";
 import Storage from "./content/kubernetes/Storage.mdx";
 import Resources from "./content/kubernetes/Resources.mdx";
 import IngressTls from "./content/kubernetes/IngressTls.mdx";
@@ -355,6 +357,8 @@ export const chapters: Chapter[] = [
     description: "소득·지출·대출·목표를 연결하고 24개월의 세 경로를 비교합니다.",
     Content: MoneyPlan,
   },
+  { id: "health-checks", bookId: "kubernetes", readId: "kubernetes/health-checks", number: "09", title: "살아 있음과 준비됨", heading: "언제 요청을 보내고 다시 시작할까?", description: "시작·생존·준비 검사와 요청 대상·컨테이너 재시작을 구분합니다.", Content: HealthChecks },
+  { id: "rollout", bookId: "kubernetes", readId: "kubernetes/rollout", number: "10", title: "교체하면서 배포하기", heading: "새 버전이 준비되지 않으면?", description: "두 ReplicaSet의 교체·자원 부족·준비 실패·명시적 되돌리기를 관찰합니다.", Content: Rollout },
 ];
 export const bookCategories = [
   { id: "technology", label: "IT·기술" },
@@ -422,7 +426,7 @@ export const books: Book[] = [
     overview:
       "작은 웹앱의 실행·연결·설정·데이터를 눈으로 이해하는 쿠버네티스 입문입니다.",
     future:
-      "소개·01~08장 공개 · 상태 점검·배포 이후와 선택 실습 부록은 후속 배치입니다.",
+      "소개·01–10장 공개 · Helm·진단과 선택 실습 부록은 후속 배치입니다.",
     Intro: KubernetesIntro,
   },
 ];

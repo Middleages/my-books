@@ -67,3 +67,11 @@ K3s 공식 v1.35 릴리스 표와 본문을 확인했다. 릴리스 본문에 �
 - PVC 사용 중 보호 → 사용 Pod 제거 → PVC 삭제 → 정상 정리 완료를 분리. 노드 접근 불가와 디스크 영구 상실도 별개 사건. PV/PVC 기록·파일 존재·앱의 마운트 연결은 다른 상태다. API가 함께 중단될 수 있는 노드 장애는 마지막 기록 표시.
 - 자원 모델: allocatable CPU 2000m/메모리 2048Mi, 기존 실제 사용 100m/256Mi, 새 컨테이너 memory request/limit 256/512Mi, CPU limit 1000m. 실제 서버 추천값이 아니다.
 - books-lab의 기존 requests.cpu는 500m 고정. 노드의 추가 기존 요청은 다른 namespace. quota는 requests.cpu만 비교하며 생성 심사 후 scheduler의 requests 적합성을 확인한다. OOM은 관측한 종료 사례이며 초과 즉시 종료 법칙이 아니다.
+
+## 배치 E · probe·롤아웃 관찰 계약
+
+2026-10-18. 기존 버전 후보 유지, 실제 클러스터 미실행.
+- study-web의 HTTP 8080 /health/live·/health/ready 계약 사용. 설명용 startupProbe가 live endpoint를 검사하는 예는 초기화 완료 전에는 성공을 반환하지 않는 앱 설계를 전제한다. 실제 앱·이미지 구현은 아직 없음.
+- probe 모델은 일반 컨테이너 하나·추가 readiness gate 없음·restartPolicy Always·successThreshold 1, 공통 failureThreshold 1/2/3 비교. 본문 YAML의 검사별 주기는 별도 가상 예이며 UI 재생 속도와 무관하다.
+- rollout은 replicas 2, 정수 surge/unavailable, minReadySeconds 0. 08 자원 판정을 재사용하고 Pod당 requests 500m/256Mi, 다른 앱 메모리 512Mi/CPU 500m 또는1000m. quota·이미지·네트워크는 정상 조건.
+- v1/v2는 버전 라벨이며 revision 번호가 아니다. 종료 중 Pod·연결 drain·controller 동시성·실제 시간은 생략한다. 명시적 rollback은 Pod template 대상이며 DB/PVC와 외부 설정 객체 내용을 되돌리지 않는다.
