@@ -13,7 +13,7 @@
 | k3s 전체 버전 | v1.35.9+k3s1 | 실행 미검증 |
 | 포함 Kubernetes | v1.35.9 | 릴리스 표 확인 / 실행 미검증 |
 | kubectl | k3s 동봉 kubectl v1.35.9 후보 | 실행 미검증 |
-| Helm CLI | 주요 버전 4 후보. 배치 F에서 patch 고정·렌더 검증 | 설치·실행하지 않음 |
+| Helm CLI | 4.3.1 공식 CLI 문서 기준 후보 (F) | 설치·렌더·클러스터 실행 미검증 |
 | Ingress controller | k3s 동봉 Traefik v3.7.13 후보 | 실행 미검증 |
 | Ingress chart | 동봉 패키지 `40.1.5+up40.1.0` (upstream chart 40.1.0) | 태그의 manifest 정적 확인 / 설치 미검증 |
 | runtime | containerd v2.2.7-k3s1 후보 | 실행 미검증 |
@@ -75,3 +75,13 @@ K3s 공식 v1.35 릴리스 표와 본문을 확인했다. 릴리스 본문에 �
 - probe 모델은 일반 컨테이너 하나·추가 readiness gate 없음·restartPolicy Always·successThreshold 1, 공통 failureThreshold 1/2/3 비교. 본문 YAML의 검사별 주기는 별도 가상 예이며 UI 재생 속도와 무관하다.
 - rollout은 replicas 2, 정수 surge/unavailable, minReadySeconds 0. 08 자원 판정을 재사용하고 Pod당 requests 500m/256Mi, 다른 앱 메모리 512Mi/CPU 500m 또는1000m. quota·이미지·네트워크는 정상 조건.
 - v1/v2는 버전 라벨이며 revision 번호가 아니다. 종료 중 Pod·연결 drain·controller 동시성·실제 시간은 생략한다. 명시적 rollback은 Pod template 대상이며 DB/PVC와 외부 설정 객체 내용을 되돌리지 않는다.
+
+## 배치 F · Helm과 진단 계약
+
+2026-10-18. Helm 공식 CLI 문서의 **4.3.1** 표시와 template/install/upgrade/rollback/history, --wait·--rollback-on-failure를 확인했다. 이는 실행한 CLI 버전이 아니다. 로컬 Helm 바이너리는 없으며 설치·실제 chart 렌더를 수행하지 않았다. 이 배치에는 runnable chart·실제 이미지 패키지를 추가하지 않고 고정 필드의 브라우저 교육 모델만 제공한다. G에서 실제 패키지를 제공할 때 exact binary·차트·이미지와 렌더/실행 결과를 별도로 기록해야 한다. 다른 환경 후보는 유지한다.
+
+- chart study-web 0.1.0, release study, namespace books-lab은 가상 사례. chart 버전·이미지 라벨·Helm revision·Deployment revision을 분리한다.
+- 별도 ConfigMap APP_MESSAGE와 replicas 변경은 Pod template에 영향을 주지 않는 조건. checksum annotation·hook·CRD·외부 동시 변경 없음. 이미지 변경/rollback은 controller 관측 뒤의 Deployment revision을 표시한다.
+- 기본 template은 로컬 출력만. 적용 성공을 가정한 이력과 Pod Ready 관측은 구분한다. DB·PVC는 모델에서 변경하거나 복원하지 않는다.
+- 진단 8사례는 가상 증거 묶음. 08 자원·04 Service·05 Ingress/TLS 모델의 판정을 재사용한다. 관련 보조 관측을 명시하며 명령 하나가 모든 사실을 출력한다고 표현하지 않는다.
+- CLI·kubectl·OpenSSL 예시는 실행 위치와 전제 조건을 설명한 형태이며 실제 클러스터/실제 도메인에 실행하지 않았다.

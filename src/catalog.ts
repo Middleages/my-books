@@ -1,3 +1,5 @@
+import Helm from "./content/kubernetes/Helm.mdx";
+import Troubleshooting from "./content/kubernetes/Troubleshooting.mdx";
 import EconomicsIntro from "./content/economics/Intro.mdx";
 import CircularFlow from "./content/economics/CircularFlow.mdx";
 import SupplyDemand from "./content/economics/SupplyDemand.mdx";
@@ -364,6 +366,8 @@ export const chapters: Chapter[] = [
   },
   { id: "health-checks", bookId: "kubernetes", readId: "kubernetes/health-checks", number: "09", title: "살아 있음과 준비됨", heading: "언제 요청을 보내고 다시 시작할까?", description: "시작·생존·준비 검사와 요청 대상·컨테이너 재시작을 구분합니다.", Content: HealthChecks },
   { id: "rollout", bookId: "kubernetes", readId: "kubernetes/rollout", number: "10", title: "교체하면서 배포하기", heading: "새 버전이 준비되지 않으면?", description: "두 ReplicaSet의 교체·자원 부족·준비 실패·명시적 되돌리기를 관찰합니다.", Content: Rollout },
+  { id: "helm", bookId: "kubernetes", readId: "kubernetes/helm", number: "11", title: "반복 배포를 묶기", heading: "같은 앱의 설정만 바꾸려면?", description: "chart·values·렌더링·release와 두 revision의 경계를 비교합니다.", Content: Helm },
+  { id: "troubleshooting", bookId: "kubernetes", readId: "kubernetes/troubleshooting", number: "12", title: "증거로 고치기", heading: "어디에서 멈췄는가?", description: "증거 카드와 다음 관측을 선택해 실패 구간과 가설을 좁힙니다.", Content: Troubleshooting },
 ];
 export const bookCategories = [
   { id: "technology", label: "IT·기술" },
@@ -432,7 +436,7 @@ export const books: Book[] = [
     overview:
       "작은 웹앱의 실행·연결·설정·데이터를 눈으로 이해하는 쿠버네티스 입문입니다.",
     future:
-      "소개·01–10장 공개 · Helm·진단과 선택 실습 부록은 후속 배치입니다.",
+      "소개·01–12장 공개 · 설치·복구·폐쇄망 선택 실습 부록은 후속 배치입니다.",
     Intro: KubernetesIntro,
   },
 ];

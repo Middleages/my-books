@@ -139,19 +139,18 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 검증은 [MONEY-08-VERIFICATION.md](docs/MONEY-08-VERIFICATION.md)를 참고하세요.
 
 
-## 쿠버네티스 교재 · 배치 A
+## 쿠버네티스 교재 · 소개와 01–12
 
-‘웹앱 운영자를 위한 쿠버네티스’는 책 소개와 01 컨테이너 다음에 필요한 것,
-02 클러스터의 지도를 구현했습니다. `#/kubernetes`, `#/kubernetes/why-kubernetes`,
-`#/kubernetes/cluster-map`에서 읽습니다. 운영 책임·단일 VM 장애 경계·제어/HTTP 경로·
-context/namespace/권한을 그림과 단계 실험으로 비교합니다.
+‘웹앱 운영자를 위한 쿠버네티스’는 소개와 01–12장을 구현했습니다.
+`#/kubernetes`에서 실행·연결·TLS·설정·저장·자원·상태 검사·롤아웃을 연결하고,
+`#/kubernetes/helm`과 `#/kubernetes/troubleshooting`에서 배포 묶음과 증거 기반 진단을 비교합니다.
 
 본문은 `src/content/kubernetes/`, UI는 `src/components/kubernetes/`, 제한된 교육 모델은
 `src/simulations/kubernetes/`에 있습니다. 실제 서버·클러스터에 접속하지 않습니다.
 [교재 계획](docs/KUBERNETES-TEXTBOOK-PLAN.md),
 [실습환경 후보 계약](docs/KUBERNETES-LAB-ENVIRONMENT.md),
-[검증·배포 및 미검증 기록](docs/KUBERNETES-BATCH-A-VERIFICATION.md)을 확인하세요.
-03 이후와 설치·복구 실습은 후속 배치입니다.
+[최신 배치 검증·배포 및 미검증 기록](docs/KUBERNETES-BATCH-F-VERIFICATION.md)을 확인하세요.
+설치·복구·폐쇄망 선택 실습 부록은 후속 배치 G입니다.
 
 09장은 집중·분산의 전후와 같은 충격에서 비상 현금·보험의 지출 충당 과정을 비교합니다.
 보험료·자기부담금·한도·제외·지급 지연을 분리하며 실제 상품 추천은 하지 않습니다.
