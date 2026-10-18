@@ -53,3 +53,11 @@ Vite 기본 0.0.0.0 실행은 시스템 네트워크 인터페이스 오류로 �
 ### 남은 실행 검증
 
 모바일 320/390px viewport·reduced-motion 에뮬레이션, 실제 휴대폰·Safari/Firefox·스크린리더, 자동 axe 검사는 실행하지 못했다. 제공된 cloud 브라우저 API에는 viewport/media 변경 기능이 없고 로컬 서버에 접근하지 못한다. CSS의 600px 세로 배치·줄바꿈·표 스크롤·prefers-reduced-motion 정지 규칙은 코드로 확인했지만 실제 실행 통과로 대체하지 않는다. 따라서 사용자 완료 조건 전체가 검증 완료된 상태는 아니다.
+
+### 보강판 실제 게시 확인
+
+보강 main `dda7499daf21644901f54732acb8106275e39ad0`, 로컬/원격 트리 `0b0c1c44275337fd7512a010eee50ea375756b2d` 일치. [Actions 39099954251](https://github.com/Middleages/my-books/actions/runs/39099954251) build·deploy의 모든 단계 success 확인. 보강 후 로컬 `npm test` 220/220, `npm run build`, `git diff --check` 통과.
+
+실제 `https://middleages.github.io/my-books/#/economics`를 다시 로드하여 JS `index-D6FZaU2L.js`, CSS `index-DiFdlDuy.css`가 보강 빌드와 일치함을 확인했다. 소개의 핵심 질문이 strong 요소이고 별표 잔류 0·del 0·문서 가로 넘침 없음. 01·02는 앞선 실행에서 동일 본문·모델을 검증했다. 검증 도중 직접 추가한 경제 01·돈 04 읽음 표시만 UI에서 취소해 테스트 전 상태로 복원했다. 기존 사용자 기록을 삭제하거나 저장 키를 초기화하지 않았다.
+
+배포·게시 확인은 완료했으나 위 모바일/reduced-motion 실행 제약은 남는다. 다음 배치는 B(03 GDP·04 고용)이며 해당 실행 프롬프트에서 이 미검증 항목도 확인하도록 검증 기록을 읽는다. 이 확인 기록의 후속 커밋은 문서만 변경하므로 앱 번들은 동일하다.
