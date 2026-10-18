@@ -44,8 +44,19 @@ Browser skill 사용. 연결 브라우저 plugin js 도구가 노출되지 않�
 
 ## main·배포·실제 게시
 
-이 문서 작성 시 반영·배포·게시 검증 대기. 확인된 커밋·Actions·게시 자산·조작 결과만 후속 기록한다. 실제 클러스터·CLI·이미지 실행·DB/볼륨 조작은 미실행이다.
+- 구현 main: `9329cbe2239aa2692c2d854b0d97bdeb6ea91628`. 검증한 로컬 tree와 원격 tree `d09fc61c863d2a33e989650c428ff4ea7bd4d5de` 일치 확인 후 non-force 반영.
+- [Actions 39102209042](https://github.com/Middleages/my-books/actions/runs/39102209042): completed/success, build·deploy 성공. 게시 JS `index-D_dJX4os.js`, CSS `index-C75Uz6cD.css` 확인.
+- 실제 URL: https://middleages.github.io/my-books/#/kubernetes/helm 및 https://middleages.github.io/my-books/#/kubernetes/troubleshooting.
+- Cloud Chrome 1363×936: 11/12 가로 넘침 없음, 중첩 p·의도치 않은 del·리터럴 강조 기호 없음. 11의 화면 캡처로 패널/포커스 가독성 확인.
+- 11: template 출력만/설치 없음, prod install replicas 2·각 revision 1, ConfigMap upgrade의 pending/deployed/superseded 이력과 Deployment revision 1 유지, 이미지 upgrade의 Deployment revision 2, 이미지 rollback의 Helm/Deployment revision 3 및 v1 복원 확인.
+- 11 재생 완료 4/4, 정지 후 1/4 유지, 이전/다시 보기, Enter 한 단계 진행, 조건 변경 초기화, 정적 단계의 수치/이력 표시 확인. 재생 중 12로 이동하고 진단 화면의 초기 1/4 상태 확인.
+- 12: 부족한 get 증거는 원인 확정 없음. Pending/events와 나머지 일곱 사례의 해당 관측을 각각 4/4까지 조작하여 다음 조사·재확인 내용을 확인. TLS 정적 대안에 이름 불일치·HTTP 이전 경계 표시 확인.
+- 11/12 각각 읽음 표시 → 새로고침 유지 → 시험 표시 취소 확인. 기존 읽음 전체 초기화는 하지 않았다.
+- 콘솔 조회에서 관찰된 오류는 chrome-extension의 metadata 전달 오류이며 앱 오류로 분류하지 않았다. 지정 폭·reduced-motion·스크린리더 등의 미검증 제한은 위와 같다.
+- 최종 기록 반영 전 최신 main `4e080d8`의 경제 배치 B를 fast-forward로 받아 보존했다. 당시 전체 장 수는 경제 두 장 추가로 43장이다. F의 기존 39개 ID 보존 검사는 구현 기준 main에 대한 기록이다.
+
+실제 클러스터·CLI·이미지 실행·DB/볼륨 조작은 미실행이다.
 
 ## 다음 범위
 
-G: 설치·첫 배포/복구/폐쇄망 선택 부록과 전체 통합 점검. F의 배포와 남은 화면 검증·01/03 강조 표기를 먼저 확인한다. 앱 전환 계획은 12장에 짧게 연결했고 실제 서버 전환을 실행하지 않았다.
+G: 설치·첫 배포/복구/폐쇄망 선택 부록과 전체 통합 점검. 남은 화면 검증·01/03 강조 표기를 먼저 확인한다. 앱 전환 계획은 12장에 짧게 연결했고 실제 서버 전환을 실행하지 않았다.
