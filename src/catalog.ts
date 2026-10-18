@@ -1,5 +1,6 @@
 import IngressTls from "./content/kubernetes/IngressTls.mdx";
 import Configuration from "./content/kubernetes/Configuration.mdx";
+import MoneyPlan from "./content/money/Plan.mdx";
 import MoneyRisk from "./content/money/Risk.mdx";
 import DesiredState from "./content/kubernetes/DesiredState.mdx";
 import ServiceDiscovery from "./content/kubernetes/ServiceDiscovery.mdx";
@@ -340,6 +341,16 @@ export const chapters: Chapter[] = [
       "집중·분산의 전후와 비상자금·보험의 지출 충당 과정을 비교합니다.",
     Content: MoneyRisk,
   },
+  {
+    id: "plan",
+    bookId: "money",
+    readId: "money/plan",
+    number: "10",
+    title: "우리 집 계획을 연결하기",
+    heading: "지금의 선택이 미래의 현금흐름을 어떻게 바꿀까?",
+    description: "소득·지출·대출·목표를 연결하고 24개월의 세 경로를 비교합니다.",
+    Content: MoneyPlan,
+  },
 ];
 export const bookCategories = [
   { id: "technology", label: "IT·기술" },
@@ -393,7 +404,7 @@ export const books: Book[] = [
       "돈의 지도, 거래의 순간, 지출의 달력. 보고 움직이며 우리 집 재무의 원리를 이해합니다.",
     overview:
       "가상의 가정과 함께 자산·부채·현금흐름을 연결합니다. 그림을 보고 예측한 다음 직접 조건을 바꿔 보세요.",
-    future: "01~09장 공개 · 다음 장과 다른 금융 분야는 후속 배치에서 다룹니다.",
+    future: "01~10장 공개 · 경제·투자 등 다른 금융 분야는 후속 교과서에서 다룹니다.",
     Intro: MoneyIntro,
   },
   {

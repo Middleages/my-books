@@ -1,0 +1,60 @@
+export type PlanParams = {
+  initialCash: number;
+  income: number;
+  living: number;
+  principal: number;
+  annualRate: number;
+  loanMonths: number;
+  goal: number;
+  monthlySaving: number;
+  goalMonth: number;
+  delay: number;
+  incomeDrop: number;
+  extraExpense: number;
+};
+export type PlanKey = "base" | "shock" | "later";
+export type PlanGoal = {
+  month: number;
+  status: "pending" | "gap" | "short" | "reached";
+  available: number;
+  shortfall: number;
+};
+export type PlanFrame = {
+  month: number;
+  phase: number;
+  cash: number;
+  savings: number;
+  debt: number;
+  income: number;
+  living: number;
+  extra: number;
+  principal: number;
+  interest: number;
+  transfer: number;
+  goalSpent: number;
+  cumulativeIncome: number;
+  cumulativeLiving: number;
+  cumulativeExtra: number;
+  cumulativeInterest: number;
+  cumulativePrincipal: number;
+  cumulativeGoal: number;
+  firstGap: number | null;
+  goal: PlanGoal;
+};
+export type PlanPath = {
+  frames: PlanFrame[];
+  rows: PlanFrame[];
+  goal: PlanGoal;
+  firstGap: number | null;
+  minCash: number;
+};
+export type PlanResult = {
+  paths: Record<PlanKey, PlanPath>;
+  chartMin: number;
+  chartMax: number;
+  monthlyPayment: number;
+};
+export const planDefaults: PlanParams;
+export const planKeys: PlanKey[];
+export const planPhases: string[];
+export function projectPlan(p: PlanParams): PlanResult;

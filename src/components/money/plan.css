@@ -1,0 +1,166 @@
+.plan-primer {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid #c3d4c6;
+  border-radius: 12px;
+  background: #f0f5ef;
+  color: #304837;
+}
+.plan-primer figcaption {
+  color: #304837;
+  font-weight: 700;
+}
+.plan-primer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+.plan-meter {
+  margin: 0.7rem 0;
+}
+.plan-meter > span,
+.plan-meter small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.plan-track {
+  height: 20px;
+  background: #e1e6e2;
+  border: 1px solid #929f94;
+  margin-top: 0.4rem;
+}
+.plan-track i {
+  display: block;
+  height: 100%;
+  background: #176746;
+}
+.plan-track.saving i {
+  background: repeating-linear-gradient(45deg, #915811 0 3px, #eddfbe 3px 7px);
+}
+.plan-track.debt i {
+  background: #35569b;
+}
+.plan-select {
+  display: block;
+  margin: 1rem 0;
+}
+.plan-select select {
+  max-width: 100%;
+  padding: 0.5rem;
+}
+.plan-phases {
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.plan-phases button {
+  width: 100%;
+  height: 100%;
+  padding: 0.7rem;
+  text-align: left;
+}
+.plan-phases [aria-current="step"] {
+  outline: 3px solid #176746;
+  font-weight: 700;
+}
+.plan-scene {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.plan-scene > div {
+  padding: 1rem;
+  border: 1px solid #b6c7bb;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.plan-in {
+  grid-column: 1 / -1;
+}
+.plan-hub {
+  grid-column: 1 / -1;
+  background: #e8f1e9;
+}
+.plan-in:after {
+  content: "↓ 생활 현금으로";
+  font-size: 0.85rem;
+}
+.plan-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.plan-comparison article {
+  min-width: 0;
+  border: 1px solid #c3d4c6;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+.plan-comparison h4 {
+  margin: 0.5rem 0;
+}
+.plan-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: inherit;
+  font-size: 13px;
+  overflow: visible;
+}
+.plan-chart text {
+  fill: #304837;
+}
+.plan-outcome {
+  font-size: 0.9rem;
+  border-top: 1px solid #c3d4c6;
+  padding-top: 0.7rem;
+}
+.plan-table-scroll {
+  overflow-x: auto;
+}
+.plan-table-scroll table {
+  min-width: 1080px;
+}
+.plan-lab button:focus-visible,
+.plan-lab input:focus-visible,
+.plan-lab select:focus-visible {
+  outline: 3px solid #1f579b;
+  outline-offset: 3px;
+}
+@media (max-width: 800px) {
+  .plan-comparison {
+    grid-template-columns: 1fr;
+  }
+  .plan-chart {
+    max-width: 500px;
+    margin: auto;
+  }
+}
+@media (max-width: 600px) {
+  .plan-primer-grid,
+  .plan-scene {
+    grid-template-columns: 1fr;
+  }
+  .plan-in,
+  .plan-hub {
+    grid-column: auto;
+  }
+  .plan-phases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .plan-primer {
+    padding: 14px;
+  }
+  .plan-chart {
+    font-size: 18px;
+  }
+}
+
+.plan-table-scroll:focus-visible { outline: 3px solid #1f579b; outline-offset: 3px; }
