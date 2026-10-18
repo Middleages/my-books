@@ -62,3 +62,25 @@ export function routeFrames(config?: {
   frames: Frame[];
   mapping: Mapping | null;
 };
+export function addressSpace(
+  config?: Parameters<typeof addressFrames>[0],
+): ReturnType<typeof addressFrames> & {
+  bits: { value: string; network: boolean }[];
+  maskBits: string[];
+  networkBits: string[];
+  mask: string;
+  blocks: {
+    start: number;
+    end: number;
+    size: number;
+    first: string;
+    last: string;
+    range: string;
+    containsSource: boolean;
+    containsDestination: boolean;
+  }[];
+  visibleSize: number;
+  visibleRange: string;
+  sourcePosition: number | null;
+  destinationPosition: number | null;
+};

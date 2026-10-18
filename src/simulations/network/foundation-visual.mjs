@@ -230,3 +230,54 @@ export function routeFrames({
   });
   return { ...result, frames };
 }
+
+// A proportional window into the same addresses used by the forwarding model.
+// /24 and /25 share a 256-address window; /16 explicitly zooms out to 65,536.
+export function addressSpace(config = {}) {
+  const route = addressFrames(config);
+  const { source, destination, prefix } = route;
+  const number = (ip) => ip.split(".").reduce((n, v) => n * 256 + Number(v), 0);
+  const dotted = (n) =>
+    [24, 16, 8, 0].map((s) => Math.floor(n / 2 ** s) % 256).join(".");
+  const sourceNumber = number(source),
+    destinationNumber = number(destination);
+  const windowPrefix = prefix === 16 ? 16 : 24;
+  const visibleSize = 2 ** (32 - windowPrefix);
+  const visibleStart = Math.floor(sourceNumber / visibleSize) * visibleSize;
+  const size = 2 ** (32 - prefix);
+  const blocks = Array.from({ length: visibleSize / size }, (_, i) => {
+    const start = visibleStart + i * size,
+      end = start + size - 1;
+    return {
+      start,
+      end,
+      size,
+      first: dotted(start),
+      last: dotted(end),
+      range: dotted(start) + "/" + prefix,
+      containsSource: sourceNumber >= start && sourceNumber <= end,
+      containsDestination:
+        destinationNumber >= start && destinationNumber <= end,
+    };
+  });
+  const position = (n) =>
+    n < visibleStart || n >= visibleStart + visibleSize
+      ? null
+      : ((n - visibleStart) / visibleSize) * 100;
+  const raw = sourceNumber.toString(2).padStart(32, "0");
+  const bits = [...raw].map((value, i) => ({ value, network: i < prefix }));
+  const maskBits = bits.map((b) => (b.network ? "1" : "0"));
+  const networkBits = bits.map((b) => (b.network ? b.value : "0"));
+  return {
+    ...route,
+    bits,
+    maskBits,
+    networkBits,
+    blocks,
+    visibleSize,
+    visibleRange: dotted(visibleStart) + "/" + windowPrefix,
+    sourcePosition: position(sourceNumber),
+    destinationPosition: position(destinationNumber),
+    mask: dotted(parseInt(maskBits.join(""), 2)),
+  };
+}

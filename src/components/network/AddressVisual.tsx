@@ -1,53 +1,29 @@
 import { useState } from "react";
-import { addressFrames } from "../../simulations/network/foundation-visual.mjs";
+import { addressSpace } from "../../simulations/network/foundation-visual.mjs";
 import { Playback, useFoundationPlayback } from "./FoundationPlayback";
-import { PathScene, StaticFrames, FrameExplanation } from "./FoundationScene";
+import { StaticFrames, FrameExplanation } from "./FoundationScene";
 import "./foundation-visuals.css";
+import { AddressSpaceDiagram, AddressPath } from "./AddressStory";
 export default function AddressVisual() {
   const [prefix, setPrefix] = useState(24);
-  const [destination, setDestination] = useState("192.168.10.20");
+  const [destination, setDestination] = useState("192.168.10.150");
   const [badGateway, setBadGateway] = useState(false);
   const [prediction, setPrediction] = useState("");
-  const r = addressFrames({ prefix, destination, badGateway });
+  const r = addressSpace({ prefix, destination, badGateway });
   const player = useFoundationPlayback(r.frames.length);
   const f = r.frames[player.index];
   const change = () => {
     player.reset();
     setPrediction("");
   };
-  const nodes = [
-    {
-      id: "source",
-      name: "출발지 · PC A",
-      address: r.source + "/" + prefix,
-      zone: r.sourceRange,
-    },
-    ...(!r.local
-      ? [
-          {
-            id: "router",
-            name: "네트워크 경계 · 라우터",
-            address: badGateway ? "실제 .1 / 설정 .254 · 없음" : "192.168.10.1",
-            zone: "다음 홉 · 기본 게이트웨이",
-          },
-        ]
-      : []),
-    {
-      id: "target",
-      name: "목적지 · 상대 PC",
-      address: destination + "/" + prefix,
-      zone: r.local
-        ? "같은 LAN · " + r.destinationRange
-        : "다른 LAN · " + r.destinationRange,
-    },
-  ];
   return (
     <section className="fv-lab" aria-label="prefix와 네트워크 경계 실험">
       <p className="fv-eyebrow">02 · 주소만큼 중요한 범위</p>
       <h2>같은 주소도 prefix에 따라 길이 바뀐다</h2>
       <p>
-        출발지는 고정하고 목적지와 prefix를 바꿔 보세요. 위쪽 경계 상자와 아래쪽
-        전달 경로가 함께 바뀝니다.
+        출발지는 고정하고 목적지와 prefix를 바꿔 보세요. 위쪽 주소 띠와 아래쪽
+        전달 경로가 함께 바뀝니다. 목적지는 .150에 둔 채 /24와 /25를 번갈아
+        선택해 보세요.
       </p>
       <div className="fv-controls">
         <label>
@@ -95,45 +71,19 @@ export default function AddressVisual() {
           </select>
         </label>
       </div>
-      <div
-        className={`fv-boundaries ${r.local ? "fv-same-lan" : ""}`}
-        aria-label="주소와 네트워크 경계 비교"
-      >
-        <div>
-          <small>출발지의 연결 네트워크</small>
-          <b>{r.sourceRange}</b>
-          <code>
-            {r.source}/{prefix}
-          </code>
-        </div>
-        <strong>
-          {r.local ? "같은 범위 · 경계 안" : "다른 범위 · 경계를 넘음"}
-        </strong>
-        <div>
-          <small>목적지가 속하는 범위</small>
-          <b>{r.destinationRange}</b>
-          <code>
-            {r.destination}/{prefix}
-          </code>
-        </div>
-      </div>
-      <p className="fv-note">
-        /16: 192.168.10.10과 192.168.20.20도 같은 범위. /25: 192.168.10.10과
-        192.168.10.150도 다른 범위. 아래 지도는 선택한 prefix에 맞게 실제 LAN
-        배치도 함께 구성한 가상 사례입니다.
-      </p>
-      <PathScene
-        nodes={nodes}
+      <AddressSpaceDiagram space={r} />
+      <AddressPath
+        space={r}
         frame={f}
+        index={player.index}
         playing={player.playing}
-        frameKey={player.index}
       />
       <Playback
         player={player}
         count={r.frames.length}
         reset={() => {
           setPrefix(24);
-          setDestination("192.168.10.20");
+          setDestination("192.168.10.150");
           setBadGateway(false);
           change();
         }}
