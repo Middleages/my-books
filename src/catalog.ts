@@ -1,3 +1,4 @@
+import MoneyRisk from "./content/money/Risk.mdx";
 import KubernetesIntro from "./content/kubernetes/Intro.mdx";
 import WhyKubernetes from "./content/kubernetes/WhyKubernetes.mdx";
 import ClusterMap from "./content/kubernetes/ClusterMap.mdx";
@@ -314,8 +315,20 @@ export const chapters: Chapter[] = [
     number: "08",
     title: "대출을 갚는 구조",
     heading: "같은 대출, 매달 갚는 모습은 왜 다를까?",
-    description: "원금·이자를 나누고 세 상환 방식의 월 부담과 전체 일정을 비교합니다.",
+    description:
+      "원금·이자를 나누고 세 상환 방식의 월 부담과 전체 일정을 비교합니다.",
     Content: MoneyRepayment,
+  },
+  {
+    id: "risk",
+    bookId: "money",
+    readId: "money/risk",
+    number: "09",
+    title: "투자와 위험 대비",
+    heading: "돈을 불리는 일과 충격을 견디는 일은 어떻게 다를까?",
+    description:
+      "집중·분산의 전후와 비상자금·보험의 지출 충당 과정을 비교합니다.",
+    Content: MoneyRisk,
   },
 ];
 export const bookCategories = [
@@ -370,8 +383,7 @@ export const books: Book[] = [
       "돈의 지도, 거래의 순간, 지출의 달력. 보고 움직이며 우리 집 재무의 원리를 이해합니다.",
     overview:
       "가상의 가정과 함께 자산·부채·현금흐름을 연결합니다. 그림을 보고 예측한 다음 직접 조건을 바꿔 보세요.",
-    future:
-      "01~08장 공개 · 투자와 다른 금융 분야는 후속 배치에서 다룹니다.",
+    future: "01~09장 공개 · 다음 장과 다른 금융 분야는 후속 배치에서 다룹니다.",
     Intro: MoneyIntro,
   },
   {

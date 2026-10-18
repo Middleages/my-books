@@ -1,0 +1,95 @@
+.risk-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.risk-columns article {
+  border: 1px solid var(--border, #d5ded8);
+  border-radius: 12px;
+  padding: 1rem;
+  min-width: 0;
+}
+.risk-bar {
+  margin: 1rem 0;
+}
+.risk-bar b,
+.risk-bar small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.risk-track {
+  height: 28px;
+  background: #e6e9e6;
+  display: flex;
+  border: 1px solid #89978c;
+  margin: 0.5rem 0;
+}
+.risk-fill {
+  display: block;
+  height: 100%;
+}
+.risk-fill-0 {
+  background: #176746;
+}
+.risk-fill-1 {
+  background: repeating-linear-gradient(45deg, #876335 0 3px, #e9d5ad 3px 7px);
+}
+.risk-options {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+.risk-options input {
+  margin-right: 0.5rem;
+}
+.risk-phases {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.risk-phases button {
+  width: 100%;
+  height: 100%;
+  padding: 0.7rem;
+  text-align: left;
+}
+.risk-phases [aria-current="step"] {
+  outline: 3px solid #176746;
+  outline-offset: 1px;
+  font-weight: bold;
+}
+.risk-ledger {
+  font-size: 0.9rem;
+}
+.risk-ledger div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid #ddd;
+  padding: 0.4rem 0;
+}
+.risk-ledger dd {
+  margin: 0;
+  text-align: right;
+}
+.risk-table-scroll {
+  overflow-x: auto;
+}
+.risk-table-scroll table {
+  min-width: 540px;
+}
+.risk-phases button:focus-visible,
+.money-lab input:focus-visible {
+  outline: 3px solid #1f579b;
+  outline-offset: 3px;
+}
+@media (max-width: 650px) {
+  .risk-columns {
+    grid-template-columns: 1fr;
+  }
+  .risk-phases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

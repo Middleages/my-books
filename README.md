@@ -83,7 +83,7 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 
 [돈·경제 교과서 시리즈 제작 계획](docs/MONEY-TEXTBOOK-PLAN.md)에 기본 6권과
 회계·확률/의사결정 추가 주제, 첫 권 ‘돈의 기초와 우리 집 재무’의 목차와 배치를 정리했습니다.
-소개와 01~08장을 구현했습니다. 09장 이후와 다른 권은 후속 배치입니다.
+소개와 01~09장을 구현했습니다. 10장 이후와 다른 권은 후속 배치입니다.
 
 신규 콘텐츠는 인터랙티브 시뮬레이션·설명용 애니메이션·그림을 적극적으로 활용합니다.
 핵심 개념의 구조·과정·조건 비교를 시각화하며, 모바일·키보드·정적 단계 대안을 함께 제공합니다.
@@ -100,6 +100,7 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 - 06 저축과 목표의 시간: `#/money/savings`
 - 07 신용과 대출: `#/money/credit`
 - 08 대출을 갚는 구조: `#/money/repayment`
+- 09 투자와 위험 대비: `#/money/risk`
 
 `src/content/money/*.mdx`에 본문, `src/components/money/`에 React 실험,
 `src/simulations/money/`에 UI 독립 거래·일별 예산 모델이 있습니다.
@@ -150,3 +151,7 @@ context/namespace/권한을 그림과 단계 실험으로 비교합니다.
 [실습환경 후보 계약](docs/KUBERNETES-LAB-ENVIRONMENT.md),
 [검증·배포 및 미검증 기록](docs/KUBERNETES-BATCH-A-VERIFICATION.md)을 확인하세요.
 03 이후와 설치·복구 실습은 후속 배치입니다.
+
+09장은 집중·분산의 전후와 같은 충격에서 비상 현금·보험의 지출 충당 과정을 비교합니다.
+보험료·자기부담금·한도·제외·지급 지연을 분리하며 실제 상품 추천은 하지 않습니다.
+검증 기록: [MONEY-09-VERIFICATION](docs/MONEY-09-VERIFICATION.md).
