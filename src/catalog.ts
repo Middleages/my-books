@@ -1,3 +1,4 @@
+import MoneySavings from "./content/money/Savings.mdx";
 import MoneyInterest from "./content/money/Interest.mdx";
 import MoneyInflation from "./content/money/Inflation.mdx";
 import MoneyIntro from "./content/money/Intro.mdx";
@@ -259,6 +260,17 @@ export const chapters: Chapter[] = [
       "이자의 재투자와 납입·비용을 단계별로 따라가며 단리와 복리를 비교합니다.",
     Content: MoneyInterest,
   },
+  {
+    id: "savings",
+    bookId: "money",
+    readId: "money/savings",
+    number: "06",
+    title: "저축과 목표의 시간",
+    heading: "목표액은 채웠는데 그날 꺼낼 수 없다면?",
+    description:
+      "목표일과 사용 가능 시점을 타임라인에서 맞추며 금액 부족과 날짜 차이를 구분합니다.",
+    Content: MoneySavings,
+  },
 ];
 type Book = {
   id: string;
@@ -303,7 +315,7 @@ export const books: Book[] = [
     overview:
       "가상의 가정과 함께 자산·부채·현금흐름을 연결합니다. 그림을 보고 예측한 다음 직접 조건을 바꿔 보세요.",
     future:
-      "01~05장 공개 · 저축·신용과 다른 금융 분야는 후속 배치에서 다룹니다.",
+      "01~06장 공개 · 신용·대출과 다른 금융 분야는 후속 배치에서 다룹니다.",
     Intro: MoneyIntro,
   },
 ];

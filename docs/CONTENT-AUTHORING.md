@@ -130,3 +130,9 @@ MDX의 `<p>` 안에 줄바꿈으로 일반 텍스트를 쓰면 Markdown이 또 �
 `simulations/money/interest.mjs`·`interest.d.mts`. 관계 그림과 직접 조작을 같은 모델로 계산하며
 월중 단계와 월말 확정 값을 구분합니다. 구성 막대의 라벨은 모바일에서 SVG와 함께 축소되지 않도록
 HTML로 표시합니다. 원금·납입·수익·비용의 보존 관계를 모든 관찰 단계에서 검사합니다.
+
+
+06장 목표 시점 사례: `money/Savings.mdx`, `SavingsVisuals.tsx`·`SavingsLab.tsx`,
+`simulations/money/savings.mjs`·`savings.d.mts`. 같은 준비금에서 사용 가능 날짜만 바꾼 비교 그림과
+월초 풀림/월말 적립/목표 지출의 실제 상태를 연결합니다. 목표일의 지출 직전 판정 기록을
+이후 잔액과 분리해 표시하고, 뒤늦게 생긴 돈으로 지난 목표일의 판정을 바꾸지 않습니다.
