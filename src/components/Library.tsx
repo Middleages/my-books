@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { books, chapters, bookCategories, type BookCategory } from "../catalog";
 import "./library.css";
+import { BookCover } from "./BookCover";
 
 export function Library({ read }: { read: string[] }) {
   const [category, setCategory] = useState<BookCategory | "all">("all");
@@ -77,17 +78,10 @@ export function Library({ read }: { read: string[] }) {
           {visible.map(({ book, total, completed, active }) => (
             <a key={book.id} className="home-book" href={`#/${book.id}`}>
               <div
-                className={`home-cover home-cover--${book.categoryId}`}
+                className={`home-cover home-cover--${book.id}`}
                 aria-hidden="true"
               >
-                <span>{book.cover}</span>
-                <span>
-                  my books /{" "}
-                  {
-                    bookCategories.find((group) => group.id === book.categoryId)
-                      ?.label
-                  }
-                </span>
+                <BookCover bookId={book.id} />
               </div>
               <div className="home-book-body">
                 <div className="home-book-meta">

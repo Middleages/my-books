@@ -58,26 +58,47 @@
   box-shadow: 0 4px 16px #1d3c7a12;
 }
 .home-cover {
-  padding: 20px;
-  min-height: 106px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
+  height: 146px;
+  padding: 13px 18px;
+  display: grid;
+  place-items: center;
   background: #eaf0ff;
-  color: #2549a1;
-  font-size: 12px;
-  letter-spacing: 0.05em;
+  color: #3559ad;
 }
-.home-cover span:first-child {
-  font-weight: 750;
-}
-.home-cover span:last-child {
-  font-size: 11px;
+.home-cover--network {
+  background: #e4f3f6;
+  color: #23758a;
 }
 .home-cover--money {
   background: #e8f3ee;
   color: #236049;
+}
+.home-cover-art {
+  display: block;
+  width: 100%;
+  height: 120px;
+  max-width: 280px;
+}
+.home-cover-art .home-art-muted {
+  opacity: 0.4;
+}
+.home-cover-art .home-art-gold {
+  color: #a37520;
+}
+@keyframes home-cover-signal {
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .home-book:focus-visible .home-art-signal {
+    animation: home-cover-signal 1.2s ease-in-out 2;
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .home-book:hover .home-art-signal {
+    animation: home-cover-signal 1.2s ease-in-out 2;
+  }
 }
 .home-book-body {
   padding: 22px;
@@ -142,12 +163,12 @@
     gap: 16px;
   }
   .home-cover {
-    min-height: 0;
-    padding: 12px 20px;
-    gap: 0;
+    height: 88px;
+    padding: 4px 20px;
   }
-  .home-cover span:last-child {
-    display: none;
+  .home-cover-art {
+    height: 80px;
+    width: 187px;
   }
   .home-book-body {
     padding: 18px 20px;
