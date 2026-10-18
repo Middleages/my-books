@@ -12,7 +12,14 @@ export function BookCover({ bookId }: { bookId: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {bookId === "kubernetes" ? (
+      {bookId === "economics" ? (
+        <>
+          <rect x="73" y="16" width="134" height="91" rx="8" fill="currentColor" fillOpacity=".06" />
+          <path d="M90 33h100M90 45h42M90 55h42M90 65h32M145 45v42h44M151 76l12-14 11 7 14-18M90 92h40" />
+          <circle cx="36" cy="59" r="17" /><path d="M29 59h14M36 52v14M53 59h13m-6-5 6 5-6 5M214 59h18m-6-5 6 5-6 5" />
+          <path className="home-art-signal" d="M241 43h24v32h-24zM247 52h12M247 61h12" />
+        </>
+      ) : bookId === "kubernetes" ? (
         <>
           <rect
             x="65"

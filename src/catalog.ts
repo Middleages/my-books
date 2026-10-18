@@ -1,3 +1,6 @@
+import EconomicsIntro from "./content/economics/Intro.mdx";
+import CircularFlow from "./content/economics/CircularFlow.mdx";
+import SupplyDemand from "./content/economics/SupplyDemand.mdx";
 import HealthChecks from "./content/kubernetes/HealthChecks.mdx";
 import Rollout from "./content/kubernetes/Rollout.mdx";
 import Storage from "./content/kubernetes/Storage.mdx";
@@ -49,6 +52,8 @@ export type Chapter = {
   Content: ComponentType;
 };
 export const chapters: Chapter[] = [
+  { id: "circular-flow", bookId: "economics", readId: "economics/circular-flow", number: "01", title: "경제는 서로 연결된 흐름", heading: "내가 쓴 돈은 누구의 소득이 되고, 무엇과 맞바뀔까?", description: "노동·임금·소비·판매의 방향과 흐름·잔액을 나눠 봅니다.", Content: CircularFlow },
+  { id: "supply-demand", bookId: "economics", readId: "economics/supply-demand", number: "02", title: "수요·공급과 가격", heading: "가격이 올랐다는 사실만으로 원인을 알 수 있을까?", description: "곡선 위 이동과 곡선 이동, 같은 가격 상승의 다른 수량을 비교합니다.", Content: SupplyDemand },
   {
     id: "why-kubernetes",
     bookId: "kubernetes",
@@ -378,6 +383,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
+  { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–02장 공개 · 생산·고용·물가·정책 등 나머지 장은 제작 예정입니다.", Intro: EconomicsIntro },
   {
     id: "computer",
     categoryId: "technology",

@@ -451,3 +451,8 @@
 - `Plan.mdx` / `PlanLab.tsx` / 독립 `plan.mjs`·타입. 동일 모델로 단계 그림·그래프·75개 월말 행·판정을 연결한다.
 - 원 단위 표시만 반올림, 현금 0 경계·목표 소수 오차 1e-7원 허용. 부채 보존·이체 총액 보존·소비 1회·0/1/24개월 경계·재실행 검증.
 - 실행·배포 증거는 [MONEY-10-VERIFICATION.md](MONEY-10-VERIFICATION.md), 다음 작업 지시는 [MONEY-REVIEW-SESSION.md](MONEY-REVIEW-SESSION.md).
+
+
+## 20. 두 번째 책 착수 · 2026-10-18
+
+‘경제 뉴스를 읽는 원리’의 12장/6배치 계획은 [ECONOMICS-TEXTBOOK-PLAN.md](ECONOMICS-TEXTBOOK-PLAN.md), 독립 실행 프롬프트는 [ECONOMICS-SESSION-PROMPTS.md](ECONOMICS-SESSION-PROMPTS.md)에서 관리한다. 이번 범위는 소개·01·02다. 첫 권 본문·계산·읽음 ID는 변경하지 않는다. 구현·배포의 실제 결과는 [배치 A 검증](ECONOMICS-BATCH-A-VERIFICATION.md)에 남긴다. 이 절 이전의 ‘다른 권은 후속’ 문구는 당시 범위 기록이다.
