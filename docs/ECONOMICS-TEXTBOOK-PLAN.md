@@ -1,7 +1,7 @@
 # 경제 뉴스를 읽는 원리 — 제작 계획
 
 작성일: 2026-10-18 (KST). 시작 main: `2483fc7e7203dc0960de1d563a5fb18e6821d870`.
-상태: 배치 A 제작 중. 실행·게시 증거는 `ECONOMICS-BATCH-A-VERIFICATION.md`에서 구분한다.
+상태: 배치 A 소개·01·02 구현·main 반영·최초 Pages 게시 확인. 모바일/reduced-motion 실제 실행은 환경 제약으로 미검증. 실행·게시 증거는 `ECONOMICS-BATCH-A-VERIFICATION.md`에서 구분한다.
 
 ## 목적과 경계
 
