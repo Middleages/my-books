@@ -159,3 +159,7 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 10장은 소득·생활비·예정 상환·목표 적립을 24개월의 세 경로로 연결합니다.
 검증: [MONEY-10-VERIFICATION](docs/MONEY-10-VERIFICATION.md).
 책 전체 점검 결과: [MONEY-BOOK-REVIEW](docs/MONEY-BOOK-REVIEW.md). 당시 작업 지시: [MONEY-REVIEW-SESSION](docs/MONEY-REVIEW-SESSION.md).
+
+## 쿠버네티스 선택 실습 부록
+
+소개·01–12와 [환경과 첫 배포](https://middleages.github.io/my-books/#/kubernetes/lab-first-deployment)·[운영과 복구](https://middleages.github.io/my-books/#/kubernetes/lab-recovery)·[폐쇄망과 공존](https://middleages.github.io/my-books/#/kubernetes/lab-airgap)을 제공한다. [최소 앱·manifest·chart](examples/kubernetes/README.md)는 직접 빌드한 로컬 이미지 경로를 사용한다. YAML 검사·Helm 로컬 렌더와 실제 클러스터 설치/복원 성공은 다르며, 후자는 미실행이다. [G 검증 기록](docs/KUBERNETES-BATCH-G-VERIFICATION.md)을 참조한다.

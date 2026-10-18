@@ -1,0 +1,135 @@
+import { RecoveryScopeLab } from '../../components/kubernetes/AppendixLabs';
+import { Check } from '../network/shared';
+
+<section className="prose">
+
+<p className="lead">Deployment를 되돌리는 것과 잃어버린 클러스터·데이터를 되살리는 일은 다릅니다. 무엇을 어디에 보관했고 무엇으로 복구를 확인할지 먼저 나눕니다.</p>
+
+<div className="learning-goals">
+
+**완료 목표:** manifest·datastore/원래 token·PV 파일·외부 DB의 복구 범위를 구분하고 별도 일회용 VM의 복원 확인표를 작성하기.
+
+</div>
+
+## 1. 백업은 한 개의 파일 이름이 아니다
+
+<div className="k8-table" role="region" aria-label="백업 대상과 복원 범위" tabIndex={0}>
+
+| 보관 대상 | 되살리는 것 | 포함하지 않는 것 |
+| --- | --- | --- |
+| Git의 manifest·chart·values·이미지 digest·설치 설정 | 원하는 명세·재배포 재료 | 런타임 API 기록, 데이터 파일 |
+| 클러스터 datastore + 원래 server token | API 객체와 클러스터 상태의 복원 재료 | PV 파일·외부 DB 데이터·이미지 tar |
+| PV 파일의 일관된 별도 사본 | 앱이 읽는 실제 파일 | PVC/PV 객체·마운트 권한 자동 복구 |
+| 외부 DB의 DB별 백업·로그·복구 절차 | DB의 데이터와 시점 | 앱 코드와 DB 스키마 호환성 자동 보장 |
+
+</div>
+
+API에서 PVC 이름이 보인다고 원래 파일도 있다고 판단하지 마세요. local-path 디렉터리는 노드 디스크에 있습니다. 원본 VM과 같은 디스크의 사본만 보관하면 VM·디스크 손실에 함께 사라질 수 있습니다. 파일/DB는 앱 쓰기 정지·DB의 일관된 백업 방식·복원 시점 정합성을 별도로 설계합니다.
+
+</section>
+<RecoveryScopeLab />
+<section className="prose">
+
+## 2. 기본 경로: 단일 server SQLite
+
+이 책의 기본 후보는 SQLite입니다. 기본 data-dir에서 공식 백업 대상은 `/var/lib/rancher/k3s/server/db/`와 `/var/lib/rancher/k3s/server/token`입니다. token은 datastore 안의 기밀 데이터를 복호화하는 데 필요하며 다른 token으로 바꿔 복원할 수 없습니다. 사용자 지정 data-dir이면 실제 경로를 기록합니다.
+
+아래는 **실습 VM에서 서비스 중단을 허용하는** 일관성 확보 경로입니다. 원본 서비스가 멈추므로 운영 서버에서 실행하는 예가 아닙니다. 백업 파일에는 Secret 등 민감한 내용이 포함될 수 있습니다. 접근 제한·암호화·노드 밖 보관·보존 기간을 정하고 원문을 이 사이트나 공개 Git에 올리지 않습니다.
+
+```sh
+# 원본 일회용 VM. 기본 SQLite만 해당. etcd에는 이 경로를 섞지 않음.
+sudo install -d -m 700 /var/backups/books-k3s
+sudo systemctl stop k3s
+sudo tar -C /var/lib/rancher/k3s/server -czf /var/backups/books-k3s/sqlite-lab.tgz db token
+sudo tar -C /etc/rancher -czf /var/backups/books-k3s/node-identity.tgz node
+sudo chmod 600 /var/backups/books-k3s/sqlite-lab.tgz /var/backups/books-k3s/node-identity.tgz
+# 성공/실패를 확인한 뒤 서비스는 반드시 다시 시작
+sudo systemctl start k3s
+sudo sha256sum /var/backups/books-k3s/sqlite-lab.tgz
+```
+
+같은 node-name으로 등록하는 복원에는 `/etc/rancher/node/password`도 원래 값이 필요합니다. 이 디렉터리의 별도 사본은 node ID가 있는 경우도 포함합니다. datastore 안의 node-password Secret과 새 VM이 생성한 password가 다르면 재등록이 거부될 수 있습니다. server token과 노드 password는 다른 파일입니다.
+
+백업 실패 시 아카이브를 정상으로 보관하지 않습니다. k3s 버전·OS·hostname/node-name·설치 인자·`/etc/rancher/k3s/`의 설정과 파일 참조·이미지 digest·생성 시각을 별도 보호된 기록으로 남깁니다. tar를 다른 저장 위치로 옮겨 해시를 비교합니다. 자동화한다면 실패해도 서비스 재시작이 수행되도록 정리 동작을 설계해야 합니다.
+
+**복원 리허설:** 원본과 네트워크를 격리한 두 번째 일회용 VM을 준비합니다. 원본과 같은 k3s 버전·설정·node-name을 재현하되 같은 이름의 두 노드가 서로 연결되지 않게 합니다. 첫 배포의 설치 스크립트를 검토·준비하되 **복원 VM은 서비스가 한 번도 시작되지 않도록 SKIP_START로 설치**합니다. 새 클러스터가 먼저 만든 TLS/credential 파일과 옛 datastore를 섞지 않습니다. 기존 설치에 덮어쓰는 복원 명령이 아닙니다.
+
+```sh
+# 복원 전용 새 VM에서만. 검토한 스크립트와 본인 백업을 이미 안전하게 반입.
+sudo env INSTALL_K3S_VERSION='v1.35.9+k3s1' INSTALL_K3S_SKIP_START=true \
+  sh /tmp/books-k3s-install.sh
+# 원본과 같은 설치 설정·node-name은 시작 전에 별도 재현.
+# 다음 블록은 하나라도 실패하면 종료. 이미 시작한 VM이면 새 빈 VM으로 다시 준비.
+(
+  set -eu
+  sudo test ! -e /var/lib/rancher/k3s/server/db
+  sudo test ! -e /var/lib/rancher/k3s/server/tls
+  sudo test ! -e /var/lib/rancher/k3s/server/cred
+  sudo install -d -m 700 /var/lib/rancher/k3s/server
+  # 신뢰한 본인 백업만. archive의 상대 경로는 db/와 token.
+  sudo tar -C /var/lib/rancher/k3s/server -xzf /root/sqlite-lab.tgz
+  sudo chmod 600 /var/lib/rancher/k3s/server/token
+  sudo install -d -m 700 /etc/rancher
+  sudo tar -C /etc/rancher -xzf /root/node-identity.tgz
+  sudo chmod 600 /etc/rancher/node/password
+  sudo systemctl start k3s
+)
+sudo k3s kubectl get nodes,pv
+sudo k3s kubectl get deployment,service,pvc -n books-lab
+```
+
+각 명령이 실패하면 다음 단계로 넘어가지 않습니다. token도 백업의 원래 값으로 복원합니다. API 객체가 보이면 **API 기록 복원 관측**입니다. PV 파일은 아직 별도입니다. 바뀐 IP·인증서 SAN·노드 경로·권한·이미지 접근을 확인하고 정상적인 마운트와 앱 응답까지 검사합니다. 기본 study-web은 무상태라 PV 복원을 시험하지 못합니다. 파일 실습을 추가한다면 07장의 단일 replica `study-data`를 별도 일회용 볼륨으로 준비하고, 테스트 문자열과 해시를 미리 기록한 뒤 쓰기를 멈춰 사본을 보관합니다.
+
+## 3. embedded etcd를 선택한 경우만
+
+이 절은 기본 SQLite 절차의 다음 단계가 아닙니다. 처음부터 embedded etcd로 구성한 **별도 실습**에만 적용합니다. 복원용 새 VM은 위처럼 SKIP_START로 설치하고 원본 설정·node-name을 시작 전에 재현합니다. etcd 파일을 SQLite처럼 복사하지 말고 공식 snapshot 절차를 사용합니다. 다음 명령은 실제 실행하지 않았습니다.
+
+```sh
+# etcd 기반 원본 실습 VM에서만. snapshot 파일 위치·시간·원래 token을 별도 보관.
+sudo k3s etcd-snapshot save --name books-lab
+sudo k3s etcd-snapshot ls
+# 원본의 /etc/rancher/node도 위와 같이 별도 보호된 사본으로 보관
+# 별도 복원 VM에서만: 같은 버전·설정, 서비스 중지, snapshot과 token 반입 후
+sudo systemctl stop k3s
+# 같은 node-name 복원 전 원래 노드 신원도 반입
+sudo tar -C /etc/rancher -xzf /root/node-identity.tgz
+sudo chmod 600 /etc/rancher/node/password
+# token-file에는 원래 token을 보호해 보관. 값 자체를 명령/로그에 적지 않음.
+sudo k3s server --cluster-reset \
+  --cluster-reset-restore-path=/root/books-lab-snapshot \
+  --token-file=/root/books-lab-original-token --etcd-s3=false
+# reset 완료 메시지를 확인한 뒤 reset 인자 없이 정상 서비스로 시작
+sudo systemctl start k3s
+```
+
+`cluster-reset`은 멤버십을 재구성하는 영향이 있습니다. 여기서는 원본과 격리한 단일 server 복원 리허설만 다룹니다. 원본 클러스터나 다중 노드에서 복사해 실행하지 않습니다. S3를 쓰던 구성에서 로컬 사본으로 복원하므로 예시는 `--etcd-s3=false`를 지정했습니다. 실제 선택 버전의 snapshot·새 호스트 복원 절차, 설정에 있는 node-name·datastore 조건을 반드시 대조합니다. 외부 datastore를 쓰면 해당 DB의 공식 백업·복원 절차를 따릅니다.
+
+## 4. ‘백업 파일 있음’에서 ‘복구 확인’으로
+
+복원 전용 환경에서 다음 결과를 각각 남깁니다. 이 교재에서는 **클러스터·PV·DB 복원 모두 미실행**입니다. 아래 표는 독자가 채울 확인표이며 통과 기록이 아닙니다.
+
+<div className="k8-table" role="region" aria-label="복구 리허설 확인표" tabIndex={0}>
+
+| 단계 | 확인할 증거 | 실패 시 다음 조사 |
+| --- | --- | --- |
+| 반입 | 버전·사본 해시·원래 token 보관 여부 | 잘못된 사본·data-dir·접근 권한 |
+| API | nodes, Deployment·Service·PVC 객체 | k3s 로그·인증·datastore·node identity |
+| 파일 | 실제 마운트 경로·내용·해시·소유권 | PV 객체와 파일 경로 매칭·파일 사본 |
+| 앱 | 이미지·Ready·Service·실제 응답 | 12장의 경계별 관측 |
+| 외부 DB | 복원 시점·테스트 데이터·스키마 호환성 | DB별 복구 로그·트랜잭션 일관성 |
+| 반복 | 원본 없이 다른 VM에서 다시 수행 가능 | 누락 파일·권한·네트워크 의존성 |
+
+</div>
+
+07장에서 PVC가 백업이 아니었던 이유가 여기에서 연결됩니다. 목표 복구 시간과 허용 데이터 손실을 정하고 그 시간 안에 실제로 복원할 수 있는지 리허설해야 합니다. 테스트 VM을 정리하기 전 원본 백업과 복원 기록이 다른 위치에 남았는지도 확인합니다.
+
+<Check question="manifest와 PVC 이름이 있으면 local-path 파일도 복구되나요?" children="아닙니다. 명세·API 객체·실제 노드 파일은 다른 보관 대상입니다. 파일 사본과 마운트·내용 검증이 필요합니다." />
+<Check question="Helm rollback을 백업 복원 대신 써도 될까요?" children="Pod template이나 릴리스 명세의 변경 이력입니다. datastore·PV·외부 DB의 복구 재료와 절차를 대신하지 않습니다." />
+
+## 근거와 다음 연결
+
+확인일 **2026-10-18**. [K3s datastore별 백업·복원과 token](https://docs.k3s.io/datastore/backup-restore), [etcd snapshot·새 호스트 복원](https://docs.k3s.io/cli/etcd-snapshot), [노드 재등록과 node-password](https://docs.k3s.io/architecture#how-agent-node-registration-works), [server의 token-file·data-dir 옵션](https://docs.k3s.io/cli/server), [local-path 저장소](https://docs.k3s.io/storage). 이 부록은 HA·모든 DB의 재해복구 설계를 제공하지 않습니다.
+
+[환경과 첫 배포](#/kubernetes/lab-first-deployment) · [폐쇄망과 기존 환경](#/kubernetes/lab-airgap)
+
+</section>

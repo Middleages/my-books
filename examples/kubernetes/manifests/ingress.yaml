@@ -1,0 +1,19 @@
+# Optional HTTP-only check on a disposable VM without an existing 80/443 listener.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: study-web
+  namespace: books-lab
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: study.example.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: study-web
+                port:
+                  number: 80

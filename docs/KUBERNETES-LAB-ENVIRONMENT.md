@@ -85,3 +85,30 @@ K3s 공식 v1.35 릴리스 표와 본문을 확인했다. 릴리스 본문에 �
 - 기본 template은 로컬 출력만. 적용 성공을 가정한 이력과 Pod Ready 관측은 구분한다. DB·PVC는 모델에서 변경하거나 복원하지 않는다.
 - 진단 8사례는 가상 증거 묶음. 08 자원·04 Service·05 Ingress/TLS 모델의 판정을 재사용한다. 관련 보조 관측을 명시하며 명령 하나가 모든 사실을 출력한다고 표현하지 않는다.
 - CLI·kubectl·OpenSSL 예시는 실행 위치와 전제 조건을 설명한 형태이며 실제 클러스터/실제 도메인에 실행하지 않았다.
+
+## 배치 G · 실행 패키지와 실제 확인 범위 (현재 상태)
+
+2026-10-18. 위 A–F의 ‘구현 전/미제공’ 문장은 당시 기록이며 현재는 아래가 우선한다.
+k3s/OS/controller/runtime 후보는 그대로이고 **클러스터 설치·배포·복원은 여전히 미실행**이다.
+
+- `examples/kubernetes/app/server.py`와 Dockerfile, manifest, chart 0.1.0, README·정적 계약 검사 제공.
+- 앱 계약: HTTP 8080, Service 80→8080, namespace books-lab, Deployment/Service study-web.
+  `/` HTML에 비밀이 아닌 APP_MESSAGE와 APP_VERSION, live 200/실패500, ready 200/미준비503.
+  앱의 로컬 Python 3.12 HTTP 실행과 4개 테스트 확인. 컨테이너 내부 Python 실행은 미검증.
+- base image: `python:3.13.7-slim-bookworm@sha256:adafcc17694d715c905b4c7bebd96907a1fd5cf183395f0ebc4d3428bd22d92d`.
+  Docker Hub manifest GET 200과 linux/amd64 descriptor
+  `sha256:781449467ffb6f04218f09b1ecdcdc7d22b289ee5da9ec498b024e24ad7a6db7` 확인.
+  이미지 pull/build/run 확인은 아니다. 앱 v1/v2는 독자가 직접 빌드·import하는 로컬 태그이며
+  제작 세션에서 생성한 앱 image ID/tar 해시는 없다. 존재하지 않는 공개 registry 주소를 제공하지 않는다.
+- Helm 실제 실행: **v4.3.1+gc0d08d0**, linux-amd64 공식 tar
+  SHA256 `0403a88ae20913d11b10a2467b50087721fea7581736da6b9d3992f5357fe54b`, 공식 sha256sum 일치.
+  `helm lint --strict`, `helm template --kube-version 1.35.9`의 v1/v2·Ingress 옵션을 확인했다.
+  설치·upgrade·rollback·API admission은 미실행이다.
+- 기본 manifest의 imagePullPolicy Never는 로컬 import 선행 조건. 다중 노드 지원 완료가 아니며
+  각 노드 이미지 준비가 필요하다. registry 전환은 실제 주소/digest와 pull 정책을 별도로 바꾼다.
+- probes: 초기화 작업 없는 작은 앱의 live endpoint를 startup에도 사용. 외부 DB 연결 없음.
+  requests 100m/64Mi, limits 500m/128Mi는 실습 앱 값이며 기존 부하 모델의 500m/256Mi와 목적이 다르다.
+- 선택 Ingress는 HTTP Prefix /, 기본 Traefik·ServiceLB와 기존 80/443 리스너 없음 전제.
+  TLS는 일회용 자기서명 인증서·명시적 curl --cacert 안내만 제공하며 실행 미검증.
+- SQLite의 db+원래 token·같은 노드 이름용 /etc/rancher/node 신원 사본, embedded etcd snapshot 대안, PV 파일·외부 DB 분리 복구 리허설은
+  별도 VM용 안내다. 실제 복원 성공을 기록한 것이 아니다. 운영 서버·기존 NGINX·사내 DB 변경 없음.

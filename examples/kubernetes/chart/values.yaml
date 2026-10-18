@@ -1,0 +1,6 @@
+replicas: 1
+image: study-web:v1
+message: hello books-lab
+ingress:
+  enabled: false
+  host: study.example.test

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { books, chapters, chapterHref } from "./catalog";
 import { parseRead, storageKey } from "./reading.mjs";
 import "./style.css";
+import { kubernetesAppendices } from "./kubernetesAppendices";
 import { Library } from "./components/Library";
 function App() {
   const [route, setRoute] = useState(location.hash.slice(1) || "/");
@@ -24,8 +25,9 @@ function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
   const chapter = chapters.find((c) => route === `/${c.bookId}/${c.id}`);
+  const appendix = kubernetesAppendices.find((a) => route === `/kubernetes/${a.id}`);
   const book = books.find(
-    (b) => b.id === chapter?.bookId || route === `/${b.id}`,
+    (b) => b.id === chapter?.bookId || route === `/${b.id}` || (b.id === "kubernetes" && !!appendix),
   );
   const bookChapters = chapters.filter((c) => c.bookId === book?.id);
   const count = (id: string) =>
@@ -34,8 +36,8 @@ function App() {
     ? bookChapters[bookChapters.indexOf(chapter) + 1]
     : undefined;
   useEffect(() => {
-    document.title = `${chapter?.title || book?.title || "직접 실험하며 배우는 교과서"} · my books`;
-  }, [chapter, book]);
+    document.title = `${chapter?.title || appendix?.title || book?.title || "직접 실험하며 배우는 교과서"} · my books`;
+  }, [chapter, appendix, book]);
   function toggleRead(id: string) {
     const updated = read.includes(id)
       ? read.filter((x) => x !== id)
@@ -88,7 +90,7 @@ function App() {
             <nav aria-label="챕터 목차">
               <a
                 href={`#/${book.id}`}
-                aria-current={!chapter ? "page" : undefined}
+                aria-current={!chapter && !appendix ? "page" : undefined}
               >
                 책 소개
               </a>
@@ -103,13 +105,14 @@ function App() {
                   {read.includes(c.readId) && <small>✓</small>}
                 </a>
               ))}
+              {book.id === "kubernetes" && kubernetesAppendices.map(a => <a key={a.id} href={`#/kubernetes/${a.id}`} aria-current={appendix?.id === a.id ? "page" : undefined}><span>부록</span>{a.title}</a>)}
             </nav>
             <p className="sidebar-note">
               {count(book.id)} / {bookChapters.length} 챕터 읽음
             </p>
           </aside>
           <main id="main-content" tabIndex={-1} className="chapter">
-            {chapter ? (
+            {appendix ? <><p className="breadcrumb">{book.title} / 선택 실습 부록</p><h1>{appendix.title}</h1><appendix.Content key={appendix.id}/><a href="#/kubernetes">책 소개·목차로 →</a></> : chapter ? (
               <>
                 <p className="breadcrumb">
                   {book.title} / {chapter.number}

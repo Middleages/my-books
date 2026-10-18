@@ -1,6 +1,6 @@
 # 웹앱 운영자를 위한 쿠버네티스 — 교재 계획
 
-작성일: 2026-10-18 (KST). 상태: **배치 A~D 소개·01~08 구현. E~G 미착수, 실제 클러스터 실습 미실행**.
+작성일: 2026-10-18 (KST). 상태: **배치 A–F 소개·01–12 공개. G 선택 부록·실습 패키지 구현 및 통합 검증 중. 실제 클러스터 실습 미실행**.
 기획 기준 main: `2b09163`. 실제 구현은 항상 최신 main에서 시작한다.
 
 관련 문서: [전역 지침](../AGENTS.md), [작성 기준](CONTENT-AUTHORING.md), [홈 구조·표지 결정](HOME-INFORMATION-ARCHITECTURE.md), [네트워크 계획](NETWORK-TEXTBOOK-PLAN.md), [세션별 실행 프롬프트](KUBERNETES-SESSION-PROMPTS.md).
@@ -162,7 +162,7 @@ Ingress를 기존 네트워크 교재와의 연결 및 k3s 사례로 설명하�
 | D | 07~08 구현 | 198 테스트·빌드·게시 핵심 조작 통과 / 지정 폭·reduced-motion 미검증 | dfec0bc · Actions/Pages 성공 | 미실행 |
 | E | 09–10 구현 | 214 테스트·빌드·SSR·게시 핵심 조작 통과 / 지정 폭·reduced-motion 미검증 | 2483fc7 · Actions/Pages 성공 | 미실행 |
 | F | 11–12 구현 | 237 테스트·빌드·SSR·게시 핵심 조작 통과 / 지정 폭·reduced-motion 미검증 | 9329cbe · Actions/Pages 성공 | Helm·클러스터 미실행 |
-| G | 미착수 | 미실행 | 미반영 | 미실행 |
+| G | 세 부록·앱/manifest/chart 구현 | 모델·로컬 HTTP·Helm 렌더 확인, 게시 점검 중 | 반영 대기 | 설치·클러스터·복원 미실행 |
 
 배치 A의 상세 결과·환경 제한·게시 버전은 [배치 A 검증](KUBERNETES-BATCH-A-VERIFICATION.md), 선택 실습 계약은 [실습환경](KUBERNETES-LAB-ENVIRONMENT.md)에 기록한다.
 
@@ -175,3 +175,5 @@ Ingress를 기존 네트워크 교재와의 연결 및 k3s 사례로 설명하�
 배치 E의 상세 결과는 [배치 E 검증](KUBERNETES-BATCH-E-VERIFICATION.md)에 기록한다.
 
 배치 F의 모델·진단 사례·검증 범위는 [배치 F 검증](KUBERNETES-BATCH-F-VERIFICATION.md)에 기록한다.
+
+배치 G의 브라우저 모델·manifest 정적 검사·Helm 렌더·클러스터 실행·배포는 [배치 G 검증](KUBERNETES-BATCH-G-VERIFICATION.md)에서 구분한다.

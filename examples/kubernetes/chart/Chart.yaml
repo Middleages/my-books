@@ -1,0 +1,6 @@
+apiVersion: v2
+name: study-web
+version: 0.1.0
+appVersion: v1
+description: Disposable books-lab app without hooks, CRDs or dependencies
+type: application

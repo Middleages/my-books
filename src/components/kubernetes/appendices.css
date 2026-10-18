@@ -1,0 +1,10 @@
+.k8g-scope {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+.k8g-scope article,.k8g-dependencies li {border:2px solid #aac7d7;border-radius:12px;padding:16px;background:#f4f8fb;min-width:0;overflow-wrap:anywhere}
+.k8g-scope article h3,.k8g-dependencies h3 {margin-top:0}
+.k8g-lab select {display:block;max-width:100%;margin:8px 0;padding:8px;font:inherit}
+.k8g-dependencies {margin:24px 0;overflow-wrap:anywhere}
+.k8g-dependencies ol {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-left:24px}
+.k8g-dependencies figcaption {margin-bottom:12px}
+.k8g-journey {border-left:3px solid #437a9d;padding-left:26px}
+.k8g-journey li {padding:8px}
+@media(max-width:650px){.k8g-scope,.k8g-dependencies ol{grid-template-columns:minmax(0,1fr)}}
