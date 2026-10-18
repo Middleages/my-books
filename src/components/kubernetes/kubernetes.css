@@ -1,0 +1,356 @@
+.k8-lab {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid #a9c0ce;
+  border-radius: 18px;
+  background: #f4f8fb;
+  color: #203441;
+  min-width: 0;
+}
+.k8-lab h2 {
+  margin: 0.3rem 0 1rem;
+}
+.k8-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #326787;
+}
+.k8-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.k8-controls label,
+.k8-predict {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.k8-lab select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  background: white;
+  color: #203441;
+  padding: 0.65rem;
+  border: 1px solid #8ba2b0;
+  border-radius: 8px;
+  font: inherit;
+}
+.k8-predict {
+  margin: 1rem 0;
+}
+.k8-primer,
+.k8-recovery-scene {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  align-items: center;
+}
+.k8-primer {
+  grid-template-columns: 1fr 40px 1.4fr;
+  margin: 1.5rem 0;
+}
+.k8-primer figcaption {
+  grid-column: 1/-1;
+  font-size: 0.9rem;
+}
+.k8-image {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 2px dashed #567c93;
+  border-radius: 12px;
+  padding: 1rem;
+  background: #eaf2f7;
+}
+.k8-arrow {
+  text-align: center;
+  font-size: 2rem;
+}
+.k8-instance-group {
+  display: grid;
+  gap: 0.7rem;
+}
+.k8-instance-group > div {
+  border: 1px solid #478e7c;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background: #eef8f3;
+}
+.k8-vm,
+.k8-boundary {
+  border: 2px solid #668698;
+  border-radius: 14px;
+  padding: 1rem;
+  background: white;
+}
+.k8-vm h3,
+.k8-boundary h3 {
+  font-size: 1rem;
+  margin: 0 0 0.8rem;
+}
+.k8-agent {
+  padding: 0.7rem;
+  background: #edf2f6;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.k8-instances {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+.k8-instances > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.8rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.k8-running {
+  border: 2px solid #37836e;
+  background: #e6f4ec;
+}
+.k8-stopped {
+  border: 2px dashed #aa5c4e;
+  background: #fff0ed;
+}
+.k8-down {
+  border-color: #aa5c4e;
+  background: repeating-linear-gradient(
+    135deg,
+    #fff8f6,
+    #fff8f6 12px,
+    #f8eeeb 12px,
+    #f8eeeb 24px
+  );
+}
+.k8-caption,
+.k8-assumption {
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.k8-assumption {
+  border-top: 1px solid #bccbd4;
+  padding-top: 0.8rem;
+}
+.k8-lab .fv-playback {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.k8-lab .fv-playback button {
+  font: inherit;
+  font-size: 0.9rem;
+  background: white;
+  color: #234757;
+  border: 1px solid #849fae;
+  border-radius: 7px;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+}
+.k8-lab .fv-playback button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.k8-lab :focus-visible {
+  outline: 3px solid #9a5213;
+  outline-offset: 3px;
+}
+.k8-explanation {
+  border-left: 4px solid #286f97;
+  background: #e7f0f8;
+  padding: 1rem;
+  min-height: 130px;
+}
+.k8-explanation h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+.k8-explanation p {
+  margin: 0.6rem 0 0;
+}
+.k8-feedback {
+  padding: 0.8rem;
+  border: 1px solid #8ba2b0;
+  background: white;
+  border-radius: 8px;
+}
+.k8-static {
+  margin-top: 1rem;
+}
+.k8-static summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.k8-static ol {
+  padding-left: 1.4rem;
+}
+.k8-static li {
+  margin-top: 0.8rem;
+}
+.k8-identity {
+  background: white;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.k8-users {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.k8-node {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.75rem;
+  border: 1px solid #a5b9c5;
+  background: #fff;
+  border-radius: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k8-node strong {
+  font-size: 0.92rem;
+}
+.k8-node span,
+.k8-node small {
+  font-size: 0.78rem;
+}
+.k8-active {
+  border: 2px solid #17678e;
+  background: #dceef8;
+  box-shadow: 0 0 0 2px #c2dce9;
+}
+.k8-plane,
+.k8-worker {
+  padding: 0.8rem;
+  margin-top: 0.7rem;
+  border: 1px dashed #8da8ba;
+  border-radius: 10px;
+  background: #f3f7fa;
+}
+.k8-worker {
+  background: #f0f7f2;
+  border-color: #82a58c;
+}
+.k8-lab h4 {
+  margin: 0 0 0.7rem;
+  font-size: 0.9rem;
+}
+.k8-chain {
+  display: grid;
+  grid-template-columns: 1fr 24px 1fr 24px 1fr;
+  align-items: center;
+  gap: 0.2rem;
+}
+.k8-link {
+  text-align: center;
+}
+.k8-store {
+  font-size: 0.8rem;
+  margin: 0.7rem 0 0;
+}
+.k8-http {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+  border-top: 2px dotted #658a7b;
+  padding-top: 0.8rem;
+}
+.k8-http p {
+  font-size: 0.85rem;
+}
+.k8-edge {
+  padding: 0.7rem;
+  background: #163e56;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.k8-permissions {
+  background: white;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: 1px solid #b8c8d1;
+  border-radius: 8px;
+}
+.k8-permissions h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+.k8-permissions p {
+  font-size: 0.85rem;
+}
+.k8-lab small {
+  line-height: 1.5;
+}
+.k8-lab * {
+  box-sizing: border-box;
+}
+@media (max-width: 650px) {
+  .k8-lab {
+    padding: 1rem 0.7rem;
+  }
+  .k8-controls,
+  .k8-recovery-scene,
+  .k8-http {
+    grid-template-columns: 1fr;
+  }
+  .k8-primer {
+    grid-template-columns: 1fr;
+  }
+  .k8-arrow {
+    transform: rotate(90deg);
+  }
+  .k8-instances {
+    grid-template-columns: 1fr;
+  }
+  .k8-chain {
+    grid-template-columns: 1fr;
+  }
+  .k8-link {
+    transform: rotate(90deg);
+  }
+  .k8-users {
+    grid-template-columns: 1fr;
+  }
+  .k8-boundary {
+    padding: 0.6rem;
+  }
+  .k8-plane,
+  .k8-worker {
+    padding: 0.6rem;
+  }
+  .k8-node strong {
+    font-size: 1rem;
+  }
+  .k8-node span,
+  .k8-node small {
+    font-size: 0.85rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .k8-lab *,
+  .k8-primer * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.k8-table { max-width: 100%; overflow-x: auto; margin: 1rem 0; }
+.k8-table table { min-width: 560px; margin: 0; }
+.k8-table th, .k8-table td { overflow-wrap: anywhere; }
+.k8-table:focus-visible { outline: 3px solid #9a5213; outline-offset: 3px; }

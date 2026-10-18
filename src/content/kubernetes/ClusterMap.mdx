@@ -1,0 +1,99 @@
+import { ClusterLab } from '../../components/kubernetes/FoundationLabs';
+import { Check } from '../network/shared';
+
+<p className="lead">kubectl로 앱을 배포하는 요청과 브라우저로 앱을 사용하는 요청은 다른 길을 갑니다. 같은 VM 안에서도 “상태를 관리하는 역할”과 “앱을 실행하는 역할”을 나누어 볼 수 있습니다.</p>
+<div className="learning-goals">
+
+**학습 목표**
+- API·controller·scheduler·kubelet·runtime의 역할을 구분합니다.
+- 명령을 보내는 제어 경로와 앱의 HTTP 경로를 나누어 설명합니다.
+- context·namespace 선택과 권한 부여가 서로 다름을 확인합니다.
+
+</div>
+<section className="prose">
+
+## 1. 클러스터는 역할들의 협력이다
+
+클러스터는 앱을 실행하는 노드와 그 상태를 관리하는 구성 요소가 협력하는 시스템입니다. **노드(node)**는 앱을 실행할 수 있는 머신으로, VM일 수도 있습니다. **Control plane(제어 영역)**은 요청을 받아 클러스터 상태를 저장하고 조정하는 역할들입니다. 역할이 다르다고 반드시 서로 다른 컴퓨터여야 하는 것은 아닙니다.
+
+k3s의 기본 단일 server 구성은 제어 역할과 kubelet·runtime 같은 실행 역할을 한 머신에서 수행할 수 있습니다. 이것은 “클러스터가 아니다”라는 뜻도, “고가용성이 생겼다”라는 뜻도 아닙니다. Kubernetes의 공통 개념과 k3s가 묶어 제공하는 방식을 구분합니다.
+
+<div className="k8-table" role="region" aria-label="비교 표 · 좁은 화면에서는 좌우로 이동" tabIndex={0}>
+
+| 이름 | 어떤 질문에 답하나? |
+| --- | --- |
+| 운영자와 kubectl | 어느 클러스터에 어떤 상태를 요청할까? kubectl은 API를 사용하는 명령줄 도구 |
+| API server | 이 요청을 받아도 되는가? 클러스터 리소스 상태를 읽고 쓰는 접점 |
+| datastore | 받아들인 클러스터 상태를 어디에 보관할까? 앱의 업무 DB와는 다름 |
+| controller | 원하는 상태와 실제 관측이 다르면 무엇을 조정할까? |
+| scheduler | 아직 노드가 정해지지 않은 Pod를 어느 노드에 둘까? |
+| kubelet | 이 노드에 배정된 Pod의 컨테이너를 어떻게 유지할까? |
+| container runtime | 컨테이너를 실제로 시작하고 중단하는 작업을 어떻게 수행할까? |
+
+</div>
+
+
+**Pod**는 Kubernetes가 다루는 컨테이너 실행 단위입니다. 여기서는 Pod 하나에 `study-web` 컨테이너 하나만 둡니다. **Deployment**는 앱의 원하는 배포 상태를 선언하는 리소스로 소개하고, Pod 소유 관계와 교체 과정은 다음 배치에서 다룹니다. **CRI**는 kubelet과 runtime이 통신하는 인터페이스 이름입니다.
+
+## 2. 설정을 보낼 때와 앱에 접속할 때
+
+`kubectl`의 요청을 API가 받아들여도 컨테이너가 이미 실행됐다는 뜻은 아닙니다. controller와 scheduler는 API를 통해 상태를 관찰하고 기록합니다. kubelet은 자신에게 배정된 Pod를 관찰하고 runtime에 실행을 요청합니다. 각 역할은 비동기로 반복해서 일하므로 그림의 단계는 이해를 위한 관찰 순서입니다.
+
+브라우저의 일반적인 앱 HTTP 요청은 설정된 외부 진입과 Pod를 향합니다. **API server가 모든 웹 요청을 중계하지 않습니다.** 아래 그림은 이미 구성된 Ingress controller와 Service를 이용하는 사례입니다. Ingress controller는 외부 요청을 받는 구성 요소, Service는 대상 Pod를 찾는 논리적 접점으로만 읽으세요. 이 장은 설치나 TLS 설정을 완료하는 안내가 아닙니다.
+
+</section>
+<ClusterLab />
+<section className="prose">
+
+## 3. context를 바꾸면 무엇이 바뀔까?
+
+**kubeconfig**는 kubectl이 접속할 클러스터 주소와 사용자 인증 정보 등의 연결 설정을 담는 파일입니다. 그 안의 **context**는 클러스터·사용자·기본 namespace를 묶어 선택하는 이름입니다. context 이름이 `admin`이라고 해서 권한이 생기는 것은 아닙니다. 서버는 실제 인증된 신원과 권한 규칙을 검사합니다.
+
+**namespace**는 많은 리소스의 이름과 관리 범위를 나누는 논리적 구획입니다. 같은 이름의 앱을 다른 namespace에 둘 수 있습니다. 하지만 namespace를 바꾸는 것만으로 그 안의 리소스를 수정할 권한이 생기지 않습니다. Node처럼 namespace에 속하지 않는 리소스도 있습니다.
+
+이 실험은 다음 가상 권한 계약을 사용합니다. 실제 클러스터의 기본 정책을 재현한 것은 아닙니다.
+
+<div className="k8-table" role="region" aria-label="비교 표 · 좁은 화면에서는 좌우로 이동" tabIndex={0}>
+
+| context | 대상 / 신원 | 실험에서 허용한 범위 |
+| --- | --- | --- |
+| lab-user | lab-cluster / app-editor | books-lab의 Deployment 생성. 다른 namespace와 Node 조회는 거부 |
+| lab-admin | lab-cluster / cluster-admin | 두 namespace의 Deployment 생성과 Node 조회 허용 |
+| remote-reader | remote-cluster / viewer | 배포와 Node 조회 거부. 다른 클러스터 선택을 보여 주는 조회자 |
+
+</div>
+
+
+앱 담당자에게는 담당 namespace의 필요한 권한을 주고, 클러스터 관리자는 노드·공통 네트워크·전체 권한 등을 관리합니다. **RBAC**는 역할에 작업 권한을 모으고 그 역할을 신원에 연결하는 방식입니다. RoleBinding의 namespace 범위와 ClusterRoleBinding의 클러스터 범위를 구분합니다. 모든 앱 담당자가 관리자 kubeconfig를 공유할 필요는 없습니다.
+
+실험에서 namespace를 `other`로 바꿔 거부를 관찰하고, `lab-admin`으로 바꿔 다시 비교하세요. 이것은 **이미 권한이 다른 신원으로 바꾼 것**이지, context 선택 기능이 권한을 만들어 준 것이 아닙니다. HTTP 경로에서는 kubectl context가 앱 로그인 정책이나 웹 주소를 바꾸지 않는 점도 확인하세요.
+
+## 4. 실제 명령을 실행하기 전 확인할 것
+
+다음은 kubeconfig가 준비된 **관리용 터미널**에서 확인하는 읽기 중심 명령입니다. 이 제작 세션에서는 실제 클러스터에 실행하지 않았습니다. namespace 이름은 가상 예시입니다.
+
+```sh
+kubectl config current-context
+kubectl config view --minify
+kubectl auth can-i create deployments.apps -n books-lab
+kubectl auth can-i list nodes
+kubectl get pods -n books-lab -o wide
+```
+
+`current-context`는 현재 선택 이름을, `view --minify`는 해당 연결 구성을 보여 줍니다. 인증 정보 원문을 드러내는 옵션은 붙이지 않습니다. `can-i`의 yes/no는 **그 신원이 해당 작업을 할 수 있는지**이며 앱 정상 여부가 아닙니다. 마지막 명령은 그 namespace의 Pod 관측입니다. 빈 목록이면 대상·namespace·배포 여부를 확인하고, Forbidden이면 권한을 먼저 확인합니다. 연결 실패라면 API 주소·네트워크·인증 설정을 구분해서 살펴야 합니다.
+
+<Check question="API가 배포 요청을 받았으니 웹 요청도 API를 통과할까요?" children="아닙니다. API는 클러스터 제어의 접점입니다. 이 책의 일반 HTTP 경로는 외부 진입과 대상 Pod를 사용합니다. API proxy나 port-forward 같은 별도 접근 방식은 이 그림의 가정 밖입니다." />
+<Check question="namespace를 books-lab으로 선택하면 그 안의 관리자일까요?" children="아닙니다. namespace는 요청 범위 선택입니다. 실제 신원에 연결된 RBAC 등 권한 규칙이 별도로 허용해야 합니다." />
+<Check question="scheduler가 컨테이너 프로세스를 직접 실행하나요?" children="아닙니다. scheduler는 Pod의 노드 배정을 기록합니다. 해당 노드의 kubelet과 runtime이 컨테이너 실행을 맡습니다." />
+
+## 근거와 모델의 경계
+
+확인일: **2026-10-18**. Kubernetes v1.35 공식 개념 문서를 기준으로 확인했습니다. 단일 노드·정상 이미지·충분한 자원·설정된 HTTP 진입을 가정하며 스케줄링 세부 규칙, admission, CNI 구성과 실패, 실제 제어 루프 지연은 생략합니다. 일반 Kubernetes의 etcd 설명을 k3s 단일 서버의 기본 datastore와 혼동하지 않습니다.
+
+- [Kubernetes v1.35 · 구성 요소](https://v1-35.docs.kubernetes.io/docs/concepts/overview/components/)
+- [Kubernetes v1.35 · kubeconfig와 context](https://v1-35.docs.kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/)
+- [Kubernetes v1.35 · RBAC](https://v1-35.docs.kubernetes.io/docs/reference/access-authn-authz/rbac/)
+- [K3s · 단일 서버와 역할](https://docs.k3s.io/architecture)
+- [K3s · 빠른 시작과 cluster access](https://docs.k3s.io/quick-start)
+
+</section>

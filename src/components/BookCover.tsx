@@ -12,7 +12,38 @@ export function BookCover({ bookId }: { bookId: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {bookId === "computer" ? (
+      {bookId === "kubernetes" ? (
+        <>
+          <rect
+            x="65"
+            y="12"
+            width="150"
+            height="97"
+            rx="14"
+            fill="currentColor"
+            fillOpacity=".06"
+          />
+          <path d="M96 41h88M140 41v30M93 71h94" />
+          <circle
+            cx="140"
+            cy="35"
+            r="16"
+            fill="currentColor"
+            fillOpacity=".12"
+          />
+          <path d="M132 35h16M140 27v16" />
+          {[80, 125, 170].map((x) => (
+            <g key={x} className="home-art-signal">
+              <rect x={x} y="71" width="30" height="24" rx="5" />
+              <path d={`M${x + 8} 79h14M${x + 8} 86h8`} />
+            </g>
+          ))}
+          <path
+            className="home-art-muted"
+            d="M20 60h35m-8-7 8 7-8 7M225 60h35m-8-7 8 7-8 7"
+          />
+        </>
+      ) : bookId === "computer" ? (
         <>
           <path
             className="home-art-muted"

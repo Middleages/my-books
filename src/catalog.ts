@@ -1,3 +1,6 @@
+import KubernetesIntro from "./content/kubernetes/Intro.mdx";
+import WhyKubernetes from "./content/kubernetes/WhyKubernetes.mdx";
+import ClusterMap from "./content/kubernetes/ClusterMap.mdx";
 import MoneyRepayment from "./content/money/Repayment.mdx";
 import MoneyCredit from "./content/money/Credit.mdx";
 import MoneySavings from "./content/money/Savings.mdx";
@@ -36,6 +39,26 @@ export type Chapter = {
   Content: ComponentType;
 };
 export const chapters: Chapter[] = [
+  {
+    id: "why-kubernetes",
+    bookId: "kubernetes",
+    readId: "kubernetes/why-kubernetes",
+    number: "01",
+    title: "컨테이너 다음에 필요한 것",
+    heading: "앱이 늘면 어떤 운영 일이 생길까?",
+    description: "실행·복구·업데이트 책임과 단일 VM의 한계를 비교합니다.",
+    Content: WhyKubernetes,
+  },
+  {
+    id: "cluster-map",
+    bookId: "kubernetes",
+    readId: "kubernetes/cluster-map",
+    number: "02",
+    title: "클러스터의 지도",
+    heading: "명령은 누가 받고 앱은 누가 실행할까?",
+    description: "제어 경로와 HTTP 경로, context·namespace·권한을 구분합니다.",
+    Content: ClusterMap,
+  },
   {
     id: "parallel",
     bookId: "computer",
@@ -350,6 +373,20 @@ export const books: Book[] = [
     future:
       "01~08장 공개 · 투자와 다른 금융 분야는 후속 배치에서 다룹니다.",
     Intro: MoneyIntro,
+  },
+  {
+    id: "kubernetes",
+    categoryId: "technology",
+    title: "웹앱 운영자를 위한 쿠버네티스",
+    category: "쿠버네티스 · 실행부터 운영까지",
+    cover: "KUBERNETES",
+    description:
+      "앱은 누가 실행하고, 멈추면 누가 고칠까? 운영의 역할과 경계를 직접 살펴봅니다.",
+    overview:
+      "작은 웹앱의 실행·연결·설정·데이터를 눈으로 이해하는 쿠버네티스 입문입니다.",
+    future:
+      "소개·01~02장 공개 · Pod·Service 이후와 선택 실습 부록은 후속 배치입니다.",
+    Intro: KubernetesIntro,
   },
 ];
 export const chapterHref = (c: Chapter) => `#/${c.bookId}/${c.id}`;
