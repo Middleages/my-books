@@ -1,3 +1,4 @@
+import { InflationPrimer } from "../../components/money/PurchasingVisuals";
 import { InflationLab } from "../../components/money/InflationLab";
 import { Check } from "../network/shared";
 
@@ -17,12 +18,9 @@ import { Check } from "../network/shared";
 
 아래는 자체 가상 사례입니다. 한 바구니의 구성은 바꾸지 않고 가격만 바꿨습니다.
 
-<figure className="power-explainer">
-  <div><span aria-hidden="true">🧺</span><b>기준 0년</b><p>1바구니 10,000원<br />100,000원으로 10바구니</p></div>
-  <strong aria-hidden="true">→</strong>
-  <div><span aria-hidden="true">🧺</span><b>1년 후 · 가격 5% 상승</b><p>1바구니 10,500원<br />100,000원으로 약 9.52바구니</p></div>
-  <figcaption>같은 돈 ÷ 달라진 바구니 가격 = 살 수 있는 양. 나누어 살 수 있다고 가정한 구매 가능량입니다.</figcaption>
-</figure>
+</section>
+<InflationPrimer />
+<section className="prose">
 
 구매력은 돈을 재화·서비스로 바꿀 수 있는 힘입니다. 가격이 오르면 같은 돈으로 살 수 있는 양이 줄어듭니다. 그렇다고 통장에서 돈이 출금된 것은 아닙니다. **잔액과 그 잔액이 살 수 있는 양은 서로 다른 질문에 답합니다.**
 
@@ -30,7 +28,7 @@ import { Check } from "../network/shared";
 
 먼저 기본 조건에서 ‘한 단계 진행’을 누릅니다. 현금 10만원은 그대로인데 예금 잔액은 연 3% 가정으로 늘어납니다. 장바구니는 연 5% 가정으로 더 빠르게 비싸집니다. 두 바구니 그림에서 살 수 있는 양을 비교하세요. ‘정지’로 멈추거나 관찰 시점을 방향키로 옮길 수 있습니다.
 
-그다음 구매력을 예측하고 기간·물가·명목수익률 중 하나를 바꿔 보세요. 수익률과 물가가 같으면 어떨까요? 물가가 하락하면요? 실험은 자동으로 시작하지 않으며, 표에서도 모든 연도의 전후 상태를 읽을 수 있습니다.
+그다음 위쪽 비교 버튼으로 물가를 5%에 고정하고 잔액 증가율을 3%·5%·7%로 바꿔 보세요. 같은 양을 사는 데 필요한 돈과 예금 막대의 차이가 어떻게 바뀌나요? 버튼은 마지막 연도로 이동합니다. 기간·물가·명목수익률을 직접 바꾸려면 아래 슬라이더를 사용하세요. 수익률과 물가가 같으면 어떨까요? 물가가 하락하면요? 실험은 자동으로 시작하지 않으며, 표에서도 모든 연도의 전후 상태를 읽을 수 있습니다.
 
 </section>
 <InflationLab />

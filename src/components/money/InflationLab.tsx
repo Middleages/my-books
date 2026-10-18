@@ -5,6 +5,8 @@ import {
   comparePower,
 } from "../../simulations/money/inflation.mjs";
 import { usePlayback, Prediction } from "./shared";
+import { purchasingScene } from "../../simulations/money/purchasing-visual.mjs";
+import { BasketAmount, InflationComparison } from "./PurchasingVisuals";
 const won = (n: number) =>
   `${n.toLocaleString("ko-KR", { maximumFractionDigits: 0 })}원`;
 const num = (n: number) =>
@@ -46,56 +48,6 @@ function Control({
     </label>
   );
 }
-function Basket({
-  count,
-  label,
-  unit,
-}: {
-  count: number;
-  label: string;
-  unit: number;
-}) {
-  return (
-    <figure className="power-basket">
-      <figcaption>
-        {label}
-        <strong>{num(count)}바구니</strong>
-      </figcaption>
-      <div className="power-goods" aria-hidden="true">
-        {Array.from({ length: 10 }, (_, i) => (
-          <span key={i} className="power-goods-slot">
-            <span
-              style={{
-                clipPath: `inset(0 ${100 - Math.min(1, Math.max(0, count / unit - i)) * 100}% 0 0)`,
-              }}
-            >
-              <svg viewBox="0 0 32 28">
-                <path
-                  d="M3 9 H29 L25 25 H7 Z M9 9 L13 2 M23 9 L19 2 M12 11 V23 M20 11 V23"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-              </svg>
-            </span>
-          </span>
-        ))}
-      </div>
-      <svg viewBox="0 0 240 55" aria-hidden="true">
-        <path
-          d="M12 5 L30 45 H210 L228 5 Z M60 5 L72 45 M120 5 V45 M180 5 L168 45"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-      </svg>
-      <p>
-        채운 기호 1개 = {unit}바구니.
-        <br />두 그림·모든 연도에 같은 눈금을 씁니다.
-      </p>
-    </figure>
-  );
-}
 export function InflationLab() {
   const [p, set] = useState(inflationDefaults),
     [prediction, predict] = useState("");
@@ -113,12 +65,7 @@ export function InflationLab() {
     predict("");
     set({ ...inflationDefaults });
   };
-  const basketUnit = Math.max(
-    1,
-    Math.ceil(
-      Math.max(...frames.flatMap((a) => [a.fixedBaskets, a.baskets])) / 10 - 1e-10,
-    ),
-  );
+  const scene = purchasingScene(frames, play.step);
   const max = Math.max(100000, ...frames.flatMap((a) => [a.nominal, a.real]));
   const x = (year: number) => 48 + (year / Math.max(1, p.years)) * 302,
     y = (v: number) => 185 - (v / max) * 145;
@@ -129,7 +76,11 @@ export function InflationLab() {
       verdict
     ];
   return (
-    <section className="money-lab power-lab" aria-label="물가와 구매력 실험">
+    <section
+      className="money-lab power-lab"
+      data-playing={play.playing}
+      aria-label="물가와 구매력 실험"
+    >
       <div className="money-lab-heading">
         <span>04 / 돈을 장바구니로 바꾸면</span>
         <h2>10만원의 두 가지 미래</h2>
@@ -150,6 +101,41 @@ export function InflationLab() {
           </select>
         </label>
       </div>
+      <div
+        className="power-presets"
+        role="group"
+        aria-label="같은 물가에서 수익률 비교"
+      >
+        <button
+          onClick={() => {
+            change({ mode: "uniform", inflation: 5, rate: 3 });
+            play.seek(p.years);
+          }}
+        >
+          물가 5% · 수익률 3%
+        </button>
+        <button
+          onClick={() => {
+            change({ mode: "uniform", inflation: 5, rate: 5 });
+            play.seek(p.years);
+          }}
+        >
+          물가 5% · 수익률 5%
+        </button>
+        <button
+          onClick={() => {
+            change({ mode: "uniform", inflation: 5, rate: 7 });
+            play.seek(p.years);
+          }}
+        >
+          물가 5% · 수익률 7%
+        </button>
+      </div>
+      <p className="money-caption">
+        가상 연율 비교 · 물가는 같게 두고 수익률만 바꿉니다. 버튼은 마지막
+        연도로 이동합니다.
+      </p>
+      <InflationComparison scene={scene} />
       <div className="power-price-board">
         <h3>
           {f.year === 0 ? "기준 0년" : `${f.year}년 후 연말`} · 같은 구성의
@@ -205,13 +191,15 @@ export function InflationLab() {
         </p>
       </div>
       <div className="power-baskets">
-        <Basket
-          unit={basketUnit}
+        <BasketAmount
+          tiles={scene.cashTiles}
+          unit={scene.unit}
           count={f.fixedBaskets}
           label="① 현금 10만원 그대로"
         />
-        <Basket
-          unit={basketUnit}
+        <BasketAmount
+          tiles={scene.accountTiles}
+          unit={scene.unit}
           count={f.baskets}
           label={`② 예금 잔액 ${won(f.nominal)}`}
         />
@@ -232,8 +220,9 @@ export function InflationLab() {
         />
       </div>
       <p className="money-caption">
-        그림의 채움과 가격표는 확정된 연말 상태입니다. 재생은 정적 단계를
-        순서대로 넘깁니다. 정지하거나 방향키로 원하는 연도를 관찰하세요.
+        그림의 채움과 가격표는 확정된 연말 상태입니다. 채움의 전환 효과는 연중
+        경로를 재현하지 않습니다. 재생은 연말 단계를 순서대로 넘깁니다.
+        정지하거나 방향키로 원하는 연도를 관찰하세요.
       </p>
       <figure className="money-chart power-chart">
         <figcaption>잔액과 구매력 · 실선: 명목 / 점선: 실질</figcaption>
@@ -409,7 +398,12 @@ export function InflationLab() {
             : `π는 직전 연도 대비 장바구니 물가 ${pct(f.annualInflation)}입니다.`}{" "}
           근사를 여러 해 누적한 값을 정확한 구매력으로 쓰지 않습니다.
         </p>
-        <div className="money-table" tabIndex={0} role="region" aria-label="모든 연도 구매력 비교 표, 가로 스크롤 가능">
+        <div
+          className="money-table"
+          tabIndex={0}
+          role="region"
+          aria-label="모든 연도 구매력 비교 표, 가로 스크롤 가능"
+        >
           <table>
             <caption>원 · 소수는 표시 때만 반올림 · 실질 기준은 0년</caption>
             <thead>
