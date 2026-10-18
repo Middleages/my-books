@@ -70,5 +70,30 @@ viewport 및 reduced-motion 미디어 에뮬레이션을 실제 기기 검증으
 
 ## main·배포
 
-아래는 구현 검증 기록이며 배포 성공을 뜻하지 않는다.
-최신 main 재확인·통합 후 구현 커밋의 Actions와 실제 게시 자산·화면을 확인하여 추가 기록한다.
+- 구현 main 커밋 `1f469ebd8b798fd4fc8320893268edc09bb9e72d`.
+- 최신 main `7cb537f`를 구현 직전·반영 직전에 재확인했다. 추가 병행 커밋이 없었으며,
+  변경 13개 파일만 기존 트리 위에 적용했다. 예상 main SHA를 검사하는 ref 갱신으로 충돌을 방지했다.
+- 원격 게시 트리 `af9463620ddcd82605aa9e5e744d3d2c58953654`는 검증한 로컬 트리와 같다.
+- [GitHub Actions 39090920754](https://github.com/Middleages/my-books/actions/runs/39090920754)
+  완료·success 확인. CI 테스트·빌드와 Pages 배포 성공.
+- 실제 https://middleages.github.io/my-books/#/money/repayment 에서 제목·8장 목차·본문·실험 확인.
+- 게시 JS `index-BH1c7vvH.js`, CSS `index-KaRKxNpS.css`가 로컬 최종 빌드와 일치.
+- 별도 Cloud Chrome에서 만기일시상환 선택 → 23개월 말 원금 12,000,000원 유지 →
+  24개월 말 원금 12,000,000원+이자 60,000원 납입 및 잔액 0원을 확인했다.
+- 세 방식의 최종 누적 원금 12,000,000원, 누적 이자 750,000 / 764,336 / 1,440,000원 표시 확인.
+- 게시 화면의 viewport 1363px, 문서 scrollWidth 1348px로 가로 넘침 없음.
+- Cloud 콘솔에는 확장 프로그램 metadata 전송 오류만 있었으며 앱 오류·React 경고는 없었다.
+- 이 배포 기록을 추가하는 후속 문서 커밋은 동일한 JS/CSS를 사용한다.
+  후속 문서 커밋의 Actions 결과는 별도로 확인하며 위 기록은 직접 확인한 구현 배포 결과다.
+
+### 병행 쿠버네티스 배치 A 통합
+
+구현 배포 확인 뒤 최신 main에 `c34c1af`(쿠버네티스 소개·01~02)가 추가됐다.
+해당 커밋을 fast-forward로 받아 새 카탈로그·분류·표지·모델·본문을 그대로 보존했다.
+통합 기준 `npm test` **134개 통과**, `npm run build` 통과.
+로컬 최종 자산은 `index-CYXKx_o9.js` / `index-CMU4ey5S.css`이며 돈 08장 자체는 변경하지 않았다.
+통합 후 위 데스크톱·모바일·키보드·reduced-motion·접근성·읽음·기존 장 회귀를 재실행해 통과했다.
+쿠버네티스 `why-kubernetes`·`cluster-map` 렌더도 추가 확인했고 앱 콘솔 오류는 없었다.
+
+통합 배포 Actions [39091004875](https://github.com/Middleages/my-books/actions/runs/39091004875)의 build/deploy success 확인.
+Cloud Chrome 새로고침으로 위 통합 JS/CSS 일치, 돈 08 제목·만기 잔액 0원 동작을 다시 확인했다.
