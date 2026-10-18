@@ -58,3 +58,12 @@ K3s 공식 v1.35 릴리스 표와 본문을 확인했다. 릴리스 본문에 �
 - 공존 HTTPS 모델은 NGINX upstream 검증 활성화, 검증 이름/SNI/CA의 정상 설정을 전제로 성공·실패를 비교한다. 호스트 프록시 제거·기존 서버 변경은 미실행.
 - ConfigMap 이름 후보 `study-web-config`, 일반 키 `APP_MESSAGE`; Secret 문자열은 `demo-only-v1/v2`. 앱 코드·실제 이미지·Secret·YAML 배포는 아직 없음.
 - 06의 마지막 단계는 전파 완료 후 새 Pod 생성. 파일 재읽기·동일 Pod 컨테이너 재시작과 구분. 일반 볼륨 갱신과 subPath 예외만 모델링.
+
+## 배치 D · 저장·자원 모델 계약
+
+2026-10-18. 기존 버전 후보를 유지하며 실제 클러스터 실습은 미실행.
+- `study-data`는 단일 replica, 정상 node-a의 디스크형 emptyDir와 local-path 디렉터리를 비교. 이미 Bound인 PVC `books-lab/data`와 PV `pv-data`에서 시작한다. 노드·경로·객체 이름은 가상이다.
+- local-path-provisioner v0.0.37의 `deploy/local-path-storage.yaml`을 정적으로 확인: `WaitForFirstConsumer`, `reclaimPolicy: Delete`, 디렉터리 setup/teardown. Retain은 삭제 전 해당 PV의 정책을 바꾼 별도 비교 조건이며 기본값이라고 표시하지 않는다. 정적 확인은 설치·삭제 실행이 아니다.
+- PVC 사용 중 보호 → 사용 Pod 제거 → PVC 삭제 → 정상 정리 완료를 분리. 노드 접근 불가와 디스크 영구 상실도 별개 사건. PV/PVC 기록·파일 존재·앱의 마운트 연결은 다른 상태다. API가 함께 중단될 수 있는 노드 장애는 마지막 기록 표시.
+- 자원 모델: allocatable CPU 2000m/메모리 2048Mi, 기존 실제 사용 100m/256Mi, 새 컨테이너 memory request/limit 256/512Mi, CPU limit 1000m. 실제 서버 추천값이 아니다.
+- books-lab의 기존 requests.cpu는 500m 고정. 노드의 추가 기존 요청은 다른 namespace. quota는 requests.cpu만 비교하며 생성 심사 후 scheduler의 requests 적합성을 확인한다. OOM은 관측한 종료 사례이며 초과 즉시 종료 법칙이 아니다.

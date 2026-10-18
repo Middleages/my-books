@@ -1,3 +1,5 @@
+import Storage from "./content/kubernetes/Storage.mdx";
+import Resources from "./content/kubernetes/Resources.mdx";
 import IngressTls from "./content/kubernetes/IngressTls.mdx";
 import Configuration from "./content/kubernetes/Configuration.mdx";
 import MoneyPlan from "./content/money/Plan.mdx";
@@ -69,6 +71,8 @@ export const chapters: Chapter[] = [
   { id: "service-discovery", bookId: "kubernetes", readId: "kubernetes/service-discovery", number: "04", title: "바뀌는 Pod와 고정된 입구", heading: "새 Pod를 어떻게 찾을까?", description: "selector·ready 대상·포트·DNS를 연결해 새 연결의 경로를 찾습니다.", Content: ServiceDiscovery },
   { id: "ingress-tls", bookId: "kubernetes", readId: "kubernetes/ingress-tls", number: "05", title: "외부 요청과 TLS", heading: "내 도메인은 어디로 들어올까?", description: "외부 입구·host/path·TLS 종료와 기존 NGINX의 공존을 따라갑니다.", Content: IngressTls },
   { id: "configuration", bookId: "kubernetes", readId: "kubernetes/configuration", number: "06", title: "설정과 비밀정보", heading: "이미지를 다시 만들지 않고 바꿀 수 있을까?", description: "환경변수·파일 갱신·앱 재읽기와 Secret의 보호 조건을 비교합니다.", Content: Configuration },
+  { id: "storage", bookId: "kubernetes", readId: "kubernetes/storage", number: "07", title: "Pod가 바뀌어도 남을 것", heading: "파일은 어디에 살까?", description: "저장 수명·PVC/PV·노드 디스크와 백업의 경계를 비교합니다.", Content: Storage },
+  { id: "resources", bookId: "kubernetes", readId: "kubernetes/resources", number: "08", title: "자원이 모자랄 때", heading: "빈 CPU가 보여도 왜 Pending일까?", description: "requests·실사용량·limits·quota를 나눠 배치와 실행을 관찰합니다.", Content: Resources },
 
 
   {
@@ -418,7 +422,7 @@ export const books: Book[] = [
     overview:
       "작은 웹앱의 실행·연결·설정·데이터를 눈으로 이해하는 쿠버네티스 입문입니다.",
     future:
-      "소개·01~06장 공개 · 데이터·자원 이후와 선택 실습 부록은 후속 배치입니다.",
+      "소개·01~08장 공개 · 상태 점검·배포 이후와 선택 실습 부록은 후속 배치입니다.",
     Intro: KubernetesIntro,
   },
 ];

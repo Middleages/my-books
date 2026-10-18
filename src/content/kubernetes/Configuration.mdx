@@ -94,7 +94,7 @@ Secret 진단에서 원문 전체를 터미널·채팅·공유 로그에 덤프�
 
 ## 근거와 모델의 경계
 
-공식 확인일 **2026-10-18**, Kubernetes **v1.35**. mutable 객체·존재하는 키·성공한 전파와 마운트만 관찰합니다. `immutable: true`는 내용을 수정할 수 없으므로 새 객체와 참조 교체가 필요합니다. 외부 Secret 저장소·CSI driver·환경별 우선순위·여러 파일의 원자적 앱 갱신·실제 암호화·자격 증명 연결은 생략합니다. 저장 데이터의 수명과 자원 한도 실험은 다음 배치 범위입니다.
+공식 확인일 **2026-10-18**, Kubernetes **v1.35**. mutable 객체·존재하는 키·성공한 전파와 마운트만 관찰합니다. `immutable: true`는 내용을 수정할 수 없으므로 새 객체와 참조 교체가 필요합니다. 외부 Secret 저장소·CSI driver·환경별 우선순위·여러 파일의 원자적 앱 갱신·실제 암호화·자격 증명 연결은 생략합니다. 저장 데이터의 수명은 [07장](#/kubernetes/storage), 자원 한도는 [08장](#/kubernetes/resources)에서 이어집니다.
 
 - [ConfigMap · env와 볼륨 갱신·subPath](https://v1-35.docs.kubernetes.io/docs/concepts/configuration/configmap/)
 - [Secret · 전달·보호·immutable](https://v1-35.docs.kubernetes.io/docs/concepts/configuration/secret/)

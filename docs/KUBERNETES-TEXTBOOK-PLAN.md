@@ -1,6 +1,6 @@
 # 웹앱 운영자를 위한 쿠버네티스 — 교재 계획
 
-작성일: 2026-10-18 (KST). 상태: **배치 A~B 소개·01~04 구현. C~G 미착수, 실제 클러스터 실습 미실행**.
+작성일: 2026-10-18 (KST). 상태: **배치 A~D 소개·01~08 구현. E~G 미착수, 실제 클러스터 실습 미실행**.
 기획 기준 main: `2b09163`. 실제 구현은 항상 최신 main에서 시작한다.
 
 관련 문서: [전역 지침](../AGENTS.md), [작성 기준](CONTENT-AUTHORING.md), [홈 구조·표지 결정](HOME-INFORMATION-ARCHITECTURE.md), [네트워크 계획](NETWORK-TEXTBOOK-PLAN.md), [세션별 실행 프롬프트](KUBERNETES-SESSION-PROMPTS.md).
@@ -159,7 +159,7 @@ Ingress를 기존 네트워크 교재와의 연결 및 k3s 사례로 설명하�
 | A | 소개·01~02 구현 | 134 테스트·빌드·게시 데스크톱 핵심 조작 통과 / 지정 폭·reduced-motion 미검증 | c34c1af · Actions/Pages 성공 | 미실행 (요청 범위) |
 | B | 03~04 구현 | 157 테스트·빌드·게시 데스크톱 주요 조작 통과 / 지정 폭·reduced-motion 미검증 | a8055a6 · Actions/Pages 성공 | 미실행 |
 | C | 05~06 구현 | 182 통합 테스트·빌드·게시 데스크톱 핵심 조작 통과 / 지정 폭·reduced-motion 미검증 | f31b692 · Actions/Pages 성공 | 미실행 |
-| D | 미착수 | 미실행 | 미반영 | 미실행 |
+| D | 07~08 구현 | 198 테스트·빌드 통과 / 게시 화면 확인 대기 | 반영·배포 대기 | 미실행 |
 | E | 미착수 | 미실행 | 미반영 | 미실행 |
 | F | 미착수 | 미실행 | 미반영 | 미실행 |
 | G | 미착수 | 미실행 | 미반영 | 미실행 |
@@ -169,3 +169,5 @@ Ingress를 기존 네트워크 교재와의 연결 및 k3s 사례로 설명하�
 배치 B의 모델·실행 검증·게시 상태는 [배치 B 검증](KUBERNETES-BATCH-B-VERIFICATION.md)에 기록한다.
 
 배치 C의 상세 결과는 [배치 C 검증](KUBERNETES-BATCH-C-VERIFICATION.md)에 기록한다.
+
+배치 D의 상세 결과는 [배치 D 검증](KUBERNETES-BATCH-D-VERIFICATION.md)에 기록한다.
