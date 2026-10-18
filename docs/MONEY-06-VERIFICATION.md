@@ -76,4 +76,15 @@ Chromium viewport 390×844 / 320×844, `prefers-reduced-motion: reduce`로 실�
 
 ## main·배포
 
-구현과 화면 검증 이후 main 반영·Actions와 실제 게시 자산 확인을 별도로 기록한다.
+- 구현 main 커밋 `52a5b52a575caadaba7f662204b599f20d456a5e`.
+- [GitHub Actions run 39083697387](https://github.com/Middleages/my-books/actions/runs/39083697387)의 build/deploy 모두 success 확인.
+- 연결된 GitHub API에서 로컬과 같은 트리 `1a545a54589850abecc83ad9e902710eec7efac1`를 게시하고,
+  예상 main SHA 검사로 병행 변경을 보호했다. 기존 네트워크 및 돈 01~05 변경을 되돌린 파일 없음.
+- 실제 주소 https://middleages.github.io/my-books/#/money/savings 를 새로고침하여 제목·실험 렌더 확인.
+- 게시 JS `index-mszMJyAp.js`, CSS `index-LNzpoThs.css`가 로컬 최종 빌드와 일치.
+- Cloud Chrome 1363px에서 문서 scrollWidth 1348px로 가로 넘침 없음.
+- 실제 게시 UI에서 부족 예측 → 목표일 결과: 총액 1,200,000원, 사용 가능 800,000원,
+  부족 200,000원 및 예측 일치. 목표 전에 풀리게 → 목표일 결과: 사용 가능 1,200,000원,
+  1,000,000원 지출 후 잔액 200,000원. 원금·적립·지출 누계와 일치.
+- Cloud 콘솔에는 확장 프로그램의 metadata 전송 오류만 있었고 앱 오류·React 경고는 없었다.
+- 이 배포 기록을 추가하는 후속 문서 커밋은 같은 JS/CSS를 사용하며, 후속 Actions 결과도 별도로 확인한다.
