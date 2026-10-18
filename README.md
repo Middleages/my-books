@@ -135,3 +135,18 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 만기일시상환의 전체 일정을 비교합니다. 월초 잔액 → 이자 계산 → 원리금 납입 → 남은 원금의
 관찰 단계, 원금·이자 구성, 누적 납입·이자, 전체 그래프·표는 같은 모델을 읽습니다.
 검증은 [MONEY-08-VERIFICATION.md](docs/MONEY-08-VERIFICATION.md)를 참고하세요.
+
+
+## 쿠버네티스 교재 · 배치 A
+
+‘웹앱 운영자를 위한 쿠버네티스’는 책 소개와 01 컨테이너 다음에 필요한 것,
+02 클러스터의 지도를 구현했습니다. `#/kubernetes`, `#/kubernetes/why-kubernetes`,
+`#/kubernetes/cluster-map`에서 읽습니다. 운영 책임·단일 VM 장애 경계·제어/HTTP 경로·
+context/namespace/권한을 그림과 단계 실험으로 비교합니다.
+
+본문은 `src/content/kubernetes/`, UI는 `src/components/kubernetes/`, 제한된 교육 모델은
+`src/simulations/kubernetes/`에 있습니다. 실제 서버·클러스터에 접속하지 않습니다.
+[교재 계획](docs/KUBERNETES-TEXTBOOK-PLAN.md),
+[실습환경 후보 계약](docs/KUBERNETES-LAB-ENVIRONMENT.md),
+[검증·배포 및 미검증 기록](docs/KUBERNETES-BATCH-A-VERIFICATION.md)을 확인하세요.
+03 이후와 설치·복구 실습은 후속 배치입니다.

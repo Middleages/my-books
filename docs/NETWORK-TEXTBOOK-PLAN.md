@@ -300,7 +300,7 @@ kubectl get endpointslices -n demo
 
 네트워크 01~15 구현과 시각 보강 A·B·C·D1·D2를 완료했다. 이전 배치 시작 문장은 과거 기록이며 신규 착수 범위를 뜻하지 않는다.
 13~14의 짧은 k3s 입문은 유지한다. 본격적인 구축·배포·운영은 별도 [쿠버네티스 교재 계획](KUBERNETES-TEXTBOOK-PLAN.md)에 따라 진행한다.
-새 세션은 [A~G 실행 프롬프트](KUBERNETES-SESSION-PROMPTS.md)를 순서대로 사용한다. 쿠버네티스 교재는 현재 기획 단계이며 미구현이다.
+새 세션은 [A~G 실행 프롬프트](KUBERNETES-SESSION-PROMPTS.md)를 순서대로 사용한다. 쿠버네티스 교재는 배치 A의 소개·01~02를 구현했다. 배포·화면 검증 및 미검증 상태는 [A 검증 기록](KUBERNETES-BATCH-A-VERIFICATION.md)을 확인한다.
 
 ## 11. 첫 배치 구현 기록 (2026-10-17)
 

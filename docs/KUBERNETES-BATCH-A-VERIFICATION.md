@@ -50,3 +50,20 @@ Git 직접 clone은 연결 실패해 GitHub connector로 기준 커밋의 전체
 B: 03 원하는 상태와 Pod, 04 바뀌는 Pod와 고정된 입구. 먼저 A의 최종 배포와 화면 미검증 항목을 확인·보완한다. 실제 클러스터 설치·기존 서버 변경은 A에서 하지 않았고 설치·복구 실습 전체 완료를 주장하지 않는다.
 
 통합 기준 main: `1f469ebd8b798fd4fc8320893268edc09bb9e72d` (돈 08). 새 모델·본문·UI·문서·테스트를 모두 받아 공통 catalog의 두 추가 영역만 병합했다.
+
+
+## 배포 후 실제 게시 검증 (2026-10-18)
+
+- 구현 main 커밋: `c34c1afccecfbf1d7df4170f4b07c644634bb616`.
+- Actions: https://github.com/Middleages/my-books/actions/runs/39091004875 — build/deploy 모두 success. Node 22의 npm ci/test/build 성공.
+- 실제 게시: https://middleages.github.io/my-books/#/kubernetes (소개), `/why-kubernetes`, `/cluster-map`.
+- 실제 DOM에서 로드된 JS `/my-books/assets/index-CYXKx_o9.js`를 로컬 통합 production 결과와 대조. CSS는 `index-CMU4ey5S.css`.
+- Cloud Chromium 관측 viewport 1363×936 (1440 대체 통과로 계산하지 않음). 소개의 공개 목차 두 개, 홈 IT·기술 3권·전체 4권/27장·돈 8장 유지와 자체 표지 렌더를 확인.
+- 02: namespace other에서 Forbidden, lab-admin 전환 후 6단계 runtime 실행, HTTP 4단계의 Pod → Ingress controller → 사용자 응답 경로 확인.
+- 01: VM 실패 후 실행 수 0/3, 초기화, Enter 키로 한 단계, 재생/즉시 정지 후 다음 관측에서도 2/4단계 유지, 다시 보기, 설정 변경 시 예측 비움 확인.
+- 01 읽음 표시 후 reload에서 유지됨을 확인한 후 테스트 표시를 취소. 기존 알 수 없는 ID 보존은 모델 테스트/소스 검토이며 실제 브라우저 임의 ID 삽입 검증은 미수행.
+- 01/02 DOM의 중첩 p 0개, 현재 viewport에서 페이지 가로 넘침 없음. 스크린샷으로 현재 데스크톱 배치 관찰. 앱 출처의 콘솔 오류는 발견하지 못했으나 browser extension의 metadata 전송 오류는 존재(교재 앱 오류와 구분).
+- 기존 Service 실험: selector app=other + 대상 없음 예측 → 대상 없음·예측 일치 확인. 돈 08의 본문과 상환 실험 로딩·1개월 비교 버튼 클릭을 smoke 확인(금융 전체 시나리오 재검증 아님).
+- 실제 화면에서 Markdown 강조 표시가 문자로 남은 두 용어를 발견해 `<strong>`으로 수정. 이 후속 변경의 자산은 다음 배포 결과를 별도로 확인한다.
+
+남은 검증: 정확한 1440/390/320px, reduced-motion media, 전체 재생 완료·장 전환 중 타이머의 실제 UI 회귀, 임의 읽음 ID를 넣은 브라우저 저장 회귀, 나머지 기존 실험 전체 UI, Safari·터치 기기·스크린리더. 로컬 환경 차단 때문에 이 목록은 통과가 아니며 다음 세션에서 우선 보완한다. 실제 클러스터 실습은 요청대로 미실행.
