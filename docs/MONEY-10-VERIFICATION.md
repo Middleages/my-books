@@ -34,7 +34,12 @@
 
 ## 배포
 
-구현·로컬 검증 완료. main·Actions·실제 게시 증거는 배포 후 추가한다.
+- 구현 커밋 `88016c33be0a192f04a6a9f7bc22443020049428`을 최신 main `f31b692` 위에 반영.
+- [Actions/Pages 39093962967](https://github.com/Middleages/my-books/actions/runs/39093962967) completed/success.
+- 실제 게시 URL https://middleages.github.io/my-books/#/money/plan
+- 게시 페이지 새로고침에서 JS `index-sdPawEAJ.js` / CSS `index-CklWS-v3.css`가 로컬 최종 빌드와 일치.
+- 게시된 목표일 버튼에서 충격 경로 12개월 750,000원 부족, 경로 선택 변경 후 18개월 목표 소비 3,000,000원·적립 잔액 0원 확인.
+- 이 배포 증거 기록은 코드 자산을 바꾸지 않는 후속 문서 커밋이다.
 
 ## 병행 변경 통합
 
