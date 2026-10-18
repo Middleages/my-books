@@ -74,3 +74,7 @@
 배포 직전 main에 쿠버네티스 07·08 추가 커밋 `dfec0bc44be02a7dd26c3c3ef31bd4924959008a`가 들어와, 이 커밋 위로 돈 보강 4개 파일만 재배치했다. 쿠버네티스 본문·모델·테스트·카탈로그·계획 변경을 그대로 보존했다. 통합 후 `npm test` **198/198**, `npm run build` 통과. 소개·돈 01–10 본문의 Markdown 별표 잔류 0 및 기존 두 새 장 URL의 의미 있는 렌더도 확인했다. 통합 빌드 자산은 JS `index-CPEQ4HXk.js`, CSS `index-Bt6budlj.css`다.
 
 범위 밖 관찰: 병행 추가된 쿠버네티스 07·08에서도 괄호 뒤 조사에 붙은 강조 별표가 일부 그대로 보인다(PVC/PV·회수 정책·throttling·퇴거). 새 장의 본문·조작은 렌더되며 이번 돈 점검에서는 해당 세션의 파일을 수정하지 않았다. 공통 작성 기준에 해결 방법을 남겼으므로 해당 권 후속 점검에서 처리할 수 있다.
+
+### 통합본 실제 게시 확인
+
+2026-10-18 UTC 03:51, 통합 main `ce1bcda472b7972d03b3e4f2b06330aa18828f20`의 [Actions 39095035606](https://github.com/Middleages/my-books/actions/runs/39095035606)에서 build·deploy 및 모든 단계 success를 확인했다. 실제 Pages를 새로고침한 DOM의 JS `index-CPEQ4HXk.js`, CSS `index-Bt6budlj.css`가 통합 production 빌드와 일치한다. 게시된 07의 `6%포인트(6%p)`는 strong 요소이고, 03의 +/−/! 설명에는 Markdown 별표가 남지 않는다. 게시 앱의 오류는 관찰되지 않았으며 브라우저 확장 프로그램의 metadata 전송 오류는 앱 오류와 구분했다. 이 확인 기록의 후속 변경은 문서뿐이며 앱 자산은 동일하다.
