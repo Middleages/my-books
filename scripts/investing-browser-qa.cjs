@@ -171,10 +171,10 @@ async function conditionChecks(page, lab, name) {
     assert.equal(label, '가격 변화 재투자 매도 총수익 실험');
     await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
     await verify('cash-default', totalReturnFrames({ endPrice: 110, reinvest: false, sellShares: 0 }).frames, 'return');
-    await lab.getByLabel('배당 현금 처리', { exact: true }).selectOption('yes');
-    await lab.getByLabel('이후 매도할 수량', { exact: true }).selectOption('1');
+    await lab.getByRole('combobox', { name: /배당 현금 처리/ }).selectOption('yes');
+    await lab.getByRole('combobox', { name: /이후 매도할 수량/ }).selectOption('1');
     await verify('reinvest-and-sell-one', totalReturnFrames({ endPrice: 110, reinvest: true, sellShares: 1 }).frames, 'return');
-    await lab.getByLabel('이후 매도할 수량', { exact: true }).selectOption('2');
+    await lab.getByRole('combobox', { name: /이후 매도할 수량/ }).selectOption('2');
     await verify('reject-sale-two', totalReturnFrames({ endPrice: 110, reinvest: true, sellShares: 2 }).frames, 'return');
     await range('Home');
     await verify('zero-price-reinvestment', totalReturnFrames({ endPrice: 0, reinvest: true, sellShares: 2 }).frames, 'return');
