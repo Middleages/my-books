@@ -641,10 +641,13 @@ async function conditionChecks(page, lab, name) {
       points.forEach((point, index) => assert(Math.abs(point[0] - series.points[index].x) <= 1e-9 && Math.abs(point[1] - series.points[index].y) <= 1e-9, 'Tracking polyline differs from model'));
       const actual = await group.locator('circle,rect').evaluateAll(elements => elements.map(element => {
         const rect = element.getBoundingClientRect(), svg = element.ownerSVGElement, p = svg.createSVGPoint();
-        p.x = element.tagName === 'circle' ? +element.getAttribute('cx') : +element.getAttribute('x') + +element.getAttribute('width') / 2;
-        p.y = element.tagName === 'circle' ? +element.getAttribute('cy') : +element.getAttribute('y') + +element.getAttribute('height') / 2;
+        const x = element.tagName === 'circle' ? +element.getAttribute('cx') : +element.getAttribute('x') + +element.getAttribute('width') / 2;
+        const y = element.tagName === 'circle' ? +element.getAttribute('cy') : +element.getAttribute('y') + +element.getAttribute('height') / 2;
+        // SVGPoint stores coordinates with reduced precision in Chromium. Compare
+        // model values to numeric attributes; use SVGPoint only for screen geometry.
+        p.x = x; p.y = y;
         const screen = p.matrixTransform(svg.getScreenCTM());
-        return { x: p.x, y: p.y, offsetX: rect.left + rect.width / 2 - screen.x, offsetY: rect.top + rect.height / 2 - screen.y };
+        return { x, y, offsetX: rect.left + rect.width / 2 - screen.x, offsetY: rect.top + rect.height / 2 - screen.y };
       }));
       actual.forEach((point, index) => {
         assert(Math.abs(point.x - series.points[index].x) <= 1e-9 && Math.abs(point.y - series.points[index].y) <= 1e-9);
