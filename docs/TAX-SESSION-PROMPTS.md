@@ -1,0 +1,21 @@
+# 세금의 구조와 생활 — 배치별 실행 프롬프트
+
+기준: [TAX-TEXTBOOK-PLAN.md](TAX-TEXTBOOK-PLAN.md). 이 문서는 후속 세션에 복사해 사용할 범위 지시다. 최신 main의 AGENTS.md, CONTENT-AUTHORING.md, HOME-INFORMATION-ARCHITECTURE.md, MONEY-TEXTBOOK-PLAN.md 및 관련 교재·검증 기록을 매번 읽는다. 기존 책/URL/readId/읽음 기록과 병행 변경을 보존한다. 이전 완료 주장을 가정하지 않는다.
+
+## 배치 A — 소개·01–02
+최신 main에서 계획의 예약 ID와 가상 모델을 확인하고 세금 책 소개, 01 tax-events, 02 progressive-tax만 구현한다. 돈 흐름의 과세 사건과 구간별 누진 계산을 같은 모델 프레임 기반 SVG·정적 표·조작으로 설명한다. 공식 근거는 실제 원문 확인 후 기록한다. TAX-BATCH-A-VERIFICATION.md를 새로 작성하고 모델 경계/재실행, 전체 테스트·빌드, 실제 데스크톱/모바일·키보드·reduced-motion, 기존 책/읽음 회귀를 수행한다. 최신 main 통합·Actions·Pages·실제 게시 자산까지 확인하고 미실행은 미검증으로 남긴다.
+
+## 배치 B — 03–04
+A 게시 상태를 재확인한 후 03 withholding·04 year-end-settlement만 구현한다. 급여·공제·세금·4대보험료·실수령액을 혼동하지 않고 원천징수와 결정세액 차액을 같은 장부에서 비교한다. 가상 계산과 실제 적용연도를 구분한다. B 검증 문서와 공통 게이트를 수행한다.
+
+## 배치 C — 05–06
+B 확인 후 05 value-added-tax·06 investment-taxes만 구현한다. 공급단계 매입/매출 세액과 금융소득 유형/시점을 보여주되 현행 규칙은 공식 원문을 확인한 범위에서만 적용한다. C 검증과 공통 게이트를 수행한다.
+
+## 배치 D — 07–08
+C 확인 후 07 tax-accounts·08 housing-taxes만 구현한다. 계좌별 조건 분기와 부동산 취득/보유/양도 시간축을 비교하고 법령 적용연도와 대상 조건을 명시한다. D 검증과 공통 게이트를 수행한다.
+
+## 배치 E — 09–10
+D 확인 후 09 gifts-inheritance·10 deductions-credits만 구현한다. 재산 이전의 조건과 과세표준·세액에 공제가 작동하는 위치를 분리한다. E 검증과 공통 게이트를 수행한다.
+
+## 배치 F — 11–12 및 전체 점검
+E 확인 후 11 tax-timeline·12 reading-tax-documents를 구현하고 소개·01–12의 계산 가정·공식 근거·시각 설명·모바일·정적 대안·읽음 회귀를 전체 점검한다. TAX-BATCH-F-VERIFICATION.md 및 TAX-BOOK-REVIEW.md를 작성하고 공통 게시 게이트를 수행한다.
