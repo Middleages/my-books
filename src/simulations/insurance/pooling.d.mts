@@ -1,0 +1,66 @@
+export type PoolingParams = {
+  households: number;
+  contribution: number;
+  reserve: number;
+  lossPerHousehold: number;
+  affectedCount: number;
+};
+export type PoolingHousehold = {
+  id: number;
+  affected: boolean;
+  contribution: number;
+  claim: number;
+  paid: number;
+  unpaid: number;
+  fractions: { contribution: number; claim: number; paid: number; unpaid: number };
+  localFractions: { paid: number; unpaid: number };
+};
+export type PoolingFractions = {
+  contributions: number;
+  reserve: number;
+  available: number;
+  claims: number;
+  paid: number;
+  remaining: number;
+  unfunded: number;
+  pendingClaims: number;
+  notYetContributed: number;
+  initialCombinedFunds: number;
+};
+export type PoolingFrame = {
+  index: number;
+  phase: 'initial' | 'contributions' | 'claims' | 'payments';
+  label: string;
+  households: PoolingHousehold[];
+  contributionsCollected: number;
+  notYetContributed: number;
+  initialCombinedFunds: number;
+  reserve: number;
+  available: number;
+  totalClaims: number;
+  totalPaid: number;
+  remaining: number;
+  pendingClaims: number;
+  unfunded: number;
+  fractions: PoolingFractions;
+};
+export type PoolingResult = {
+  params: PoolingParams;
+  moneyScale: number;
+  households: PoolingHousehold[];
+  totalContributions: number;
+  initialReserve: number;
+  initialCombinedFunds: number;
+  available: number;
+  totalClaims: number;
+  totalPaid: number;
+  remaining: number;
+  pendingClaims: number;
+  unfunded: number;
+  paymentRatio: number;
+  canCoverAllClaims: boolean;
+  fractions: PoolingFractions;
+  frames: PoolingFrame[];
+};
+export const poolingDefaults: Readonly<PoolingParams>;
+export function projectPooling(options?: Partial<PoolingParams>): PoolingResult;

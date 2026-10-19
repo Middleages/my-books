@@ -163,3 +163,8 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 ## 쿠버네티스 선택 실습 부록
 
 소개·01–12와 [환경과 첫 배포](https://middleages.github.io/my-books/#/kubernetes/lab-first-deployment)·[운영과 복구](https://middleages.github.io/my-books/#/kubernetes/lab-recovery)·[폐쇄망과 공존](https://middleages.github.io/my-books/#/kubernetes/lab-airgap)을 제공한다. [최소 앱·manifest·chart](examples/kubernetes/README.md)는 직접 빌드한 로컬 이미지 경로를 사용한다. YAML 검사·Helm 로컬 렌더와 실제 클러스터 설치/복원 성공은 다르며, 후자는 미실행이다. [G 검증 기록](docs/KUBERNETES-BATCH-G-VERIFICATION.md)을 참조한다.
+
+
+## 보험과 위험 대비 · 4권
+
+[제작 계획](docs/INSURANCE-TEXTBOOK-PLAN.md)과 [배치별 실행 프롬프트](docs/INSURANCE-SESSION-PROMPTS.md)를 따른다. 소개·01 같은 평균, 다른 충격·02 보험은 위험을 어떻게 나눌까를 `insurance`에 구현한다. 기대손실과 한 번의 충격, 공동 재원과 공통 위험의 관계를 자체 가상 사례로 설명한다. 실제 보험료·개인 적정 보장액·상품 추천·건강정보 입력을 제공하지 않는다. 구현과 실제 게시 검증 상태는 [A 기록](docs/INSURANCE-BATCH-A-VERIFICATION.md)에서 구분한다.

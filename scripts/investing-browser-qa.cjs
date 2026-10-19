@@ -22,6 +22,7 @@ const chapterRows = [...catalog.matchAll(/\bid:\s*"([^"]+)"\s*,\s*bookId:\s*"([^
 const investingChapters = chapterRows.filter(chapter => chapter.book === 'investing');
 const investingRoutes = investingChapters.map(chapter => chapter.route);
 const bookIds = [...catalog.split('export const books:')[1].matchAll(/\bid:\s*"([^"]+)"/g)].map(m => m[1]);
+const moneyBookIds = [...catalog.split('export const books:')[1].matchAll(/\bid:\s*"([^"]+)"\s*,\s*categoryId:\s*"money"/g)].map(m => m[1]);
 const appendices = [...fs.readFileSync(path.join(root, 'src/kubernetesAppendices.ts'), 'utf8').matchAll(/id:\s*['"]([^'"]+)['"]/g)].map(m => `/kubernetes/${m[1]}`);
 const knownRoutes = ['/', ...bookIds.map(id => `/${id}`), ...chapterRows.map(c => c.route), ...appendices];
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -1200,11 +1201,11 @@ async function representativeControl(page) {
       });
       await check(`home-filter-${width}`, page, async () => {
         await visit(page, '/');
-        assert.equal(await page.locator('.home-book').count(), 6);
-        assert.equal(await page.locator('.home-cover svg').count(), 6, 'Six book cover SVGs expected');
+        assert.equal(await page.locator('.home-book').count(), bookIds.length);
+        assert.equal(await page.locator('.home-cover svg').count(), bookIds.length, 'Every published book needs a cover SVG');
         await page.getByRole('button', { name: /돈·경제/ }).click();
-        assert.equal(await page.locator('.home-book').count(), 3);
-        assert.deepEqual((await page.locator('.home-book').evaluateAll(els => els.map(el => el.getAttribute('href')))).sort(), ['#/economics', '#/investing', '#/money']);
+        assert.equal(await page.locator('.home-book').count(), moneyBookIds.length);
+        assert.deepEqual((await page.locator('.home-book').evaluateAll(els => els.map(el => el.getAttribute('href')))).sort(), moneyBookIds.map(id => `#/${id}`).sort());
         await capture(page, `${width}-home-money-filter`);
         return domAudit(page);
       });

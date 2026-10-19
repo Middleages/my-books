@@ -31,6 +31,18 @@ jobs:
           NODE_PATH: ${{ runner.temp }}/investing-qa/node_modules
           CHROME_PATH: /usr/bin/google-chrome
         run: node scripts/investing-browser-qa.cjs
+      - name: Verify insurance textbook in Chromium
+        env:
+          NODE_PATH: ${{ runner.temp }}/investing-qa/node_modules
+          CHROME_PATH: /usr/bin/google-chrome
+        run: node scripts/insurance-browser-qa.cjs
+      - name: Save insurance browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: insurance-browser-local
+          path: artifacts/insurance-browser/
+          if-no-files-found: warn
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,6 +93,19 @@ jobs:
           CHROME_PATH: /usr/bin/google-chrome
           LIVE_URL: https://middleages.github.io/my-books/
         run: node scripts/investing-browser-qa.cjs
+      - name: Verify live insurance assets and textbook
+        env:
+          NODE_PATH: ${{ runner.temp }}/investing-qa/node_modules
+          CHROME_PATH: /usr/bin/google-chrome
+          LIVE_URL: https://middleages.github.io/my-books/
+        run: node scripts/insurance-browser-qa.cjs
+      - name: Save published insurance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: insurance-browser-published
+          path: artifacts/insurance-browser/
+          if-no-files-found: warn
       - name: Save published browser evidence
         if: always()
         uses: actions/upload-artifact@v4
