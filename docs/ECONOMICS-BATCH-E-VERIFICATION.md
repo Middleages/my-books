@@ -48,3 +48,19 @@ AGENTS·ECONOMICS-TEXTBOOK-PLAN·ECONOMICS-SESSION-PROMPTS 세션 E 전체·CONT
 ## 미검증 경계
 
 실제 iOS/Android 터치 기기·Safari/Firefox·스크린리더 음성 출력·자동 axe·독자 학습효과 실험은 미실행. 실제 거시경제 예측·공식 통계 재현·기존 전 장 전수 검증은 범위 밖이다.
+
+
+### 구현판 main·배포·실제 게시 확인
+
+구현 main `c26cb83a3249d9db46bef8c688674066cd5f3e92`, tree `98401282293638b344f19ad02c569dda89a841e9`가 로컬 검증 트리와 일치한다. main 직전 재조회에서 기준508403e 유지·병행 변경 없음 확인. 연결 GitHub의 기존 트리 기반 변경·expected SHA 확인·비강제 main 갱신으로 반영한 뒤 fetch로 실제 원격 커밋과 트리를 재확인했다.
+
+[Actions 39228814245](https://github.com/Middleages/my-books/actions/runs/39228814245) head c26cb83, completed/success. build의 설치·289테스트·production 빌드·artifact와 deploy의 Pages 배포 success 확인.
+
+배포 진행 중 한 차례 확인에서는 이전 번들이 유지되어 09 미공개였으며 성공으로 기록하지 않았다. 배포 성공 뒤 새로고침하여 실제 JS `index-DIKpzTjB.js`·CSS `index-ClFOeAJw.css`가 최종 로컬 빌드와 같음을 확인했다. 09/10 URL·제목·본문·10장 목차 일치.
+
+- 실제09: 빵18개 교환·두 단계 후 A−6개/B+12개·양쪽 엄격 개선 아님 반례 확인.
+- 실제10: 단계 진행 후 채무350, 관찰 시점6개월에서 자동 반응 차이180·추가 구매 포함 수지−380 = 120−350−150 확인.
+- 게시10 실제 DOM 가로 넘침0·del0·강조 별표 잔류 없음. 캡처에서 현금 막대·거래 방향·관찰 제어·텍스트 가독성 확인.
+- 게시 검증은 클라우드 Chromium 데스크톱, 320/390px·reduced-motion은 위 로컬 production 실렌더다. 범위를 혼동하지 않는다.
+
+이후 검증 문서/계획만 갱신하는 커밋은 앱 소스를 바꾸지 않는다. 최종 Actions와 같은 게시 자산을 다시 확인하며, 후속 F(11·12)는 이번에 구현하지 않았다. 위 미검증 범위는 통과로 바꾸지 않는다.
