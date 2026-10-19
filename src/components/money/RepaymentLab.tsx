@@ -14,6 +14,8 @@ import {
   repaymentLabels as labels,
   won,
 } from "./RepaymentVisuals";
+import { RepaymentFlow, RepaymentRhythms } from "./RepaymentScenes";
+import { repaymentScene } from "../../simulations/money/repayment-visual.mjs";
 const phases = [
   "① 월초 잔액",
   "② 이자 계산",
@@ -75,7 +77,11 @@ export function RepaymentLab() {
     );
   }
   return (
-    <section className="money-lab repay-lab" aria-label="대출 상환 방식 실험">
+    <section
+      className="money-lab repay-lab"
+      data-playing={play.playing}
+      aria-label="대출 상환 방식 실험"
+    >
       <div className="money-lab-heading">
         <span>REPAYMENT LAB · 가상 조건 · 원 단위</span>
         <h2>같은 빚, 세 가지 갚는 리듬</h2>
@@ -205,6 +211,10 @@ export function RepaymentLab() {
         납입은 ③에서 한 번만 반영됩니다. ④는 확인만 합니다. 진행 강조는 금액이나
         실제 처리 속도를 뜻하지 않습니다.
       </p>
+      <RepaymentFlow
+        scene={repaymentScene(result, kind, index)}
+        onPhase={(phase) => play.seek((f.month - 1) * 4 + phase)}
+      />
       <div className="repay-cards">
         {repaymentKinds.map((k) => {
           const s = result.paths[k],
@@ -262,6 +272,7 @@ export function RepaymentLab() {
             : "만기일시상환: 만기 전에는 이자만 내고 원금 감소를 미룹니다. 작은 월 납입액이 적은 총비용을 뜻하지 않습니다."}{" "}
         0금리에서는 이자 몫이 0입니다.
       </p>
+      <RepaymentRhythms result={result} kind={kind} />
       <RepaymentComposition rows={path.rows} month={f.month} />
       <RepaymentLine result={result} metric="closing" month={f.month} />
       <RepaymentLine

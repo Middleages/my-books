@@ -1,0 +1,285 @@
+.rv-scene {
+  margin: 1.5rem 0;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border: 1px solid #c7d8d3;
+  border-radius: 18px;
+  background: #f4f9f7;
+  color: #243e35;
+  min-width: 0;
+}
+.rv-scene *,
+.rv-scene *::before,
+.rv-scene *::after {
+  box-sizing: border-box;
+}
+.rv-kicker {
+  font-size: 0.75rem;
+  color: #506d62;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+.rv-scene h3 {
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+  line-height: 1.5;
+  margin: 0.6rem 0 1rem;
+}
+.rv-scene h4 {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 0.5rem;
+}
+.rv-scene p {
+  line-height: 1.8;
+}
+.rv-scene figcaption,
+.rv-legend {
+  font-size: 0.78rem;
+  line-height: 1.8;
+  color: #4f655a;
+}
+.rv-example {
+  padding: 0.8rem 1rem;
+  border-left: 4px solid #3766a0;
+  background: #edf3fa;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+.rv-phase-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
+}
+.rv-phase-buttons button {
+  font: inherit;
+  font-size: 0.83rem;
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  background: white;
+  border: 1px solid #a4bfb3;
+  border-radius: 8px;
+  color: #275940;
+  cursor: pointer;
+}
+.rv-phase-buttons button[aria-pressed="true"] {
+  background: #176553;
+  border-color: #176553;
+  color: white;
+}
+.rv-scene :focus-visible {
+  outline: 3px solid #a5671c;
+  outline-offset: 3px;
+}
+.rv-payment-source {
+  max-width: 530px;
+  margin: auto;
+  border: 2px solid #425e78;
+  border-radius: 14px;
+  background: white;
+  padding: 1rem;
+}
+.rv-payment-source > span {
+  font-size: 0.85rem;
+  color: #415c71;
+}
+.rv-payment-source > strong {
+  font-size: 1.5rem;
+  display: block;
+  margin: 0.4rem 0 1rem;
+}
+.rv-payment-source .repay-payment p {
+  margin: 0.5rem 0 0;
+}
+.rv-branches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.8rem 0 1.2rem;
+}
+.rv-branches > section {
+  position: relative;
+  text-align: center;
+  padding: 1.2rem 0.8rem 1rem;
+  min-width: 0;
+  border-top: 5px solid;
+}
+.rv-principal-route {
+  background: #e2f2e8;
+  border-color: #176553 !important;
+  border-radius: 0 0 22px 22px;
+}
+.rv-interest-route {
+  background: #fff2da;
+  border-color: #a16c24 !important;
+  border-radius: 0 0 3px 3px;
+  border-bottom: 3px dashed #bd8d46;
+}
+.rv-branches p {
+  font-size: 0.83rem;
+  min-height: 1.8em;
+  margin: 0.5rem 0;
+}
+.rv-arrow {
+  position: absolute;
+  left: 50%;
+  top: -1.8rem;
+  transform: translateX(-50%);
+  font-size: 1.6rem;
+  color: #375b50;
+}
+.rv-branches b {
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 0.6rem;
+}
+.rv-route-symbol {
+  display: block;
+  width: 48px;
+  height: 48px;
+  line-height: 40px;
+  border: 3px solid #176553;
+  color: #176553;
+  border-radius: 50%;
+  font-size: 2.2rem;
+  margin: 0.7rem auto;
+}
+.rv-receipt {
+  display: block;
+  margin: 0.7rem auto;
+  width: 100px;
+  height: 48px;
+  line-height: 44px;
+  border: 2px dashed #ae772b;
+  color: #78521c;
+  background: #fffaf0;
+  font-size: 0.83rem;
+}
+.rv-branches:not(.rv-paid) .rv-route-symbol,
+.rv-branches:not(.rv-paid) .rv-receipt {
+  opacity: 0.55;
+}
+.rv-debt-picture {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #d2dfd9;
+  border-radius: 12px;
+}
+.rv-debt-row {
+  margin: 1rem 0;
+}
+.rv-debt-row > span {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+  margin-bottom: 0.5rem;
+}
+.rv-debt-track {
+  position: relative;
+  height: 40px;
+  border: 1px solid #bccbd5;
+  border-radius: 5px;
+  background: #f1f3f4;
+  overflow: hidden;
+}
+.rv-debt-track i {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: block;
+}
+.rv-balance {
+  left: 0;
+  background: #476fa5;
+  border: 1px solid #315683;
+}
+.rv-cleared {
+  border: 2px dashed #267a55;
+  background: repeating-linear-gradient(
+    135deg,
+    #d0ebda,
+    #d0ebda 7px,
+    #edf8f0 7px,
+    #edf8f0 14px
+  );
+}
+.rv-insight {
+  padding: 1rem;
+  background: #fff0d8;
+  border-left: 4px solid #b77f2b;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9rem;
+}
+.rv-months {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.rv-months > section {
+  min-width: 0;
+  background: white;
+  padding: 1rem;
+  border: 1px solid #d0dfd6;
+  border-radius: 12px;
+}
+.rv-months > section > p {
+  font-size: 0.82rem;
+}
+.rv-months b {
+  display: inline-block;
+}
+@media (max-width: 700px) {
+  .rv-months {
+    grid-template-columns: 1fr;
+  }
+  .rv-branches {
+    gap: 0.65rem;
+  }
+  .rv-branches > section {
+    padding: 1rem 0.55rem;
+  }
+  .rv-branches h4 {
+    font-size: 0.9rem;
+  }
+  .rv-branches p,
+  .rv-branches b {
+    font-size: 0.78rem;
+  }
+  .rv-receipt {
+    width: 85px;
+  }
+  .rv-debt-picture {
+    padding: 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .repay-lab[data-playing="true"] .rv-balance {
+    transition: width 0.6s ease;
+  }
+  .repay-lab[data-playing="true"] .rv-cleared {
+    transition:
+      left 0.6s ease,
+      width 0.6s ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rv-scene * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.rv-scene h4,
+.rv-scene strong,
+.rv-scene b {
+  overflow-wrap: anywhere;
+}
+.repay-payment .repay-whole-amount {
+  display: inline-block;
+  white-space: nowrap;
+}
+.rv-route-amount {
+  display: block;
+  white-space: nowrap;
+  font-size: clamp(0.75rem, 1.3vw, 1rem);
+}

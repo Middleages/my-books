@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  projectRepayment,
-  repaymentDefaults,
   repaymentKinds,
   type RepaymentKind,
   type RepaymentResult,
@@ -35,49 +33,14 @@ export function PaymentBar({
         />
       </div>
       <p>
-        <b>원금 {won(row.principal)}</b> + 이자 {won(row.interest)}
-        <br />= 납입 {won(row.payment)}
+        <b>
+          원금 <span className="repay-whole-amount">{won(row.principal)}</span>
+        </b>{" "}
+        + 이자 <span className="repay-whole-amount">{won(row.interest)}</span>
+        <br />= 납입{" "}
+        <span className="repay-whole-amount">{won(row.payment)}</span>
       </p>
     </div>
-  );
-}
-export function RepaymentPrimer() {
-  const r = projectRepayment({
-      ...repaymentDefaults,
-      principal: 3000000,
-      annualRate: 12,
-      months: 3,
-    }),
-    row = r.paths.equalPrincipal.rows[0];
-  return (
-    <figure className="repay-primer">
-      <figcaption>
-        <b>300만원을 3개월에 원금균등으로 · 명목연율 12%</b>
-      </figcaption>
-      <div className="repay-fork">
-        <div>
-          월초 빚<br />
-          <strong>{won(row.opening)}</strong>
-        </div>
-        <span aria-hidden="true">→</span>
-        <div>
-          <PaymentBar row={row} scale={row.payment} />
-        </div>
-        <span aria-hidden="true">→</span>
-        <div>
-          월말 빚<br />
-          <strong>{won(row.closing)}</strong>
-        </div>
-      </div>
-      <p>
-        초록 원금은 빚을 줄이고, 빗금 이자는 빌린 비용을 냅니다. 103만원이
-        나가도 빚은 100만원만 줄어듭니다.
-      </p>
-      <p className="money-caption">
-        월율 1% × 월초 300만원 = 이자 3만원. 월말 전액 납입 가정, 세금·수수료
-        등은 제외합니다. 화살표는 계산 순서이며 금액의 크기가 아닙니다.
-      </p>
-    </figure>
   );
 }
 function useChartWidth() {
