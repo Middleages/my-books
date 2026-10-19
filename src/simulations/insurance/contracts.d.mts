@@ -1,0 +1,11 @@
+export type ContractParams = { preset: 'separate' | 'same' | 'employer'; addRider: boolean; restrictRider: boolean; employed: boolean };
+export type ContractRole = { id: string; label: string; detail: string; symbol: string };
+export type ContractPerson = { id: string; name: string; kind: string; roles: ContractRole[] };
+export type ContractEdge = { id: string; from: string; to: string; personId: string; direction: string; label: string; detail: string; kind: string; connected: boolean; active?: boolean };
+export type ContractEvent = { id: string; label: string; included: boolean; region: string; reason: string };
+export type ContractSource = { id: string; label: string; example: string; connection: string; status: string; detail: string };
+export type ContractFrame = { index: number; phase: string; label: string; detail: string; people: ContractPerson[]; edges: ContractEdge[]; events: ContractEvent[]; sources: ContractSource[]; groupConnection: boolean };
+export type ContractResult = { params: ContractParams; people: ContractPerson[]; edges: ContractEdge[]; events: ContractEvent[]; sources: ContractSource[]; frames: ContractFrame[]; samePayerAndBeneficiary: boolean; includedCount: number; verdict: string };
+export const contractDefaults: Readonly<ContractParams>;
+export const contractPresets: readonly { id: ContractParams['preset']; label: string }[];
+export function projectContractMap(options?: Partial<ContractParams>): ContractResult;

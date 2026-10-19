@@ -1,7 +1,7 @@
 # 보험과 위험 대비 — 4권 제작 계획
 
 작성일: 2026-10-20 KST (2026-10-19 UTC). 기준 main: `8b8262cb7f7f3fc9c37781d5285886f1e11b0331`.
-상태: **A 소개·01–02 구현, 로컬531테스트·빌드 통과. 독립 검토·실제 화면·main/Pages 게시 검증 진행 중([A 기록](INSURANCE-BATCH-A-VERIFICATION.md)). B–E 미구현.** 이 문서는 승인된 실행 설계이며 구현·실행·게시 증거를 대신하지 않는다. 각 배치의 실제 결과는 해당 검증 기록에서 갱신한다.
+상태: **A 소개·01–02의531테스트·독립 검토·실제 화면·main/Pages 게시 검증 완료([A 기록](INSURANCE-BATCH-A-VERIFICATION.md), main97ba4fd). B03–04 구현·569테스트·빌드·독립 코드 검토 완료, 실제 화면·게시 검증 진행 중([B 기록](INSURANCE-BATCH-B-VERIFICATION.md)). C–E 미구현.** 이 문서는 승인된 실행 설계이며 구현·실행·게시 증거를 대신하지 않는다. 각 배치의 실제 결과는 해당 검증 기록에서 갱신한다.
 실행 지시: [세션 프롬프트](INSURANCE-SESSION-PROMPTS.md). [시리즈 계획](MONEY-TEXTBOOK-PLAN.md), [콘텐츠 기준](CONTENT-AUTHORING.md), [홈 구조](HOME-INFORMATION-ARCHITECTURE.md)를 따른다.
 
 ## 목적·독자·선행 연결

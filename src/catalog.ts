@@ -1,6 +1,8 @@
 import InsuranceIntro from "./content/insurance/Intro.mdx";
 import ExpectedLoss from "./content/insurance/ExpectedLoss.mdx";
 import Pooling from "./content/insurance/Pooling.mdx";
+import ContractMap from "./content/insurance/ContractMap.mdx";
+import Payout from "./content/insurance/Payout.mdx";
 import PerformanceHistory from "./content/investing/PerformanceHistory.mdx";
 import ReadingInvestments from "./content/investing/ReadingInvestments.mdx";
 import CostsFx from "./content/investing/CostsFx.mdx";
@@ -82,6 +84,8 @@ export type Chapter = {
 export const chapters: Chapter[] = [
   { id: "expected-loss", bookId: "insurance", readId: "insurance/expected-loss", number: "01", title: "같은 평균, 다른 충격", heading: "같은 기대손실이면 감당할 위험도 같을까?", description: "사건 확률과 손실 크기, 같은 평균 뒤에 남는 현금 부족을 비교합니다.", Content: ExpectedLoss },
   { id: "pooling", bookId: "insurance", readId: "insurance/pooling", number: "02", title: "보험은 위험을 어떻게 나눌까", heading: "여럿이 모이면 손실이 사라질까?", description: "공동 재원의 이동과 개별·공통 충격에서 지급 여력이 달라지는 이유를 봅니다.", Content: Pooling },
+  { id: "contract-map", bookId: "insurance", readId: "insurance/contract-map", number: "03", title: "보험 계약의 지도", heading: "내 계약에서 누가 내고 누가 보장받을까?", description: "계약의 역할과 돈의 방향, 기본계약·특약의 경계를 연결합니다.", Content: ContractMap },
+  { id: "payout", bookId: "insurance", readId: "insurance/payout", number: "04", title: "보험금은 어떻게 정해질까", heading: "손실과 보험금이 왜 다를까?", description: "제외·공제·자기부담·한도로 나뉘는 손실과 반복 청구의 연간한도를 봅니다.", Content: Payout },
   { id: "ownership", bookId: "investing", readId: "investing/ownership", number: "01", title: "주식으로 무엇을 소유할까", heading: "주식을 사면 회사에 내 돈이 들어갈까?", description: "발행과 유통의 돈·지분 흐름, 회사 자산과 지분 비율을 구분합니다.", Content: Ownership },
   { id: "total-return", bookId: "investing", readId: "investing/total-return", number: "02", title: "가격·배당·총수익", heading: "배당을 받으면 그만큼 더 부자가 될까?", description: "같은 장부에서 평가액·현금·가격 수익·배당·재투자를 연결합니다.", Content: TotalReturn },
   { id: "orders", bookId: "investing", readId: "investing/orders", number: "03", title: "주문과 체결", heading: "현재가에 주문하면 그 가격에 모두 살 수 있을까?", description: "가격별 잔량을 따라 체결 가격·수량·대금과 미체결 이유를 읽습니다.", Content: Orders },
@@ -437,7 +441,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "insurance", categoryId: "money", title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–02장 공개 · 위험의 크기와 공동 부담부터 살펴봅니다.", Intro: InsuranceIntro },
+  { id: "insurance", categoryId: "money", title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–04장 공개 · 위험의 크기부터 계약의 역할과 보험금 구조까지 살펴봅니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
   { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–12장 공개 · 가상 실험으로 경제 뉴스의 원리와 해석 조건을 익힙니다.", Intro: EconomicsIntro },
   {

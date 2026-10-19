@@ -192,6 +192,17 @@ async function setRange(page, slider, value) {
   for (let index = 0; index < steps; index++) await page.keyboard.press('ArrowRight');
   assert.equal(await slider.inputValue(), String(value), 'Keyboard range control did not reach the requested model input');
 }
+async function selectWithKeyboard(page, select, value) {
+  const options = await select.locator('option').evaluateAll(elements => elements.map(element => ({ value: element.value, disabled: element.disabled })));
+  const index = options.findIndex(option => option.value === value);
+  assert(index >= 0 && !options[index].disabled, `Keyboard select value is not an enabled option: ${value}`);
+  assert(options.every(option => !option.disabled), 'Keyboard selector helper requires an uninterrupted option list');
+  await select.focus();
+  await page.keyboard.press('Home');
+  for (let step = 0; step < index; step++) await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Tab');
+  assert.equal(await select.inputValue(), value, 'Keyboard selection did not change the model input');
+}
 // Compare painted geometry, not only data attributes or CSS declarations.
 async function assertBars(locator, expected, description, childSelector = 'i') {
   const actual = await locator.evaluateAll((elements, childSelector) => elements.map(element => {
@@ -430,6 +441,278 @@ async function conditionChecks(page, lab, name) {
     await reset(); await run('repeated-default-no-double-collection');
     assert.equal(await reserve.inputValue(), String(poolingDefaults.reserve / 10000));
     assert.equal(await individual.getAttribute('aria-pressed'), 'true');
+  } else if (kind === 'contract-map') {
+    const { projectContractMap, contractDefaults } = await import('../src/simulations/insurance/contracts.mjs');
+    const cells = model => [
+      ...model.frames.map(frame => [frame.label, frame.edges.filter(edge => edge.active).map(edge => edge.label).join(' / ') || '사람과 역할 전체', frame.detail]),
+      ...model.people.flatMap(person => person.roles.map(role => [person.name, role.label, role.detail])),
+      ['가상 보험회사', '보험자', '계약을 인수하고 조건에 따라 지급할 책임'],
+      ...model.edges.map(edge => [edge.from === 'insurer' ? '가상 보험회사' : model.people.find(person => person.id === edge.from).name, edge.label, edge.to === 'insurer' ? '가상 보험회사' : model.people.find(person => person.id === edge.to).name, edge.detail]),
+      ...model.events.map(event => [event.label, event.included ? '안' : '밖', event.reason]),
+      ...model.sources.map(source => [source.label, source.example, source.detail, source.connection]),
+    ];
+    const inspect = async (frame, model) => {
+      const people = lab.locator('[data-contract-person]');
+      assert.equal(await people.count(), frame.people.length, 'People must be grouped once per model person, not once per role');
+      assert.equal(await lab.locator('[data-contract-role]').count(), 3, 'The three person roles must survive every person-grouping choice');
+      assert.equal(await lab.locator('[data-contract-insurer]').count(), 1, 'The insurer must remain a separate counterparty');
+      for (const person of frame.people) {
+        const node = lab.locator(`[data-contract-person="${person.id}"]`);
+        assert.equal(await node.locator(':scope > strong').innerText(), person.name);
+        assert.equal(Number(await node.getAttribute('data-role-count')), person.roles.length);
+        assert.deepEqual(await node.locator('[data-contract-role]').evaluateAll(elements => elements.map(element => element.dataset.contractRole)), person.roles.map(role => role.id));
+        const geometry = await node.evaluate(element => {
+          const box = element.getBoundingClientRect();
+          return { box: box.toJSON(), roles: [...element.querySelectorAll('[data-contract-role]')].map(role => ({ box: role.getBoundingClientRect().toJSON(), text: role.textContent, font: parseFloat(getComputedStyle(role).fontSize) })), icon: element.querySelector('svg').getBoundingClientRect().toJSON() };
+        });
+        assert(geometry.box.width > 60 && geometry.icon.width >= 30, 'Person identity has been reduced below readable geometry');
+        geometry.roles.forEach((role, index) => {
+          assert(role.text.includes(person.roles[index].label), 'Visible role label differs from model');
+          assert(role.font >= 12, 'A responsive role label has been shrunk below 12 CSS pixels');
+          assert(role.box.left >= geometry.box.left && role.box.right <= geometry.box.right + 1 && role.box.top >= geometry.box.top && role.box.bottom <= geometry.box.bottom + 1, 'Role escaped the single-person boundary');
+        });
+      }
+      for (const edge of frame.edges) {
+        const lane = lab.locator(`[data-contract-edge="${edge.id}"]`);
+        for (const [attribute, value] of [['data-from', edge.from], ['data-to', edge.to], ['data-connected', String(edge.connected)], ['data-active', String(edge.active)]]) assert.equal(await lane.getAttribute(attribute), value, `Contract ${edge.id}: ${attribute} differs from model`);
+        assert.equal(await lane.locator(':scope > span').innerText(), edge.label);
+        assert.equal(await lane.locator(':scope > small').innerText(), !edge.connected ? '지속 미확인' : edge.kind === 'reference' ? '관계' : edge.id === 'payout' ? '지급 약속' : '납입 의무');
+        const geometry = await lane.evaluate((element, personId) => {
+          const root = element.closest('[data-insurance-lab]'), line = element.querySelector('i');
+          const pseudo = getComputedStyle(line, '::after'), matrix = new DOMMatrixReadOnly(pseudo.transform), box = line.getBoundingClientRect();
+          return { box: box.toJSON(), person: root.querySelector(`[data-contract-person="${personId}"]`).getBoundingClientRect().toJSON(), insurer: root.querySelector('[data-contract-insurer]').getBoundingClientRect().toJSON(), headAngle: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI, headLeft: pseudo.left, headRight: pseudo.right, active: element.classList.contains('active'), uncertain: element.classList.contains('unconfirmed'), lineBorder: getComputedStyle(line).borderTopStyle };
+        }, edge.personId);
+        assert(geometry.box.width >= 24 && geometry.box.width > geometry.box.height * 4, 'Contract relationship must have a visible horizontal connector');
+        assert(geometry.box.left >= geometry.person.right - 1 && geometry.box.right <= geometry.insurer.left + 1, 'Connection does not run between its person and the insurer');
+        const center = (geometry.box.top + geometry.box.bottom) / 2;
+        assert(center >= geometry.person.top && center <= geometry.person.bottom && center >= geometry.insurer.top && center <= geometry.insurer.bottom, 'A connector is visually attached to the wrong person row');
+        assert(Math.abs(geometry.headAngle - (edge.direction === 'from-insurer' ? -135 : 45)) < .01, 'Painted arrowhead contradicts the model payment direction');
+        assert.equal(parseFloat(edge.direction === 'from-insurer' ? geometry.headLeft : geometry.headRight), 0, 'Arrowhead is not anchored at the receiving end');
+        assert.equal(geometry.active, edge.active);
+        assert.equal(geometry.uncertain, !edge.connected);
+        if (edge.kind === 'reference' && edge.connected) assert.equal(geometry.lineBorder, 'dashed', 'Coverage relation must remain visibly distinct from money direction');
+      }
+      assert.equal(await lab.locator('[data-contract-event]').count(), frame.events.length);
+      for (const event of frame.events) {
+        const token = lab.locator(`[data-contract-event="${event.id}"]`);
+        assert.equal(await token.getAttribute('data-included'), String(event.included));
+        assert.equal(await token.getAttribute('data-region'), event.region);
+        assert.equal(await token.locator(':scope > strong').innerText(), event.label);
+        assert.equal(await token.locator(':scope > small').innerText(), event.reason);
+        const bounds = await token.evaluate(element => {
+          const region = element.closest('[data-contract-boundary]');
+          return { region: region.dataset.contractBoundary, token: element.getBoundingClientRect().toJSON(), boundary: region.getBoundingClientRect().toJSON(), inAgreement: !!element.closest('[data-contract-agreement]') };
+        });
+        assert.equal(bounds.region, event.region);
+        assert.equal(bounds.inAgreement, event.included, 'Inclusion is not represented by the actual contract boundary');
+        assert(bounds.token.left >= bounds.boundary.left && bounds.token.right <= bounds.boundary.right + 1 && bounds.token.top >= bounds.boundary.top && bounds.token.bottom <= bounds.boundary.bottom + 1, 'Event token is painted outside its model region');
+      }
+      assert.equal(await lab.locator('[data-contract-boundary="rider"]').getAttribute('data-attached'), String(model.params.addRider));
+      const boundaries = await lab.locator('[data-contract-agreement], [data-contract-boundary="outside"]').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().toJSON()));
+      assert.equal(boundaries.length, 2);
+      if (page.viewportSize().width <= 1000) assert(boundaries[1].top >= boundaries[0].bottom, 'Sidebar/mobile coverage boundaries must stack');
+      else assert(boundaries[1].left >= boundaries[0].right, 'Desktop inside/outside coverage boundaries overlap');
+      assert.deepEqual(await lab.locator('[data-contract-source]').evaluateAll(elements => elements.map(element => element.dataset.contractSource)), frame.sources.map(source => source.id));
+      for (const source of frame.sources) {
+        const node = lab.locator(`[data-contract-source="${source.id}"]`);
+        assert.equal(await node.locator(':scope > strong').innerText(), source.label);
+        assert.equal(await node.locator(':scope > span').innerText(), source.example);
+        assert.equal(await node.locator(':scope > small').innerText(), source.connection);
+        assert.equal(await node.locator('i').evaluate(element => element.classList.contains('uncertain')), source.status === '지속 미확인');
+      }
+      const sources = await lab.locator('[data-contract-source]').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().toJSON()));
+      for (let index = 1; index < sources.length; index++) {
+        if (page.viewportSize().width <= 1000) assert(sources[index].top >= sources[index - 1].bottom, 'Source paths must reflow into readable vertical rows');
+        else assert(Math.abs(sources[index].top - sources[0].top) <= 1 && sources[index].left >= sources[index - 1].right, 'Desktop source paths must remain separate and aligned');
+      }
+    };
+    const preset = lab.getByRole('combobox', { name: '가상 역할 배치', exact: true });
+    const rider = lab.getByRole('checkbox', { name: '추가 특약 · 사건 C 포함', exact: true });
+    const restriction = lab.getByRole('checkbox', { name: '제한 특약 · 사건 B 제외', exact: true });
+    const employment = lab.getByRole('checkbox', { name: '가상 지우가 현재 직장에 재직 중', exact: true });
+    const toggle = async input => { await input.focus(); await page.keyboard.press('Space'); };
+    const run = async (scenario, options = {}) => {
+      const model = projectContractMap(options);
+      await verify(scenario, model, model.samePayerAndBeneficiary ? 'same' : 'different', inspect, cells);
+      assert((await lab.locator('.insurance-result').innerText()).includes(model.verdict));
+    };
+    await reset(); await run('separate-people-default');
+    await changingStopsPlayback(() => selectWithKeyboard(page, preset, 'same'));
+    await run('one-person-three-roles', { preset: 'same' });
+    await changingStopsPlayback(() => toggle(rider));
+    await run('additional-rider-includes-c', { preset: 'same', addRider: true });
+    await changingStopsPlayback(() => toggle(restriction));
+    await run('restriction-moves-b-outside', { preset: 'same', addRider: true, restrictRider: true });
+    await toggle(rider); await run('restricted-basic-without-addition', { preset: 'same', restrictRider: true });
+    await selectWithKeyboard(page, preset, 'employer');
+    await run('employer-and-employee-roles', { preset: 'employer', restrictRider: true });
+    await changingStopsPlayback(() => toggle(employment));
+    await run('employer-after-leaving-work', { preset: 'employer', restrictRider: true, employed: false });
+    await selectWithKeyboard(page, preset, 'separate');
+    await run('personal-contract-and-public-work-sources', { restrictRider: true, employed: false });
+    await reset(); await run('repeated-default-restores-roles-boundaries-sources');
+    assert.equal(await preset.inputValue(), contractDefaults.preset);
+    assert.equal(await rider.isChecked(), contractDefaults.addRider);
+    assert.equal(await restriction.isChecked(), contractDefaults.restrictRider);
+    assert.equal(await employment.isChecked(), contractDefaults.employed);
+  } else if (kind === 'payout') {
+    const { projectPayout, projectPayoutYear, payoutDefaults, previewPayoutClaim, createPayoutYear, submitPayoutClaim, startNextPayoutYear, projectFixedBenefit } = await import('../src/simulations/insurance/payout.mjs');
+    const defaultClaim = { loss: payoutDefaults.loss, excluded: payoutDefaults.excluded, deductible: payoutDefaults.deductible, insurerRate: payoutDefaults.insurerRate, perClaimLimit: payoutDefaults.perClaimLimit };
+    let year = createPayoutYear();
+    let fixedEligible = true;
+    const fixedAmount = 1000000;
+    const cells = model => [
+      ...model.frames.map(frame => [frame.label, ...model.frames[0].segments.map(segment => format((frame.segments.find(item => item.id === segment.id)?.amount ?? 0) / 10000)), format(frame.loss / 10000)]),
+      ...projectPayoutYear(model.params).claims.map((claim, index) => [`${index + 1}번째`, ...['annualRemainingBefore', 'paid', 'remainingBurden', 'annualRemainingAfter'].map(key => format(claim[key] / 10000))]),
+      ...[true, false].map(eventEligible => {
+        const fixed = projectFixedBenefit({ eventEligible, amount: fixedAmount });
+        return [eventEligible ? '모든 지급조건 충족' : '지급조건 불충족', won(fixed.amount), won(fixed.paid)];
+      }),
+    ];
+    const inspectYear = async () => {
+      assert.equal(Number(await lab.locator('[data-payout-year]').innerText()), year.year, 'Observation changed the insurance year');
+      assert.equal(Number(await lab.locator('[data-payout-claim-count]').innerText()), year.claims.length, 'Only explicit record actions may add claims');
+      for (const [attribute, value] of [['data-payout-annual-used', year.annualUsed], ['data-payout-annual-remaining', year.annualRemaining]]) {
+        const label = lab.locator(`[${attribute}]`);
+        assert.equal(Number(await label.getAttribute('data-value')), value);
+        assert.equal(await label.innerText(), won(value), 'Annual capacity label differs from recorded claims');
+      }
+      await assertBars(lab.locator('[data-payout-annual-track]'), [[...year.annualSegments.map(segment => segment.fraction), year.annualRemainingFraction]], 'Recorded annual payments and remaining capacity');
+      assert.deepEqual(await lab.locator('[data-payout-annual-segment]').evaluateAll(elements => elements.map(element => ({ index: Number(element.dataset.payoutAnnualSegment), amount: Number(element.dataset.amount) }))), year.annualSegments.map(segment => ({ index: segment.index, amount: segment.amount })));
+      const expectedRows = year.claims.map((claim, index) => [`${index + 1}번째`, won(claim.params.loss), won(claim.paid), won(claim.remainingBurden), won(claim.annualRemainingAfter)]);
+      assert.deepEqual(await lab.locator('[data-payout-claim-row]').evaluateAll(rows => rows.map(row => [...row.querySelectorAll('th,td')].map(cell => cell.textContent.trim()))), expectedRows, 'Recorded claim history changed while previewing/replaying conditions');
+      const label = await lab.locator('[data-payout-annual-track]').getAttribute('aria-label');
+      assert(label.includes(`연간한도 ${won(year.params.annualLimit)} 중 사용 ${won(year.annualUsed)}, 남음 ${won(year.annualRemaining)}`));
+      assert.deepEqual(await lab.locator('[data-payout-annual-ledger] > .insurance-axis span').allTextContents(), ['0원', `연간총한도 ${won(year.params.annualLimit)}`]);
+    };
+    const inspectFixed = async () => {
+      const fixed = projectFixedBenefit({ eventEligible: fixedEligible, amount: fixedAmount });
+      const lane = lab.locator('[data-payout-fixed-lane]');
+      assert.equal(await lane.getAttribute('data-eligible'), String(fixed.eventEligible));
+      assert.equal(await lane.locator('[data-payout-fixed-paid]').innerText(), won(fixed.paid));
+      assert.equal(Number(await lane.locator('[data-payout-fixed-paid]').getAttribute('data-value')), fixed.paid);
+      assert.equal(await lane.locator('.payout-fixed-event strong').innerText(), fixed.eventEligible ? '조건 충족' : '조건 불충족');
+      assert.equal(await lane.locator('.payout-fixed-arrow span').innerText(), fixed.eventEligible ? '→' : '×');
+      assert.equal(await lane.locator('.payout-fixed-arrow').evaluate(element => element.classList.contains('closed')), !fixed.eventEligible);
+      const boxes = await lane.evaluate(element => ({
+        lane: element.getBoundingClientRect().toJSON(), loss: element.closest('.insurance-lab').querySelector('[data-payout-lossbar]').getBoundingClientRect().toJSON(),
+        event: element.querySelector('.payout-fixed-event').getBoundingClientRect().toJSON(), promise: element.querySelector('.payout-fixed-promise').getBoundingClientRect().toJSON(),
+        line: element.querySelector('.payout-fixed-arrow i').getBoundingClientRect().toJSON(), includedInLoss: !!element.closest('[data-payout-lossbar]'),
+      }));
+      assert(!boxes.includedInLoss && boxes.lane.top > boxes.loss.bottom, 'The fixed benefit must be a separately painted conditional promise, never a loss segment');
+      assert(boxes.event.width >= 70 && boxes.promise.width >= 70, 'Fixed condition and promise are unreadably narrow');
+      if (page.viewportSize().width <= 1000) {
+        assert(boxes.promise.top > boxes.event.bottom, 'Mobile fixed-benefit relationship must reflow downward');
+        assert(boxes.line.height > boxes.line.width * 4, 'Mobile fixed-benefit connector still points across a desktop layout');
+      } else {
+        assert(boxes.promise.left > boxes.event.right, 'Desktop fixed-benefit relationship overlaps');
+        assert(boxes.line.width > boxes.line.height * 4, 'Desktop fixed-benefit connector is not horizontal');
+      }
+    };
+    const inspect = async (frame, model) => {
+      const bar = lab.locator('[data-payout-lossbar]');
+      assert.equal(Number(await bar.getAttribute('data-loss')), frame.loss);
+      assert.equal(await lab.locator('[data-payout-loss]').innerText(), won(frame.loss));
+      assert.deepEqual(await bar.locator('[data-payout-segment]').evaluateAll(elements => elements.map(element => ({ id: element.dataset.payoutSegment, amount: Number(element.dataset.amount), fraction: Number(element.dataset.fraction) }))), frame.segments.map(segment => ({ id: segment.id, amount: segment.amount, fraction: segment.fraction })));
+      await assertBars(bar, [frame.segments.map(segment => segment.fraction)], 'Every loss component painted once on the original loss scale');
+      const total = frame.segments.reduce((sum, segment) => sum + segment.amount, 0);
+      assert(Math.abs(total - frame.loss) <= 1e-8 * Math.max(1, frame.loss), 'Observation frame does not partition the original loss');
+      assert.deepEqual(await lab.locator('.payout-loss-figure > .insurance-axis span').allTextContents(), ['0원', `${won(frame.loss)} · 이 손실 전체`]);
+      const keys = frame.segments.filter(segment => segment.id !== 'unresolved' || segment.amount > 0);
+      assert.deepEqual(await lab.locator('[data-payout-key]').evaluateAll(elements => elements.map(element => ({ id: element.dataset.payoutKey, label: element.querySelector('span').textContent, amount: element.querySelector('b').textContent }))), keys.map(segment => ({ id: segment.id, label: segment.label, amount: won(segment.amount) })));
+      const description = await bar.getAttribute('aria-label');
+      for (const segment of frame.segments) assert(description.includes(`${segment.label} ${won(segment.amount)}`), 'Accessible loss partition omits a model component');
+      for (const [attribute, value] of [['data-payout-paid', frame.paid], ['data-payout-burden', frame.resolvedBurden]]) {
+        assert.equal(Number(await lab.locator(`[${attribute}]`).getAttribute('data-value')), value);
+        assert.equal(await lab.locator(`[${attribute}]`).innerText(), won(value));
+      }
+      const current = lab.locator('.payout-process [data-current="true"] button');
+      assert.equal(await current.count(), 1, 'Exactly one computation stage should be visibly current');
+      assert.equal(await current.getAttribute('aria-current'), 'step');
+      assert.equal(await current.innerText(), frame.label);
+      await inspectYear(); await inspectFixed();
+      assert.equal(model.paid + model.remainingBurden, model.params.loss, 'Final payment plus burden must conserve the original loss');
+    };
+    const loss = lab.getByRole('slider', { name: /^총손실/ });
+    const excluded = lab.getByRole('slider', { name: /^보장 제외 금액/ });
+    const deductible = lab.getByRole('slider', { name: /^공제 금액/ });
+    const rate = lab.getByRole('slider', { name: /^보험자 부담 비율/ });
+    const cap = lab.getByRole('slider', { name: /^건별 지급한도/ });
+    const fixedControl = lab.getByRole('checkbox', { name: '정액 지급조건 충족', exact: true });
+    const clearConditions = async () => { await reset(); fixedEligible = true; };
+    const run = async (scenario, options = {}) => {
+      const model = previewPayoutClaim(year, { ...defaultClaim, ...options });
+      await verify(scenario, model, model.remainingBurden === 0 ? 'all' : 'partial', inspect, cells);
+      assert((await lab.locator('.insurance-result').innerText()).includes(model.verdict), 'Final payout explanation differs from the model');
+    };
+    const frozen = projectPayout();
+    assert.deepEqual(frozen.segments.map(segment => segment.amount), [1000000, 500000, 700000, 800000, 0, 2000000], 'Frozen first-claim loss partition changed');
+    const overview = page.locator('.payout-overview [data-payout-lossbar]');
+    assert.equal(await overview.count(), 1, 'The authored first-claim overview is missing');
+    await assertBars(overview, [frozen.segments.map(segment => segment.fraction)], 'Static overview and interactive first claim share the frozen model');
+    assert.deepEqual(await overview.locator('[data-payout-segment]').evaluateAll(elements => elements.map(element => Number(element.dataset.amount))), frozen.segments.map(segment => segment.amount));
+    await clearConditions(); await run('frozen-first-claim-partition');
+    await changingStopsPlayback(async () => { await loss.focus(); await page.keyboard.press('ArrowRight'); });
+    await clearConditions(); await setRange(page, loss, 0); await run('zero-loss-zero-painted-components', { loss: 0 });
+    await setRange(page, loss, 50); await run('exclusion-exceeds-smaller-loss', { loss: 500000 });
+    await setRange(page, loss, 150); await run('exact-deductible-boundary', { loss: 1500000 });
+    await setRange(page, loss, 175); await run('one-ui-step-above-deductible', { loss: 1750000 });
+    await clearConditions();
+    await changingStopsPlayback(() => setRange(page, excluded, 0));
+    await run('zero-exclusion-keeps-other-terms', { excluded: 0 });
+    await clearConditions();
+    await changingStopsPlayback(() => setRange(page, deductible, 500));
+    await run('deductible-exceeds-covered-loss', { deductible: 5000000 });
+    await clearConditions();
+    await changingStopsPlayback(() => setRange(page, rate, 0));
+    await run('zero-insurer-share', { insurerRate: 0 });
+    await setRange(page, rate, 100); await run('full-insurer-share-still-capped', { insurerRate: 1 });
+    await clearConditions();
+    await changingStopsPlayback(() => setRange(page, cap, 0));
+    await run('zero-per-claim-limit', { perClaimLimit: 0 });
+    await setRange(page, cap, 1000); await run('nonbinding-per-claim-limit', { perClaimLimit: 10000000 });
+    await clearConditions(); await setRange(page, loss, 200); await setRange(page, excluded, 0); await setRange(page, deductible, 0); await setRange(page, rate, 100); await setRange(page, cap, 1000);
+    await run('entire-loss-covered-within-annual-cap', { loss: 2000000, excluded: 0, deductible: 0, insurerRate: 1, perClaimLimit: 10000000 });
+    await setRange(page, loss, 1000);
+    await run('maximum-loss-annual-cap-binds', { loss: 10000000, excluded: 0, deductible: 0, insurerRate: 1, perClaimLimit: 10000000 });
+    await clearConditions();
+    await changingStopsPlayback(async () => { await fixedControl.focus(); await page.keyboard.press('Space'); fixedEligible = false; });
+    await run('fixed-condition-false-keeps-loss-and-year-independent');
+    await fixedControl.focus(); await page.keyboard.press('Space'); fixedEligible = true;
+    await run('fixed-condition-true-keeps-loss-and-year-independent');
+    await clearConditions(); await run('repeated-default-no-implicit-claim');
+    const record = lab.getByRole('button', { name: '이번 청구 기록하기', exact: true });
+    const commit = async () => {
+      await record.focus(); await page.keyboard.press('Enter');
+      year = submitPayoutClaim(year, defaultClaim);
+      assert.match(await controls.locator('span').innerText(), /^0 \/ /, 'Committing a claim must rewind the next preview');
+      assert.equal(await prediction.inputValue(), '', 'Recorded claim left a stale prediction');
+      await inspectYear();
+    };
+    await commit();
+    assert.equal(year.claims[0].paid, 2000000);
+    await run('second-claim-only-one-million-remaining');
+    await changingStopsPlayback(() => setRange(page, loss, 525));
+    await inspectYear();
+    await clearConditions(); await inspectYear();
+    await run('rewind-and-condition-reset-preserve-first-claim');
+    await commit();
+    assert.equal(year.claims[1].paid, 1000000);
+    await run('third-claim-exhausted-annual-cap');
+    await commit();
+    assert.deepEqual(year.claims.map(claim => claim.paid), [2000000, 1000000, 0], 'Repeated claims must pay 200/100/0만원');
+    await clearConditions(); await run('exhausted-year-survives-condition-reset');
+    await fixedControl.focus(); await page.keyboard.press('Space'); fixedEligible = false;
+    await run('fixed-ineligible-does-not-refill-exhausted-year');
+    const newYear = lab.getByRole('button', { name: '새 보험연도 시작', exact: true });
+    await changingStopsPlayback(async () => { await newYear.focus(); await page.keyboard.press('Enter'); });
+    year = startNextPayoutYear(year);
+    assert.equal(year.year, 2); assert.equal(year.annualUsed, 0); assert.equal(year.annualRemaining, 3000000); assert.equal(year.claims.length, 0);
+    await inspectYear(); await run('explicit-new-year-restores-three-million');
+    await clearConditions(); await run('new-year-default-first-claim-is-two-million-again');
+    for (const [slider, value] of [[loss, payoutDefaults.loss / 10000], [excluded, payoutDefaults.excluded / 10000], [deductible, payoutDefaults.deductible / 10000], [rate, payoutDefaults.insurerRate * 100], [cap, payoutDefaults.perClaimLimit / 10000]]) assert.equal(await slider.inputValue(), String(value), 'Condition reset did not restore an authored default');
+    assert.equal(await fixedControl.isChecked(), true);
+    await inspectYear();
   } else assert.fail(`No model-specific verifier exists for published lab ${JSON.stringify(kind)}`);
   await reset();
   assert.match(await controls.locator('span').innerText(), /^0 \/ /);
@@ -530,7 +813,7 @@ async function verifyAssets() {
     }
     // Sidebar + intermediate viewport can be tighter than either desktop or phone.
     const intermediate = await browser.newContext({ viewport: { width: 850, height: 1000 }, deviceScaleFactor: 1 });
-    const intermediatePage = await intermediate.newPage(); watchPage(intermediatePage, 'intermediate-850-pooling');
+    const intermediatePage = await intermediate.newPage(); watchPage(intermediatePage, 'intermediate-850-insurance');
     await check('intermediate-850-pooling-layout', intermediatePage, async () => {
       const route = insuranceChapters.find(chapter => chapter.id === 'pooling')?.route;
       assert(route, 'Published pooling chapter is missing');
@@ -552,6 +835,16 @@ async function verifyAssets() {
       await capture(intermediatePage, '850-pooling-common-final-scene', lab);
       return verifyStack();
     });
+    for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout'].includes(chapter.id))) {
+      await check(`intermediate-850-${chapter.id}-layout-and-model`, intermediatePage, async () => {
+        await visit(intermediatePage, chapter.route);
+        await domAudit(intermediatePage);
+        const lab = intermediatePage.locator(`[data-insurance-lab="${chapter.id}"]`);
+        assert.equal(await lab.count(), 1, 'Intermediate-width chapter must retain its published lab');
+        await capture(intermediatePage, `850-${chapter.id}-initial-scene`, lab);
+        return conditionChecks(intermediatePage, lab, `850-${chapter.id}`);
+      });
+    }
     await intermediate.close();
     const reduced = await browser.newContext({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
     const page = await reduced.newPage(); watchPage(page, 'reduced-motion');
@@ -562,8 +855,16 @@ async function verifyAssets() {
       assert.deepEqual(await motion(), [], 'Computed motion remains with reduced-motion preference');
       for (const lab of await page.locator('.insurance-lab').all()) {
         await openTables(page, lab);
-        await lab.locator('.money-playback').getByRole('button', { name: '한 단계 진행', exact: true }).click();
-        assert.match(await lab.locator('.money-playback span').innerText(), /^1 \/ /, 'Reduced motion must still allow manual observation');
+        const controls = lab.locator('.money-playback');
+        const step = controls.getByRole('button', { name: '한 단계 진행', exact: true });
+        const frameCount = Number((await controls.locator('span').innerText()).match(/^0 \/ (\d+) 단계$/)?.[1]);
+        assert(Number.isInteger(frameCount) && frameCount > 0 && frameCount <= 30, 'Reduced-motion observation count must be bounded and initially at zero');
+        for (let index = 1; index <= frameCount; index++) {
+          await step.focus(); await page.keyboard.press('Enter');
+          assert.equal(await controls.locator('span').innerText(), `${index} / ${frameCount} 단계`, 'Reduced motion must allow every manual observation frame');
+          assert.deepEqual(await motion(), [], 'Manual observation reintroduced reduced-motion animation');
+        }
+        assert(await step.isDisabled(), 'Reduced-motion stepping did not stop at the final frame');
       }
       assert.deepEqual(await motion(), [], 'Stepping reintroduced reduced-motion animation');
       await capture(page, `390-${chapter.id}-reduced-motion-static`);
