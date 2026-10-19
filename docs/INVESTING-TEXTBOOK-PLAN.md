@@ -1,7 +1,7 @@
 # 주식과 투자 자산의 원리 — 3권 제작 계획
 
 작성일: 2026-10-19 KST. 기준 main: `a8f9d083a94fdb453bd9e13c0fcdb40f8e80c277`.
-상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 배치 C 05·06도 구현·검증·main 반영·게시 확인을 완료했으며 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 배치 D 07·08은 구현·검증 진행 중이며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. 09–12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
+상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 배치 C 05·06도 구현·검증·main 반영·게시 확인을 완료했으며 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 배치 D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. 09–12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
 선행: 돈 1권 소개·01–10과 경제 2권 소개·01–12 구현·점검·게시 완료. 착수 시 최신 main과 각 검증 기록에서 실제 상태를 다시 확인한다.
 실행 지시: [배치별 세션 프롬프트](INVESTING-SESSION-PROMPTS.md). 시리즈 지도: [돈·경제 계획](MONEY-TEXTBOOK-PLAN.md).
 
@@ -197,3 +197,5 @@ KRX 교육 사이트는 확인 도구에서 리디렉션 접근 제한, DART와 
 ## 배치 D 구현 · 2026-10-19
 
 07 diversification·08 funds-etfs를 계획의 제목·URL·readId로 추가한다. 같은 네 가상 시나리오의 가중 결과·공통 충격과, ETF 안쪽 중복 노출·NAV/시장가격·추적 성과를 모델에서 계산한다. 소개·카탈로그는 여덟 장만 공개하고 09 이후는 예약 상태로 둔다. 실행 검증·게시 성공 여부와 미검증 경계는 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)에서 구분한다.
+
+2026-10-19 D 완료: 421테스트·빌드·production 114/게시 115검사·각 382캡처와 독립 본문/모델/실제 화면 검토, main `d0796c7` 및 실제 Pages 자산 일치를 확인했다. 초기 검사기 실패와 수정·재검증, 미검증 경계는 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. 다음 범위는 E 09·10이다.

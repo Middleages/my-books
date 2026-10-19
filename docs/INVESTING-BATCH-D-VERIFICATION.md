@@ -15,7 +15,7 @@
 
 ## 검증 진행 상태
 
-현재 구현·검증 진행 중이다. 모델/빌드·실제 Chromium 화면·독립 검토·main 반영·Pages 게시 성공 여부는 실행한 뒤 아래에 구분해 기록한다.
+구현·모델/빌드·실제 Chromium 화면·독립 검토·main 병합·Pages 배포·실제 게시 검증을 완료했다. 초기 실패·수정 후 PR·main 및 게시 결과는 아래에서 구분한다.
 
 로컬 Chromium은 선행 작업에서 확인된 socket EPERM 제약이 있으므로 중복 재시도하지 않는다. 실제 브라우저 검사는 기존 GitHub Actions Ubuntu·Google Chrome·Playwright 검증기를 사용하고 결과 JSON/PNG를 내려받아 직접 검토한다.
 
@@ -37,7 +37,7 @@
 
 클라우드 Linux Node 24.19.0에서 신규 모델 37개(07 18·08 19)와 카탈로그 공개 범위 검사를 포함해 `npm test` 421/421 통과, 실패·건너뜀 0. `npm run build` TypeScript·MDX·Vite 성공(237 modules), `git diff --check`와 QA JavaScript 문법 검사 통과. 기존 500kB 초과 번들 안내는 유지한다.
 
-독립 검토는 별도 133개 교차 조건과 NAV의 UI 입력 전체 4,641조합(21개 자산 변화율×221개 시장가격)을 검사했다. 가중 결과·자산 노출 합계·고정 좌수·괴리 부호·정의 불가·반복성을 확인했다. -90/-80/-70%에서 NAV 10/20/30과 같은 시장가격을 비교할 때 부동소수점 잔여가 잘못된 양/음 괴리 판정을 만들 수 있어, 자산 변화액을 기초 자산에 더하는 계산으로 고치고 회귀검사했다. 실제로 작은 양/음 괴리는 보존한다.
+독립 검토는 별도 133개 교차 조건과 NAV의 다른 입력을 고정한 자산 변화율×시장가격 UI 격자 전체 4,641조합(21개 변화율×221개 시장가격)을 검사했다. 가중 결과·자산 노출 합계·고정 좌수·괴리 부호·정의 불가·반복성을 확인했다. -90/-80/-70%에서 NAV 10/20/30과 같은 시장가격을 비교할 때 부동소수점 잔여가 잘못된 양/음 괴리 판정을 만들 수 있어, 자산 변화액을 기초 자산에 더하는 계산으로 고치고 회귀검사했다. 실제로 작은 양/음 괴리는 보존한다.
 
 08 MDX의 괄호·퍼센트 기호 뒤 조사와 붙은 강조가 별표로 남는 문제도 MDX AST/SSR에서 발견해 명시적 strong 요소로 수정했다. 두 장의 최종 SSR에서 별표·취소선·문단 중첩이 없었다. 정성적인 매매/설정 경로는 모바일에서 세로로 쌓이며 화살표도 세로로 바꾼다. 독립 소스·본문·모델·UI 검토에서 수정 후 남은 CI 전 차단 문제는 없었다. 실제 브라우저/캡처 검증은 아래 실행에서 별도로 수행한다.
 
@@ -45,8 +45,32 @@ QA는 새 세 실험의 모든 관찰 프레임·그림 실제 길이/위치·�
 
 ## 첫 실제 Chromium 실행과 검사기 수정
 
-초기 구현 `393d6b68d64713019cc189a40a5042172b7a0532`의 [초안 PR #5](https://github.com/Middleages/my-books/pull/5)·[Actions 39266665235](https://github.com/Middleages/my-books/actions/runs/39266665235)에서 단위 테스트 421개와 빌드는 통과했다. 실제 Chromium 결과는 114개 검사 중 111개 통과·3개 실패이며 성공으로 기록하지 않는다. 실제 아티팩트 `investing-browser-qa`(ID 12192689393)의 JSON과 PNG 379개를 내려받았다. console error·pageerror는 없었다.
+초기 구현 `393d6b68d64713019cc189a40a5042172b7a0532`의 [초안 PR #5](https://github.com/Middleages/my-books/pull/5)·[Actions 39266665235](https://github.com/Middleages/my-books/actions/runs/39266665235)에서 단위 테스트 421개와 빌드는 통과했다. 실제 Chromium 결과는 114개 검사 중 111개 통과·3개 실패이며 성공으로 기록하지 않는다. 실제 아티팩트 `investing-browser-local`(ID 12192689393)의 JSON과 PNG 379개를 내려받았다. console error·pageerror는 없었다.
 
 실패 3개는 모두 1440/390/320px의 추적 선 그림에서 발생했다. SVG 속성의 원래 double 좌표를 `SVGPoint`에 대입하면 브라우저의 낮은 좌표 정밀도로 반올림되는데, 그 값을 원래 모델과 1e-9 오차로 비교한 검사기 문제였다. 원래 속성의 double 값으로 모델 일치를 검사하고, 실제 화면에 그려진 중심과 CTM 변환 좌표의 1px 기하 검사는 그대로 유지하도록 고쳤다. 실패 이후의 추적 요약·라벨 자동 검사는 이 실행에서 통과했다고 간주하지 않으며 재실행한다.
 
 작성자와 독립 검토자가 실제 데스크톱/모바일 PNG를 직접 열었다. 320px 공통 충격의 −20% 손실·800단위 합계, 모바일/데스크톱 A50/B20/C30의 같은 100% 축, NAV 0과 정의 불가 및 보유 좌수 유지, 모바일 세로 매매/설정 경로, 추적 그림/표의 원문 해상도 구간을 확인했다. 검토에서 새 화면 차단 문제는 발견하지 못했으나 수정 후 자동 검사가 끝나기 전에는 병합하지 않는다.
+
+
+## 수정 후 PR 검증·독립 승인
+
+수정 커밋 `5d7928eb2c91998e3b23d5f8fca6a5f8ac7ee598`의 [Actions 39268385010](https://github.com/Middleages/my-books/actions/runs/39268385010)는 completed/success다. Node 22·Ubuntu·설치된 Google Chrome/Playwright 환경에서 421개 테스트·빌드와 production Chromium **114/114** 검사를 통과했다. 아티팩트 `investing-browser-local`(ID 12194256740, SHA-256 `b597b235076078e27bbd55b551d3b1a31fa025f23eff7d2b85d5dd522304d704`)의 실제 JSON·PNG **382개**를 내려받았다. consoleErrors·nonApplicationResourceErrors·pageErrors는 모두 0이다.
+
+1440px 데스크톱, 390/320px 모바일 viewport에서 소개·8장 전체 렌더·조건 변화·모델/DOM 위치·길이·표·예측을 확인했다. 1440/320px 키보드·포커스·일시정지·다시 시작·조건 초기화, 390px reduced-motion·정적 대안, MDX 잔류·내부 링크, 기존 책 대표 11개 경로, 홈 6권/돈 분야 3권, 새로고침 및 알 수 없는 읽음 ID 보존 검사를 포함한다. 추적 선/마커의 원래 좌표와 실제 중심, 12px 이상 모바일 축 라벨, 월별 표 키보드 가로 이동, 각 통로의 주체–거래 설명–상대의 반응형 배치를 이번 성공 실행에서 끝까지 확인했다.
+
+작성자와 독립 검토자는 새로 저장된 1440/390/320px 추적차이/오차·매매/설정 경로 캡처를 직접 열어 이전 확인과 대조했다. 값/단위·같은 평균과 다른 흩어짐·누적 차이·표 포커스·거래 경로 구분이 읽히며 주요 내용의 잘림이 없었다. 독립 검토자는 관련 테스트 40개를 다시 통과시키고 소스·본문·모델·UI·실제 화면에 남은 차단 문제가 없음을 확인했다. 최신 main이 시작점과 같음을 재확인한 뒤 PR #5를 ready로 바꾸고 예상 head를 지정해 병합했다.
+
+구현 main 커밋: `d0796c74c87e098a1652e577b42e82c197db45b3`. [main Actions 39269944371](https://github.com/Middleages/my-books/actions/runs/39269944371)의 build·deploy·verify-published는 모두 completed/success이며 아래 게시 증거로 확인했다. PR 성공만으로 게시 성공을 판단하지 않았다.
+
+
+## main·Pages·실제 게시 확인
+
+main [Actions 39269944371](https://github.com/Middleages/my-books/actions/runs/39269944371)에서 421/421 테스트·빌드·production 114/114 검사를 다시 통과했다. build job `118119286682`의 실제 로그에서 테스트 수와 전체 결과 JSON을 확인했다. deploy job `118122015122`와 verify-published job `118122154959`도 success다.
+
+2026-10-19 14:38–14:44 UTC 실제 게시본 **115/115** 검사·**382 PNG**를 완료했다. `investing-browser-published` 아티팩트 ID `12195088406`(SHA-256 `7532e225453a2389028000eee19b0d21742a1f2baae16807f2a8deb06ea68b8a`)의 실제 JSON/PNG를 내려받았다. HTTP 200, JS `index-DHBYyoQ9.js`·CSS `index-CQKoJMVh.css`가 해당 run의 정확한 배포 아티팩트와 일치했다. 별도 curl로 public HTML과 두 자산을 다시 받고 로컬 dist와 파일명·파일 내용 SHA-256도 일치함을 확인했다. JS `67faa780df5ec3baefeb1c9d7a248504323ac4eb5ac8c535ebf8e5d9015b468a`, CSS `9afe0956a8767243316b06c678c5c580ee2cfebdf44ff9b938bd738d0845ca6e`다.
+
+앱 consoleErrors·pageErrors는 0이다. 사이트 루트 `/favicon.ico`의 404 한 건은 nonApplicationResourceErrors에 별도로 기록됐다. 이를 새 장의 자산 오류로 합산하거나 리소스 오류가 전혀 없었다고 쓰지 않는다.
+
+게시 아티팩트에서도 320px 공통 충격 네 시나리오의 같은 방향·같은 눈금과 −20% 손실, 390px 기여분 합산의 A50/B20/C30 및 동일 축, 320px 추적 그림/키보드 표/두 요약, 1440px 유통 매매와 설정·환매 경로를 직접 열어 확인했다. 원문 해상도 구간에서 읽히며 PR의 검토 결과와 같았다. 실제 게시 검사도 모든 공개 장·조건별 모델/기하·키보드/정지/초기화·reduced-motion·정적 대안·읽음 보존·기존 책 회귀를 다시 실행했다.
+
+공개 [07 분산과 함께 움직이는 위험](https://middleages.github.io/my-books/#/investing/diversification), [08 펀드·ETF와 그 안의 자산](https://middleages.github.io/my-books/#/investing/funds-etfs). 소개·카탈로그·계획·세션·시리즈 상태·홈 범위를 여덟 장의 실제 공개와 맞췄다. 다음은 E 09·10이며 이번 D에서는 구현하지 않았다. 이 마감 변경은 문서 전용이며 제품 자산을 바꾸지 않는다. 문서 커밋 자체의 자동 Actions 결과는 해당 커밋의 run에서 별도로 확인한다.
