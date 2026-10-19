@@ -84,3 +84,7 @@ Linux, Node 24.19.0, Vite 6.4.4. 별도 세션 전용 clone/브랜치에서 진�
 배치 C 05·06 구현·모델 테스트·데스크톱/320·390px·키보드·정지·초기화·reduced-motion·정적 대안·대표 회귀·읽음 보존·main 반영·Actions·Pages 게시 확인 완료. 계획의 07 이후는 구현하지 않았다.
 
 실제 iOS/Android 터치 기기, Safari/Firefox, 스크린리더 음성 출력, 자동 axe·별도 독자 학습 효과 실험은 실행하지 않았다. 기존 전체 교재의 전수 화면 검증이나 선행 기록의 모든 검사를 재실행한 것은 아니다. 기존 큰 번들 경고도 유지된다.
+
+### 최종 문서 반영 확인
+
+최종 기록 main `ad79910f7a5bf9bbf097ad6efeda34d3c6399d29`, [Actions 39223155470](https://github.com/Middleages/my-books/actions/runs/39223155470)의 build·deploy success 확인. 재게시 후 실제 Pages의 JS/CSS가 위 최종 자산과 같고 공개 목차 6장·06 기본 실질금리 결과가 유지됨을 확인했다.

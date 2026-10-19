@@ -1,0 +1,353 @@
+.eco-transmission,
+.eco-fx-quote {
+  margin: 1.5rem 0;
+  min-width: 0;
+}
+.eco-policy-origin {
+  max-width: 550px;
+  margin: auto;
+  padding: 1rem;
+  border: 4px double #315d89;
+  border-radius: 40px;
+  background: #eaf3fb;
+  text-align: center;
+  display: grid;
+  gap: 0.5rem;
+}
+.eco-policy-split {
+  text-align: center;
+  padding: 1rem;
+  line-height: 1.7;
+}
+.eco-policy-lane {
+  --lane: #326443;
+  border-left: 5px solid var(--lane);
+  padding: 0.8rem;
+  background: #fff;
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+.eco-policy-lane h4 {
+  margin: 0 0 0.8rem;
+  color: var(--lane);
+}
+.eco-policy-lane ol {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+.eco-policy-lane li {
+  position: relative;
+  background: #f6f8f6;
+  padding: 0.8rem;
+  border: 1px solid #bdcfc3;
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.eco-policy-lane li:not(:last-child):after {
+  content: "→";
+  position: absolute;
+  right: -1rem;
+  top: 40%;
+  color: var(--lane);
+}
+.eco-policy-lane small {
+  font-weight: bold;
+}
+.eco-policy-lane p {
+  margin: 0.7rem 0 0;
+  font-size: 0.9rem;
+}
+.eco-channel-credit {
+  --lane: #8c5826;
+}
+.eco-channel-assets {
+  --lane: #675092;
+}
+.eco-channel-fx {
+  --lane: #236b82;
+}
+.eco-channel-expectations {
+  --lane: #8b4b64;
+}
+.eco-policy-end {
+  border: 2px dashed #648273;
+  padding: 1rem;
+  display: grid;
+  gap: 0.5rem;
+  background: #eaf2eb;
+}
+.eco-transmission figcaption,
+.eco-fx-quote figcaption {
+  line-height: 1.8;
+  color: #43564a;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+.eco-lab .eco-observing {
+  outline: 3px double #204d37;
+  outline-offset: 3px;
+}
+.eco-month-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  border-bottom: 3px solid #71897b;
+  padding: 0.7rem 0;
+  margin: 1rem 0;
+}
+.eco-month-rail button[aria-pressed="true"] {
+  background: #285e46;
+  color: #fff;
+}
+.eco-contracts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.eco-contract {
+  min-width: 0;
+  border: 1px solid #91aa9a;
+  border-radius: 12px;
+  background: #fff;
+  padding: 1rem;
+}
+.eco-contract-role {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.eco-contract-role > span {
+  font-size: 2rem;
+  border-bottom: 2px solid #698e78;
+}
+.eco-contract-date {
+  border: 1px dashed #567965;
+  padding: 0.6rem;
+}
+.eco-cash-direction {
+  margin: 0.8rem 0;
+  font-weight: 600;
+  line-height: 1.7;
+}
+.eco-signed-cash > span {
+  display: block;
+  line-height: 1.8;
+}
+.eco-signed-track {
+  height: 26px;
+  background: #e4eae6;
+  position: relative;
+  margin: 0.6rem 0;
+  border: 1px solid #90a89a;
+}
+.eco-signed-track i {
+  display: block;
+  height: 100%;
+  position: absolute;
+}
+.eco-signed-track b {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  border-left: 2px solid #233d2c;
+}
+.eco-cash-positive {
+  background: #28644a;
+}
+.eco-cash-negative {
+  background: repeating-linear-gradient(135deg, #a0532c 0 5px, #f0cfb7 5px 9px);
+}
+.eco-fx-quote {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.7fr) auto minmax(0, 2fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #a5bdae;
+  border-radius: 12px;
+}
+.eco-fx-quote figcaption {
+  grid-column: 1/-1;
+}
+.eco-dollar-note {
+  padding: 1rem;
+  border: 3px double #397c53;
+  background: #e8f3e8;
+  border-radius: 5px;
+  text-align: center;
+  display: grid;
+  gap: 0.5rem;
+}
+.eco-dollar-note strong {
+  font-size: 1.5rem;
+}
+.eco-dollar-note span {
+  font-size: 0.85rem;
+}
+.eco-fx-arrow {
+  color: #53715c;
+  max-width: 4rem;
+  line-height: 1.7;
+  text-align: center;
+}
+.eco-won-quotes {
+  display: grid;
+  gap: 1rem;
+}
+.eco-won-quotes span {
+  font-size: 0.9rem;
+}
+.eco-fx-track {
+  height: 22px;
+  border: 1px solid #9ab4a3;
+  background: #e6ede8;
+  margin: 0.4rem 0;
+  min-width: 0;
+}
+.eco-fx-track i {
+  height: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+.eco-fx-before {
+  background: transparent;
+  border: 2px dashed #527762;
+}
+.eco-fx-after {
+  background: #337858;
+}
+.eco-fx-pair {
+  display: grid;
+  gap: 0.5rem;
+  line-height: 1.7;
+  min-width: 0;
+}
+.eco-fx-pair > b {
+  font-size: 1.05rem;
+}
+.eco-conversion-bill {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 2px solid #8c6a32;
+  border-radius: 4px;
+  background: #fff8e9;
+  margin: 1.3rem 0;
+}
+.eco-conversion-bill strong {
+  border-top: 1px dashed #997e4a;
+  padding-top: 0.7rem;
+}
+.eco-firm-exposure {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.eco-trade-leg {
+  padding: 1rem;
+  border: 2px solid #3a7553;
+  border-radius: 12px;
+  background: #fff;
+  min-width: 0;
+}
+.eco-trade-leg > b {
+  display: block;
+  border-bottom: 1px solid #c5d6c8;
+  padding-bottom: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+.eco-payment {
+  border-color: #a16637;
+}
+.eco-payment .eco-fx-after {
+  background: repeating-linear-gradient(135deg, #a5683d 0 5px, #f0d4ba 5px 9px);
+}
+.eco-firm-margin {
+  padding: 1rem;
+  background: #edf4ed;
+  border-top: 2px solid #719780;
+  margin: 1rem 0;
+}
+.eco-fx-debt {
+  border: 2px dashed #6e5a9c;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #f4f0fa;
+  margin: 1.5rem 0;
+}
+.eco-fx-debt h4 {
+  margin: 0 0 1rem;
+}
+.eco-fx-debt .eco-fx-after {
+  background: #75639d;
+}
+.eco-retail-exposure {
+  padding: 1rem;
+  border: 1px solid #a7b9ac;
+  border-radius: 10px;
+  background: #fff;
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.eco-retail-gate {
+  display: grid;
+  gap: 0.5rem;
+  text-align: center;
+  padding: 0.8rem;
+  border-block: 2px dashed #9e7c3e;
+  background: #fff6e5;
+}
+@media (max-width: 700px) {
+  .eco-policy-lane ol,
+  .eco-contracts,
+  .eco-firm-exposure {
+    grid-template-columns: 1fr;
+  }
+  .eco-policy-lane li:not(:last-child):after {
+    content: "↓";
+    right: 50%;
+    top: auto;
+    bottom: -1.1rem;
+  }
+  .eco-policy-lane ol {
+    gap: 1.4rem;
+  }
+  .eco-policy-lane {
+    padding: 0.75rem;
+  }
+  .eco-contract {
+    padding: 0.85rem;
+  }
+  .eco-fx-quote {
+    grid-template-columns: 1fr;
+    padding: 0.85rem;
+  }
+  .eco-fx-arrow {
+    max-width: none;
+  }
+  .eco-fx-quote figcaption {
+    grid-column: auto;
+  }
+  .eco-dollar-note {
+    max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eco-transmission *,
+  .eco-contracts *,
+  .eco-fx-quote *,
+  .eco-retail-exposure * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,3 +1,5 @@
+import MonetaryPolicy from "./content/economics/MonetaryPolicy.mdx";
+import ExchangeRates from "./content/economics/ExchangeRates.mdx";
 import Prices from "./content/economics/Prices.mdx";
 import InterestRates from "./content/economics/InterestRates.mdx";
 import Helm from "./content/kubernetes/Helm.mdx";
@@ -64,6 +66,8 @@ export const chapters: Chapter[] = [
   { id: "jobs", bookId: "economics", readId: "economics/jobs", number: "04", title: "고용과 실업", heading: "실업률이 낮아지면 일자리가 늘었을까?", description: "인구의 분류 이동과 실업률·고용률의 분모를 비교합니다.", Content: Jobs },
   { id: "prices", bookId: "economics", readId: "economics/prices", number: "05", title: "물가와 인플레이션", heading: "상승률이 낮아지면 가격도 내려갈까?", description: "고정 바구니·비교 기간·기저효과로 가격 수준과 상승률을 구분합니다.", Content: Prices },
   { id: "interest-rates", bookId: "economics", readId: "economics/interest-rates", number: "06", title: "여러 금리와 실질금리", heading: "기준금리와 내 대출금리는 왜 다를까?", description: "금리의 연결과 기대·실현 물가에 따른 정확 실질금리를 비교합니다.", Content: InterestRates },
+  { id: "monetary-policy", bookId: "economics", readId: "economics/monetary-policy", number: "07", title: "통화정책의 전달 경로", heading: "금리를 바꾸면 언제 누구에게 전달될까?", description: "다섯 경로와 계약별 시차·현금 방향을 비교합니다.", Content: MonetaryPolicy },
+  { id: "exchange-rates", bookId: "economics", readId: "economics/exchange-rates", number: "08", title: "환율과 생활", heading: "원/달러 환율이 오르면 누구에게 어떤 변화가 생길까?", description: "같은 환율로 대금·원가·부채와 가격 전가를 나란히 봅니다.", Content: ExchangeRates },
   {
     id: "why-kubernetes",
     bookId: "kubernetes",
@@ -395,7 +399,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–06장 공개 · 통화정책·환율 등 나머지 장은 제작 예정입니다.", Intro: EconomicsIntro },
+  { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–08장 공개 · 무역·재정 등 나머지 장은 제작 예정입니다.", Intro: EconomicsIntro },
   {
     id: "computer",
     categoryId: "technology",
