@@ -192,7 +192,7 @@ async function conditionChecks(page, lab, name) {
     }
   };
   const verify = async (scenario, expected, kind, inspectFrame) => {
-    const predictedOutcome = inspectFrame ? expected.at(-1).status ?? expected.find(frame => frame.phase === 'closing')?.closingCashDirection : undefined;
+    const predictedOutcome = inspectFrame ? expected.at(-1).predictionOutcome ?? expected.at(-1).status ?? expected.find(frame => frame.phase === 'closing')?.closingCashDirection : undefined;
     if (predictedOutcome) await lab.locator('.invest-predict select').selectOption(predictedOutcome);
     if (inspectFrame) {
       const controls = lab.locator('.money-playback');
@@ -210,7 +210,7 @@ async function conditionChecks(page, lab, name) {
     } else await finish();
     const summary = lab.locator('details > summary').first();
     if (!(await lab.locator('details').first().getAttribute('open') !== null)) await summary.click();
-    const rows = await lab.locator('table tbody tr').evaluateAll(els => els.map(el => [...el.querySelectorAll('td')].map(td => td.textContent.trim())));
+    const rows = await lab.locator('details').first().locator('table tbody tr').evaluateAll(els => els.map(el => [...el.querySelectorAll('td')].map(td => td.textContent.trim())));
     const wanted = expected.map(typeof kind === 'function' ? kind : row => kind === 'ownership'
       ? [format(row.companyCash), format(row.buyerCash), format(row.sellerCash), format(row.cashTotal), format(row.totalShares), `${format(row.buyerShares)} / ${format(row.sellerShares)}`, ratio(row.ownershipRatio)]
       : kind === 'dividend' ? [format(row.companyCash), format(row.cash), format(row.otherShareholdersCash), format(row.cashTotal), format(row.stockValue), format(row.wealth)]
@@ -359,6 +359,194 @@ async function conditionChecks(page, lab, name) {
       assert.equal(await lab.locator('.money-playback span').innerText(), '3 / 4 단계');
       await inspect(result.closing);
       await capture(page, `${name}-credit-${creditSales}-closing`, lab);
+    }
+  } else if (label === '주가·시가총액·주당이익 실험') {
+    const { shareValuationFrames } = await import('../src/simulations/investing/valuation.mjs');
+    const nullable = value => value === null ? '정의 불가' : format(value);
+    const cells = frame => [frame.price, frame.shares, frame.marketCap, frame.earnings].map(format).concat([nullable(frame.eps), nullable(frame.per)]);
+    const inspect = result => async frame => {
+      assert.equal(await lab.locator('.invest-stage').innerText(), frame.label);
+      const panels = lab.locator('.valuation-share-panel');
+      const expected = [result.before, frame];
+      const mosaics = panels.locator('.valuation-mosaic');
+      const boxes = await mosaics.evaluateAll(elements => elements.map(element => {
+        const rect = element.getBoundingClientRect(), style = getComputedStyle(element);
+        return { width: rect.width, height: rect.height, top: rect.top, bottom: rect.bottom, left: rect.left,
+          columns: style.gridTemplateColumns.split(' ').map(Number.parseFloat), rows: style.gridTemplateRows.split(' ').map(Number.parseFloat),
+          tiles: [...element.children].map(child => { const r = child.getBoundingClientRect(); return { width: r.width, height: r.height, fraction: +child.dataset.shareFraction }; }) };
+      }));
+      assert.equal(boxes.length, 2);
+      assert(Math.abs(boxes[0].width - boxes[1].width) <= 1 && Math.abs(boxes[0].height - boxes[1].height) <= 1, 'Split changes the outer company boundary area');
+      if (page.viewportSize().width <= 650) assert(boxes[1].top > boxes[0].bottom, 'Mobile split panels do not stack');
+      for (let index = 0; index < expected.length; index++) {
+        const snapshot = expected[index], box = boxes[index];
+        assert.equal(box.tiles.length, snapshot.tiles.length, 'Share mosaic tile count differs from model');
+        assert.equal(box.columns.length, snapshot.gridColumns);
+        assert.equal(box.rows.length, snapshot.gridRows);
+        box.tiles.forEach(tile => {
+          assert(Math.abs(tile.width - box.columns[0]) <= 1 && Math.abs(tile.height - box.rows[0]) <= 1, 'Mosaic tile does not use the model grid');
+          assert.equal(tile.fraction, snapshot.tiles[0].fraction);
+        });
+        const text = await panels.nth(index).innerText();
+        for (const value of [`${format(snapshot.price)}단위`, `${format(snapshot.shares)}주`, `${format(snapshot.marketCap)}단위`]) assert(text.includes(value), `Share visual missing model value ${value}`);
+      }
+      const metrics = await lab.locator('.valuation-metrics').innerText();
+      assert(metrics.includes(`EPS ${nullable(frame.eps)}`) && metrics.includes(`PER ${nullable(frame.per)}`), 'EPS/PER differs from model');
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    const cases = [{ splitFactor: 2, earnings: 10000 }, { splitFactor: 1, earnings: 10000 }, { splitFactor: 5, earnings: 10000 }, { splitFactor: 5, earnings: 0 }, { splitFactor: 2, earnings: -10000 }, { splitFactor: 2, earnings: 20000 }];
+    for (const input of cases) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await lab.getByRole('combobox', { name: /분할 배수/ }).selectOption(String(input.splitFactor));
+      await setRange(/당기 이익/, input.earnings);
+      const result = shareValuationFrames(input);
+      assert.equal(result.before.marketCap, 100000);
+      assert.equal(result.after.marketCap, result.before.marketCap);
+      await verify(`split-${input.splitFactor}-earnings-${input.earnings}`, result.frames, cells, inspect(result));
+    }
+  } else if (label === '미래 현금의 현재가치 실험') {
+    const { cashFlowValuationFrames } = await import('../src/simulations/investing/valuation.mjs');
+    const cells = frame => [frame.year1Present, frame.year2Present, frame.year3Present].map(value => value === null ? '미반영' : format(value)).concat(format(frame.observedPresentValue));
+    const inspect = result => async frame => {
+      assert.equal(await lab.locator('.invest-stage').innerText(), frame.label);
+      const years = lab.locator('.valuation-flow-year');
+      assert.equal(await years.count(), frame.contributions.length);
+      const boxes = await years.evaluateAll(elements => elements.map(element => { const r = element.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, width: r.width, left: r.left, right: r.right }; }));
+      for (let index = 1; index < boxes.length; index++) {
+        if (page.viewportSize().width <= 650) assert(boxes[index].top >= boxes[index - 1].bottom, 'Mobile cash-flow years overlap');
+        else assert(Math.abs(boxes[index].top - boxes[0].top) <= 1 && boxes[index].left >= boxes[index - 1].right, 'Desktop cash-flow years overlap');
+      }
+      for (let index = 0; index < frame.contributions.length; index++) {
+        const flow = frame.contributions[index], year = years.nth(index), bars = year.locator('.valuation-cash-bar');
+        await verifyStacks(bars.nth(0), [flow.futureSegments.map(part => part.fraction)], `valuation future year ${flow.year}`);
+        if (flow.observed) await verifyStacks(bars.nth(1), [flow.presentSegments.map(part => part.fraction)], `valuation present year ${flow.year}`);
+        else {
+          assert.equal(await bars.nth(1).locator('i').count(), 0, 'Unobserved present value is drawn as a measured amount');
+          assert((await bars.nth(1).getAttribute('aria-label')).includes('아직'));
+        }
+        const text = await year.innerText();
+        assert(text.includes(`매년 ${format(flow.regularCash)} + 잔존 ${format(flow.residualCash)}`), 'Residual/regular cash split differs from model');
+        assert(text.includes(`÷ ${format(flow.discountDivisor)}`), 'Discount divisor differs from model');
+      }
+      await verifyStacks(lab.locator('.valuation-current-total .valuation-cash-bar'), [frame.totalSegments.map(part => part.fraction)], 'valuation accumulated present value');
+      const scaleWidths = await lab.locator('.valuation-cash-bar').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().width));
+      assert(Math.max(...scaleWidths) - Math.min(...scaleWidths) <= 1, `Valuation common-scale bars differ in painted width: ${scaleWidths}`);
+      assert((await lab.locator('.valuation-current-total').innerText()).includes(`${format(frame.observedPresentValue)}단위/주`));
+      assert((await lab.locator('figcaption').innerText()).includes(`0–${format(result.scale)}`));
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    const cases = [
+      { annualCash: 10, residualCash: 80, ratePercent: 10 },
+      { annualCash: 10, residualCash: 80, ratePercent: 0 },
+      { annualCash: 10, residualCash: 80, ratePercent: 20 },
+      { annualCash: 0, residualCash: 0, ratePercent: 20 },
+      { annualCash: 0, residualCash: 80, ratePercent: 10 },
+      { annualCash: 20, residualCash: 160, ratePercent: 20 },
+    ];
+    for (const input of cases) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await setRange(/할인율/, input.ratePercent);
+      await setRange(/매년 현금/, input.annualCash);
+      await setRange(/3년 말 잔존 현금/, input.residualCash);
+      const result = cashFlowValuationFrames(input);
+      assert.equal(result.flows[2].futureCash, input.annualCash + input.residualCash);
+      assert.equal(result.undiscountedTotal, input.annualCash * 3 + input.residualCash);
+      if (input.ratePercent === 0) assert.equal(result.totalPresentValue, result.undiscountedTotal);
+      await verify(`cash-${input.annualCash}-residual-${input.residualCash}-rate-${input.ratePercent}`, result.frames, cells, inspect(result));
+      const details = lab.locator('details').nth(1);
+      if (await details.getAttribute('open') === null) await details.locator('summary').click();
+      const rows = await details.locator('tbody tr').evaluateAll(elements => elements.map(element => [...element.querySelectorAll('td')].map(cell => cell.textContent.trim())));
+      assert.deepEqual(rows, result.flows.map(flow => [flow.regularCash, flow.residualCash, flow.futureCash, flow.discountDivisor, flow.presentValue].map(format)), 'Complete cash-flow schedule differs from model');
+    }
+  } else if (label === '채권 가격과 요구수익률 실험') {
+    const { bondFrames } = await import('../src/simulations/investing/bonds.mjs');
+    const cells = frame => [frame.year, frame.presentValue, frame.accumulatedPV].map(format);
+    const inspect = result => async frame => {
+      assert.equal(await lab.locator('.invest-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('bonds-price').innerText(), `${format(frame.accumulatedPV)}단위`);
+      const rows = lab.locator('.bond-time-row');
+      assert.equal(await rows.count(), result.schedule.length);
+      for (let index = 0; index < result.schedule.length; index++) {
+        const payment = result.schedule[index], row = rows.nth(index);
+        await verifyStacks(row.locator('.bond-bar'), [payment.promisedSegments.map(part => part.fraction), payment.presentSegments.map(part => part.fraction)], `bond year ${payment.year} cash and present value`);
+        await verifyResponsivePanels(row.locator('.bond-pair > div'));
+        assert.equal(await row.getAttribute('aria-current'), frame.year === payment.year ? 'step' : null, 'Pricing observation highlights wrong year');
+        const text = await row.innerText();
+        assert(text.includes(`그때의 약속 ${format(payment.promisedCash)}단위`) && text.includes(`오늘 가치 ${format(payment.presentValue)}단위`), 'Promised/PV cash labels differ from model');
+      }
+      const chart = lab.locator('.bond-chart svg');
+      assert.equal(await chart.locator('polyline').getAttribute('points'), result.curve, 'Yield curve differs from model points');
+      const point = await chart.locator('circle').evaluate(element => {
+        const bounds = element.getBoundingClientRect(), svg = element.ownerSVGElement, matrix = svg.getScreenCTM();
+        const p = svg.createSVGPoint(); p.x = +element.getAttribute('cx'); p.y = +element.getAttribute('cy'); const screen = p.matrixTransform(matrix);
+        return { cx: +element.getAttribute('cx'), cy: +element.getAttribute('cy'), screenX: screen.x, screenY: screen.y, actualX: bounds.x + bounds.width / 2, actualY: bounds.y + bounds.height / 2 };
+      });
+      assert.equal(point.cx, result.selectedPoint.x); assert.equal(point.cy, result.selectedPoint.y);
+      assert(Math.abs(point.actualX - point.screenX) <= 1 && Math.abs(point.actualY - point.screenY) <= 1, 'Selected yield point does not paint at model coordinates');
+      const labels = await chart.locator('text').evaluateAll(elements => elements.map(element => {
+        const box = element.getBBox(), svg = element.ownerSVGElement, viewBox = svg.viewBox.baseVal, matrix = svg.getScreenCTM();
+        return { text: element.textContent, left: box.x, top: box.y, right: box.x + box.width, bottom: box.y + box.height, width: viewBox.width, height: viewBox.height, renderedFont: parseFloat(getComputedStyle(element).fontSize) * matrix.a };
+      }));
+      for (const text of labels) {
+        assert(text.left >= -1 && text.right <= text.width + 1 && text.top >= -1 && text.bottom <= text.height + 1, `Bond chart label outside viewBox: ${JSON.stringify(text)}`);
+        assert(text.renderedFont >= 11.9, `Bond chart tick too small: ${JSON.stringify(text)}`);
+      }
+      const tickLabels = await lab.locator('.bond-chart-plot > span').evaluateAll(elements => elements.map(element => {
+        const range = document.createRange(); range.selectNodeContents(element); const glyph = range.getBoundingClientRect();
+        const bounds = element.getBoundingClientRect(), plot = element.parentElement.getBoundingClientRect(), figure = element.closest('figure').getBoundingClientRect();
+        return { kind: element.className, text: element.textContent, font: parseFloat(getComputedStyle(element).fontSize), xFraction: (bounds.x + bounds.width / 2 - plot.x) / plot.width, yFraction: (bounds.y + bounds.height / 2 - plot.y) / plot.height, within: glyph.left >= figure.left && glyph.right <= figure.right && glyph.top >= figure.top && glyph.bottom <= figure.bottom };
+      }));
+      const xLabels = tickLabels.filter(tick => tick.kind === 'bond-x-label'), yLabels = tickLabels.filter(tick => tick.kind === 'bond-y-label');
+      assert.deepEqual(xLabels.map(tick => tick.text), result.sensitivityTicks.map(tick => format(tick.requiredYield * 100)));
+      assert.deepEqual(yLabels.map(tick => tick.text), result.priceTicks.map(tick => format(tick.value)));
+      xLabels.forEach((tick, index) => assert(Math.abs(tick.xFraction - result.sensitivityTicks[index].xFraction) < 0.005, 'HTML yield tick position differs from model'));
+      yLabels.forEach((tick, index) => assert(Math.abs(tick.yFraction - result.priceTicks[index].yFraction) < 0.005, 'HTML price tick position differs from model'));
+      for (const tick of tickLabels) assert(tick.font >= 12 && tick.within, `HTML tick is tiny or outside figure: ${JSON.stringify(tick)}`);
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    for (const requiredYield of [0.05, 0, 0.025, 0.1, 0.2]) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await setRange(/요구수익률/, requiredYield * 100);
+      const result = bondFrames({ requiredYield });
+      if (requiredYield === 0.05) assert(Math.abs(result.price - 1000) < 1e-9);
+      if (requiredYield === 0) assert.equal(result.price, 1150);
+      assert.deepEqual(result.schedule.map(row => [row.promisedCoupon, row.promisedPrincipal]), [[50, 0], [50, 0], [50, 1000]]);
+      await verify(`yield-${requiredYield * 100}`, result.pricingFrames, cells, inspect(result));
+      const details = lab.locator('details').nth(1);
+      if (await details.getAttribute('open') === null) await details.locator('summary').click();
+      const table = await details.locator('tbody tr').evaluateAll(elements => elements.map(element => [...element.querySelectorAll('td')].map(cell => cell.textContent.trim())));
+      assert.deepEqual(table, result.schedule.map(row => [row.promisedCoupon, row.promisedPrincipal, row.presentCoupon, row.presentPrincipal, row.presentValue].map(format)), 'Bond schedule table differs from model');
+      await capture(page, `${name}-yield-${requiredYield * 100}-chart`, lab.locator('.bond-chart'));
+    }
+  } else if (label === '채권 약속과 실제 지급 실험') {
+    const { bondFrames } = await import('../src/simulations/investing/bonds.mjs');
+    const cells = frame => [frame.promisedCoupon, frame.promisedPrincipal, frame.actualCoupon, frame.actualPrincipal, frame.promisedCash, frame.actualCash, frame.netCashFlow].map(format).concat(frame.isMatured ? ratio(frame.holdingPeriodReturn) : '미정산');
+    const inspect = result => async frame => {
+      assert.equal(await lab.getByTestId('bonds-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('bonds-cash').innerText(), `${format(frame.actualCash)}단위`);
+      assert.equal(await lab.getByTestId('bonds-return').innerText(), frame.isMatured ? ratio(frame.holdingPeriodReturn) : '만기 정산 전');
+      await verifyStacks(lab.locator('.bond-cumulative .bond-bar'), [frame.promisedSegments.map(part => part.fraction), frame.actualSegments.map(part => part.fraction)], `bond receipts year ${frame.year}`);
+      assert((await lab.locator('figcaption').innerText()).includes(`지급 부족 ${format(frame.missingCash)}단위`), 'Missing receipts differs from model');
+      const path = lab.locator('.bond-payment-path li');
+      assert.equal(await path.count(), result.frames.length);
+      for (let index = 0; index < result.frames.length; index++) {
+        const entry = result.frames[index];
+        assert.equal(await path.nth(index).getAttribute('aria-current'), entry.year === frame.year ? 'step' : null, 'Cash timeline highlights wrong year');
+        assert((await path.nth(index).innerText()).includes(`${format(entry.year === 0 ? entry.purchaseOutflow : entry.payment)}단위`), 'Cash timeline amount differs from model');
+      }
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    for (const scenario of ['normal', 'failure']) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await lab.getByRole('combobox', { name: /지급 시나리오/ }).selectOption(scenario);
+      const result = bondFrames({ scenario });
+      assert.equal(result.summary.actualCash, scenario === 'normal' ? 1150 : 450);
+      assert.equal(result.summary.promisedCash, 1150);
+      assert(Math.abs(result.summary.holdingPeriodReturn - (scenario === 'normal' ? 0.15 : -0.55)) < 1e-9);
+      await verify(`payments-${scenario}`, result.frames, cells, inspect(result));
+      await lab.getByRole('button', { name: /1년 말.*보기/ }).click();
+      await inspect(result)(result.frames[1]);
+      await capture(page, `${name}-payments-${scenario}-first-coupon`, lab);
     }
   } else {
     assert.fail(`${name}: no model-matching condition checks implemented for lab ${JSON.stringify(label)}`);

@@ -74,3 +74,6 @@
 
 
 2026-10-19 투자 배치 B: 기존 표지·분야·홈 구조를 유지하고03 orders·04 financial-statements를 추가한다. 공개 목차와 읽음 분모는 구현한 네 장만 포함한다. 실제 검증·게시 상태는 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다.
+
+
+2026-10-19 투자 배치 C: 기존 표지·분야·홈 구조를 유지하고05 valuation·06 bonds를 추가한다. 공개 목차와 읽음 분모는 구현한 여섯 장만 포함하며07 이후는 예약이다. 실제 검증·게시 상태는 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다.
