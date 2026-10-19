@@ -69,3 +69,16 @@ test('all parameter combinations maintain cash/share and return decompositions',
    conserve(totalReturnFrames({investorShares,dividendPerShare,endPrice,reinvest,sellShares:investorShares/2,companyCash:100000}));
  }
 });
+
+test('underflowed positive investment and non-finite derived returns are explicitly rejected', () => {
+ for (const input of [
+  {initialPrice:Number.MIN_VALUE,investorShares:.5,dividendPerShare:0,endPrice:0},
+  {initialPrice:Number.MIN_VALUE,dividendPerShare:0,endPrice:100},
+  {initialPrice:Number.MIN_VALUE,investorShares:0,dividendPerShare:0,endPrice:100},
+ ]) assert.throws(() => totalReturnFrames(input), RangeError);
+});
+test('tiny representable return ratios retain a finite result without an arbitrary minimum input', () => {
+ const r=totalReturnFrames({initialPrice:1e-300,dividendPerShare:0,endPrice:2e-300});
+ assert.equal(r.summary.priceReturn,1); assert.equal(r.summary.totalReturn,1);
+ for (const frame of r.frames) for (const value of Object.values(frame)) if (typeof value === 'number') assert(Number.isFinite(value));
+});

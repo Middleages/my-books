@@ -37,7 +37,10 @@ export function ownershipFrames(options = {}) {
   if (reason) frames.push(decorate(initial, 'settled', 'rejected', reason));
   else {
     const settled = { ...initial, buyerCash: initial.buyerCash - amount, buyerShares: quantity, companyCash: initial.companyCash + (mode === 'issuance' ? amount : 0), sellerCash: mode === 'secondary' ? amount : 0, sellerShares: initial.sellerShares - (mode === 'secondary' ? quantity : 0), totalShares: initial.totalShares + (mode === 'issuance' ? quantity : 0) };
-    frames.push(decorate(settled, 'settled', 'completed', mode === 'issuance' ? '신주와 회사 현금이 함께 늘었습니다. 지분 비율 하락만으로 가치 손실을 확정할 수 없습니다.' : '기존 주식과 매매대금이 투자자 사이를 이동했습니다. 회사로 들어온 돈은 0입니다.', { from: 'buyer', to: recipient, amount }, { from: recipient, to: 'buyer', amount: quantity }));
+    const lostShares = quantity > 0 && (mode === 'issuance' ? settled.totalShares === initial.totalShares : settled.sellerShares === initial.sellerShares);
+    const lostPayment = quantity > 0 && price > 0 && (amount === 0 || settled.buyerCash === initial.buyerCash || (mode === 'issuance' ? settled.companyCash === initial.companyCash : settled.sellerCash === initial.sellerCash));
+    if (lostShares || lostPayment) frames.push(decorate(initial, 'settled', 'rejected', '요청한 양수 변화를 현재 장부의 계산 정밀도로 표현할 수 없어 거래하지 않습니다.'));
+    else frames.push(decorate(settled, 'settled', 'completed', quantity === 0 ? '거래 수량이 0주이므로 주식과 현금은 그대로입니다.' : price === 0 ? mode === 'issuance' ? '대금 0의 가상 신주 이전입니다. 전체 주식 수는 늘고 회사 현금은 그대로입니다.' : '기존 주식만 투자자 사이로 이전합니다. 대금은 0이며 회사 현금은 그대로입니다.' : mode === 'issuance' ? '신주와 회사 현금이 함께 늘었습니다. 지분 비율 하락만으로 가치 손실을 확정할 수 없습니다.' : '기존 주식과 매매대금이 투자자 사이를 이동했습니다. 회사로 들어온 돈은 0입니다.', { from: 'buyer', to: recipient, amount }, { from: recipient, to: 'buyer', amount: quantity }));
   }
   return { input, frames, summary: frames.at(-1) };
 }

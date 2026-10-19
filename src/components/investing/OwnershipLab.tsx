@@ -28,13 +28,13 @@ export function OwnershipLab() {
       <div className="invest-trade">
         {mode === 'issuance' ? company : seller}
         <div className="invest-routes">
-          <FlowArrow label={`현금 · 구매자 → ${mode === 'issuance' ? '회사' : '판매자'} ${amount(after.cashFlow?.amount ?? 0)}`} reverse active={frame.cashFlow !== null} />
-          <FlowArrow label={`${mode === 'issuance' ? '신주' : '기존 주식'} · 구매자에게 ${number(after.shareFlow?.amount ?? 0)}주`} kind="shares" active={frame.shareFlow !== null} />
+          <FlowArrow label={`현금 · 구매자 → ${mode === 'issuance' ? '회사' : '판매자'} ${amount(after.cashFlow?.amount ?? 0)}`} reverse active={(frame.cashFlow?.amount ?? 0) > 0} />
+          <FlowArrow label={`${mode === 'issuance' ? '신주' : '기존 주식'} · 구매자에게 ${number(after.shareFlow?.amount ?? 0)}주`} kind="shares" active={(frame.shareFlow?.amount ?? 0) > 0} />
         </div>
         <Person><b>구매 투자자</b><strong>{number(frame.buyerShares)}주</strong><span>현금 {amount(frame.buyerCash)}</span></Person>
       </div>
       <div className="invest-offstage">{mode === 'issuance' ? <><b>거래하지 않는 판매 주주</b><span>{number(frame.sellerShares)}주 · 현금 {amount(frame.sellerCash)}</span></> : <><b>거래 밖의 회사 통장</b><span>{amount(frame.companyCash)} · 유입 {amount(frame.companyCashChange)}</span></>}</div>
-      <figcaption>황토 실선·원 = 돈, 파랑 점선·사각형 = 주식. 화살표는 거래가 실행될 때의 방향과 수량입니다. 강조되지 않은 경로는 아직 실행 전이며, 실패한 거래의 이동량은 0입니다.</figcaption>
+      <figcaption>황토 실선·원 = 돈, 파랑 점선·사각형 = 주식. 화살표는 거래가 실행될 때의 방향과 수량입니다. 강조는 현재 단계에서 양수가 이동할 때만 나타납니다. 실행 전·0수량·실패한 거래는 이동하지 않습니다.</figcaption>
     </figure>
     <div className="invest-share-key"><span className="observer">관찰 주주 · 진한 테두리</span><span>나머지 기존 주식 · 실선</span><span className="issued">새로 발행한 주식 · 점선</span></div>
     <div className="invest-fraction">

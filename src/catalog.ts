@@ -1,3 +1,5 @@
+import PerformanceHistory from "./content/investing/PerformanceHistory.mdx";
+import ReadingInvestments from "./content/investing/ReadingInvestments.mdx";
 import CostsFx from "./content/investing/CostsFx.mdx";
 import AllocationRebalancing from "./content/investing/AllocationRebalancing.mdx";
 import Diversification from "./content/investing/Diversification.mdx";
@@ -85,6 +87,8 @@ export const chapters: Chapter[] = [
   { id: "funds-etfs", bookId: "investing", readId: "investing/funds-etfs", number: "08", title: "펀드·ETF와 그 안의 자산", heading: "ETF 두 개면 두 배로 분산된 걸까?", description: "펀드 안쪽의 중복 노출과 좌당 순자산, 시장가격과 추적 성과를 구분합니다.", Content: FundsEtfs },
   { id: "costs-fx", bookId: "investing", readId: "investing/costs-fx", number: "09", title: "비용과 환율 뒤의 수익", heading: "달러 수익률과 내 원화 수익률은 왜 다를까?", description: "외화 가격·환율의 곱과 같은 예산에서 비용이 빠지는 순서를 구분합니다.", Content: CostsFx },
   { id: "allocation-rebalancing", bookId: "investing", readId: "investing/allocation-rebalancing", number: "10", title: "자산배분과 재조정", heading: "가만히 보유했는데 왜 비중이 달라질까?", description: "가격 변화로 이동한 비중과 매도·현금·매수로 되돌리는 과정을 봅니다.", Content: AllocationRebalancing },
+  { id: "performance-history", bookId: "investing", readId: "investing/performance-history", number: "11", title: "과거 성과와 손실 경로", heading: "마지막 수익률이 같으면 겪은 위험도 같을까?", description: "같은 종점의 다른 낙폭과 회복률, 과거 선택과 이후 검토의 경계를 봅니다.", Content: PerformanceHistory },
+  { id: "reading-investments", bookId: "investing", readId: "investing/reading-investments", number: "12", title: "투자 설명 함께 읽기", heading: "이 설명에서 무엇을 더 확인해야 할까?", description: "세 가상 설명서의 권리·약속·비용·손실 조건과 확인할 자료를 구분합니다.", Content: ReadingInvestments },
   { id: "circular-flow", bookId: "economics", readId: "economics/circular-flow", number: "01", title: "경제는 서로 연결된 흐름", heading: "내가 쓴 돈은 누구의 소득이 되고, 무엇과 맞바뀔까?", description: "노동·임금·소비·판매의 방향과 흐름·잔액을 나눠 봅니다.", Content: CircularFlow },
   { id: "supply-demand", bookId: "economics", readId: "economics/supply-demand", number: "02", title: "수요·공급과 가격", heading: "가격이 올랐다는 사실만으로 원인을 알 수 있을까?", description: "곡선 위 이동과 곡선 이동, 같은 가격 상승의 다른 수량을 비교합니다.", Content: SupplyDemand },
   { id: "output-growth", bookId: "economics", readId: "economics/output-growth", number: "03", title: "GDP와 성장률", heading: "돈으로 잰 생산이 늘면 실제 생산도 늘었을까?", description: "최종재·부가가치와 명목·실질 성장률을 같은 생산표로 비교합니다.", Content: OutputGrowth },
@@ -428,7 +432,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "investing", categoryId: "money", title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–08장 공개 · 비용·환율과 자산배분 등은 후속 집필 예정입니다.", Intro: InvestingIntro },
+  { id: "investing", categoryId: "money", title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
   { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–12장 공개 · 가상 실험으로 경제 뉴스의 원리와 해석 조건을 익힙니다.", Intro: EconomicsIntro },
   {
     id: "computer",
