@@ -1,0 +1,177 @@
+.eco-basket-scene,
+.eco-real-scene,
+.eco-price-chart {
+  margin: 1.2rem 0;
+  min-width: 0;
+}
+.eco-basket-scene figcaption,
+.eco-real-scene figcaption,
+.eco-price-chart figcaption {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: #43564a;
+}
+.eco-basket-parts,
+.eco-comparison-pairs,
+.eco-real-pair,
+.eco-rate-branches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.eco-basket-parts > div {
+  border: 2px solid #276749;
+  border-radius: 12px 12px 24px 24px;
+  padding: 1rem;
+  background: #fff;
+}
+.eco-basket-parts > div + div {
+  border-color: #6853a0;
+  border-style: dashed;
+}
+.eco-index-row {
+  margin: 1rem 0;
+}
+.eco-stack-track {
+  height: 26px;
+  position: relative;
+  background: #e4e9e6;
+  display: flex;
+  border: 1px solid #7d9285;
+  margin-top: 0.5rem;
+}
+.eco-piece {
+  height: 100%;
+  display: block;
+  flex-shrink: 0;
+}
+.eco-piece-0 {
+  background: #276749;
+}
+.eco-piece-1 {
+  background: repeating-linear-gradient(135deg, #7762a6 0 5px, #d9cfec 5px 9px);
+}
+.eco-one-marker {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  bottom: -5px;
+  border-left: 2px dashed #152e21;
+}
+.eco-price-chart {
+  max-width: 510px;
+  margin: 1rem auto;
+}
+.eco-price-chart svg {
+  width: 100%;
+  display: block;
+}
+.eco-price-chart svg text {
+  font: 14px system-ui;
+  fill: #263d30;
+}
+.eco-price-chart > p {
+  font-size: 0.9rem;
+}
+.eco-comparison-pairs > div,
+.eco-real-scene {
+  padding: 1rem;
+  border: 1px solid #a6bdae;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.eco-comparison-pairs > div {
+  border-left: 5px solid #6853a0;
+}
+.eco-comparison-pairs > div + div {
+  border-left-color: #955524;
+}
+.eco-comparison-pairs strong {
+  font-size: 1.5rem;
+}
+.eco-division {
+  border-top: 1px solid #a6bdae;
+  padding-top: 0.8rem;
+  line-height: 1.8;
+}
+.eco-real-scene h4 {
+  margin: 0;
+}
+.eco-rate-network {
+  max-width: 580px;
+  margin: 1.5rem auto;
+  text-align: center;
+}
+.eco-rate-network b,
+.eco-rate-network span {
+  display: block;
+  line-height: 1.8;
+}
+.eco-policy {
+  border: 3px double #335e82;
+  border-radius: 40px;
+  padding: 1rem;
+  background: #e9f2fb;
+}
+.eco-market {
+  border: 2px solid #a56b25;
+  padding: 1rem;
+  background: #faf0de;
+}
+.eco-rate-branches > div {
+  border: 2px solid #527761;
+  border-radius: 10px;
+  padding: 1rem;
+  background: white;
+}
+.eco-link-label {
+  padding: 0.75rem;
+  line-height: 1.7;
+  color: #425b4a;
+}
+.eco-real-scene p {
+  margin: 0.4rem 0;
+}
+.eco-lab input[type="range"]:focus-visible {
+  outline: 3px solid #245b9a;
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .eco-basket-parts,
+  .eco-comparison-pairs,
+  .eco-real-pair,
+  .eco-rate-branches {
+    grid-template-columns: 1fr;
+  }
+  .eco-comparison-pairs > div,
+  .eco-real-scene {
+    padding: 0.75rem;
+  }
+  .eco-real-scene {
+    margin: 0.3rem 0;
+  }
+  .eco-basket-parts > div {
+    padding: 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eco-basket-scene *,
+  .eco-real-scene *,
+  .eco-price-chart * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .eco-price-chart svg text {
+    font-size: 22px;
+  }
+}
+
+.eco-lab .eco-price-chart {
+  max-width: 510px;
+}
