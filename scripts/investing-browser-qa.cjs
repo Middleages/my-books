@@ -62,7 +62,8 @@ async function domAudit(page, strict = false) {
     const brokenLinks = [...main.querySelectorAll('a[href]')].map(a => a.getAttribute('href')).filter(href => href.startsWith('#/') && !knownRoutes.includes(href.slice(1)));
     const unlabelled = strict ? [...main.querySelectorAll('input:not([type=hidden]),select,textarea')].filter(el => !el.labels?.length && !el.getAttribute('aria-label') && !el.getAttribute('aria-labelledby')).map(el => el.outerHTML) : [];
     const figures = [...main.querySelectorAll('figure')].map(el => ({ caption: el.querySelector('figcaption')?.textContent.trim() || '', width: el.getBoundingClientRect().width }));
-    return { title: document.title, h1: main.querySelectorAll('h1').length, headings: [...main.querySelectorAll('h1,h2,h3')].map(el => el.textContent), width: innerWidth, scrollWidth: document.documentElement.scrollWidth, offenders, brokenLinks, del: main.querySelectorAll('del').length, nestedParagraphs: main.querySelectorAll('p p').length, rawStars: main.innerText.includes('**'), unlabelled, figures, textLength: main.innerText.length };
+    const priceBaselines = [...main.querySelectorAll('.invest-price-plot')].map(el => el.getBoundingClientRect().bottom);
+    return { priceBaselines, title: document.title, h1: main.querySelectorAll('h1').length, headings: [...main.querySelectorAll('h1,h2,h3')].map(el => el.textContent), width: innerWidth, scrollWidth: document.documentElement.scrollWidth, offenders, brokenLinks, del: main.querySelectorAll('del').length, nestedParagraphs: main.querySelectorAll('p p').length, rawStars: main.innerText.includes('**'), unlabelled, figures, textLength: main.innerText.length };
   }, { knownRoutes, strict });
   assert.equal(data.h1, 1, JSON.stringify(data));
   assert(data.textLength > 150, 'Main content is suspiciously empty');
@@ -73,6 +74,7 @@ async function domAudit(page, strict = false) {
   assert.equal(data.rawStars, false, 'Raw emphasis markers in rendered text');
   assert.equal(data.unlabelled.length, 0, `Unlabelled inputs: ${data.unlabelled}`);
   if (strict) for (const f of data.figures) assert(f.caption, 'Figure missing caption');
+  if (data.priceBaselines.length > 1) assert(Math.max(...data.priceBaselines) - Math.min(...data.priceBaselines) <= 1, `Price chart baselines differ: ${data.priceBaselines}`);
   return data;
 }
 async function playbackChecks(page, lab, name) {
@@ -111,6 +113,15 @@ async function playbackChecks(page, lab, name) {
   assert(await summaries.count() > 0, 'Static alternative missing');
   for (let i = 0; i < await summaries.count(); i++) await summaries.nth(i).click();
   assert(await lab.locator('details[open] table tbody tr').count() > 1, 'Static table has no frames');
+  const tableRegion = lab.locator('.invest-table').first();
+  const tableSize = await tableRegion.evaluate(el => ({ width: el.clientWidth, scrollWidth: el.scrollWidth }));
+  if (tableSize.scrollWidth > tableSize.width + 1) {
+    await tableRegion.focus();
+    await page.keyboard.press('ArrowRight');
+    await delay(250);
+    assert(await tableRegion.evaluate(el => el.scrollLeft > 0), 'Static table cannot be scrolled by keyboard');
+    await tableRegion.evaluate(el => { el.scrollLeft = 0; });
+  }
   await capture(page, `${name}-static-table`, lab.locator('details').first());
   await controls.getByRole('button', { name: '처음부터', exact: true }).click();
   // Keyboard navigation, rather than programmatic focus, exercises :focus-visible.
