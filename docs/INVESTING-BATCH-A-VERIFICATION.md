@@ -1,0 +1,45 @@
+# 투자 교재 배치 A · 소개·소유권·총수익
+
+2026-10-19. 시작 main `30b8c4c19a6a1268c799c7dd12271e2b8dd89b91`. 구현 범위는 소개, 01 `ownership`, 02 `total-return`뿐이다. 기존 모든 책·URL·chapter id·readId·`my-books:read:v1`과 알 수 없는 읽음 ID를 보존한다. 03 이후는 예약이며 카탈로그·링크·읽음 분모에 넣지 않는다.
+
+## 선행 상태
+
+최신 main과 깨끗한 작업 트리에서 시작했다. AGENTS·투자 계획/세션 A·돈 계획/전체 점검·경제 계획/배치 F·작성 기준·홈 구조와 관련 본문·모델·테스트를 확인했다. 투자 구현·기존 배치 검증 기록은 없었다. 돈 소개·01–10과 경제 소개·01–12는 소스에 구현되어 있었다. 시작 main의 [Actions 39246318299](https://github.com/Middleages/my-books/actions/runs/39246318299)는 completed/success였다. 기존 production 빌드 자산은 JS `index-BXSqgr7H.js`, CSS `index-42ZORFLa.css`로 경제 F 최종 기록과 일치했다. 실제 Pages HTML을 curl로 가져와 이 두 자산 경로가 현재 게시본과 일치함을 확인했다. HTML/자산 확인은 실제 게시 DOM 브라우저 확인과 구분하며 후자는 아래 실행 결과를 따른다.
+
+## 장면·모델·가정
+
+| 질문 | 눈으로 발견할 관계 | 시각 속성과 같은 모델 |
+| --- | --- | --- |
+| 주식 매수대금은 누구에게 가는가? | 회사 또는 판매자와 구매자 사이의 반대 흐름 | 건물/사람 형태, 황토 실선 현금·파랑 점선 주식, `ownershipFrames` |
+| 지분 비율 감소가 같은 가치 손실인가? | 관찰 10주는 그대로, 전체 1000→1050과 회사 현금 +5000 | 같은10주 단위100→105칸·전후 분모·회사 현금의 같은 눈금 막대, 같은 거래 프레임 |
+| 배당으로 공짜 이익이 생기는가? | 회사 −5000 = 관찰 +5 + 기타 +4995, 관찰 95+5=100 | 회사에서 모든 주주로 갈라지는 현금·주식/현금 합계 경계, `totalReturnFrames` |
+| 가격수익과 총수익은 같은가? | 기초100·배당락95·별도 가격110, 가격수익10%와 총수익15% | 동일 눈금 가격 기둥·평가액/현금 띠·손익/표, 같은 프레임 |
+| 재투자·매도는 자산을 더 만드는가? | 현금으로 주식 매수, 매도는 역방향; 두 번 더하지 않음 | 양방향 거래 경로·현재 자산 경계·평균원가 실현/평가손익 |
+
+01: 가상 기업1000주, 거래하지 않는 관찰 주주10주, 별도 판매자100주, 신규 구매자 현금10000. 신주50주×100단위, 회사 현금10000→15000, 전체1050주, 관찰 지분1%→약0.9524%. 기존 주식 매매는 회사 현금 유입0. 회사의 다른 자산·가치·발행 후 시장가격은 평가하지 않는다.
+
+02: 01과 별도 기업1000주, 관찰1주, 기업 현금10000·관찰 현금0. 주가100·주당 배당5·이론 배당락95. 현금 지급과 배당락의 실제 날짜 차이를 생략한 교육 관찰 단계다. 지급 현금 부족은 거래 불가이며 음수 기업 현금을 만들지 않는다. 별도 총수익 사례는 기초→배당→독자가 선택한 시장가격→그 가격에서 재투자→선택 매도 순서. 외부입출금·비용·세금0, 분수 주식 허용. 재투자 이후 미래 가격 경로는 계산하지 않는다. 시장 거래 상대의 현금 값은 누적 증감이며 잔액이 아니다. 기초 투자액0이면 수익률 null(정의 불가), 가격0이면 재투자 나눗셈을 거부한다.
+
+본문 MDX·UI React/TypeScript·순수 `.mjs`/`.d.mts`를 분리했다. 기존 playback을 재사용한다. 같은 프레임이 그림·수치·표·예측 판정을 제공하며 반올림은 표시만 한다. 자체 장식 SVG 표지를 추가하고 기존 홈 분야/표지는 유지한다. 앱 의존성은 추가하지 않았다.
+
+## 공식 근거
+
+2026-10-19 원문 확인: SEC Investor.gov [Stocks](https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks), [Primary Market](https://www.investor.gov/introduction-investing/investing-basics/glossary/primary-market), [Secondary Market](https://www.investor.gov/introduction-investing/investing-basics/glossary/secondary-market), [Ex-Dividend Dates](https://www.investor.gov/introduction-investing/investing-basics/glossary/ex-dividend-dates-when-are-you-entitled-stock-and); FINRA [Stocks](https://www.finra.org/investors/investing/investment-products/stocks), [Return and Rate of Return](https://syndication.finra.org/content/key-concepts-return-and-rate-return). 적용 범위는 소유권·발행/유통의 수취자·배당/재투자·수익 정의다. 미국 날짜/결제/세법 규칙을 한국 제도로 옮기지 않았다. 실제 통계·상품 추천·실시간 시세·개인정보 연동은 없다.
+
+## 실행 검증과 환경
+
+클라우드 Linux Node24.19.0. 최초 npm ci는 기본 캐시 쓰기 제한으로 실패했으며 `/tmp` 전용 캐시로 다시 설치해 성공했다. 기준 main 전체296테스트·빌드 성공. 신규 모델20개와 카탈로그/읽음2개를 추가해 현재 `npm test`318/318 통과(실패·건너뜀0), `npm run build` TypeScript·MDX·Vite 성공. 기존 500kB 이상 단일 번들 경고는 유지한다. `git diff --check` 통과.
+
+신규 테스트: 모든 단계의 현금·주식 보존, 발행 분모, 배당 전체 지급/수령, 재투자 현금 단일 차감, 실현/평가손익 합계, 0주·0배당·0주가·0기초금액·초과 매도·지급 부족·잘못된 입력·입력 불변·재실행. 가격/배당/재투자/매도 조합72개도 같은 보존식으로 확인한다.
+
+로컬 Chromium은 sandbox의 로컬 socket EPERM으로 시작하지 못했다. 승격 실행도 executor의 읽기 전용 마운트 설정 오류로 실행 전 실패했다. 이를 브라우저 통과로 기록하지 않는다. 공식 headless-shell 다운로드도 실패했다. 사용자 컴퓨터는 사용하지 않았다.
+
+요청된 실제 화면 검증을 위해 기존 Actions build에 범위를 제한한 production Chromium 검사를 추가했다. Playwright1.56.1은 runner 임시 디렉터리에 설치하며 앱 의존성/권한/인증정보는 바꾸지 않는다. 한국어 캡처용 Noto CJK는 Ubuntu 공식 패키지로 설치한다. 캡처·JSON 증거를 artifact로 남기고, Pages 배포 후 동일 production 자산과 실제 게시 DOM을 별도 job으로 대조한다. 실제 실행 결과와 직접 캡처 검토는 완료 뒤 아래에 기록한다.
+
+## 브라우저·main·게시 확인 상태
+
+현재 구현·로컬 모델/빌드 완료. CI 실제 브라우저 실행, 캡처 직접 검토, main 반영·새 Pages 게시 확인은 진행 중이며 아직 성공으로 기록하지 않는다.
+
+## 미검증 경계
+
+실제 iOS/Android 기기·Safari/Firefox·스크린리더 음성 출력·독자 학습 효과는 미실행이다. Chromium의 모바일 viewport 검증은 실제 기기 검증과 다르다. 실제 회사 가치·배당락 가격·투자수익을 예측/실증한 것은 아니다.
