@@ -8,6 +8,8 @@ import {
 } from "../../simulations/money/interest.mjs";
 import { usePlayback } from "./shared";
 import "./interest.css";
+import { interestVisualFrame } from "../../simulations/money/interest-visual.mjs";
+import { InterestPools, InterestCostScene } from "./InterestVisuals";
 const amount = (n: number) =>
   `${(Object.is(n, -0) ? 0 : n).toLocaleString("ko-KR", { maximumFractionDigits: 0 })}원`;
 const percent = (n: number) =>
@@ -188,6 +190,7 @@ export function InterestLab() {
   const c = result.paths.compound[index],
     s = result.paths.simple[index],
     free = result.paths.free[index];
+  const scene = interestVisualFrame(result, index);
   const scale = Math.max(
     1,
     ...Object.values(result.paths).flatMap((fs) =>
@@ -249,7 +252,11 @@ export function InterestLab() {
     );
   }
   return (
-    <section className="money-lab interest-lab" aria-label="이자와 복리 실험">
+    <section
+      className="money-lab interest-lab"
+      data-playing={play.playing}
+      aria-label="이자와 복리 실험"
+    >
       <div className="money-lab-heading">
         <span>INTEREST LAB · 원 단위 · 가상 0개월 시작</span>
         <h2>이자가 다음 이자의 바탕이 될 때</h2>
@@ -410,23 +417,11 @@ export function InterestLab() {
               <h3>
                 {label as string} · 현재 총액 {amount(f.total)}
               </h3>
-              <div className="interest-pools">
-                <div>
-                  <b>운용 중</b>
-                  <strong>{amount(f.active)}</strong>
-                  <small>다음 달 이자의 바탕</small>
-                </div>
-                <span aria-hidden="true">+</span>
-                <div>
-                  <b>이자 보관금</b>
-                  <strong>{amount(f.reserve)}</strong>
-                  <small>
-                    {label === "단리"
-                      ? "이자 붙이지 않음"
-                      : "별도 보관 없이 재투자"}
-                  </small>
-                </div>
-              </div>
+              <InterestPools
+                frame={f}
+                kind={label === "단리" ? "simple" : "compound"}
+                scale={scene.poolMax}
+              />
               <p className="interest-formula">
                 이번 달 계산 기준 {amount(f.basis)} × 월율{" "}
                 {percent(result.monthlyRate)}
@@ -463,6 +458,7 @@ export function InterestLab() {
         비용 {amount(c.cost)}과 이 차이는 다를 수 있습니다. 비용으로 빠진 돈의
         이후 수익·손실 경로도 달라지기 때문입니다.
       </p>
+      <InterestCostScene scene={scene} />
       <div className="interest-month-jump">
         <label>
           월말 바로 보기{" "}

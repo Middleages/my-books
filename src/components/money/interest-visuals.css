@@ -1,0 +1,296 @@
+/* Chapter 05: earning pools have a solid boundary; non-earning reserves have a dashed one. */
+.iv-figure,
+.money-lab .iv-figure {
+  margin: 1.5rem 0;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border: 1px solid #cedfd5;
+  border-radius: 18px;
+  background: #f5faf7;
+  min-width: 0;
+  color: #263e35;
+}
+.iv-figure *,
+.iv-pools *,
+.iv-figure *::before,
+.iv-figure *::after {
+  box-sizing: border-box;
+}
+.iv-kicker {
+  color: #4a6e60;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+}
+.iv-figure h3 {
+  font-size: clamp(1.15rem, 2.6vw, 1.55rem);
+  line-height: 1.5;
+  margin: 0.5rem 0 0.8rem;
+}
+.iv-figure p {
+  line-height: 1.8;
+}
+.iv-figure figcaption {
+  font-size: 0.78rem;
+  color: #506559;
+  line-height: 1.8;
+  margin-top: 1rem;
+}
+.iv-step-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.iv-step-buttons button,
+.iv-next {
+  border: 1px solid #9dbfaf;
+  background: white;
+  color: #275e49;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  min-height: 44px;
+  font: inherit;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+.iv-step-buttons button[aria-pressed="true"] {
+  color: white;
+  background: #176a51;
+  border-color: #176a51;
+}
+.iv-figure :focus-visible {
+  outline: 3px solid #ad6820;
+  outline-offset: 3px;
+}
+.iv-next:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.iv-primer-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.iv-primer-columns > section {
+  background: white;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #d1e0d7;
+  min-width: 0;
+}
+.iv-primer-columns h4 {
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+.iv-pools {
+  position: relative;
+  min-width: 0;
+}
+.iv-vessels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+.iv-vessel {
+  position: relative;
+  height: 200px;
+  border: 2px solid #3c8a6f;
+  border-top: 0;
+  border-radius: 0 0 24px 24px;
+  overflow: hidden;
+  text-align: center;
+  padding: 1rem 0.3rem;
+  background: #f4faf7;
+}
+.iv-reserve-pot {
+  border: 2px dashed #9477ba;
+  border-radius: 14px;
+  background: #faf7fd;
+}
+.iv-level {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, #c3e8d5, #def3e8);
+}
+.iv-reserve-pot .iv-level {
+  background: repeating-linear-gradient(
+    135deg,
+    #e8dbf8,
+    #e8dbf8 8px,
+    #f0e7fb 8px,
+    #f0e7fb 16px
+  );
+}
+.iv-vessel > b,
+.iv-vessel > strong,
+.iv-vessel > small {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+.iv-vessel > b {
+  font-size: 0.85rem;
+}
+.iv-vessel > strong {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  margin: 0.5rem 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.iv-vessel > small {
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+.iv-first-interest {
+  position: absolute;
+  top: 126px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 105px;
+  border: 2px solid #1e6c4f;
+  border-radius: 50%;
+  background: #b8e5ce;
+  color: #205640;
+  text-align: center;
+  padding: 0.6rem 0.2rem;
+  opacity: 0;
+  font-size: 0.8rem;
+  box-shadow: 0 3px 0 #6c9c83;
+}
+.iv-first-interest > * {
+  display: block;
+}
+.iv-simple .iv-coin-present {
+  left: 75%;
+  opacity: 1;
+}
+.iv-compound .iv-coin-present {
+  left: 25%;
+  opacity: 1;
+}
+.iv-pools .iv-total {
+  font-size: 0.86rem;
+  margin: 0.8rem 0 0;
+  padding: 0.6rem;
+  border-top: 1px solid #d5e2d9;
+  text-align: center;
+}
+.iv-total b {
+  display: inline-block;
+  margin-left: 0.3rem;
+}
+.iv-basis {
+  margin: 1rem 0 0;
+  padding: 0.8rem;
+  background: #eef6f1;
+  border-left: 3px solid #3c8a6f;
+  font-size: 0.86rem;
+}
+.iv-basis > * {
+  display: block;
+}
+.iv-insight {
+  padding: 1rem;
+  background: #fff1d9;
+  border-left: 4px solid #bb812f;
+  border-radius: 0 10px 10px 0;
+  font-size: 0.9rem;
+}
+.iv-cost-scene {
+  background: white !important;
+  border-top: 4px solid #bb812f !important;
+}
+.iv-cost-totals {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: #f0f4f9;
+  border-radius: 9px;
+}
+.iv-cost-totals span {
+  flex: 1 1 160px;
+  font-size: 0.85rem;
+}
+.iv-cost-totals b {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1rem;
+}
+.iv-cost-row {
+  margin: 1rem 0;
+}
+.iv-cost-row > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.iv-cost-track {
+  height: 32px;
+  position: relative;
+  background: #f3f5f1;
+  margin-top: 0.5rem;
+  border-radius: 5px;
+}
+.iv-cost-track i {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  border-left: 2px dashed #53665c;
+}
+.iv-cost-track span {
+  position: absolute;
+  height: 24px;
+  top: 4px;
+  border-radius: 4px;
+}
+.iv-direct-cost {
+  background: repeating-linear-gradient(
+    135deg,
+    #da9648,
+    #da9648 8px,
+    #efb567 8px,
+    #efb567 16px
+  );
+}
+.iv-path-effect {
+  background: #9273b6;
+}
+.iv-total-gap {
+  background: #3c8a6f;
+}
+@media (max-width: 700px) {
+  .iv-primer-columns {
+    grid-template-columns: 1fr;
+  }
+  .iv-primer-columns > section {
+    padding: 0.8rem;
+  }
+  .iv-first-interest {
+    width: 90px;
+    font-size: 0.74rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .iv-first-interest {
+    transition:
+      left 0.6s ease,
+      opacity 0.4s;
+  }
+  .interest-lab[data-playing="true"] .iv-level {
+    transition: height 0.6s ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iv-figure *,
+  .iv-pools * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
