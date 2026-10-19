@@ -1,7 +1,7 @@
 # 주식과 투자 자산의 원리 — 3권 제작 계획
 
 작성일: 2026-10-19 KST. 기준 main: `a8f9d083a94fdb453bd9e13c0fcdb40f8e80c277`.
-상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 배치 C 05·06도 구현·검증·main 반영·게시 확인을 완료했으며 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 배치 D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. E 09·10은 구현 중이며 검증·게시 상태는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에서 구분한다. 11·12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
+상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 배치 C 05·06도 구현·검증·main 반영·게시 확인을 완료했으며 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 배치 D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. E 09·10은 구현·검토·실제 게시 검사를 완료했으며 검증·게시 상태는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에서 구분한다. 11·12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
 선행: 돈 1권 소개·01–10과 경제 2권 소개·01–12 구현·점검·게시 완료. 착수 시 최신 main과 각 검증 기록에서 실제 상태를 다시 확인한다.
 실행 지시: [배치별 세션 프롬프트](INVESTING-SESSION-PROMPTS.md). 시리즈 지도: [돈·경제 계획](MONEY-TEXTBOOK-PLAN.md).
 
@@ -201,6 +201,8 @@ KRX 교육 사이트는 확인 도구에서 리디렉션 접근 제한, DART와 
 2026-10-19 D 완료: 421테스트·빌드·production 114/게시 115검사·각 382캡처와 독립 본문/모델/실제 화면 검토, main `d0796c7` 및 실제 Pages 자산 일치를 확인했다. 초기 검사기 실패와 수정·재검증, 미검증 경계는 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. 다음 범위는 E 09·10이다.
 
 
-## 배치 E 구현 · 2026-10-19
+## 배치 E 게시 확인 · 2026-10-19
 
 09 costs-fx·10 allocation-rebalancing을 계획의 제목·URL·readId로 추가한다. 09는 외화 가격과 환율의 곱을 면적으로 설명하고 실제 현금·보유 자산·매매수수료를 한 번씩 반영한다. 10은 같은 시점의 구성 띠와 매도→현금→매수 경로로 비중 복귀와 총액 보존을 보여 준다. 소개·카탈로그는 열 장만 포함하며 11·12는 예약 상태로 둔다. 모델의 상세 가정·공식 근거·실행 검증·게시 상태와 미검증 경계는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)을 따른다.
+
+2026-10-19 E 게시 확인: 465테스트·빌드·production132/게시133검사, 각554 PNG 생성 및 대표 실제 장면의 직접·독립 검토를 완료했다. main `cbbf6d1`의 Pages 배포 성공 로그와 게시 자산의 정확한 바이트/SHA-256 일치를 확인했다. Actions 전체 run 메타데이터는 완료 로그보다 지연되어 terminal-success를 아직 주장하지 않는다. 상세 시각·한계·남은 책 안내 문구 불일치는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)을 따른다. 다음 구현 범위는 F11·12다.
