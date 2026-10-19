@@ -118,4 +118,10 @@ reduced-motion 에뮬레이션을 보완한다. 실제 휴대기기 터치·모�
 
 ### 재보강 배포
 
-아래에는 실제 완료 후 확인한 main·Actions·게시 버전을 기록한다.
+- 구현 main: `b6e8677175a9ea458de846f215c44151e8f9e9fc`.
+- GitHub Actions [run 39213436627](https://github.com/Middleages/my-books/actions/runs/39213436627): 완료·성공.
+- 실제 게시 주소 https://middleages.github.io/my-books/#/money/interest 를 새로고침해 새 장면을 확인했다.
+- 게시 JS `index-Bc-WZVSb.js`, CSS `index-BxNa-pif.css`가 최종 로컬 빌드와 일치한다.
+- cloud Chrome에서 둘째 달 버튼을 눌러 추가 이자 10원, 비용 프리셋과 월말 End를 조작해 17,991/1,810/19,801원을 확인했다. 1363px 창에서 문서 scrollWidth 1348px로 가로 넘침 없음.
+- cloud 로그에는 브라우저 확장 프로그램 metadata 전송 오류만 있었다. 로컬 앱 오류 검증 결과와 구분한다.
+- 이 배포 기록을 담는 후속 문서 커밋은 제품 JS/CSS를 바꾸지 않는다. 후속 문서 커밋의 Actions 결과는 따로 확인한다.
