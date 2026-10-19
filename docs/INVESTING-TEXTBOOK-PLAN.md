@@ -1,7 +1,7 @@
 # 주식과 투자 자산의 원리 — 3권 제작 계획
 
 작성일: 2026-10-19 KST. 기준 main: `a8f9d083a94fdb453bd9e13c0fcdb40f8e80c277`.
-상태: **배치 A–D 구현·검증·main 반영·Pages 게시 확인 완료. E 09·10도 배포·실제 게시 133검사·정확한 자산 바이트와 구현 workflow의 최종 success를 확인했다. 지연된 메타데이터가 뒤늦게 확정된 경과는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에 구분했다. F 11·12와 전체 편집 점검은 구현 중이며 검증·main·게시 상태는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md)에서 구분한다.** 후속 설계와 실행 완료 기록을 혼동하지 않는다.
+상태: **배치 A–D 구현·검증·main 반영·Pages 게시 확인 완료. E 09·10도 배포·실제 게시 133검사·정확한 자산 바이트와 구현 workflow의 최종 success를 확인했다. 지연된 메타데이터가 뒤늦게 확정된 경과는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에 구분했다. F 11·12와 소개·01–12 전체 편집 점검·독립 실제 화면 검토·main 반영·Pages 게시 검증도 완료했다. 최종 500테스트·production160/게시161검사·정확한 자산 일치와 미검증 경계는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md)을 따른다.** 후속 설계와 실행 완료 기록을 혼동하지 않는다.
 선행: 돈 1권 소개·01–10과 경제 2권 소개·01–12 구현·점검·게시 완료. 착수 시 최신 main과 각 검증 기록에서 실제 상태를 다시 확인한다.
 실행 지시: [배치별 세션 프롬프트](INVESTING-SESSION-PROMPTS.md). 시리즈 지도: [돈·경제 계획](MONEY-TEXTBOOK-PLAN.md).
 
@@ -208,6 +208,9 @@ KRX 교육 사이트는 확인 도구에서 리디렉션 접근 제한, DART와 
 2026-10-19 E 게시 확인: 465테스트·빌드·production132/게시133검사, 각554 PNG 생성 및 대표 실제 장면의 직접·독립 검토를 완료했다. main `cbbf6d1`의 Pages 배포 성공 로그와 게시 자산의 정확한 바이트/SHA-256 일치를 확인했다. Actions 전체 run 메타데이터는 완료 로그보다 지연되어 terminal-success를 아직 주장하지 않는다. 상세 시각·한계·남은 책 안내 문구 불일치는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)을 따른다. 다음 구현 범위는 F11·12다.
 
 
-## 배치 F 구현 · 2026-10-19
+## 배치 F 완료 · 2026-10-19
 
-11 performance-history·12 reading-investments와 전체 편집 점검을 진행한다. 같은 종점의 이전 정점 기준 낙폭, 손실 회복의 분모, 산술평균/누적수익, 고정한 과거 선택과 이후 검토를 구분한다. 종합 장에서는 주식·일반 채권·일반 ETF의 가상 설명을 관측·기록/계산 가정/추정·평가/누락 정보로 나누고 추가 근거를 고르는 이유와 반례를 설명한다. 소개·공개 목차·읽음 대상은 구현한 열두 장에 맞춘다. 독립 검토·실제 화면·main·Pages와 미검증 경계는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md), 전체 용어·단위·수익 정의와 장간 연결은 [전체 편집 점검](INVESTING-BOOK-REVIEW.md)에 남긴다. 작성 중인 검증 항목을 통과로 기록하지 않는다.
+11 performance-history·12 reading-investments와 전체 편집 점검을 완료했다. 같은 종점의 이전 정점 기준 낙폭, 손실 회복의 분모, 산술평균/누적수익, 고정한 과거 선택과 이후 검토를 구분한다. 종합 장에서는 주식·일반 채권·일반 ETF의 가상 설명을 관측·기록/계산 가정/추정·평가/누락 정보로 나누고 추가 근거를 고르는 이유와 반례를 설명한다. 소개·공개 목차·읽음 대상은 구현한 열두 장에 맞춘다. 독립 검토·실제 화면·main·Pages와 미검증 경계는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md), 전체 용어·단위·수익 정의와 장간 연결은 [전체 편집 점검](INVESTING-BOOK-REVIEW.md)에 남긴다. 작성 중인 검증 항목을 통과로 기록하지 않는다.
+
+
+2026-10-19 F 완료: `npm test` 500/500·production build, PR/main production 각각160검사·실제 게시161검사와 실행별680 PNG 생성, 독립 본문/모델/실제 화면 검토, main `f65e334`·Pages 자산의 정확한 바이트/SHA-256 일치와 전체 Actions success를 확인했다. 생성 캡처 수와 직접 열어 본 대표 이미지 수·환경 한계는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md)에서 구분한다. 투자 3권의 계획한 소개·12장 범위는 모두 공개됐다.

@@ -85,3 +85,6 @@
 2026-10-19 투자 배치 E: 기존 표지·분야·홈 구조를 유지하고 09 costs-fx·10 allocation-rebalancing을 추가한다. 공개 목차·읽음 분모는 구현한 열 장만 포함하며 11·12는 예약이다. 실제 검증·게시 상태와 미검증 경계는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)을 따른다.
 
 E 게시 검사는 production132/게시133개를 통과했고 실제 자산 바이트까지 일치했다. Actions 전체 상태 표시 지연과 `investing.future`에 남은01–08 안내 문구의 F 인계는 E 기록에 명시했다. 새10개 장의 실제 URL·읽음 분모는 검증했으며 책 안내 문자열을 이미 수정했다고 주장하지 않는다.
+
+
+2026-10-19 투자 배치 F: 11 performance-history·12 reading-investments를 추가하고 공개 목차·읽음 분모·책 안내를 소개·01–12로 일치시켰다. 기존 분야·표지·홈 구조·URL·읽음 저장 키·알 수 없는 ID를 보존한다. 실제 PR Chromium의 1440/390/320에서 홈 6권·돈 분야 3권·투자 12장과 읽음 회귀를 통과했다. main·Pages 게시와 실제 자산 일치, 게시161검사를 확인했으며 전체 편집 결과는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md)·[전체 편집 점검](INVESTING-BOOK-REVIEW.md)을 따른다. 위 E의 오래된 안내 문구와 메타데이터 지연은 당시 기록이며 F에서 안내를 고쳤고 E 두 run의 최종 success도 확인했다.

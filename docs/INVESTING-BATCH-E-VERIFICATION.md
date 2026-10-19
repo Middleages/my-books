@@ -77,3 +77,7 @@ F만 미구현이다. `catalog.ts`의 investing 책 `future` 안내에 D 당시 
 ## F 통합 중 확인된 상태 후속 · 2026-10-19
 
 구현 [run39277937642](https://github.com/Middleages/my-books/actions/runs/39277937642)은16:22:47 UTC 갱신에서 최종 `completed/success`로 확인됐다. 위16:13 시점의 미확인은 당시 조회 기록이며, 이제 구현 workflow의 종료 상태도 확인됐다. E 최종 문서 commit `5793a1b`의 별도 자동 run 상태와 F 진행 결과는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md)에서 이어서 구분한다. 이 후속 확인은 기존 실제 배포·게시 자산 증거를 변경하지 않는다.
+
+최종 문서 commit `5793a1b`의 [run39284020750](https://github.com/Middleages/my-books/actions/runs/39284020750)도 16:44:32 UTC 갱신에서 전체 `completed/success`로 확정됐다. build·deploy·verify-published와 모든 단계가 성공했으며, 이 종료를 확인한 뒤 F를 main에 반영했다.
+
+해당 최종 문서 run의 실제 게시 JSON도 16:35:27–16:44:12 UTC에 133/133 통과·554 PNG 생성·앱 오류0을 기록했다. 기존 루트 favicon404만 별도로 남았고 JS/CSS의 정확한 바이트와 SHA-256은 위 구현 게시본과 같았다.
