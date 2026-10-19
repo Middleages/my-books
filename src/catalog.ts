@@ -1,3 +1,5 @@
+import CostsFx from "./content/investing/CostsFx.mdx";
+import AllocationRebalancing from "./content/investing/AllocationRebalancing.mdx";
 import Diversification from "./content/investing/Diversification.mdx";
 import FundsEtfs from "./content/investing/FundsEtfs.mdx";
 import Valuation from "./content/investing/Valuation.mdx";
@@ -81,6 +83,8 @@ export const chapters: Chapter[] = [
   { id: "bonds", bookId: "investing", readId: "investing/bonds", number: "06", title: "채권의 약속과 가격", heading: "이자가 같은데 채권 가격은 왜 달라질까?", description: "같은 쿠폰·원금의 시점과 현재가치, 약속과 실제 수령 현금을 구분합니다.", Content: Bonds },
   { id: "diversification", bookId: "investing", readId: "investing/diversification", number: "07", title: "분산과 함께 움직이는 위험", heading: "여러 개를 사면 손실이 사라질까?", description: "같은 충격에서 개별 자산과 묶음의 결과, 공통 위험과 집중도를 비교합니다.", Content: Diversification },
   { id: "funds-etfs", bookId: "investing", readId: "investing/funds-etfs", number: "08", title: "펀드·ETF와 그 안의 자산", heading: "ETF 두 개면 두 배로 분산된 걸까?", description: "펀드 안쪽의 중복 노출과 좌당 순자산, 시장가격과 추적 성과를 구분합니다.", Content: FundsEtfs },
+  { id: "costs-fx", bookId: "investing", readId: "investing/costs-fx", number: "09", title: "비용과 환율 뒤의 수익", heading: "달러 수익률과 내 원화 수익률은 왜 다를까?", description: "외화 가격·환율의 곱과 같은 예산에서 비용이 빠지는 순서를 구분합니다.", Content: CostsFx },
+  { id: "allocation-rebalancing", bookId: "investing", readId: "investing/allocation-rebalancing", number: "10", title: "자산배분과 재조정", heading: "가만히 보유했는데 왜 비중이 달라질까?", description: "가격 변화로 이동한 비중과 매도·현금·매수로 되돌리는 과정을 봅니다.", Content: AllocationRebalancing },
   { id: "circular-flow", bookId: "economics", readId: "economics/circular-flow", number: "01", title: "경제는 서로 연결된 흐름", heading: "내가 쓴 돈은 누구의 소득이 되고, 무엇과 맞바뀔까?", description: "노동·임금·소비·판매의 방향과 흐름·잔액을 나눠 봅니다.", Content: CircularFlow },
   { id: "supply-demand", bookId: "economics", readId: "economics/supply-demand", number: "02", title: "수요·공급과 가격", heading: "가격이 올랐다는 사실만으로 원인을 알 수 있을까?", description: "곡선 위 이동과 곡선 이동, 같은 가격 상승의 다른 수량을 비교합니다.", Content: SupplyDemand },
   { id: "output-growth", bookId: "economics", readId: "economics/output-growth", number: "03", title: "GDP와 성장률", heading: "돈으로 잰 생산이 늘면 실제 생산도 늘었을까?", description: "최종재·부가가치와 명목·실질 성장률을 같은 생산표로 비교합니다.", Content: OutputGrowth },

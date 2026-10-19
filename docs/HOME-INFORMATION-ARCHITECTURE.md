@@ -80,3 +80,6 @@
 
 
 2026-10-19 투자 배치 D: 기존 표지·분야·홈 구조를 유지하고 07 diversification·08 funds-etfs를 추가했다. 공개 목차와 읽음 분모는 구현한 여덟 장만 포함하며 09 이후는 예약이다. 1440·390·320px 실제 홈의 돈 분야 3권과 투자 8장 표시, 기존 표지·읽음 보존 및 Pages 게시를 확인했다. 실제 검증·게시 상태와 미검증 경계는 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다.
+
+
+2026-10-19 투자 배치 E: 기존 표지·분야·홈 구조를 유지하고 09 costs-fx·10 allocation-rebalancing을 추가한다. 공개 목차·읽음 분모는 구현한 열 장만 포함하며 11·12는 예약이다. 실제 검증·게시 상태와 미검증 경계는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)을 따른다.

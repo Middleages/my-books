@@ -6,6 +6,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
+const { createHash } = require('node:crypto');
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
@@ -159,13 +160,13 @@ async function conditionChecks(page, lab, name) {
     assert.equal(await slider.inputValue(), String(value), `Range ${accessibleName} did not reach requested value`);
   };
   // Compare actual painted lengths with the model, not just inline styles or text.
-  const verifyStacks = async (locator, expected, description) => {
-    const actual = await locator.evaluateAll(elements => elements.map(element => {
+  const verifyStacks = async (locator, expected, description, childSelector = null) => {
+    const actual = await locator.evaluateAll((elements, childSelector) => elements.map(element => {
       const style = getComputedStyle(element), bounds = element.getBoundingClientRect();
       const inset = parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft);
       const width = bounds.width - inset - parseFloat(style.borderRightWidth) - parseFloat(style.paddingRight);
-      return { width, segments: [...element.children].map(child => { const box = child.getBoundingClientRect(); return { width: box.width, left: box.left - bounds.left - inset }; }) };
-    }));
+      return { width, segments: [...element.children].filter(child => !childSelector || child.matches(childSelector)).map(child => { const box = child.getBoundingClientRect(); return { width: box.width, left: box.left - bounds.left - inset }; }) };
+    }), childSelector);
     assert.equal(actual.length, expected.length, `${description}: wrong number of model bars`);
     actual.forEach((bar, index) => {
       assert(bar.width > 0, `${description}: bar has no visible width`);
@@ -726,6 +727,163 @@ async function conditionChecks(page, lab, name) {
       if (input.underlyingReturn === 0.1 && input.issuedUnits === 100) assert(Math.abs(result.summary.nav - 110) < 1e-9);
       await verify(`underlying-${input.underlyingReturn * 100}-price-${input.marketPrice}-held-${input.heldUnits}-issued-${input.issuedUnits}`, result.frames, cells, inspect(result));
     }
+  } else if (label === '비용과 환율 현금 흐름 실험') {
+    const { costsFxScenario, costsFxPresets, fxReturnPrimer } = await import('../src/simulations/investing/costs-fx.mjs');
+    const cells = frame => [frame.cashKrw, frame.cashUsd, frame.assetUsd, frame.units, frame.fx, frame.paidBuyFeeUsd, frame.paidSellFeeUsd, frame.totalKrw].map(format);
+    const inspect = result => async frame => {
+      assert.equal(await lab.locator('.invest-stage').innerText(), frame.label);
+      assert.equal(await lab.locator('.cfx-route [aria-current=step]').getAttribute('data-cfx-step'), String(frame.index));
+      assert.deepEqual(await lab.locator('.cfx-holdings strong').allTextContents(), [`${format(frame.cashKrw)}원`, `${format(frame.cashUsd)} USD`, `${format(frame.assetUsd)} USD`]);
+      assert((await lab.locator('.cfx-asset-wallet').innerText()).includes(`보유 자산 · ${format(frame.units)}단위`));
+      await verifyStacks(lab.locator('.cfx-value-track'), [[frame.cashKrwFraction, frame.cashUsdKrwFraction, frame.assetKrwFraction]], 'FX current cash and asset holdings');
+      await verifyStacks(lab.locator('.cfx-split-track'), result.splits.map(row => [row.keptFraction, row.feeFraction]), 'FX purchase/sale cost splits');
+      await verifyStacks(lab.locator('.cfx-comparison-track'), result.comparison.map(row => [row.fraction]), 'FX same-budget final comparisons');
+      const widths = await lab.locator('.cfx-value-track,.cfx-comparison-track').evaluateAll(elements => elements.map(el => el.getBoundingClientRect().width));
+      assert(Math.max(...widths) - Math.min(...widths) <= 1, 'KRW comparison and current bar do not share same painted scale');
+      assert.equal(await lab.getByTestId('costs-fx-final-krw').innerText(), `${format(result.finalKrw)}원`);
+      assert.equal(await lab.getByTestId('costs-fx-return').innerText(), ratio(result.netReturn));
+      assert.equal(await lab.getByTestId('costs-fx-buy-fee').innerText(), `↘ 수수료: ${format(result.buyFeeUsd)} USD`);
+      assert.equal(await lab.getByTestId('costs-fx-sell-fee').innerText(), `↘ 수수료: ${format(result.sellFeeUsd)} USD`);
+      assert.deepEqual(await lab.locator('.cfx-compare-row strong').allTextContents(), result.comparison.map(row => `${format(row.value)}원`));
+      const boxes = await lab.locator('.cfx-holdings > div').evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }));
+      for (let i = 1; i < boxes.length; i++) {
+        if (page.viewportSize().width <= 600) assert(boxes[i].top >= boxes[i - 1].bottom, 'Mobile currency/asset holdings overlap');
+        else assert(boxes[i].left >= boxes[i - 1].right, 'Desktop currency/asset holdings overlap');
+      }
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    const cases = [
+      { name: 'default-21', input: {} },
+      ...costsFxPresets.map(preset => ({ name: preset.id, input: preset.input, preset: preset.id })),
+      { name: 'buy-fee-only', input: { buyFeeRate: 0.02 } },
+      { name: 'sell-fee-only', input: { sellFeeRate: 0.02 } },
+      { name: 'zero-asset', input: { sellPriceUsd: 0, buyFeeRate: 0.02, sellFeeRate: 0.02 } },
+      { name: 'maximum-controls', input: { budgetKrw: 240000, sellPriceUsd: 200, sellFx: 1800, buyFeeRate: 0.1, sellFeeRate: 0.1 } },
+      { name: 'adverse-fx', input: { sellPriceUsd: 110, sellFx: 600 } },
+    ];
+    for (const scenario of cases) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      if (scenario.preset) await lab.locator(`[data-cfx-preset="${scenario.preset}"]`).click();
+      else {
+        for (const [key, label, multiplier] of [['budgetKrw', /수수료 포함 총예산/, 1], ['sellPriceUsd', /구간 말 외화 가격/, 1], ['sellFx', /매도 후 환율/, 1], ['buyFeeRate', /매수대금 기준 수수료율/, 100], ['sellFeeRate', /매도대금 기준 수수료율/, 100]]) {
+          if (scenario.input[key] !== undefined) await setRange(label, scenario.input[key] * multiplier);
+        }
+      }
+      const result = costsFxScenario(scenario.input);
+      for (const [key, label, multiplier] of [['budgetKrw', /수수료 포함 총예산/, 1], ['sellPriceUsd', /구간 말 외화 가격/, 1], ['sellFx', /매도 후 환율/, 1], ['buyFeeRate', /매수대금 기준 수수료율/, 100], ['sellFeeRate', /매도대금 기준 수수료율/, 100]]) assert(Math.abs(Number(await lab.getByRole('slider', { name: label }).inputValue()) - result.input[key] * multiplier) < 1e-9, `${scenario.name}: slider value diverged from model`);
+      if (scenario.name === 'default-21') { assert(Math.abs(result.finalKrw - 145200) < 1e-8); assert(Math.abs(result.netReturn - 0.21) < 1e-12); }
+      assert(Math.abs(result.purchaseUsd + result.buyFeeUsd - result.budgetUsd) < 1e-8, 'Purchase exceeds inclusive budget');
+      assert(Math.abs(result.netSaleUsd + result.sellFeeUsd - result.grossSaleUsd) < 1e-8, 'Sale fee applied twice');
+      await verify(scenario.name, result.frames, cells, inspect(result));
+      await lab.locator('.money-playback').getByRole('button', { name: '처음부터', exact: true }).click();
+      await lab.locator('.money-playback').getByRole('button', { name: '한 단계 진행', exact: true }).click();
+      await lab.locator('.money-playback').getByRole('button', { name: '한 단계 진행', exact: true }).click();
+      await inspect(result)(result.frames[2]);
+      await capture(page, `${name}-${scenario.name}-purchase-state`, lab.locator('.cfx-current'));
+    }
+    const result = fxReturnPrimer(), primer = page.getByTestId('fx-return-primer');
+    const geometry = await primer.locator('.cfx-area').evaluate(element => {
+      const r = element.getBoundingClientRect(), style = getComputedStyle(element);
+      const left = parseFloat(style.borderLeftWidth), top = parseFloat(style.borderTopWidth);
+      return { width: r.width - left - parseFloat(style.borderRightWidth), height: r.height - top - parseFloat(style.borderBottomWidth), pieces: [...element.children].map(child => { const box = child.getBoundingClientRect(); const label = child.querySelector('span').getBoundingClientRect(); return { left: box.left - r.left - left, top: box.top - r.top - top, width: box.width, height: box.height, labelWithin: label.left >= box.left && label.right <= box.right && label.top >= box.top && label.bottom <= box.bottom }; }) };
+    });
+    assert.equal(geometry.pieces.length, result.pieces.length);
+    geometry.pieces.forEach((actual, index) => {
+      const expected = result.pieces[index];
+      for (const [key, value] of Object.entries({ left: expected.x * geometry.width, top: expected.y * geometry.height, width: expected.width * geometry.width, height: expected.height * geometry.height })) assert(Math.abs(actual[key] - value) <= 1, `FX area ${expected.id} ${key} does not match model`);
+      assert(actual.labelWithin, `FX area ${expected.id} numeric key is clipped`);
+    });
+    assert.deepEqual(await primer.locator('.cfx-area-key strong').allTextContents(), result.pieces.map(piece => `${format(piece.amountKrw)}원`));
+    assert((await primer.innerText()).includes('145,200원') && (await primer.innerText()).includes('21%'));
+    await capture(page, `${name}-multiplicative-area-primer`, primer);
+  } else if (label === '자산배분과 재조정 실험') {
+    const { allocationFrames } = await import('../src/simulations/investing/allocation-rebalancing.mjs');
+    const cells = frame => [frame.time, ...[frame.stockValue, frame.bondValue, frame.cash, frame.total].map(format), ratio(frame.stockWeight), ...[frame.sold, frame.bought, frame.externalFlow].map(format)];
+    const inspectBars = async (scope, result, frames) => {
+      const rows = scope.locator('.allocation-bar-row');
+      assert.equal(await rows.count(), frames.length);
+      await verifyStacks(rows.locator('.allocation-track'), frames.map(frame => frame.segments.map(part => part.fraction)), 'allocation common-scale bars', 'i');
+      const widths = await rows.locator('.allocation-track').evaluateAll(elements => elements.map(el => el.getBoundingClientRect().width));
+      assert(Math.max(...widths) - Math.min(...widths) <= 1, 'Allocation frames have different painted scales');
+      for (let i = 0; i < frames.length; i++) {
+        const frame = frames[i], row = rows.nth(i);
+        assert.equal(await row.getAttribute('data-allocation-frame'), frame.key);
+        const text = await row.innerText();
+        assert(text.includes(`합계 ${format(frame.total)}단위`) && text.includes(`주식 비중 ${ratio(frame.stockWeight)}`));
+        for (const segment of frame.segments) assert(text.includes(`${segment.label} ${format(segment.value)}단위`));
+        const marker = row.locator('.allocation-target-marker');
+        if (await marker.count()) {
+          const position = await marker.evaluate(el => { const r = el.getBoundingClientRect(), p = el.parentElement.getBoundingClientRect(); return (r.left + r.width / 2 - p.left) / p.width; });
+          assert(Math.abs(position - result.targetMarkerFraction) <= 0.005, 'Target marker does not paint at model amount');
+        }
+      }
+      const ticks = await scope.locator('.allocation-axis span').allTextContents();
+      assert.deepEqual(ticks, result.axis.map(tick => `${format(tick.value)}단위`));
+    };
+    const inspect = result => async frame => {
+      assert.equal(await lab.getByTestId('allocation-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('allocation-total').innerText(), `${format(frame.total)}단위`);
+      assert.equal(await lab.getByTestId('allocation-stock-weight').innerText(), ratio(frame.stockWeight));
+      assert.equal(await lab.getByTestId('allocation-cash').innerText(), `${format(frame.cash)}단위`);
+      assert.equal(await lab.getByTestId('allocation-trade').innerText(), result.tradeLabel);
+      const outcome = result.targetReached === null ? '총액 0: 목표 비중 도달 여부도 정의하지 않습니다.' : result.targetReached ? '같은 T1에서 목표 비중과 총액을 확인했습니다. 이후 수익의 우열은 계산하지 않았습니다.' : result.status === 'blocked-zero-price' ? '목표 비중에 도달하지 못했습니다. 가격 0인 자산에 양의 평가액을 만들어 넣을 수 없습니다.' : '매매 뒤 목표 금액과 실제 평가액의 차이가 남았습니다. 비중 복귀가 확인되지 않았습니다.';
+      assert.equal(await lab.getByTestId('allocation-outcome').innerText(), outcome);
+      assert.equal(await lab.locator('.allocation-bar-row[aria-current=step]').getAttribute('data-allocation-frame'), frame.key);
+      await inspectBars(lab, result, result.frames);
+      assert.deepEqual(await lab.locator('.allocation-arrow').evaluateAll(elements => elements.map(el => el.dataset.active)), [String(frame.movement?.to === 'cash'), String(frame.movement?.from === 'cash')]);
+      const boxes = await lab.locator('.allocation-path > *').evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }));
+      assert.equal(boxes.length, 5);
+      for (let i = 1; i < boxes.length; i++) {
+        if (page.viewportSize().width <= 650) assert(boxes[i].top >= boxes[i - 1].bottom, 'Mobile allocation path overlaps');
+        else assert(boxes[i].left >= boxes[i - 1].right, 'Desktop allocation path overlaps');
+      }
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    const cases = [
+      { initialAmount: 1000, stockWeight: 0.6, stockReturn: 0.2, bondReturn: 0 },
+      { initialAmount: 1000, stockWeight: 0.6, stockReturn: -0.2, bondReturn: 0 },
+      { initialAmount: 1000, stockWeight: 0.6, stockReturn: 0.2, bondReturn: 0.2 },
+      { initialAmount: 1000, stockWeight: 0.6, stockReturn: -0.4, bondReturn: -0.1 },
+      { initialAmount: 1000, stockWeight: 0, stockReturn: 0.2, bondReturn: 0 },
+      { initialAmount: 1000, stockWeight: 1, stockReturn: 0.2, bondReturn: 0 },
+      { initialAmount: 0, stockWeight: 0.6, stockReturn: 0.2, bondReturn: 0 },
+      { initialAmount: 1000, stockWeight: 0.6, stockReturn: -1, bondReturn: 0 },
+      { initialAmount: 1000, stockWeight: 0.6, stockReturn: 0, bondReturn: -1 },
+      { initialAmount: 1000, stockWeight: 0.6, stockReturn: -1, bondReturn: -1 },
+      { initialAmount: 2000, stockWeight: 0.25, stockReturn: 1, bondReturn: -0.5 },
+      { initialAmount: 1000, stockWeight: 0.01, stockReturn: -0.1, bondReturn: -0.95 },
+    ];
+    for (const input of cases) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await setRange(/출발·목표 주식 비중/, input.stockWeight * 100);
+      await setRange(/주식 가격 변화/, input.stockReturn * 100);
+      await setRange(/채권 가격 변화/, input.bondReturn * 100);
+      await setRange(/출발 평가액/, input.initialAmount);
+      const result = allocationFrames(input);
+      if (input.stockReturn === 0.2 && input.stockWeight === 0.6 && input.initialAmount === 1000 && input.bondReturn === 0) {
+        assert.equal(result.drift.total, 1120); assert.equal(result.tradeAmount, 48);
+        assert(Math.abs(result.summary.stockValue - 672) <= 1e-9); assert(Math.abs(result.summary.bondValue - 448) <= 1e-9);
+      }
+      for (const frame of result.frames.slice(1)) assert(Math.abs(frame.total - result.drift.total) <= 1e-8, 'Rebalancing changed same-date total');
+      assert.equal(result.afterSale.cash, result.tradeAmount);
+      assert.equal(result.summary.cash, 0);
+      await verify(`budget-${input.initialAmount}-weight-${input.stockWeight * 100}-stock-${input.stockReturn * 100}-bond-${input.bondReturn * 100}`, result.frames, cells, inspect(result));
+      const details = lab.locator('details').nth(1);
+      if (await details.getAttribute('open') === null) await details.locator('summary').click();
+      const rows = await details.locator('tbody tr').evaluateAll(elements => elements.map(el => [...el.querySelectorAll('td')].map(cell => cell.textContent.trim())));
+      assert.deepEqual(rows, result.frames.map(frame => [frame.stockUnits, frame.stockPrice, frame.bondUnits, frame.bondPrice, frame.targetStock, frame.targetBond].map(format)));
+      await lab.locator('.allocation-step-buttons').getByRole('button', { name: result.afterSale.label, exact: true }).click();
+      await inspect(result)(result.afterSale);
+      await capture(page, `${name}-cash-stage-${input.initialAmount}-${input.stockWeight}-${input.stockReturn}-${input.bondReturn}`, lab.locator('.allocation-transfer'));
+    }
+    const primer = page.locator('.allocation-primer'), result = allocationFrames();
+    await inspectBars(primer, result, [result.initial, result.drift]);
+    const holdingBoxes = await primer.locator('.allocation-holdings > div').evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; }));
+    assert.equal(holdingBoxes.length, 2);
+    if (page.viewportSize().width <= 650) assert(holdingBoxes[1].top >= holdingBoxes[0].bottom);
+    else assert(holdingBoxes[1].left >= holdingBoxes[0].right);
+    assert((await primer.innerText()).includes('64.2857%'));
+    await capture(page, `${name}-same-units-drift-primer`, primer);
   } else {
     assert.fail(`${name}: no model-matching condition checks implemented for lab ${JSON.stringify(label)}`);
   }
@@ -795,7 +953,18 @@ async function representativeControl(page) {
         do {
           const response = await context.request.get(`${base}?qa=${Date.now()}`);
           status = response.status(); actual = assets(await response.text());
-          if (status === 200 && JSON.stringify(actual) === JSON.stringify(expected)) return { expected, actual, status };
+          if (status === 200 && JSON.stringify(actual) === JSON.stringify(expected)) {
+            const verifiedBytes = [];
+            for (const file of expected) {
+              const local = fs.readFileSync(path.join(dist, 'assets', file));
+              const response = await context.request.get(`${base}assets/${file}?qa=${Date.now()}`);
+              assert.equal(response.status(), 200, `Published asset unavailable: ${file}`);
+              const received = await response.body();
+              assert.deepEqual(received, local, `Published asset bytes differ from deployed build: ${file}`);
+              verifiedBytes.push({ file, bytes: received.length, sha256: createHash('sha256').update(received).digest('hex') });
+            }
+            return { expected, actual, status, verifiedBytes };
+          }
           await delay(5000);
         } while (Date.now() < deadline);
         assert.deepEqual({ status, actual }, { status: 200, actual: expected }, 'Published HTML still differs from this build');
@@ -809,7 +978,7 @@ async function representativeControl(page) {
         await visit(page, route);
         const audit = await domAudit(page, true);
         await capture(page, `${width}-${route}-full`);
-        const labs = page.locator('.invest-lab');
+        const labs = page.locator('.invest-lab:not([data-static-scene=true])');
         for (let i = 0; i < await labs.count(); i++) await capture(page, `${width}-${route}-scene-${i + 1}`, labs.nth(i));
         if (route !== '/investing') assert(await labs.count() > 0, 'Chapter lab missing');
         return audit;
@@ -826,7 +995,7 @@ async function representativeControl(page) {
       });
       for (const route of investingRoutes) {
         await visit(page, route);
-        const labs = page.locator('.invest-lab');
+        const labs = page.locator('.invest-lab:not([data-static-scene=true])');
         for (let i = 0; i < await labs.count(); i++) {
           if (width === 1440 || width === 320) await check(`controls-${width}-${route}-${i + 1}`, page, () => playbackChecks(page, labs.nth(i), `${width}-${safe(route)}-${i + 1}`));
           await check(`conditions-${width}-${route}-${i + 1}`, page, () => conditionChecks(page, labs.nth(i), `${width}-${safe(route)}-${i + 1}`));
@@ -863,7 +1032,7 @@ async function representativeControl(page) {
       await visit(page, route);
       assert(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
       const assertNoMotion = async () => {
-        const running = await page.locator('.invest-lab, .etf-tracking').evaluateAll(els => els.flatMap(el => [el, ...el.querySelectorAll('*')]).filter(el => { const style = getComputedStyle(el); return style.animationName !== 'none' || style.transitionDuration.split(',').some(s => parseFloat(s) > 0); }).map(el => el.className));
+        const running = await page.locator('.invest-lab, .etf-tracking, .cfx-primer').evaluateAll(els => els.flatMap(el => [el, ...el.querySelectorAll('*')]).filter(el => { const style = getComputedStyle(el); return style.animationName !== 'none' || style.transitionDuration.split(',').some(s => parseFloat(s) > 0); }).map(el => el.className));
         assert.deepEqual(running, [], 'Motion styles remain under reduced motion');
       };
       await assertNoMotion();
