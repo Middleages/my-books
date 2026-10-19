@@ -1,0 +1,45 @@
+.diversification-lab{--div-a:#287b73;--div-b:#a46520;--div-p:#344a74}
+.diversification-allocation-labels,.diversification-money-parts,.diversification-legend{display:flex;flex-wrap:wrap;gap:.65rem 1rem;align-items:center;line-height:1.7}
+.diversification-allocation-labels{justify-content:space-between;margin-bottom:.6rem}
+.diversification-allocation-strip,.diversification-money-track{display:flex;height:30px;width:100%;background:#e0e7ed;outline:1px solid #8ca1af;overflow:hidden}
+.diversification-allocation-strip i,.diversification-money-track i{height:100%;display:block;flex-shrink:0}
+.diversification-allocation-strip .diversification-a,.diversification-money-track .diversification-a{background:var(--div-a)}
+.diversification-allocation-strip .diversification-b,.diversification-money-track .diversification-b{background:repeating-linear-gradient(135deg,#b47a37 0,#b47a37 5px,#e9cba3 5px,#e9cba3 8px)}
+.diversification-shock{display:flex;align-items:flex-start;gap:.65rem;padding:1rem;border:2px dashed #7b8ba1;border-radius:8px;line-height:1.7;margin:1rem 0;cursor:pointer}
+.diversification-shock input{width:20px;height:20px;flex-shrink:0;accent-color:var(--div-p);margin-top:4px}
+.diversification-money{padding:1rem;border:1px solid #aabfcb;background:white;border-radius:10px}
+.diversification-money h4{margin:0 0 1rem}
+.diversification-money-parts{margin-bottom:.8rem;font-size:.95rem}
+.diversification-money-parts>span:not([aria-hidden]){display:grid;gap:.25rem}
+.diversification-money-axis{display:flex;justify-content:space-between;margin:.45rem 0;font-size:.85rem}
+.diversification-legend{font-size:.9rem;margin-bottom:1rem}
+.diversification-legend span:before{content:'';display:inline-block;width:11px;height:11px;margin-right:.5rem;background:var(--div-a);border-radius:50%}
+.diversification-legend .diversification-b:before{background:var(--div-b);border-radius:0}
+.diversification-legend .diversification-portfolio:before{background:var(--div-p);border-radius:0;transform:rotate(45deg)}
+.diversification-scenarios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.diversification-scenario{min-width:0;background:white;border:1px solid #b9c9d3;border-radius:10px;padding:.85rem}
+.diversification-scenario[aria-current=step]{border:2px solid var(--div-p);padding:calc(.85rem - 1px);box-shadow:0 0 0 2px #d3dce7}
+.diversification-scenario button{font-weight:700;margin:0 0 .4rem}
+.diversification-direction{display:block;font-size:.85rem;line-height:1.7;margin-bottom:.8rem}
+.diversification-return-axis{position:relative;height:1.5em;font-size:.78rem;line-height:1.5;margin:0 67px .65rem 42px}
+.diversification-return-axis span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.diversification-return-row{display:grid;grid-template-columns:30px minmax(0,1fr) 55px;align-items:center;gap:12px;margin:.65rem 0;font-size:.85rem;line-height:1.6}
+.diversification-return-row>b{font-weight:600}
+.diversification-return-row>strong{text-align:right;font-variant-numeric:tabular-nums}
+.diversification-return-track{position:relative;height:22px;background:linear-gradient(to right,transparent calc(50% - .5px),#8b9aa6 calc(50% - .5px),#8b9aa6 calc(50% + .5px),transparent calc(50% + .5px))}
+.diversification-return-track:before{content:'';position:absolute;left:0;right:0;top:11px;border-top:1px solid #d9e2e7}
+.diversification-return-track i{position:absolute;top:8px;height:6px;display:block;background:var(--div-a)}
+.diversification-marker{position:absolute;top:6px;width:10px;height:10px;background:var(--div-a);border:1px solid white;border-radius:50%;transform:translateX(-50%)}
+.diversification-b .diversification-return-track i,.diversification-b .diversification-marker{background:var(--div-b)}
+.diversification-b .diversification-marker{border-radius:0}
+.diversification-portfolio .diversification-return-track i,.diversification-portfolio .diversification-marker{background:var(--div-p)}
+.diversification-portfolio .diversification-marker{border-radius:0;transform:translateX(-50%) rotate(45deg)}
+.diversification-statistics{border-top:2px solid #b9c9d3;padding-top:.5rem;margin-top:1.5rem}
+.diversification-spread-row{display:grid;grid-template-columns:34px minmax(0,1fr) 104px;gap:.7rem;align-items:center;margin:.85rem 0;font-size:.9rem}
+.diversification-spread-row strong{text-align:right;font-variant-numeric:tabular-nums}
+.diversification-spread-track{height:17px;background:#e0e7ed}
+.diversification-spread-track i{display:block;height:100%;background:var(--div-a)}
+.diversification-b .diversification-spread-track i{background:repeating-linear-gradient(135deg,#b47a37 0,#b47a37 5px,#e9cba3 5px,#e9cba3 8px)}
+.diversification-portfolio .diversification-spread-track i{background:var(--div-p)}
+@media(max-width:650px){.diversification-scenarios{grid-template-columns:1fr}.diversification-money{padding:.75rem}.diversification-money-parts{gap:.5rem}.diversification-allocation-labels{flex-direction:column;align-items:flex-start}.diversification-spread-row{grid-template-columns:32px minmax(0,1fr) 98px;gap:.45rem;font-size:.85rem}.diversification-shock{padding:.75rem}}
+@media(prefers-reduced-motion:reduce){.diversification-lab *{animation:none!important;transition:none!important}}
