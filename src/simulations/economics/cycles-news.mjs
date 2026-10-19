@@ -88,7 +88,7 @@ export function newsCase(id = "demand") {
           {
             id: "fact",
             category: "observation",
-            text: `Q6 전체 생산지수 ${cycle.output}, 전분기 대비 ${fmt(cycle.growth)}%. 고용지수는 ${cycle.employment}로 전분기보다 낮다.`,
+            text: `Q6 전체 생산지수 ${cycle.output}, 전분기 대비 ${fmt(cycle.growth)}%. 고용지수는 ${cycle.employment}이며 전분기보다 낮다.`,
           },
           {
             id: "condition",
