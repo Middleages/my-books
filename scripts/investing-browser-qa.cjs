@@ -191,7 +191,7 @@ async function conditionChecks(page, lab, name) {
       assert(Math.abs(boxes[0].top - boxes[1].top) <= 1 && boxes[1].left >= boxes[0].right, 'Desktop comparison panels do not form non-overlapping aligned columns');
     }
   };
-  const verify = async (scenario, expected, kind, inspectFrame) => {
+  const verify = async (scenario, expected, kind, inspectFrame, tableExpected = expected) => {
     const predictedOutcome = inspectFrame ? expected.at(-1).predictionOutcome ?? expected.at(-1).status ?? expected.find(frame => frame.phase === 'closing')?.closingCashDirection : undefined;
     if (predictedOutcome) await lab.locator('.invest-predict select').selectOption(predictedOutcome);
     if (inspectFrame) {
@@ -211,7 +211,7 @@ async function conditionChecks(page, lab, name) {
     const summary = lab.locator('details > summary').first();
     if (!(await lab.locator('details').first().getAttribute('open') !== null)) await summary.click();
     const rows = await lab.locator('details').first().locator('table tbody tr').evaluateAll(els => els.map(el => [...el.querySelectorAll('td')].map(td => td.textContent.trim())));
-    const wanted = expected.map(typeof kind === 'function' ? kind : row => kind === 'ownership'
+    const wanted = tableExpected.map(typeof kind === 'function' ? kind : row => kind === 'ownership'
       ? [format(row.companyCash), format(row.buyerCash), format(row.sellerCash), format(row.cashTotal), format(row.totalShares), `${format(row.buyerShares)} / ${format(row.sellerShares)}`, ratio(row.ownershipRatio)]
       : kind === 'dividend' ? [format(row.companyCash), format(row.cash), format(row.otherShareholdersCash), format(row.cashTotal), format(row.stockValue), format(row.wealth)]
       : [format(row.price), format(row.shares), format(row.stockValue), format(row.cash), format(row.wealth), format(row.dividendsReceived), format(row.unrealizedGain), format(row.realizedGain), ratio(row.totalReturn)]);
@@ -554,6 +554,175 @@ async function conditionChecks(page, lab, name) {
       await inspect(result)(result.frames[1]);
       await capture(page, `${name}-payments-${scenario}-first-coupon`, lab);
     }
+  } else if (label === '분산과 공통 충격 실험') {
+    const { diversificationFrames } = await import('../src/simulations/investing/diversification.mjs');
+    const cells = row => [ratio(row.aReturn), ratio(row.bReturn), format(row.contributionA * 100), format(row.contributionB * 100), ratio(row.portfolioReturn), format(row.endingTotal), ratio(row.comparisonWeight)];
+    const inspect = result => async frame => {
+      assert.equal(await lab.getByTestId('diversification-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('diversification-mean').innerText(), ratio(result.statistics.portfolio.mean));
+      assert.equal(await lab.getByTestId('diversification-spread').innerText(), `${format(result.statistics.portfolio.spread * 100)}%p`);
+      await verifyStacks(lab.locator('.diversification-allocation-strip'), [result.allocation.map(part => part.weight)], 'diversification initial allocation');
+      await verifyStacks(lab.locator('.diversification-money-track'), [frame.amountSegments.map(part => part.fraction)], 'diversification current amounts');
+      await verifyStacks(lab.locator('.diversification-spread-track'), result.spreadBars.map(bar => [bar.fraction]), 'diversification descriptive spread');
+      const panels = lab.locator('.diversification-scenario');
+      const boxes = await panels.evaluateAll(elements => elements.map(element => { const rect = element.getBoundingClientRect(); return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right }; }));
+      assert.equal(boxes.length, 4);
+      if (page.viewportSize().width <= 650) for (let index = 1; index < boxes.length; index++) assert(boxes[index].top >= boxes[index - 1].bottom, 'Mobile scenario panels overlap');
+      else assert(Math.abs(boxes[0].top - boxes[1].top) <= 1 && boxes[1].left >= boxes[0].right, 'Desktop scenario comparison does not form two columns');
+      for (let index = 0; index < result.scenarios.length; index++) {
+        const row = result.scenarios[index], panel = panels.nth(index);
+        assert.equal(await panel.getAttribute('aria-current'), frame.scenarioIndex === index ? 'step' : null);
+        const geometry = await panel.locator('.diversification-return-track').evaluateAll(elements => elements.map(element => {
+          const track = element.getBoundingClientRect(), bar = element.querySelector('i').getBoundingClientRect(), marker = element.querySelector('.diversification-marker').getBoundingClientRect();
+          return { width: track.width, barWidth: bar.width, barStart: bar.left - track.left, markerX: marker.left + marker.width / 2 - track.left };
+        }));
+        assert.equal(geometry.length, row.bars.length);
+        geometry.forEach((actual, part) => {
+          const expected = row.bars[part];
+          assert(actual.width > 0);
+          assert(Math.abs(actual.barWidth - expected.widthFraction * actual.width) <= 1, 'Scenario return length differs from model');
+          assert(Math.abs(actual.barStart - expected.startFraction * actual.width) <= 1, 'Scenario return origin differs from model');
+          assert(Math.abs(actual.markerX - expected.endFraction * actual.width) <= 1, 'Scenario endpoint differs from model');
+        });
+      }
+      const money = await lab.locator('.diversification-money-parts').innerText();
+      for (const value of [frame.endingA, frame.endingB, frame.endingTotal]) assert(money.includes(`${format(value)}단위`), 'Current scenario valuation differs from model');
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    const cases = [{ weightA: 0.5, commonShock: false }, { weightA: 0, commonShock: false }, { weightA: 1, commonShock: false }, { weightA: 0.25, commonShock: false }, { weightA: 0.5, commonShock: true }, { weightA: 0.25, commonShock: true }];
+    for (const input of cases) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await setRange(/A에 나누는 최초 금액 비중/, input.weightA * 100);
+      await lab.getByRole('checkbox', { name: /공통 충격/ }).setChecked(input.commonShock);
+      const result = diversificationFrames(input);
+      if (!input.commonShock && input.weightA === 0.5) assert.deepEqual(result.scenarios.map(row => row.portfolioReturn), [0.2, 0, 0, -0.2]);
+      if (input.commonShock) assert.deepEqual(result.scenarios.map(row => row.portfolioReturn), [0.2, 0.2, -0.2, -0.2]);
+      await verify(`weight-${input.weightA * 100}-common-${input.commonShock}`, result.frames, cells, inspect(result), result.scenarios);
+      const statistics = lab.locator('details').nth(1);
+      if (await statistics.getAttribute('open') === null) await statistics.locator('summary').click();
+      const rows = await statistics.locator('tbody tr').evaluateAll(elements => elements.map(element => [...element.querySelectorAll('td')].map(cell => cell.textContent.trim())));
+      assert.deepEqual(rows, result.spreadBars.map(bar => [ratio(result.statistics[bar.key].mean), format(bar.value * 100), ratio(result.statistics[bar.key].minimum), ratio(result.statistics[bar.key].maximum)]));
+      await lab.getByRole('button', { name: '시나리오 4 보기', exact: true }).click();
+      await inspect(result)(result.frames[4]);
+      await capture(page, `${name}-weight-${input.weightA * 100}-common-${input.commonShock}-loss`, lab);
+    }
+  } else if (label === 'ETF 기초자산 중복 실험') {
+    const { exposureFrames, trackingComparison } = await import('../src/simulations/investing/funds-etfs.mjs');
+    const cells = frame => [...frame.exposures.map(part => ratio(part.fraction)), ratio(frame.accountedWeight)];
+    const inspect = result => async frame => {
+      assert.equal(await lab.locator('.invest-stage').innerText(), frame.label);
+      await verifyStacks(lab.locator('.etf-inner-bar'), result.funds.map(fund => fund.holdings.map(part => part.fraction)), 'ETF internal holdings');
+      await verifyStacks(lab.locator('.etf-contribution-bar'), result.funds.map(fund => fund.contributions.map(part => part.fraction)), 'ETF contributions to total investment');
+      await verifyStacks(lab.locator('.etf-total-bar'), [frame.exposures.map(part => part.fraction)], 'ETF effective exposure');
+      const commonWidths = await lab.locator('.etf-contribution-bar,.etf-total-bar').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().width));
+      assert(Math.max(...commonWidths) - Math.min(...commonWidths) <= 1, 'ETF contribution/total bars use unequal physical 100% scales');
+      await verifyResponsivePanels(lab.locator('.etf-fund-pair > .etf-fund-shell'));
+      assert.deepEqual(await lab.locator('.etf-contributions > div').evaluateAll(elements => elements.map(element => element.dataset.visible)), [String(frame.xVisible), String(frame.yVisible)]);
+      assert.equal(await lab.locator('.etf-combined').getAttribute('data-grouped'), String(frame.grouped));
+      const combined = await lab.locator('.etf-combined').innerText();
+      for (const part of frame.exposures) assert(combined.includes(`${part.asset} ${ratio(part.fraction)}`), 'Displayed effective exposure differs from model');
+      assert(combined.includes(`반영 ${ratio(frame.accountedWeight)}`) && combined.includes(`아직 펼치지 않은 몫 ${ratio(frame.unexaminedWeight)}`));
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    for (const input of [{ xWeight: 0.5, sameHoldings: false }, { xWeight: 0, sameHoldings: false }, { xWeight: 1, sameHoldings: false }, { xWeight: 0.25, sameHoldings: false }, { xWeight: 0.5, sameHoldings: true }, { xWeight: 0.25, sameHoldings: true }]) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await setRange(/ETF X에 둔 비중/, input.xWeight * 100);
+      await lab.getByRole('combobox', { name: /ETF Y의 기초자산/ }).selectOption(input.sameHoldings ? 'same' : 'original');
+      const result = exposureFrames(input);
+      if (input.xWeight === 0.5 && !input.sameHoldings) assert.deepEqual(result.exposure.map(part => part.fraction), [0.5, 0.2, 0.3]);
+      assert(Math.abs(result.totalWeight - 1) <= 1e-12);
+      await verify(`x-${input.xWeight * 100}-same-${input.sameHoldings}`, result.frames, cells, inspect(result));
+    }
+    const tracking = trackingComparison(), chart = page.locator('.etf-tracking');
+    for (const series of tracking.series) {
+      const group = chart.locator(`[data-tracking-series=${series.id}]`);
+      const points = (await group.locator('polyline').getAttribute('points')).split(' ').map(value => value.split(',').map(Number));
+      assert.equal(points.length, series.points.length);
+      points.forEach((point, index) => assert(Math.abs(point[0] - series.points[index].x) <= 1e-9 && Math.abs(point[1] - series.points[index].y) <= 1e-9, 'Tracking polyline differs from model'));
+      const actual = await group.locator('circle,rect').evaluateAll(elements => elements.map(element => {
+        const rect = element.getBoundingClientRect(), svg = element.ownerSVGElement, p = svg.createSVGPoint();
+        p.x = element.tagName === 'circle' ? +element.getAttribute('cx') : +element.getAttribute('x') + +element.getAttribute('width') / 2;
+        p.y = element.tagName === 'circle' ? +element.getAttribute('cy') : +element.getAttribute('y') + +element.getAttribute('height') / 2;
+        const screen = p.matrixTransform(svg.getScreenCTM());
+        return { x: p.x, y: p.y, offsetX: rect.left + rect.width / 2 - screen.x, offsetY: rect.top + rect.height / 2 - screen.y };
+      }));
+      actual.forEach((point, index) => {
+        assert(Math.abs(point.x - series.points[index].x) <= 1e-9 && Math.abs(point.y - series.points[index].y) <= 1e-9);
+        assert(Math.abs(point.offsetX) <= 1 && Math.abs(point.offsetY) <= 1, 'Tracking markers do not paint at model coordinates');
+      });
+      assert.deepEqual(await chart.locator(`[data-tracking-summary=${series.id}] dd`).allTextContents(), [`${format(series.meanDifference * 100)}%p`, `${format(series.trackingError * 100)}%p`, ratio(series.fundReturn), ratio(series.benchmarkReturn), `${format(series.trackingDifference * 100)}%p`]);
+    }
+    const rows = await chart.locator('table tbody tr').evaluateAll(elements => elements.map(element => [...element.querySelectorAll('td')].map(cell => cell.textContent.trim())));
+    assert.deepEqual(rows, tracking.rows.map(row => [ratio(row.benchmarkReturn), ratio(row.steadyReturn), ratio(row.varyingReturn), `${format(row.steadyDifference * 100)}%p`, `${format(row.varyingDifference * 100)}%p`]));
+    const ticks = await chart.locator('.etf-tracking-plot > span').evaluateAll(elements => elements.map(element => {
+      const rect = element.getBoundingClientRect(), plot = element.parentElement.getBoundingClientRect(), figure = element.closest('figure').getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(element); const glyph = range.getBoundingClientRect();
+      return { kind: element.className, text: element.textContent, font: parseFloat(getComputedStyle(element).fontSize), x: (rect.left + rect.width / 2 - plot.left) / plot.width, y: (rect.top + rect.height / 2 - plot.top) / plot.height, within: glyph.left >= figure.left - 1 && glyph.right <= figure.right + 1 && glyph.top >= figure.top && glyph.bottom <= figure.bottom };
+    }));
+    const yTicks = ticks.filter(tick => tick.kind === 'etf-y-label'), xTicks = ticks.filter(tick => tick.kind === 'etf-x-label');
+    assert.deepEqual(yTicks.map(tick => tick.text), tracking.ticks.map(tick => format(tick.value * 100)));
+    yTicks.forEach((tick, index) => assert(Math.abs(tick.y - tracking.ticks[index].fraction) < 0.005));
+    xTicks.forEach((tick, index) => assert(Math.abs(tick.x - tracking.series[0].points[index].x / tracking.chart.width) < 0.005));
+    ticks.forEach(tick => assert(tick.font >= 12 && tick.within, `Tracking label tiny/outside figure: ${JSON.stringify(tick)}`));
+    const region = chart.locator('.invest-table');
+    if (await region.evaluate(element => element.scrollWidth > element.clientWidth + 1)) {
+      await region.focus(); await page.keyboard.press('ArrowRight'); await delay(250);
+      assert(await region.evaluate(element => element.scrollLeft > 0), 'Tracking static table is not keyboard-scrollable');
+      await region.evaluate(element => { element.scrollLeft = 0; });
+    }
+    await capture(page, `${name}-tracking-difference-and-spread`, chart);
+    await capture(page, `${name}-creation-and-market-routes`, page.locator('.etf-routes'));
+    for (const lane of await page.locator('.etf-route-lane').all()) {
+      const boxes = await lane.locator(':scope > *').evaluateAll(elements => elements.map(element => { const r = element.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; }));
+      assert.equal(boxes.length, 3);
+      if (page.viewportSize().width <= 600) for (let index = 1; index < boxes.length; index++) assert(boxes[index].top >= boxes[index - 1].bottom, 'Mobile ETF relation nodes overlap');
+      else for (let index = 1; index < boxes.length; index++) assert(boxes[index].left >= boxes[index - 1].right, 'Desktop ETF relation nodes overlap');
+    }
+    observed.push({ scenario: 'tracking-four-months', summaries: tracking.series.map(series => ({ id: series.id, trackingDifference: series.trackingDifference, trackingError: series.trackingError })) });
+  } else if (label === 'ETF NAV와 시장가격 실험') {
+    const { navFrames } = await import('../src/simulations/investing/funds-etfs.mjs');
+    const nullable = value => value === null ? '정의 불가' : format(value);
+    const cells = frame => [frame.assets, frame.liabilities, frame.netAssets, frame.issuedUnits, frame.heldUnits].map(format).concat([nullable(frame.nav), frame.marketPrice === null ? '비교 전' : format(frame.marketPrice), frame.marketPrice === null ? '비교 전' : ratio(frame.premium)]);
+    const inspect = result => async frame => {
+      assert.equal(await lab.locator('.invest-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('etf-nav').innerText(), frame.nav === null ? '정의 불가' : `${format(frame.nav)}단위`);
+      assert.equal(await lab.getByTestId('etf-market-price').innerText(), frame.marketPrice === null ? '마지막 단계에서 비교' : `${format(frame.marketPrice)}단위`);
+      assert.equal(await lab.getByTestId('etf-premium').innerText(), frame.marketPrice === null ? '비교 전' : ratio(frame.premium));
+      await verifyStacks(lab.locator('.etf-net-bar'), [[frame.netAssetFraction]], 'ETF net assets');
+      await verifyStacks(lab.locator('.etf-price-bar.nav'), [frame.navFraction === null ? [] : [frame.navFraction]], 'ETF NAV per unit');
+      await verifyStacks(lab.locator('.etf-price-bar.market'), [frame.marketFraction === null ? [] : [frame.marketFraction]], 'ETF market price per unit');
+      const widths = await lab.locator('.etf-price-bar').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().width));
+      assert(Math.abs(widths[0] - widths[1]) <= 1, 'NAV and market prices have unequal physical scales');
+      assert.equal(await lab.locator('.etf-unit-row i').count(), frame.heldUnits, 'Held-unit tiles differ from model');
+      const held = await lab.locator('.etf-held').innerText();
+      assert(held.includes(`내 보유 ${format(frame.heldUnits)}좌`) && held.includes(`NAV 기준 평가액 ${frame.heldNavValue === null ? '정의 불가' : `${format(frame.heldNavValue)}단위`}`));
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message));
+    };
+    const cases = [
+      { underlyingReturn: 0.1, marketPrice: 112, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: 0.1, marketPrice: 110, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: 0.1, marketPrice: 100, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: -0.9, marketPrice: 10, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: -0.8, marketPrice: 20, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: -0.7, marketPrice: 30, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: 0, marketPrice: 0, heldUnits: 0, issuedUnits: 100 },
+      { underlyingReturn: 1, marketPrice: 220, heldUnits: 20, issuedUnits: 100 },
+      { underlyingReturn: -1, marketPrice: 0, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: -1, marketPrice: 112, heldUnits: 10, issuedUnits: 100 },
+      { underlyingReturn: 0.1, marketPrice: 112, heldUnits: 0, issuedUnits: 0 },
+    ];
+    for (const input of cases) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await setRange(/기초자산 가치 변화/, input.underlyingReturn * 100);
+      await setRange(/ETF 시장가격/, input.marketPrice);
+      await setRange(/보유 좌수/, input.heldUnits);
+      await lab.getByRole('combobox', { name: /발행 상태/ }).selectOption(input.issuedUnits === 0 ? 'zero' : 'issued');
+      // Selecting issued resets held units to 10, so apply the requested holding after issuance selection.
+      await setRange(/보유 좌수/, input.heldUnits);
+      const result = navFrames(input);
+      assert(result.frames.every(frame => frame.issuedUnits === input.issuedUnits && frame.heldUnits === input.heldUnits));
+      if (input.underlyingReturn === 0.1 && input.issuedUnits === 100) assert(Math.abs(result.summary.nav - 110) < 1e-9);
+      await verify(`underlying-${input.underlyingReturn * 100}-price-${input.marketPrice}-held-${input.heldUnits}-issued-${input.issuedUnits}`, result.frames, cells, inspect(result));
+    }
   } else {
     assert.fail(`${name}: no model-matching condition checks implemented for lab ${JSON.stringify(label)}`);
   }
@@ -691,7 +860,7 @@ async function representativeControl(page) {
       await visit(page, route);
       assert(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
       const assertNoMotion = async () => {
-        const running = await page.locator('.invest-lab').evaluateAll(els => els.flatMap(el => [el, ...el.querySelectorAll('*')]).filter(el => { const style = getComputedStyle(el); return style.animationName !== 'none' || style.transitionDuration.split(',').some(s => parseFloat(s) > 0); }).map(el => el.className));
+        const running = await page.locator('.invest-lab, .etf-tracking').evaluateAll(els => els.flatMap(el => [el, ...el.querySelectorAll('*')]).filter(el => { const style = getComputedStyle(el); return style.animationName !== 'none' || style.transitionDuration.split(',').some(s => parseFloat(s) > 0); }).map(el => el.className));
         assert.deepEqual(running, [], 'Motion styles remain under reduced motion');
       };
       await assertNoMotion();
