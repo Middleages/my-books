@@ -1,0 +1,242 @@
+.eco-export-scene,
+.eco-account-boundaries,
+.eco-country-scene,
+.eco-fiscal-scene,
+.eco-stabilizer-scene {
+  margin: 1.3rem 0;
+  line-height: 1.65;
+}
+.eco-export-box {
+  border: 3px solid #456571;
+  border-radius: 14px;
+  padding: 1rem;
+  background: #f6fbfa;
+}
+.eco-export-track {
+  height: 42px;
+  display: flex;
+  margin: 1rem 0;
+  background: #eee;
+  max-width: 100%;
+}
+.eco-export-track i {
+  display: block;
+  min-width: 0;
+}
+.eco-import-part {
+  background: #9467b6;
+}
+.eco-domestic-part {
+  background: #22897d;
+}
+.eco-export-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.eco-export-input,
+.eco-export-output {
+  text-align: center;
+  padding: 0.5rem;
+}
+.eco-account-boundaries {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1rem;
+}
+.eco-current-boundary {
+  border: 3px solid #247c70;
+  border-radius: 12px;
+  padding: 1rem;
+}
+.eco-financial-boundary {
+  border: 3px dashed #987449;
+  border-radius: 12px;
+  padding: 1rem;
+}
+.eco-account-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.3rem;
+  margin-bottom: 0.7rem;
+}
+.eco-diverging {
+  grid-column: 1/-1;
+  position: relative;
+  height: 17px;
+  background: linear-gradient(
+    to right,
+    #f2ecf6 49.7%,
+    #4b5661 49.7%,
+    #4b5661 50.3%,
+    #e5f3ef 50.3%
+  );
+}
+.eco-diverging i {
+  position: absolute;
+  height: 100%;
+  background: #617f8d;
+}
+.eco-current-boundary small {
+  display: block;
+}
+.eco-finance-arrow {
+  border-bottom: 1px solid #d6c4a9;
+  padding: 0.6rem 0;
+}
+.eco-account-boundaries figcaption,
+.eco-country-scene figcaption,
+.eco-stabilizer-scene figcaption {
+  grid-column: 1/-1;
+}
+.eco-country-scene {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.eco-country-scene article,
+.eco-cash-accounts article {
+  background: #f7f9fc;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 1rem;
+}
+.eco-hours {
+  border-left: 5px solid #8798a8;
+  padding-left: 0.6rem;
+  font-size: 0.9rem;
+}
+.eco-trade-arrows {
+  grid-column: 1/-1;
+  text-align: center;
+  border-top: 2px solid #55788a;
+  border-bottom: 2px solid #55788a;
+  padding: 0.6rem;
+}
+.eco-quantity {
+  margin: 0.7rem 0;
+}
+.eco-quantity span {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.eco-measure {
+  height: 18px;
+  background: #e5eaf0;
+  margin-top: 0.3rem;
+}
+.eco-measure i {
+  display: block;
+  height: 100%;
+  background: #b87f36;
+}
+.eco-cloth .eco-measure i {
+  background: #8c6ca5;
+}
+.eco-cash .eco-measure i {
+  background: #278579;
+}
+.eco-fixed .eco-measure i {
+  background: #697585;
+}
+.eco-debt .eco-measure i {
+  background: #9c6470;
+}
+.eco-cash-accounts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+.eco-flow-lanes {
+  list-style: none;
+  padding: 0 !important;
+  margin: 1rem 0;
+}
+.eco-flow-lanes li {
+  border-left: 6px solid #899da9;
+  background: #f2f5f8;
+  padding: 0.7rem;
+  margin: 0.4rem 0;
+}
+.eco-flow-lanes li:nth-child(2) {
+  border-color: #557db0;
+}
+.eco-flow-lanes li:nth-child(3) {
+  border-color: #987caa;
+}
+.eco-flow-lanes li:nth-child(4) {
+  border-color: #278579;
+}
+.eco-flow-lanes span {
+  display: block;
+}
+.eco-stock-frame {
+  border: 2px dashed #9c6470;
+  padding: 1rem;
+  border-radius: 12px;
+}
+.eco-budget-equation {
+  border-top: 2px solid #416979;
+  padding: 0.8rem 0;
+  display: grid;
+  gap: 0.3rem;
+}
+.eco-flow-lanes .eco-observing,
+.eco-stabilizer-scene .eco-observing {
+  outline: 3px solid #d09b34;
+  outline-offset: 2px;
+}
+.eco-stabilizer-scene {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+.eco-lag-calendar ol {
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+.eco-lag-calendar li {
+  border: 1px solid #a8b8c4;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+.eco-lag-calendar li span,
+.eco-lag-calendar li strong {
+  display: block;
+}
+@media (max-width: 600px) {
+  .eco-account-boundaries,
+  .eco-country-scene,
+  .eco-stabilizer-scene,
+  .eco-cash-accounts {
+    grid-template-columns: 1fr;
+  }
+  .eco-country-scene article,
+  .eco-cash-accounts article,
+  .eco-current-boundary,
+  .eco-financial-boundary {
+    padding: 0.7rem;
+  }
+  .eco-export-box {
+    padding: 0.6rem;
+  }
+  .eco-export-labels {
+    display: grid;
+    gap: 0.2rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eco-lab *,
+  .eco-lab *::before,
+  .eco-lab *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
