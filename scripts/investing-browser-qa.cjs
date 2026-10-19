@@ -296,14 +296,14 @@ async function conditionChecks(page, lab, name) {
     await setRange(/매수 지정가/, 99);
     await verify('limit-below-all-asks', ordersFrames({ mode: 'limit', limitPrice: 99 }).frames, cells, inspect);
     await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
-    await lab.getByRole('combobox', { name: '매도 호가 시나리오', exact: true }).selectOption('empty');
+    await lab.getByRole('combobox', { name: /매도 호가 시나리오/ }).selectOption('empty');
     const empty = ordersFrames({ asks: [] });
     assert.equal(empty.summary.notional, 0);
     assert.equal(empty.summary.reason, 'liquidity');
     await verify('no-liquidity', empty.frames, cells, inspect);
-    await lab.getByRole('combobox', { name: '매도 호가 시나리오', exact: true }).selectOption('thin');
+    await lab.getByRole('combobox', { name: /매도 호가 시나리오/ }).selectOption('thin');
     await verify('thin-book-partial', ordersFrames({ asks: [{ id: 'A', price: 100, quantity: 2, arrival: 1 }, { id: 'B', price: 101, quantity: 3, arrival: 2 }] }).frames, cells, inspect);
-    await lab.getByRole('combobox', { name: '매도 호가 시나리오', exact: true }).selectOption('queue');
+    await lab.getByRole('combobox', { name: /매도 호가 시나리오/ }).selectOption('queue');
     const queued = ordersFrames({ asks: [{ id: '나중', price: 100, quantity: 4, arrival: 2 }, { id: '먼저', price: 100, quantity: 6, arrival: 1 }, { id: '다음 가격', price: 101, quantity: 10, arrival: 3 }] });
     assert.deepEqual(queued.summary.fills.map(fill => fill.askId), ['먼저', '나중', '다음 가격']);
     await verify('equal-price-arrival-order', queued.frames, cells, inspect);
