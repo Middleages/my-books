@@ -475,13 +475,19 @@ async function conditionChecks(page, lab, name) {
         assert(text.includes(`그때의 약속 ${format(payment.promisedCash)}단위`) && text.includes(`오늘 가치 ${format(payment.presentValue)}단위`), 'Promised/PV cash labels differ from model');
       }
       const chart = lab.locator('.bond-chart svg');
-      assert.equal(await chart.locator('polyline').getAttribute('points'), result.curve, 'Yield curve differs from model points');
+      // Node and Chrome can differ in the last binary digits of exponentiation.
+      // Compare model coordinates numerically at a sub-pixel tolerance, never as strings.
+      const curvePoints = (await chart.locator('polyline').getAttribute('points')).split(' ').map(point => point.split(',').map(Number));
+      assert.equal(curvePoints.length, result.sensitivity.length);
+      curvePoints.forEach((point, index) => {
+        assert(Math.abs(point[0] - result.sensitivity[index].x) <= 1e-9 && Math.abs(point[1] - result.sensitivity[index].y) <= 1e-9, 'Yield curve differs from model points');
+      });
       const point = await chart.locator('circle').evaluate(element => {
         const bounds = element.getBoundingClientRect(), svg = element.ownerSVGElement, matrix = svg.getScreenCTM();
         const p = svg.createSVGPoint(); p.x = +element.getAttribute('cx'); p.y = +element.getAttribute('cy'); const screen = p.matrixTransform(matrix);
         return { cx: +element.getAttribute('cx'), cy: +element.getAttribute('cy'), screenX: screen.x, screenY: screen.y, actualX: bounds.x + bounds.width / 2, actualY: bounds.y + bounds.height / 2 };
       });
-      assert.equal(point.cx, result.selectedPoint.x); assert.equal(point.cy, result.selectedPoint.y);
+      assert(Math.abs(point.cx - result.selectedPoint.x) <= 1e-9 && Math.abs(point.cy - result.selectedPoint.y) <= 1e-9, 'Selected point differs from model coordinates');
       assert(Math.abs(point.actualX - point.screenX) <= 1 && Math.abs(point.actualY - point.screenY) <= 1, 'Selected yield point does not paint at model coordinates');
       const labels = await chart.locator('text').evaluateAll(elements => elements.map(element => {
         const box = element.getBBox(), svg = element.ownerSVGElement, viewBox = svg.viewBox.baseVal, matrix = svg.getScreenCTM();
