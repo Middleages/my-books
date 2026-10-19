@@ -1,7 +1,7 @@
 # 주식과 투자 자산의 원리 — 3권 제작 계획
 
 작성일: 2026-10-19 KST. 기준 main: `a8f9d083a94fdb453bd9e13c0fcdb40f8e80c277`.
-상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 배치 C 05·06은 구현·검증 진행 중이며 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 07–12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
+상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 배치 C 05·06도 구현·검증·main 반영·게시 확인을 완료했으며 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 07–12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
 선행: 돈 1권 소개·01–10과 경제 2권 소개·01–12 구현·점검·게시 완료. 착수 시 최신 main과 각 검증 기록에서 실제 상태를 다시 확인한다.
 실행 지시: [배치별 세션 프롬프트](INVESTING-SESSION-PROMPTS.md). 시리즈 지도: [돈·경제 계획](MONEY-TEXTBOOK-PLAN.md).
 
@@ -187,6 +187,8 @@ KRX 교육 사이트는 확인 도구에서 리디렉션 접근 제한, DART와 
 2026-10-19 B 완료:346테스트·빌드·production63/게시64검사·146캡처와 독립 검토, main1d4ea4e 및 실제 Pages 자산 일치를 확인했다. 상세 한계는 B 기록을 따른다.
 
 
-## 배치 C 구현·검증 진행 · 2026-10-19
+## 배치 C 완료 · 2026-10-19
 
 05 valuation·06 bonds만 추가한다. 분할 전후 주당/전체의 경계, 유한 미래 현금의 할인 가정, 채권의 약속 시점과 요구수익률, 실제 지급 실패를 분리한다. 소개·카탈로그·읽음 분모는 구현한 여섯 장이며07 이후는 예약이다. 실제 검증·main 반영·게시 결과는 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다.
+
+2026-10-19 C 완료: 383테스트·빌드·production 91/게시 92검사·260캡처와 독립 코드/본문/실제 화면 검토, main `f55f9aa` 및 실제 Pages 자산 일치를 확인했다. 상세 실행과 미검증 경계는 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 다음 범위는 D 07·08이다.
