@@ -130,4 +130,10 @@ Cloud Chrome 새로고침으로 위 통합 JS/CSS 일치, 돈 08 제목·만기 
 
 ### 재보강 배포
 
-실제 완료 뒤 확인한 main·Actions·게시 버전을 아래에 기록한다.
+- 구현 main `e9c3baadd1e74308825bf863fa327ab86fdb9a4b`.
+- GitHub Actions [run 39217372677](https://github.com/Middleages/my-books/actions/runs/39217372677): 완료·success, build/deploy 성공.
+- https://middleages.github.io/my-books/#/money/repayment 를 새로고침해 게시 JS `index-CyVjUmuv.js`, CSS `index-DRAbXzB1.css`가 최종 로컬 빌드와 일치함을 확인했다.
+- cloud Chrome에서 첫 그림의 월초/납입 버튼을 눌러 300만원→200만원, 납입 103만원 중 원금 100만원만 차감됨을 확인했다.
+- 원리금균등 세 시점의 납입 531,847원과 원금/이자 구성 변화, 만기일시 23개월 원금 1,200만원 유지→24개월 12,060,000원 납입·잔액 0원을 실제 게시 UI에서 확인했다.
+- cloud 창 1363px에서 문서 scrollWidth 1348px로 가로 넘침 없음. 로그에는 브라우저 확장 metadata 전송 오류만 있었으며 로컬 앱 오류 검증과 구분한다.
+- 예상 main SHA 검사와 기존 트리 기반 갱신으로 다른 파일을 보존했다. 이 배포 기록을 추가하는 후속 문서 커밋은 제품 JS/CSS를 변경하지 않으며 Actions 결과는 별도로 확인한다.
