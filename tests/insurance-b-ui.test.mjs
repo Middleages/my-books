@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -46,4 +47,31 @@ test('insurance contract SSR shows grouped roles and neutral prediction feedback
     assert.equal((html.match(/data-contract-event="/g)||[]).length,4);
     assert.equal((html.match(/data-contract-source="/g)||[]).length,3);
   } finally {await server.close();}
+});
+
+
+test('reader content track can shrink below open static-table min-content at the 850px sidebar breakpoint', () => {
+  const css=readFileSync(new URL('../src/style.css',import.meta.url),'utf8');
+  const base=css.match(/\.reader\s*\{([^}]+)\}/)?.[1];
+  assert(base,'base reader layout exists');
+  assert.match(base,/grid-template-columns:\s*250px\s+minmax\(0,\s*1fr\)/);
+  const intermediate=css.match(/@media\s*\(max-width:\s*850px\)\s*\{\s*\.reader\s*\{([^}]+)\}/)?.[1];
+  assert(intermediate,'tablet sidebar breakpoint exists');
+  assert.match(intermediate,/grid-template-columns:\s*200px\s+minmax\(0,\s*1fr\)/,
+    'A bare 1fr has an auto minimum: opened nowrap tables must scroll inside their region, not widen the page.');
+  const insurance=readFileSync(new URL('../src/components/insurance/insurance.css',import.meta.url),'utf8');
+  assert.match(insurance,/\.insurance-table\s*\{[^}]*overflow:auto/,'table content remains accessible by scrolling');
+  assert(!/overflow(?:-x)?:\s*(?:hidden|clip)/.test(intermediate),'do not mask intrinsic overflow by clipping');
+});
+
+test('uncertain insured reference keeps a dashed non-money stroke and the existing question overlay', () => {
+  const css=readFileSync(new URL('../src/components/insurance/contract-map.css',import.meta.url),'utf8');
+  const uncertain=css.match(/\.contract-edge\.unconfirmed i\{([^}]+)\}/);
+  const reference=css.match(/\.contract-edge\.reference\.unconfirmed i\{([^}]+)\}/);
+  assert(uncertain && reference);
+  assert.match(uncertain[1],/background:linear-gradient/,'uncertain money edges retain broken solid strokes');
+  assert.match(reference[1],/background:none/,'the non-money reference must not inherit the solid gradient');
+  assert.match(reference[1],/border-top:2px dashed currentColor/);
+  assert.match(css,/\.contract-edge\.reference\.unconfirmed\.active i\{border-top-width:4px\}/,'active reference highlight preserves the dashed style');
+  assert.match(css,/\.contract-edge\.unconfirmed i:before\{content:'\?'/,'uncertainty remains marked by a visible question overlay');
 });

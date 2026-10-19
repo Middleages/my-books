@@ -486,7 +486,7 @@ details p {
 }
 @media (max-width: 850px) {
   .reader {
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 200px minmax(0, 1fr);
   }
   .chapter {
     padding: 26px 24px;

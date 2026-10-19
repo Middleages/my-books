@@ -138,6 +138,43 @@ async function openTables(page, lab) {
     }
   }
 }
+async function tableDisclosureGeometryChecks(page, lab, name) {
+  const geometry = () => lab.evaluate(element => {
+    const main = element.closest('main'), mainBox = main.getBoundingClientRect(), box = element.getBoundingClientRect();
+    return { viewport: innerWidth, documentWidth: document.documentElement.scrollWidth, scrollX, mainWidth: mainBox.width, mainLeft: mainBox.left + scrollX, labWidth: box.width, labLeft: box.left + scrollX };
+  });
+  const baseline = await geometry();
+  const observations = [];
+  const summaries = lab.locator('details.insurance-static > summary');
+  assert(await summaries.count() > 0, 'Published lab needs a static-table disclosure');
+  assert.equal(await lab.locator('details.insurance-static[open]').count(), 0, 'Disclosure geometry starts from the authored closed-table state');
+  const inspect = async state => {
+    const current = await geometry();
+    assert(current.documentWidth <= current.viewport + 1, `${state}: opening a static table expanded the document: ${JSON.stringify(current)}`);
+    assert.equal(current.scrollX, baseline.scrollX, `${state}: a table disclosure caused page-level horizontal scrolling`);
+    for (const key of ['mainWidth', 'mainLeft', 'labWidth', 'labLeft']) assert(Math.abs(current[key] - baseline[key]) <= 1, `${state}: static table changed ${key} from ${baseline[key]} to ${current[key]}`);
+    await domAudit(page);
+    observations.push({ state, ...current });
+  };
+  for (let index = 0; index < await summaries.count(); index++) {
+    const summary = summaries.nth(index);
+    await summary.focus(); await page.keyboard.press('Enter');
+    assert(await summary.evaluate(element => element.parentElement.open), 'Keyboard Enter did not open the static table');
+    await inspect(`table-${index + 1}-open`);
+    await summary.focus(); await page.keyboard.press('Enter');
+    assert.equal(await summary.evaluate(element => element.parentElement.open), false, 'Keyboard Enter did not close the static table');
+    await inspect(`table-${index + 1}-closed`);
+  }
+  await openTables(page, lab);
+  await inspect('all-static-tables-open');
+  await capture(page, `${name}-all-static-tables-open`, lab);
+  for (const summary of await summaries.all()) {
+    await summary.focus(); await page.keyboard.press('Enter');
+    assert.equal(await summary.evaluate(element => element.parentElement.open), false);
+  }
+  await inspect('all-static-tables-closed-again');
+  return observations;
+}
 async function playbackChecks(page, lab, name) {
   const controls = lab.locator('.money-playback');
   assert.equal(await controls.count(), 1, 'Exactly one shared playback control is required');
@@ -480,7 +517,7 @@ async function conditionChecks(page, lab, name) {
         const geometry = await lane.evaluate((element, personId) => {
           const root = element.closest('[data-insurance-lab]'), line = element.querySelector('i');
           const pseudo = getComputedStyle(line, '::after'), matrix = new DOMMatrixReadOnly(pseudo.transform), box = line.getBoundingClientRect();
-          return { box: box.toJSON(), person: root.querySelector(`[data-contract-person="${personId}"]`).getBoundingClientRect().toJSON(), insurer: root.querySelector('[data-contract-insurer]').getBoundingClientRect().toJSON(), headAngle: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI, headLeft: pseudo.left, headRight: pseudo.right, active: element.classList.contains('active'), uncertain: element.classList.contains('unconfirmed'), lineBorder: getComputedStyle(line).borderTopStyle };
+          return { box: box.toJSON(), person: root.querySelector(`[data-contract-person="${personId}"]`).getBoundingClientRect().toJSON(), insurer: root.querySelector('[data-contract-insurer]').getBoundingClientRect().toJSON(), headAngle: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI, headLeft: pseudo.left, headRight: pseudo.right, active: element.classList.contains('active'), uncertain: element.classList.contains('unconfirmed'), lineBorder: getComputedStyle(line).borderTopStyle, lineBorderWidth: parseFloat(getComputedStyle(line).borderTopWidth), lineBackground: getComputedStyle(line).backgroundColor, lineBackgroundImage: getComputedStyle(line).backgroundImage, uncertaintyContent: getComputedStyle(line, '::before').content, uncertaintyVisible: getComputedStyle(line, '::before').visibility !== 'hidden' && getComputedStyle(line, '::before').display !== 'none' && parseFloat(getComputedStyle(line, '::before').opacity) > 0 };
         }, edge.personId);
         assert(geometry.box.width >= 24 && geometry.box.width > geometry.box.height * 4, 'Contract relationship must have a visible horizontal connector');
         assert(geometry.box.left >= geometry.person.right - 1 && geometry.box.right <= geometry.insurer.left + 1, 'Connection does not run between its person and the insurer');
@@ -490,7 +527,20 @@ async function conditionChecks(page, lab, name) {
         assert.equal(parseFloat(edge.direction === 'from-insurer' ? geometry.headLeft : geometry.headRight), 0, 'Arrowhead is not anchored at the receiving end');
         assert.equal(geometry.active, edge.active);
         assert.equal(geometry.uncertain, !edge.connected);
-        if (edge.kind === 'reference' && edge.connected) assert.equal(geometry.lineBorder, 'dashed', 'Coverage relation must remain visibly distinct from money direction');
+        if (edge.kind === 'reference') {
+          assert.equal(geometry.lineBorder, 'dashed', 'Coverage relation must remain dashed even when continuation is unconfirmed');
+          assert(geometry.lineBorderWidth > 0, 'The dashed reference relation has no painted stroke');
+        } else {
+          assert.notEqual(geometry.lineBorder, 'dashed', 'Money direction must remain distinct from the dashed reference relation');
+          if (edge.connected) {
+            assert.equal(geometry.lineBackgroundImage, 'none', 'Confirmed money direction must be a continuous solid line');
+            assert(!/rgba\([^)]*,\s*0\)/.test(geometry.lineBackground), 'Confirmed money direction has no painted stroke');
+          } else assert(geometry.lineBackgroundImage.startsWith('linear-gradient(') && /rgba\([^)]*,\s*0\)/.test(geometry.lineBackgroundImage), 'Unconfirmed money direction must retain its visible break');
+        }
+        if (!edge.connected) {
+          assert.equal(geometry.uncertaintyContent.replace(/^["']|["']$/g, ''), '?', 'Unconfirmed reference/payment connection lost its uncertainty marker');
+          assert(geometry.uncertaintyVisible, 'The uncertainty marker is hidden');
+        }
       }
       assert.equal(await lab.locator('[data-contract-event]').count(), frame.events.length);
       for (const event of frame.events) {
@@ -827,13 +877,14 @@ async function verifyAssets() {
       };
       await verifyStack();
       await capture(intermediatePage, '850-pooling-initial-scene', lab);
+      const disclosures = await tableDisclosureGeometryChecks(intermediatePage, lab, '850-pooling');
       await lab.getByRole('button', { name: '지급 결과 보기', exact: true }).click();
       await verifyStack();
       await capture(intermediatePage, '850-pooling-individual-final-scene', lab);
       await lab.getByRole('button', { name: '공통 충격 · 8가구', exact: true }).click();
       await lab.getByRole('button', { name: '지급 결과 보기', exact: true }).click();
       await capture(intermediatePage, '850-pooling-common-final-scene', lab);
-      return verifyStack();
+      return { disclosures, audit: await verifyStack() };
     });
     for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout'].includes(chapter.id))) {
       await check(`intermediate-850-${chapter.id}-layout-and-model`, intermediatePage, async () => {
@@ -842,9 +893,46 @@ async function verifyAssets() {
         const lab = intermediatePage.locator(`[data-insurance-lab="${chapter.id}"]`);
         assert.equal(await lab.count(), 1, 'Intermediate-width chapter must retain its published lab');
         await capture(intermediatePage, `850-${chapter.id}-initial-scene`, lab);
-        return conditionChecks(intermediatePage, lab, `850-${chapter.id}`);
+        const disclosures = await tableDisclosureGeometryChecks(intermediatePage, lab, `850-${chapter.id}`);
+        return { disclosures, model: await conditionChecks(intermediatePage, lab, `850-${chapter.id}`) };
       });
     }
+    await check('intermediate-850-existing-investing-static-tables', intermediatePage, async () => {
+      await visit(intermediatePage, '/investing/costs-fx');
+      const lab = intermediatePage.locator('[data-testid="costs-fx-lab"]');
+      assert.equal(await lab.count(), 1, 'Existing investing lab remains available');
+      const geometry = () => intermediatePage.evaluate(() => {
+        const rect = document.querySelector('main').getBoundingClientRect();
+        return { viewport: innerWidth, documentWidth: document.documentElement.scrollWidth, mainWidth: rect.width, mainLeft: rect.left, scrollX };
+      });
+      const initial = await geometry();
+      assert(initial.documentWidth <= initial.viewport + 1, 'Existing chapter overflows before opening tables');
+      const summaries = lab.locator('details > summary');
+      assert(await summaries.count() > 0, 'Existing chapter static alternatives are preserved');
+      for (const summary of await summaries.all()) {
+        if (!(await summary.evaluate(element => element.parentElement.open))) { await summary.focus(); await intermediatePage.keyboard.press('Enter'); }
+      }
+      const opened = await geometry();
+      assert(opened.documentWidth <= opened.viewport + 1, 'Existing chapter expanded after opening tables');
+      for (const key of ['mainWidth', 'mainLeft', 'scrollX']) assert(Math.abs(opened[key] - initial[key]) <= 1, `Existing chapter changed ${key}`);
+      let scrollingRegions = 0;
+      for (const region of await lab.locator('.invest-table').all()) {
+        assert.equal(await region.getAttribute('tabindex'), '0');
+        const size = await region.evaluate(element => ({ width: element.clientWidth, content: element.scrollWidth }));
+        if (size.content > size.width + 1) {
+          await region.focus(); await intermediatePage.keyboard.press('ArrowRight'); await delay(250);
+          assert(await region.evaluate(element => element.scrollLeft > 0), 'Existing table no longer supports keyboard scrolling');
+          await region.evaluate(element => { element.scrollLeft = 0; }); scrollingRegions++;
+        }
+      }
+      assert(scrollingRegions > 0, 'Regression must exercise at least one overflowing internal table');
+      await capture(intermediatePage, '850-existing-investing-costs-fx-static-tables', lab);
+      for (const summary of await summaries.all()) { await summary.focus(); await intermediatePage.keyboard.press('Enter'); }
+      const closed = await geometry();
+      assert(closed.documentWidth <= closed.viewport + 1);
+      for (const key of ['mainWidth', 'mainLeft', 'scrollX']) assert(Math.abs(closed[key] - initial[key]) <= 1);
+      return { initial, opened, closed, scrollingRegions };
+    });
     await intermediate.close();
     const reduced = await browser.newContext({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
     const page = await reduced.newPage(); watchPage(page, 'reduced-motion');
