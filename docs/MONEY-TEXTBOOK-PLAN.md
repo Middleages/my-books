@@ -2,7 +2,7 @@
 
 작성일: 2026-10-17 (KST)  
 개정: 같은 날 사용자의 요청으로 시뮬레이션·설명용 애니메이션·그림을 적극 사용하는 방향으로 변경.
-상태: **1권 소개·01–10 구현·전체 편집 점검 완료. [점검 결과](MONEY-BOOK-REVIEW.md) 참조. 2권 소개·01–12 구현·점검·게시 완료([경제 계획](ECONOMICS-TEXTBOOK-PLAN.md)). 3권 A·B 소개·01–04 구현·검증·게시 확인을 완료했다. [투자 계획](INVESTING-TEXTBOOK-PLAN.md)과 [B 검증·게시 상태](INVESTING-BATCH-B-VERIFICATION.md)를 따른다. 3권 C 05·06도 구현·검증·main 반영·게시 확인을 완료했다([C 기록](INVESTING-BATCH-C-VERIFICATION.md)). D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. 소개·01–08 범위를 반영하고 09 이후는 후속 범위로 남긴다. 4–8권은 큰 범위만 정한 후속 계획.**
+상태: **1권 소개·01–10 구현·전체 편집 점검 완료. [점검 결과](MONEY-BOOK-REVIEW.md) 참조. 2권 소개·01–12 구현·점검·게시 완료([경제 계획](ECONOMICS-TEXTBOOK-PLAN.md)). 3권 A·B 소개·01–04 구현·검증·게시 확인을 완료했다. [투자 계획](INVESTING-TEXTBOOK-PLAN.md)과 [B 검증·게시 상태](INVESTING-BATCH-B-VERIFICATION.md)를 따른다. 3권 C 05·06도 구현·검증·main 반영·게시 확인을 완료했다([C 기록](INVESTING-BATCH-C-VERIFICATION.md)). D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. E 09·10은 구현 중이며 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에서 검증·게시 상태를 구분한다. 소개·01–10 구현 범위를 반영하고 11·12는 후속 범위로 남긴다. 4–8권은 큰 범위만 정한 후속 계획.**
 기준 저장소: Middleages/my-books, main `808c6e4`  
 첫 권 가제: **돈의 기초와 우리 집 재무 — 숫자로 이해하는 돈의 흐름**
 
