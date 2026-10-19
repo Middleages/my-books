@@ -1,0 +1,13 @@
+export type BondScenario = 'normal' | 'failure';
+export type BondDirection = 'up' | 'same' | 'down';
+export interface BondInput { face: number; annualCoupon: number; years: number; requiredYield: number; scenario: BondScenario; failureYear: number; recoveryRate: number }
+export interface BondSegment { kind: 'coupon' | 'principal'; value: number; fraction: number }
+export interface BondPayment { year: number; label: string; promisedCoupon: number; promisedPrincipal: number; promisedCash: number; discountFactor: number; presentCoupon: number; presentPrincipal: number; presentValue: number; actualCoupon: number; actualPrincipal: number; actualCash: number; failed: boolean; missingCash: number; promisedSegments: BondSegment[]; presentSegments: BondSegment[]; actualSegments: BondSegment[] }
+export interface BondFrame { index: number; year: number; label: string; message: string; isMatured: boolean; promisedCoupon: number; promisedPrincipal: number; actualCoupon: number; actualPrincipal: number; payment: number; promisedCash: number; actualCash: number; cumulativeActualCoupon: number; cumulativeActualPrincipal: number; netCashFlow: number; purchaseOutflow: number; missingCash: number; holdingPeriodReturn: number | null; promisedSegments: BondSegment[]; actualSegments: BondSegment[]; cashDirection: BondDirection; predictionOutcome: BondDirection }
+export interface BondPricingFrame { index: number; year: number; label: string; presentValue: number; accumulatedPV: number; message: string; predictionOutcome: BondDirection }
+export interface BondPoint { requiredYield: number; price: number; x: number; y: number; xFraction: number; yFraction: number }
+export interface BondResult { input: BondInput; price: number; couponRate: number | null; couponPV: number; principalPV: number; promisedTotal: number; paymentScale: number; cashScale: number; schedule: BondPayment[]; frames: BondFrame[]; pricingFrames: BondPricingFrame[]; summary: BondFrame; pricingSummary: BondPricingFrame; priceDirection: BondDirection; parDirection: BondDirection; sensitivity: BondPoint[]; selectedPoint: BondPoint; chart: {left: number; top: number; width: number; height: number; viewWidth: number; viewHeight: number; maximumPrice: number}; curve: string; sensitivityTicks: BondPoint[]; priceTicks: {value: number; y: number; yFraction: number}[]; priceSegments: BondSegment[]; baselinePrice: number }
+export const bondDefaults: Readonly<BondInput>;
+export function bondPrice(options?: Partial<BondInput>): number;
+export function bondFrames(options?: Partial<BondInput>): BondResult;
+export function classifyBondPrediction(actualDirection: BondDirection, prediction: string): boolean | null;

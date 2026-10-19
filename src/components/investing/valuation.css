@@ -1,0 +1,36 @@
+.valuation-lab .valuation-mosaic-comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,.45fr) minmax(0,1fr);align-items:center;gap:.7rem}
+.valuation-lab .valuation-share-panel{min-width:0;padding:.8rem;background:#fff;border:1px solid #b9cbd6;border-radius:10px}
+.valuation-lab .valuation-share-panel h4{margin:.1rem 0 .8rem}
+.valuation-lab .valuation-mosaic{display:grid;gap:2px;height:132px;border:3px solid #285b77;background:#285b77;box-sizing:border-box}
+.valuation-lab .valuation-mosaic i{display:block;min-width:0;background:#a4cbdc;border:1px solid #f1f8fb}
+.valuation-lab .valuation-mosaic-key{font-size:.85rem;margin:.6rem 0}
+.valuation-lab .valuation-equation{display:flex;flex-wrap:wrap;gap:.3rem .5rem;align-items:center;margin:.7rem 0}
+.valuation-lab .valuation-share-panel>span{font-size:.85rem;line-height:1.6}
+.valuation-lab .valuation-split-link{display:flex;flex-direction:column;gap:.5rem;text-align:center;font-size:.9rem;color:#285b77}
+.valuation-lab .valuation-split-link>span{font-size:2rem;font-weight:bold}
+.valuation-lab .valuation-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.valuation-lab .valuation-metrics>div{padding:1rem;border-left:4px solid #407863;background:#edf5ef;min-width:0}
+.valuation-lab .valuation-metrics p{margin:.5rem 0}
+.valuation-lab .valuation-flow-key{display:flex;flex-wrap:wrap;gap:.7rem 1rem;margin:.8rem 0;font-size:.9rem}
+.valuation-lab .valuation-flow-key span:before{content:'';display:inline-block;width:16px;height:16px;vertical-align:middle;margin-right:.4rem;border:1px solid #426670}
+.valuation-lab .valuation-flow-key .valuation-regular-key:before,.valuation-lab .valuation-regular{background:#397e8e}
+.valuation-lab .valuation-flow-key .valuation-residual-key:before,.valuation-lab .valuation-residual{background:repeating-linear-gradient(135deg,#c78b34 0,#c78b34 6px,#fff1d6 6px,#fff1d6 9px)}
+.valuation-lab .valuation-flow-years{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;align-items:stretch}
+.valuation-lab .valuation-flow-year{background:white;border:1px solid #b1c6d0;border-top:4px solid #8ea9b5;border-radius:8px;padding:.8rem;min-width:0}
+.valuation-lab .valuation-flow-year.valuation-observed{border-top-color:#407863}
+.valuation-lab .valuation-flow-year h4{margin:0}
+.valuation-lab .valuation-flow-year>p{margin:.6rem 0;line-height:1.65}
+.valuation-lab .valuation-cash-bar{height:27px;width:100%;display:flex;background:#e6edf1;border:1px solid #718d9b;box-sizing:border-box;overflow:hidden}
+.valuation-lab .valuation-cash-bar>i{height:100%;display:block;flex-shrink:0;box-sizing:border-box}
+.valuation-lab .valuation-pending-bar{background:repeating-linear-gradient(45deg,#f5f8fa 0,#f5f8fa 6px,#e6edf1 6px,#e6edf1 7px);border-style:dashed}
+.valuation-lab .valuation-flow-parts{font-size:.85rem;color:#4b5f6b;min-height:3.3em}
+.valuation-lab .valuation-discount-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;min-height:105px;padding:.5rem 0;color:#855315;text-align:center;border-top:1px dashed #c3d3db;border-bottom:1px dashed #c3d3db}
+.valuation-lab .valuation-discount-arrow>b{font-size:1.8rem;line-height:1}
+.valuation-lab .valuation-current-total{grid-column:2;border:1px solid #407863;border-radius:12px;padding:.8rem;margin:1rem 0;background:white;min-width:0}
+.valuation-lab .valuation-current-total .valuation-cash-bar{margin-top:.8rem;height:35px}
+.valuation-lab .valuation-current-total p{font-size:.85rem;margin-bottom:0}
+.valuation-lab .valuation-year-1{background:#397e8e;box-shadow:inset -2px 0 white}
+.valuation-lab .valuation-year-2{background:repeating-linear-gradient(90deg,#397e8e 0,#397e8e 7px,#c1e0e5 7px,#c1e0e5 9px);box-shadow:inset -2px 0 white}
+.valuation-lab .valuation-year-3{background:repeating-linear-gradient(135deg,#397e8e 0,#397e8e 7px,#c1e0e5 7px,#c1e0e5 9px)}
+@media(max-width:650px){.valuation-lab .valuation-mosaic-comparison,.valuation-lab .valuation-metrics,.valuation-lab .valuation-flow-years{grid-template-columns:1fr}.valuation-lab .valuation-split-link{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center}.valuation-lab .valuation-split-link>span{transform:rotate(90deg)}.valuation-lab .valuation-mosaic{height:112px}.valuation-lab .valuation-discount-arrow{min-height:92px}.valuation-lab .valuation-flow-parts{min-height:0}.valuation-lab .valuation-current-total{grid-column:1}}
+@media(prefers-reduced-motion:reduce){.valuation-lab *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
