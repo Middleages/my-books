@@ -18,6 +18,8 @@ const safe = s => s.replace(/[^a-z0-9_-]/gi, '-');
 const assets = html => [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css))(?:\?[^"']*)?["']/g)].map(m => path.posix.basename(m[1])).sort();
 const catalog = fs.readFileSync(path.join(root, 'src/catalog.ts'), 'utf8');
 const chapterRows = [...catalog.matchAll(/\bid:\s*"([^"]+)"\s*,\s*bookId:\s*"([^"]+)"\s*,\s*readId:\s*"([^"]+)"\s*,\s*number:\s*"([^"]+)"/g)].map(m => ({ id: m[1], book: m[2], readId: m[3], number: m[4], route: `/${m[2]}/${m[1]}` }));
+const investingChapters = chapterRows.filter(chapter => chapter.book === 'investing');
+const investingRoutes = investingChapters.map(chapter => chapter.route);
 const bookIds = [...catalog.split('export const books:')[1].matchAll(/\bid:\s*"([^"]+)"/g)].map(m => m[1]);
 const appendices = [...fs.readFileSync(path.join(root, 'src/kubernetesAppendices.ts'), 'utf8').matchAll(/id:\s*['"]([^'"]+)['"]/g)].map(m => `/kubernetes/${m[1]}`);
 const knownRoutes = ['/', ...bookIds.map(id => `/${id}`), ...chapterRows.map(c => c.route), ...appendices];
@@ -147,17 +149,82 @@ async function conditionChecks(page, lab, name) {
     assert(await step.isDisabled());
   };
   const range = async key => { await lab.locator('input[type=range]').focus(); await page.keyboard.press(key); };
-  const verify = async (scenario, expected, kind) => {
-    await finish();
+  const setRange = async (accessibleName, value) => {
+    const slider = lab.getByRole('slider', { name: accessibleName });
+    const bounds = await slider.evaluate(el => ({ min: +el.min, max: +el.max, step: +(el.step || 1) }));
+    assert(value >= bounds.min && value <= bounds.max && Number.isInteger((value - bounds.min) / bounds.step), `Invalid range test value: ${value}`);
+    await slider.focus();
+    await page.keyboard.press('Home');
+    for (let i = 0; i < (value - bounds.min) / bounds.step; i++) await page.keyboard.press('ArrowRight');
+    assert.equal(await slider.inputValue(), String(value), `Range ${accessibleName} did not reach requested value`);
+  };
+  // Compare actual painted lengths with the model, not just inline styles or text.
+  const verifyStacks = async (locator, expected, description) => {
+    const actual = await locator.evaluateAll(elements => elements.map(element => {
+      const style = getComputedStyle(element), bounds = element.getBoundingClientRect();
+      const inset = parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft);
+      const width = bounds.width - inset - parseFloat(style.borderRightWidth) - parseFloat(style.paddingRight);
+      return { width, segments: [...element.children].map(child => { const box = child.getBoundingClientRect(); return { width: box.width, left: box.left - bounds.left - inset }; }) };
+    }));
+    assert.equal(actual.length, expected.length, `${description}: wrong number of model bars`);
+    actual.forEach((bar, index) => {
+      assert(bar.width > 0, `${description}: bar has no visible width`);
+      assert.equal(bar.segments.length, expected[index].length, `${description}: wrong number of segments`);
+      let offset = 0;
+      bar.segments.forEach((segment, part) => {
+        const wanted = expected[index][part] * bar.width;
+        assert(Math.abs(segment.width - wanted) <= 1, `${description}: bar ${index}, segment ${part} width ${segment.width} != model ${wanted}`);
+        assert(Math.abs(segment.left - offset) <= 1, `${description}: segments overlap or leave an unmodelled gap`);
+        offset += wanted;
+      });
+      assert(offset <= bar.width + 1, `${description}: model segments exceed bar scale`);
+    });
+    return actual;
+  };
+  const verifyResponsivePanels = async locator => {
+    const boxes = await locator.evaluateAll(elements => elements.map(element => { const box = element.getBoundingClientRect(); return { top: box.top, bottom: box.bottom, left: box.left, right: box.right, width: box.width }; }));
+    assert.equal(boxes.length, 2, 'Expected two comparison panels');
+    if (page.viewportSize().width <= 600) {
+      assert(boxes[1].top >= boxes[0].bottom, 'Mobile comparison panels overlap instead of stacking');
+      assert(Math.abs(boxes[0].left - boxes[1].left) <= 1 && Math.abs(boxes[0].width - boxes[1].width) <= 1, 'Mobile comparison panels do not share a readable full-width alignment');
+    } else {
+      assert(Math.abs(boxes[0].top - boxes[1].top) <= 1 && boxes[1].left >= boxes[0].right, 'Desktop comparison panels do not form non-overlapping aligned columns');
+    }
+  };
+  const verify = async (scenario, expected, kind, inspectFrame) => {
+    const predictedOutcome = inspectFrame ? expected.at(-1).status ?? expected.find(frame => frame.phase === 'closing')?.closingCashDirection : undefined;
+    if (predictedOutcome) await lab.locator('.invest-predict select').selectOption(predictedOutcome);
+    if (inspectFrame) {
+      const controls = lab.locator('.money-playback');
+      await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+      const step = controls.getByRole('button', { name: '한 단계 진행', exact: true });
+      for (let index = 0; index < expected.length; index++) {
+        assert.equal(await controls.locator('span').innerText(), `${index} / ${expected.length - 1} 단계`, `${scenario}: wrong visible frame`);
+        await inspectFrame(expected[index], index);
+        if (index < expected.length - 1) {
+          assert(await step.isEnabled(), `${scenario}: playback ended before model frames`);
+          await step.click();
+        }
+      }
+      assert(await step.isDisabled(), `${scenario}: playback exceeds model frames`);
+    } else await finish();
     const summary = lab.locator('details > summary').first();
     if (!(await lab.locator('details').first().getAttribute('open') !== null)) await summary.click();
     const rows = await lab.locator('table tbody tr').evaluateAll(els => els.map(el => [...el.querySelectorAll('td')].map(td => td.textContent.trim())));
-    const wanted = expected.map(row => kind === 'ownership'
+    const wanted = expected.map(typeof kind === 'function' ? kind : row => kind === 'ownership'
       ? [format(row.companyCash), format(row.buyerCash), format(row.sellerCash), format(row.cashTotal), format(row.totalShares), `${format(row.buyerShares)} / ${format(row.sellerShares)}`, ratio(row.ownershipRatio)]
       : kind === 'dividend' ? [format(row.companyCash), format(row.cash), format(row.otherShareholdersCash), format(row.cashTotal), format(row.stockValue), format(row.wealth)]
       : [format(row.price), format(row.shares), format(row.stockValue), format(row.cash), format(row.wealth), format(row.dividendsReceived), format(row.unrealizedGain), format(row.realizedGain), ratio(row.totalReturn)]);
     assert.deepEqual(rows, wanted, `${scenario}: rendered table differs from model frames`);
     assert((await lab.locator('.invest-result').innerText()).includes(expected.at(-1).message), `${scenario}: live explanation differs from model`);
+    if (predictedOutcome) {
+      assert((await lab.locator('.invest-result').innerText()).startsWith('예측과 같습니다.'), `${scenario}: matching model prediction was not marked correct`);
+      const alternative = await lab.locator('.invest-predict select option').evaluateAll((options, expected) => options.find(option => option.value && option.value !== expected)?.value, predictedOutcome);
+      assert(alternative, `${scenario}: prediction needs an alternate outcome`);
+      await lab.locator('.invest-predict select').selectOption(alternative);
+      assert((await lab.locator('.invest-result').innerText()).startsWith('예측과 다릅니다.'), `${scenario}: wrong prediction was not marked incorrect`);
+      await lab.locator('.invest-predict select').selectOption(predictedOutcome);
+    }
     await domAudit(page, true);
     await capture(page, `${name}-${scenario}`, lab);
     observed.push({ scenario, frames: rows.length, final: rows.at(-1) });
@@ -178,8 +245,7 @@ async function conditionChecks(page, lab, name) {
     await verify('dividend-rejected-15', totalReturnFrames({ dividendPerShare: 15 }).frames.slice(0, 2), 'dividend');
     await range('Home');
     await verify('dividend-zero', totalReturnFrames({ dividendPerShare: 0 }).frames.slice(0, 2), 'dividend');
-  } else {
-    assert.equal(label, '가격 변화 재투자 매도 총수익 실험');
+  } else if (label === '가격 변화 재투자 매도 총수익 실험') {
     await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
     await verify('cash-default', totalReturnFrames({ endPrice: 110, reinvest: false, sellShares: 0 }).frames, 'return');
     await lab.getByRole('combobox', { name: /배당 현금 처리/ }).selectOption('yes');
@@ -189,6 +255,113 @@ async function conditionChecks(page, lab, name) {
     await verify('reject-sale-two', totalReturnFrames({ endPrice: 110, reinvest: true, sellShares: 2 }).frames, 'return');
     await range('Home');
     await verify('zero-price-reinvestment', totalReturnFrames({ endPrice: 0, reinvest: true, sellShares: 2 }).frames, 'return');
+  } else if (label === '호가 잔량과 주문 체결 실험') {
+    const { ordersFrames } = await import('../src/simulations/investing/orders.mjs');
+    const cells = row => [row.currentFill ? `${row.currentFill.askId}: ${format(row.currentFill.price)} × ${format(row.currentFill.quantity)}` : '추가 체결 없음', format(row.filledQuantity), format(row.remainingQuantity), format(row.notional), row.averagePrice === null ? '정의 불가' : format(row.averagePrice), `${format(row.buyerCash)} / ${format(row.sellerCash)}`, format(row.shareTotal)];
+    const inspect = async frame => {
+      const figure = lab.locator('figure');
+      const panels = figure.locator('.invest-comparison > .invest-wallet');
+      const expectedBars = [...frame.asks.map(ask => [ask.remainingFraction, ask.filledFraction]), [frame.orderFilledFraction, frame.orderUnfilledFraction], [frame.buyerCashFraction, frame.sellerCashFraction]];
+      await verifyStacks(figure.locator('.invest-stack'), expectedBars, `orders ${frame.phase}`);
+      await verifyResponsivePanels(panels);
+      const bookText = await panels.nth(0).innerText();
+      for (const ask of frame.asks) {
+        assert(bookText.includes(`${format(ask.price)}단위 · ${ask.id}`), 'Displayed ask identity/price differs from model');
+        assert(bookText.includes(`남음 ${format(ask.remainingQuantity)}주 / 소비 ${format(ask.filledQuantity)}주`), 'Displayed ask quantity differs from model');
+      }
+      assert.equal((bookText.match(/지정가 초과/g) || []).length, frame.asks.filter(ask => !ask.withinLimit).length, 'Limit-price exclusion markings differ from model');
+      const orderText = await panels.nth(1).innerText();
+      assert(orderText.includes(`체결 ${format(frame.filledQuantity)}주`) && orderText.includes(`미체결 ${format(frame.remainingQuantity)}주`), 'Live filled/unfilled quantities differ from model');
+      assert(orderText.includes(`체결대금 합계 ${format(frame.notional)}단위`), 'Live notional differs from model');
+      assert(orderText.includes(frame.averagePrice === null ? '정의 불가 · 체결 0주' : `${format(frame.averagePrice)}단위 / 주`), 'Live average price differs from model');
+      assert(orderText.includes(`이번 주문 마지막 체결가 ${frame.lastFillPrice === null ? '없음' : `${format(frame.lastFillPrice)}단위`}`), 'Last fill price differs from model');
+      const tiles = await panels.nth(1).locator('.invest-share-grid > i').evaluateAll(elements => elements.map(element => getComputedStyle(element).borderStyle));
+      assert.equal(tiles.length, frame.filledQuantity + frame.remainingQuantity, 'One-share tile count differs from order');
+      assert.equal(tiles.filter(style => style === 'solid').length, frame.filledQuantity, 'Filled share tile count differs from model');
+      assert.equal(tiles.filter(style => style === 'dashed').length, frame.remainingQuantity, 'Unfilled share tile count differs from model');
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message), 'Live frame explanation differs from model');
+    };
+    await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+    const standard = ordersFrames();
+    assert.equal(standard.summary.filledQuantity, 15);
+    assert.equal(standard.summary.notional, 1505);
+    assert.equal(standard.summary.averagePrice, 1505 / 15);
+    await verify('market-15-cost-1505', standard.frames, cells, inspect);
+    await lab.getByRole('button', { name: '지정가 매수', exact: true }).click();
+    const limited = ordersFrames({ mode: 'limit', limitPrice: 100 });
+    assert.equal(limited.summary.filledQuantity, 10);
+    assert.equal(limited.summary.notional, 1000);
+    assert.equal(limited.summary.reason, 'limit');
+    await verify('limit-100-partial', limited.frames, cells, inspect);
+    await setRange(/매수 지정가/, 99);
+    await verify('limit-below-all-asks', ordersFrames({ mode: 'limit', limitPrice: 99 }).frames, cells, inspect);
+    await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+    await lab.getByRole('combobox', { name: /매도 호가 시나리오/ }).selectOption('empty');
+    const empty = ordersFrames({ asks: [] });
+    assert.equal(empty.summary.notional, 0);
+    assert.equal(empty.summary.reason, 'liquidity');
+    await verify('no-liquidity', empty.frames, cells, inspect);
+    await lab.getByRole('combobox', { name: /매도 호가 시나리오/ }).selectOption('thin');
+    await verify('thin-book-partial', ordersFrames({ asks: [{ id: 'A', price: 100, quantity: 2, arrival: 1 }, { id: 'B', price: 101, quantity: 3, arrival: 2 }] }).frames, cells, inspect);
+    await lab.getByRole('combobox', { name: /매도 호가 시나리오/ }).selectOption('queue');
+    const queued = ordersFrames({ asks: [{ id: '나중', price: 100, quantity: 4, arrival: 2 }, { id: '먼저', price: 100, quantity: 6, arrival: 1 }, { id: '다음 가격', price: 101, quantity: 10, arrival: 3 }] });
+    assert.deepEqual(queued.summary.fills.map(fill => fill.askId), ['먼저', '나중', '다음 가격']);
+    await verify('equal-price-arrival-order', queued.frames, cells, inspect);
+    await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+    await setRange(/사용 가능한 예산/, 1000);
+    const constrained = ordersFrames({ budget: 1000 });
+    assert.equal(constrained.summary.filledQuantity, 10);
+    assert.equal(constrained.summary.buyerCash, 0);
+    assert.equal(constrained.summary.reason, 'budget');
+    await verify('budget-1000-partial', constrained.frames, cells, inspect);
+    await setRange(/사용 가능한 예산/, 0);
+    await verify('budget-zero', ordersFrames({ budget: 0 }).frames, cells, inspect);
+    await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+    await setRange(/매수 주문 수량/, 0);
+    await verify('order-zero', ordersFrames({ quantity: 0 }).frames, cells, inspect);
+  } else if (label === '기업의 이익과 현금 실험') {
+    const { financialStatementsFrames } = await import('../src/simulations/investing/financial-statements.mjs');
+    const cells = row => [row.period, ...[row.cash, row.receivables, row.assets, row.liabilities, row.equity, row.periodRevenue, row.periodExpenses, row.periodProfit, row.periodOperatingCashFlow].map(format)];
+    const inspect = async frame => {
+      assert.equal(await lab.locator('.invest-stage').innerText(), frame.label, 'Live accounting stage differs from model');
+      assert.equal(await lab.locator('.invest-timeline [aria-current=step]').innerText(), frame.label, 'Accounting timeline highlights wrong frame');
+      const balance = lab.getByRole('figure', { name: '현재 단계 자산과 부채·자본의 균형', exact: true });
+      const bars = balance.getByRole('img');
+      await verifyStacks(bars, [frame.assetSegments.map(part => part.fraction), frame.fundingSegments.map(part => part.fraction)], `statements ${frame.phase}`);
+      assert.deepEqual(await balance.locator('.invest-legend b').allTextContents(), [...frame.assetSegments, ...frame.fundingSegments].map(part => `${part.label} ${format(part.value)}단위`), 'Balance-sheet legend differs from model');
+      assert((await balance.innerText()).includes(`자산 ${format(frame.assets)}단위 = 부채 ${format(frame.liabilities)}단위 + 자본 ${format(frame.equity)}단위`), 'Displayed accounting identity differs from model');
+      assert((await balance.innerText()).includes(`0–${format(frame.balanceScale)}단위`), 'Common balance-sheet scale is missing');
+      const paths = lab.getByRole('figure', { name: '서비스 매출이 현금과 매출채권으로 갈라지는 경로', exact: true });
+      await verifyStacks(paths.locator('.invest-stack'), [[frame.saleSplit.cashFraction], [frame.saleSplit.creditFraction]], `sale split ${frame.phase}`);
+      await verifyResponsivePanels(paths.locator('.invest-dividend-fork > .invest-wallet'));
+      const panels = lab.locator(':scope > .invest-comparison > .invest-wallet');
+      await verifyResponsivePanels(panels);
+      const income = await panels.nth(0).innerText(), cash = await panels.nth(1).innerText();
+      assert(income.includes(`${frame.period}의 손익`) && income.includes(`매출 ${format(frame.periodRevenue)}단위 − 비용 ${format(frame.periodExpenses)}단위`) && income.includes(`이익 ${format(frame.periodProfit)}단위`), 'Live period income differs from model');
+      assert(cash.includes(`${frame.period}의 현금`) && cash.includes(`기초 현금 ${format(frame.periodOpeningCash)}단위 + 영업 현금흐름 ${format(frame.periodOperatingCashFlow)}단위`) && cash.includes(`현재 현금 ${format(frame.cash)}단위`), 'Live period cash flow differs from model');
+      assert((await lab.locator('.invest-result').innerText()).includes(frame.message), 'Live accounting explanation differs from model');
+    };
+    for (const creditSales of [120, 0, 40]) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      await setRange(/매출 120단위 중 외상액/, creditSales);
+      const result = financialStatementsFrames({ creditSales });
+      assert.equal(result.closing.periodProfit, 40);
+      assert.equal(result.closing.cash, 140 - creditSales);
+      assert.equal(result.closing.periodOperatingCashFlow, 40 - creditSales);
+      assert.equal(result.summary.cash, 140);
+      assert.equal(result.summary.receivables, 0);
+      assert.equal(result.summary.periodRevenue, 0, 'Collection must not recognize revenue again');
+      assert.equal(result.summary.periodProfit, 0, 'Collection must not recognize profit again');
+      assert.equal(result.summary.cumulativeRevenue, 120);
+      assert.equal(result.summary.cumulativeProfit, 40);
+      await verify(`credit-${creditSales}-then-collection`, result.frames, cells, inspect);
+      await lab.getByRole('button', { name: '당기 말 바로 보기', exact: true }).click();
+      assert.equal(await lab.locator('.money-playback span').innerText(), '3 / 4 단계');
+      await inspect(result.closing);
+      await capture(page, `${name}-credit-${creditSales}-closing`, lab);
+    }
+  } else {
+    assert.fail(`${name}: no model-matching condition checks implemented for lab ${JSON.stringify(label)}`);
   }
   await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
   assert.match(await lab.locator('.money-playback span').innerText(), /^0 \/ /);
@@ -266,7 +439,7 @@ async function representativeControl(page) {
       const context = await browser.newContext({ viewport: { width, height: 1000 }, deviceScaleFactor: 1 });
       const page = await context.newPage();
       watchPage(page, `viewport-${width}`);
-      for (const route of ['/investing', '/investing/ownership', '/investing/total-return']) await check(`render-${width}-${route}`, page, async () => {
+      for (const route of ['/investing', ...investingRoutes]) await check(`render-${width}-${route}`, page, async () => {
         await visit(page, route);
         const audit = await domAudit(page, true);
         await capture(page, `${width}-${route}-full`);
@@ -285,7 +458,7 @@ async function representativeControl(page) {
         await capture(page, `${width}-home-money-filter`);
         return domAudit(page);
       });
-      for (const route of ['/investing/ownership', '/investing/total-return']) {
+      for (const route of investingRoutes) {
         await visit(page, route);
         const labs = page.locator('.invest-lab');
         for (let i = 0; i < await labs.count(); i++) {
@@ -294,11 +467,14 @@ async function representativeControl(page) {
         }
       }
       if (width === 1440) {
-        for (const [book, count] of [['money', 10], ['economics', 12], ['investing', 2]]) await check(`published-chapter-count-${book}`, page, async () => {
+        for (const book of ['money', 'economics', 'investing']) await check(`published-chapter-count-${book}`, page, async () => {
+          const published = chapterRows.filter(chapter => chapter.book === book);
+          const count = published.length;
+          assert(count > 0, `${book}: catalog has no published chapters`);
           await visit(page, `/${book}`);
           const links = await page.locator('.chapter-list > a').evaluateAll(els => els.map(el => el.getAttribute('href')));
           assert.equal(links.length, count);
-          assert.deepEqual(links, chapterRows.filter(c => c.book === book).map(c => `#${c.route}`));
+          assert.deepEqual(links, published.map(chapter => `#${chapter.route}`));
           return { book, count, links, audit: await domAudit(page) };
         });
         const selected = [['money', '01'], ['money', '02'], ['money', '05'], ['money', '09'], ['money', '10'], ['economics', '06'], ['economics', '08'], ['economics', '12'], ['computer', '01'], ['network', '02'], ['kubernetes', '03']];
@@ -317,16 +493,20 @@ async function representativeControl(page) {
     const context = await browser.newContext({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
     watchPage(page, 'reduced-motion');
-    for (const route of ['/investing/ownership', '/investing/total-return']) await check(`reduced-motion-${route}`, page, async () => {
+    for (const route of investingRoutes) await check(`reduced-motion-${route}`, page, async () => {
       await visit(page, route);
       assert(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
-      const running = await page.locator('.invest-lab').evaluateAll(els => els.flatMap(el => [...el.querySelectorAll('*')]).filter(el => { const style = getComputedStyle(el); return style.animationName !== 'none' || style.transitionDuration.split(',').some(s => parseFloat(s) > 0); }).map(el => el.className));
-      assert.deepEqual(running, [], 'Motion styles remain under reduced motion');
+      const assertNoMotion = async () => {
+        const running = await page.locator('.invest-lab').evaluateAll(els => els.flatMap(el => [el, ...el.querySelectorAll('*')]).filter(el => { const style = getComputedStyle(el); return style.animationName !== 'none' || style.transitionDuration.split(',').some(s => parseFloat(s) > 0); }).map(el => el.className));
+        assert.deepEqual(running, [], 'Motion styles remain under reduced motion');
+      };
+      await assertNoMotion();
       const summaries = page.locator('.invest-lab details > summary');
       assert(await summaries.count() > 0);
       for (let i = 0; i < await summaries.count(); i++) await summaries.nth(i).click();
       const steps = page.locator('.invest-lab .money-playback').getByRole('button', { name: '한 단계 진행', exact: true });
       for (let i = 0; i < await steps.count(); i++) await steps.nth(i).click();
+      await assertNoMotion();
       assert(await page.locator('.invest-lab details[open] table tbody tr').count() > 1);
       await capture(page, `${safe(route)}-reduced-motion-static`);
       return domAudit(page, true);
@@ -340,18 +520,19 @@ async function representativeControl(page) {
       await visit(readingPage, '/');
       await readingPage.evaluate(() => localStorage.setItem('my-books:read:v1', JSON.stringify(['unknown-future/id', 'parallel', 'money/map'])));
       await readingPage.reload({ waitUntil: 'networkidle' });
-      for (const id of ['ownership', 'total-return']) {
-        await visit(readingPage, `/investing/${id}`);
+      assert(investingChapters.length > 0, 'No published investing chapters to verify');
+      for (const chapter of investingChapters) {
+        await visit(readingPage, chapter.route);
         await readingPage.getByRole('button', { name: '읽음으로 표시', exact: true }).click();
         await readingPage.reload({ waitUntil: 'networkidle' });
         assert(await readingPage.getByRole('button', { name: '✓ 읽음 · 표시 취소', exact: true }).isVisible());
       }
       let ids = await readingPage.evaluate(() => JSON.parse(localStorage.getItem('my-books:read:v1')));
-      assert.deepEqual([...ids].sort(), ['unknown-future/id', 'parallel', 'money/map', 'investing/ownership', 'investing/total-return'].sort());
+      assert.deepEqual([...ids].sort(), ['unknown-future/id', 'parallel', 'money/map', ...investingChapters.map(chapter => chapter.readId)].sort());
       await readingPage.getByRole('button', { name: '✓ 읽음 · 표시 취소', exact: true }).click();
       await readingPage.reload({ waitUntil: 'networkidle' });
       ids = await readingPage.evaluate(() => JSON.parse(localStorage.getItem('my-books:read:v1')));
-      assert(ids.includes('unknown-future/id') && !ids.includes('investing/total-return'));
+      assert.deepEqual([...ids].sort(), ['unknown-future/id', 'parallel', 'money/map', ...investingChapters.slice(0, -1).map(chapter => chapter.readId)].sort(), `Unmarking ${investingChapters.at(-1).readId} must preserve all other reading IDs`);
       return { ids };
     });
     await reading.close();

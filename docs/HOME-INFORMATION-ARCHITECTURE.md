@@ -71,3 +71,6 @@
 ## 투자 세 번째 책 추가 — 2026-10-19
 
 `investing`을 기존 `money` 분야에 배정하고 회사·지분/자산의 자체 SVG 장식 표지를 추가한다. 소개와01 ownership·02 total-return만 등록한다. 홈의 책 선택 역할·기존 분야/표지/저장 키·알 수 없는 읽음 ID를 유지한다. 검증·게시 상태는 [투자 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다.
+
+
+2026-10-19 투자 배치 B: 기존 표지·분야·홈 구조를 유지하고03 orders·04 financial-statements를 추가한다. 공개 목차와 읽음 분모는 구현한 네 장만 포함한다. 실제 검증·게시 상태는 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다.
