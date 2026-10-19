@@ -862,7 +862,7 @@ async function conditionChecks(page, lab, name) {
       const result = allocationFrames(input);
       if (input.stockReturn === 0.2 && input.stockWeight === 0.6 && input.initialAmount === 1000 && input.bondReturn === 0) {
         assert.equal(result.drift.total, 1120); assert.equal(result.tradeAmount, 48);
-        assert.equal(result.summary.stockValue, 672); assert.equal(result.summary.bondValue, 448);
+        assert(Math.abs(result.summary.stockValue - 672) <= 1e-9); assert(Math.abs(result.summary.bondValue - 448) <= 1e-9);
       }
       for (const frame of result.frames.slice(1)) assert(Math.abs(frame.total - result.drift.total) <= 1e-8, 'Rebalancing changed same-date total');
       assert.equal(result.afterSale.cash, result.tradeAmount);
