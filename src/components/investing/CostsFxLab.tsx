@@ -22,7 +22,7 @@ export function FxReturnPrimer() {
       <ol className="cfx-area-key">{result.pieces.map(piece => <li key={piece.id} className={`cfx-key-${piece.id}`}><span>{piece.label}</span><strong>{krw(piece.amountKrw)}</strong></li>)}</ol>
     </div>
     <p className="cfx-equation">{number(result.assetMultiplier)}배 × {number(result.fxMultiplier)}배 = <strong>{number(result.combinedMultiplier)}배</strong><br />{krw(result.input.budgetKrw)} → <strong>{krw(result.finalKrw)}</strong> · 비용 전 원화 수익률 <strong>{percent(result.noFeeReturn)}</strong></p>
-    <figcaption>번호와 무늬가 각 부분을 연결합니다. {percent(result.assetReturn)} + {percent(result.fxReturn)} = {percent(result.additiveReturn)}만 더하면, 늘어난 달러에도 적용되는 환율 변화 {percent(result.interactionReturn)}를 놓칩니다. 원화는 별도의 새 자산이 아니라 같은 자산을 원화 단위로 평가한 값입니다. 자체 가상 사례이며 면적 그림은 이 양의 변화 기본 사례만 설명합니다.</figcaption>
+    <figcaption>번호와 무늬가 각 부분을 연결합니다. {percent(result.assetReturn)} + {percent(result.fxReturn)} = {percent(result.additiveReturn)}만 더하면, 늘어난 달러에도 환율 변화가 적용되어 생기는 처음 원금 대비 {percent(result.interactionReturn)}의 추가분(수익률 기여 {number(result.interactionReturn * 100)}%p)을 놓칩니다. 원화는 별도의 새 자산이 아니라 같은 자산을 원화 단위로 평가한 값입니다. 자체 가상 사례이며 면적 그림은 이 양의 변화 기본 사례만 설명합니다.</figcaption>
   </figure>;
 }
 

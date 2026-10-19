@@ -25,6 +25,12 @@ const bookIds = [...catalog.split('export const books:')[1].matchAll(/\bid:\s*"(
 const appendices = [...fs.readFileSync(path.join(root, 'src/kubernetesAppendices.ts'), 'utf8').matchAll(/id:\s*['"]([^'"]+)['"]/g)].map(m => `/kubernetes/${m[1]}`);
 const knownRoutes = ['/', ...bookIds.map(id => `/${id}`), ...chapterRows.map(c => c.route), ...appendices];
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+// Only fractional model/render arithmetic gets bounded numeric tolerance. IDs,
+// integer ledgers, formatted labels and states stay exact; painted geometry is ±1px.
+const assertClose = (actual, expected, message, absolute = 1e-9, relative = 1e-12) => {
+  assert(Number.isFinite(actual) && Number.isFinite(expected), `${message}: non-finite value`);
+  assert(Math.abs(actual - expected) <= absolute + relative * Math.abs(expected), `${message}: ${actual} != ${expected}`);
+};
 async function capture(page, name, locator) {
   const filename = `${safe(name)}.png`;
   if (locator) await locator.screenshot({ path: path.join(out, filename), animations: 'disabled', timeout: 15000 });
@@ -182,10 +188,10 @@ async function conditionChecks(page, lab, name) {
     });
     return actual;
   };
-  const verifyResponsivePanels = async locator => {
+  const verifyResponsivePanels = async (locator, mobileMax = 600) => {
     const boxes = await locator.evaluateAll(elements => elements.map(element => { const box = element.getBoundingClientRect(); return { top: box.top, bottom: box.bottom, left: box.left, right: box.right, width: box.width }; }));
     assert.equal(boxes.length, 2, 'Expected two comparison panels');
-    if (page.viewportSize().width <= 600) {
+    if (page.viewportSize().width <= mobileMax) {
       assert(boxes[1].top >= boxes[0].bottom, 'Mobile comparison panels overlap instead of stacking');
       assert(Math.abs(boxes[0].left - boxes[1].left) <= 1 && Math.abs(boxes[0].width - boxes[1].width) <= 1, 'Mobile comparison panels do not share a readable full-width alignment');
     } else {
@@ -233,12 +239,18 @@ async function conditionChecks(page, lab, name) {
   if (label === '발행과 유통 거래 실험') {
     await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
     await verify('issuance-default', ownershipFrames({ mode: 'issuance', quantity: 50 }).frames, 'ownership');
+    assert.equal(await lab.locator('.invest-route.active').count(), 2);
+    await range('Home');
+    await verify('issuance-zero', ownershipFrames({ mode: 'issuance', quantity: 0 }).frames, 'ownership');
+    assert.equal(await lab.locator('.invest-route.active').count(), 0, 'Zero-quantity issuance must not highlight cash/share movement');
+    await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
     await lab.getByRole('button', { name: '유통 매매 · 기존 주주에게 구매', exact: true }).click();
     await verify('secondary-default', ownershipFrames({ mode: 'secondary', quantity: 50 }).frames, 'ownership');
     await range('End');
     await verify('secondary-rejected-120', ownershipFrames({ mode: 'secondary', quantity: 120 }).frames, 'ownership');
     await range('Home');
     await verify('secondary-zero', ownershipFrames({ mode: 'secondary', quantity: 0 }).frames, 'ownership');
+    assert.equal(await lab.locator('.invest-route.active').count(), 0, 'Zero-quantity trading must not highlight cash/share movement');
   } else if (label === '배당 전후 자산 경계 실험') {
     await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
     await verify('dividend-default', totalReturnFrames({ dividendPerShare: 5 }).frames.slice(0, 2), 'dividend');
@@ -795,6 +807,7 @@ async function conditionChecks(page, lab, name) {
     });
     assert.deepEqual(await primer.locator('.cfx-area-key strong').allTextContents(), result.pieces.map(piece => `${format(piece.amountKrw)}원`));
     assert((await primer.innerText()).includes('145,200원') && (await primer.innerText()).includes('21%'));
+    assert((await primer.locator('figcaption').innerText()).includes('수익률 기여 1%p'), 'Cross-term needs a percentage-point contribution, not a false 1% FX change');
     await capture(page, `${name}-multiplicative-area-primer`, primer);
   } else if (label === '자산배분과 재조정 실험') {
     const { allocationFrames } = await import('../src/simulations/investing/allocation-rebalancing.mjs');
@@ -883,7 +896,209 @@ async function conditionChecks(page, lab, name) {
     if (page.viewportSize().width <= 650) assert(holdingBoxes[1].top >= holdingBoxes[0].bottom);
     else assert(holdingBoxes[1].left >= holdingBoxes[0].right);
     assert((await primer.innerText()).includes('64.2857%'));
+    assert((await primer.innerText()).includes('가상 채권 4개 그대로') && (await primer.innerText()).includes('1개 가격'), 'Bond quantity must not be mislabeled as fund units');
     await capture(page, `${name}-same-units-drift-primer`, primer);
+  } else if (label === '과거 성과와 낙폭 실험') {
+    const { performanceHistoryFrames } = await import('../src/simulations/investing/performance-history.mjs');
+    const cells = point => [point.label, format(point.value), format(point.peak), point.index === 0 ? '앞 구간 없음' : ratio(point.periodReturn), ratio(point.drawdown), ratio(point.maxDrawdown)];
+    const inspect = result => async frame => {
+      assert.equal(await lab.getByTestId('performance-path-stage').innerText(), frame.label);
+      await verifyResponsivePanels(lab.locator('.ph-path-panel'), 650);
+      for (const path of frame.paths) {
+        const panel = lab.locator(`[data-path="${path.id}"]`);
+        assert.equal(await lab.getByTestId(`performance-path-${path.id}-drawdown`).innerText(), ratio(path.current.maxDrawdown));
+        assert.equal(await lab.getByTestId(`performance-path-${path.id}-return`).innerText(), ratio(path.totalReturn));
+        assert((await panel.innerText()).includes(`${format(path.current.peak)}단위`));
+        const coordinates = (await panel.locator('.ph-observed-line').getAttribute('points')).trim().split(/\s+/).map(pair => pair.split(',').map(Number));
+        assert.equal(coordinates.length, path.points.length);
+        coordinates.forEach((point, index) => { assertClose(point[0], path.points[index].x * 100, 'Path SVG x'); assertClose(point[1], path.points[index].y * 100, 'Path SVG y'); });
+        const geometry = await panel.locator('.ph-plot').evaluate(el => {
+          const r = el.getBoundingClientRect(), style = getComputedStyle(el);
+          const left = parseFloat(style.borderLeftWidth), top = parseFloat(style.borderTopWidth);
+          const gap = el.querySelector('.ph-gap').getBoundingClientRect();
+          return { width: r.width - left - parseFloat(style.borderRightWidth), height: r.height - top - parseFloat(style.borderBottomWidth), points: [...el.querySelectorAll('.ph-point')].map(p => { const b = p.getBoundingClientRect(); return { index: Number(p.dataset.point), x: b.left + b.width / 2 - r.left - left, y: b.top + b.height / 2 - r.top - top }; }), gap: { x: gap.left + gap.width / 2 - r.left - left, y: gap.top - r.top - top, height: gap.height } };
+        });
+        assert(geometry.width > 0 && geometry.height > 0);
+        assert.equal(geometry.points.length, path.points.length);
+        geometry.points.forEach((point, index) => {
+          const model = path.points[index]; assert.equal(point.index, model.index);
+          assert(Math.abs(point.x - model.x * geometry.width) <= 1 && Math.abs(point.y - model.y * geometry.height) <= 1, 'Painted path point differs from model');
+        });
+        for (const [key, expected] of Object.entries({ x: path.current.x * geometry.width, y: path.peakY * geometry.height, height: path.gapHeight * geometry.height })) assert(Math.abs(geometry.gap[key] - expected) <= 1, `Painted previous-peak gap ${key} differs from model`);
+        assert.deepEqual(await panel.locator('.ph-time-tick').allTextContents(), result.ticks.map(tick => tick.label));
+      }
+    };
+    for (const [scenario, button] of [['paths', '같은 종점 · 다른 경로'], ['zero', '전체 평가액 0'], ['single', '관찰값 1개']]) {
+      await lab.getByRole('button', { name: button, exact: true }).click();
+      const result = performanceHistoryFrames({ scenario });
+      await verify(scenario, result.frames, cells, inspect(result), result.paths.flatMap(path => path.points));
+      if (scenario === 'paths') { assert.deepEqual(result.paths.map(path => path.totalReturn), [0, 0]); assert.deepEqual(result.paths.map(path => path.maxDrawdown), [.5, .1]); }
+      if (scenario === 'single') assert((await lab.locator('.invest-result').innerText()).includes('시간 구간의 수익률은 없으며'));
+    }
+  } else if (label === '손실 회복과 누적 수익 실험') {
+    const { recoveryCompoundingFrames } = await import('../src/simulations/investing/performance-history.mjs');
+    const cells = frame => [format(frame.recoveryAmount), frame.recoveryIsAssumed ? '예 · 실제 예측 아님' : '아니요', format(frame.compoundAmount)];
+    const inspect = result => async frame => {
+      assert.equal(await lab.getByTestId('performance-recovery-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('performance-recovery-amount').innerText(), `${format(frame.recoveryAmount)}단위`);
+      assert.equal(await lab.getByTestId('performance-recovery-rate').innerText(), ratio(result.recoveryRate));
+      assert.equal(await lab.getByTestId('performance-average-return').innerText(), '0%');
+      assert.equal(await lab.getByTestId('performance-cumulative-return').innerText(), '-25%');
+      await verifyStacks(lab.locator('.ph-recovery-figure .ph-amount-track'), [[1], [result.remainingFraction, result.requiredFraction], [frame.recoveryFraction]], 'Recovery money and missing amount', 'i');
+      await verifyStacks(lab.locator('.ph-compounding-figure .ph-amount-track'), result.compounding.bars.map(bar => [bar.fraction]), 'Compounding common 150 scale', 'i');
+      assert.equal(await lab.locator('.ph-compound-row[aria-current=step] [data-compound-bar]').getAttribute('data-compound-bar'), String(frame.compoundIndex));
+    };
+    for (const loss of [0, 5, 50, 95, 100]) {
+      await setRange(/손실률/, loss);
+      const result = recoveryCompoundingFrames({ lossRate: loss / 100 });
+      await verify(`loss-${loss}`, result.frames, cells, inspect(result));
+      if (loss === 50) assert.equal(result.recoveryRate, 1);
+      if (loss === 100) assert.equal(result.recoveryRate, null);
+    }
+  } else if (label === '과거 선택과 이후 검토 실험') {
+    const { historyReviewFrames } = await import('../src/simulations/investing/performance-history.mjs');
+    const cells = row => [row.window === 'training' ? '과거 S0–S2' : '이후 S2–S4', format(row.initialAmount), ratio(row.returns[0]), ratio(row.returns[1]), format(row.finalAmount), ratio(row.totalReturn)];
+    const inspect = result => async frame => {
+      assert.equal(await lab.getByTestId('performance-review-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('performance-review-status').innerText(), result.status);
+      assert.equal(await lab.getByTestId('performance-review-selected').innerText(), frame.selectedId === null ? '아직 선택 전' : result.rules.find(rule => rule.id === frame.selectedId).label);
+      assert.equal(await lab.locator('.ph-rule-row').count(), 3);
+      assert.equal(await lab.locator('.ph-rule-row[aria-current=true]').count(), frame.selectedId === null ? 0 : 1);
+      if (frame.selectedId !== null) assert.equal(await lab.locator('.ph-rule-row[aria-current=true]').getAttribute('data-rule'), frame.selectedId);
+      for (const rule of result.rules) {
+        const row = lab.locator(`[data-rule="${rule.id}"]`);
+        await verifyResponsivePanels(row.locator('.ph-window-result'), 650);
+        for (const window of ['training', 'review']) {
+          const visible = window === 'training' ? frame.trainingVisible : frame.reviewVisible;
+          const scope = row.locator(`.ph-window-result.${window}`);
+          await verifyStacks(scope.locator('.ph-amount-track'), [visible ? [rule[window].endFraction] : []], 'Fixed rule comparison window', 'i');
+          assert.equal(await scope.locator('strong').innerText(), visible ? `${format(rule[window].finalAmount)} · ${ratio(rule[window].totalReturn)}` : '선택에 사용할 자료 범위 확인');
+        }
+      }
+      const contaminated = (frame.futureLeak || frame.reselected) && frame.reviewVisible;
+      assert.equal(await lab.locator('.ph-contamination').count(), contaminated ? 1 : 0);
+      if (contaminated) assert((await lab.locator('.ph-contamination').innerText()).includes(frame.futureLeak ? '미래 자료 누출' : '사후 재선택'));
+      const boxes = await lab.locator('.ph-time-windows > div').evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; }));
+      assert.equal(boxes.length, 3);
+      for (let i = 1; i < boxes.length; i++) {
+        if (page.viewportSize().width <= 650) assert(boxes[i].top >= boxes[i - 1].bottom, 'Mobile selection boundary overlaps');
+        else assert(boxes[i].left >= boxes[i - 1].right, 'Desktop selection boundary overlaps');
+      }
+    };
+    for (const [reviewMode, button] of [['held', '선택 고정'], ['future-leak', '미래 자료 미리 보기'], ['reselection', '이후 보고 재선택']]) {
+      await lab.getByRole('button', { name: button, exact: true }).click();
+      const result = historyReviewFrames({ reviewMode });
+      const table = result.rules.flatMap(rule => ['training', 'review'].map(window => ({ ...rule[window], window })));
+      await verify(reviewMode, result.frames, cells, inspect(result), table);
+    }
+  } else if (label === '가상 투자 설명 읽기 실험') {
+    const { readingIds, readingCategories, readingFrames, assessReading } = await import('../src/simulations/investing/reading-investments.mjs');
+    const cells = frame => [frame.message];
+    const inspect = result => async frame => {
+      const dossier = result.dossier, structure = dossier.structure;
+      assert.equal(await lab.getByTestId('reading-stage').innerText(), frame.label);
+      assert.equal(await lab.getByTestId('reading-dossier').getAttribute('data-dossier'), dossier.id);
+      assert.equal(await lab.getByTestId('reading-structure').getAttribute('data-kind'), structure.kind);
+      assert.equal(await lab.getByTestId('reading-structure').locator('figcaption').innerText(), structure.caption);
+      assert.equal(await lab.locator('.reading-focus-region[data-active=true]').count(), 1);
+      const active = { structure: '.reading-focus-region:has(.reading-structure)', basis: '.reading-basis', claims: '.reading-classify', source: '.reading-source' }[frame.focus];
+      assert.equal(await lab.locator(active).getAttribute('data-active'), 'true');
+      assert.deepEqual(await lab.locator('.reading-basis dt').allTextContents(), dossier.metricRows.map(row => row.label));
+      assert.deepEqual(await lab.locator('.reading-basis dd').allTextContents(), dossier.metricRows.map(row => row.value));
+      assert((await lab.locator('.reading-basis').innerText()).includes(dossier.period));
+      const diagram = lab.getByTestId('reading-structure');
+      if (structure.kind === 'stock') {
+        assert.equal(await diagram.locator('.reading-share-grid > i').count(), structure.cells.length);
+        assert.equal(await diagram.locator('.reading-share-grid > i.held').count(), structure.cells.filter(cell => cell.held).length);
+        const boxes = await diagram.locator('.reading-share-grid > i').evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { width: r.width, height: r.height, top: r.top }; }));
+        assert(boxes.every(box => box.width > 1 && box.height > 1), 'Ownership tiles are not visibly painted');
+        assert(Math.max(...boxes.map(box => box.width)) - Math.min(...boxes.map(box => box.width)) <= 1, 'Equal share units have unequal painted widths');
+        assert.equal(new Set(boxes.map(box => box.top)).size, 10, 'The 100 equal share units should form ten readable rows');
+        assert((await diagram.innerText()).includes(`지분 ${ratio(structure.ownership)}`));
+      } else if (structure.kind === 'bond') {
+        assert.deepEqual(await diagram.locator('.reading-promise-line time').allTextContents(), structure.schedule.map(payment => payment.date));
+        assert.deepEqual(await diagram.locator('.reading-promise-line li > b').allTextContents(), structure.schedule.map(payment => `약속 합계 ${format(payment.total)}원`));
+        assert.equal(await diagram.locator('.reading-coupon').count(), 3);
+        assert.equal(await diagram.locator('.reading-principal').count(), 1);
+        assert.equal(result.dossier.metrics.cashReceived, null); assert.equal(result.dossier.metrics.totalReturn, null);
+        const boxes = await diagram.locator('.reading-promise-line > li').evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }));
+        for (let i = 1; i < boxes.length; i++) {
+          if (page.viewportSize().width <= 480) assert(boxes[i].top >= boxes[i - 1].bottom, 'Mobile bond promise dates overlap');
+          else assert(boxes[i].left >= boxes[i - 1].right, 'Desktop bond promise dates overlap');
+        }
+      } else {
+        await verifyStacks(diagram.locator('.reading-holdings-bar'), [structure.holdings.map(row => row.weight)], 'ETF nested asset exposure', 'i');
+        assert.deepEqual(await diagram.locator('.reading-holdings-labels span').allTextContents(), structure.holdings.map(row => `내 NAV 기준 간접 노출 ${format(row.exposure)}원`));
+        assert.equal(result.dossier.metrics.feeDeductedAgain, 0);
+        const contained = await diagram.locator('.reading-fund-boundary').evaluate(el => { const outer = el.getBoundingClientRect(), inner = el.querySelector('.reading-holdings-bar').getBoundingClientRect(); return inner.left >= outer.left && inner.right <= outer.right && inner.top >= outer.top && inner.bottom <= outer.bottom; });
+        assert(contained, 'Underlying assets escape the ETF ownership boundary');
+      }
+    };
+    const showFeedback = async () => lab.getByRole('button', { name: '분류·자료 선택 해설 보기', exact: true }).click();
+    const assertFeedback = async (id, answers, sourceAnswer) => {
+      const expected = assessReading(id, answers, sourceAnswer);
+      for (const row of expected.feedback) {
+        const feedback = lab.locator(`[data-claim="${row.id}"]`).getByTestId('reading-feedback');
+        const title = row.correct === null ? '아직 선택하지 않았습니다' : row.correct ? '분류 일치' : '분류 다시 확인';
+        assert.equal(await feedback.locator('strong').innerText(), `${title} · ${readingCategories.find(category => category.id === row.category).label}`);
+        assert.deepEqual(await feedback.locator('p').allTextContents(), [row.reason, `반례·한계: ${row.counterexample}`]);
+      }
+      const source = lab.getByTestId('reading-source-feedback');
+      assert.equal(await source.locator('h4').innerText(), expected.source.correct === null ? '자료를 아직 선택하지 않았습니다' : expected.source.correct ? '질문에 맞는 첫 자료입니다' : '질문과 자료의 역할을 다시 맞춰 보세요');
+      const paragraphs = await source.locator('p').allTextContents();
+      assert.deepEqual(paragraphs.slice(0, 3), [expected.source.reason, `남는 한계: ${expected.source.limitation}`, expected.counterexample]);
+    };
+    for (const id of readingIds) {
+      await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+      const selector = lab.getByRole('combobox', { name: '가상 투자 설명서 선택', exact: true });
+      await selector.selectOption(id);
+      const result = readingFrames(id), dossier = result.dossier;
+      assert.equal(await lab.locator('.invest-predict select').inputValue(), '');
+      assert.equal(await lab.getByTestId('reading-feedback').count(), 0);
+      await verify(id, result.frames.map(frame => ({ ...frame, predictionOutcome: result.predictionOutcome })), cells, inspect(result));
+      assert.deepEqual(await lab.locator('details').first().locator('tbody th').allTextContents(), result.frames.map(frame => frame.label));
+      const details = lab.locator('.reading-dossier-details');
+      if (await details.getAttribute('open') === null) await details.locator('summary').click();
+      assert.deepEqual(await details.locator('dt').allTextContents(), dossier.sections.map(row => row.label));
+      assert.deepEqual(await details.locator('dd').allTextContents(), dossier.sections.map(row => row.text));
+      await showFeedback(); await assertFeedback(id, {}, '');
+      const wrong = {};
+      for (let i = 0; i < dossier.claims.length; i++) {
+        const claim = dossier.claims[i], category = readingCategories.find(row => row.id !== claim.category).id;
+        wrong[claim.id] = category;
+        await lab.getByRole('combobox', { name: `${i + 1}번 문장 분류`, exact: true }).selectOption(category);
+      }
+      await showFeedback(); await assertFeedback(id, wrong, '');
+      const answers = {};
+      for (let i = 0; i < dossier.claims.length; i++) {
+        const claim = dossier.claims[i]; answers[claim.id] = claim.category;
+        const select = lab.getByRole('combobox', { name: `${i + 1}번 문장 분류`, exact: true });
+        await select.focus(); await page.keyboard.press('Home');
+        for (let step = 0; step <= readingCategories.findIndex(row => row.id === claim.category); step++) await page.keyboard.press('ArrowDown');
+        assert.equal(await select.inputValue(), claim.category, 'Keyboard classification differs from selected model category');
+      }
+      for (const source of dossier.sources) {
+        await lab.getByRole('combobox', { name: '추가 확인 자료 선택', exact: true }).selectOption(source.id);
+        await showFeedback(); await assertFeedback(id, answers, source.id);
+        await capture(page, `${name}-${id}-source-${source.id}`, lab.getByTestId('reading-source-feedback'));
+      }
+      for (const [title, expected] of [
+        ['모든 문장의 분류·이유·반례', dossier.claims.map(row => [row.text, readingCategories.find(category => category.id === row.category).label, row.reason, row.counterexample])],
+        ['확인 자료 세 가지의 역할과 한계', dossier.sources.map(row => [row.label, row.best ? '예' : '다른 질문에 유용', row.reason, row.limitation])],
+      ]) {
+        const table = lab.locator('details').filter({ has: page.locator(`.invest-table[aria-label="${title}"]`) });
+        if (await table.getAttribute('open') === null) await table.locator('summary').click();
+        const rows = await table.locator('tbody tr').evaluateAll(elements => elements.map(el => [...el.querySelectorAll('td, th')].map(cell => cell.textContent.trim())));
+        assert.deepEqual(rows, expected);
+      }
+      await capture(page, `${name}-${id}-classified`, lab);
+      await capture(page, `${name}-${id}-structure`, lab.getByTestId('reading-structure'));
+    }
+    await lab.getByRole('button', { name: '조건까지 초기화', exact: true }).click();
+    assert.equal(await lab.getByRole('combobox', { name: '가상 투자 설명서 선택', exact: true }).inputValue(), 'stock');
+    assert.equal(await lab.getByTestId('reading-feedback').count(), 0);
+    assert.equal(await lab.getByTestId('reading-source-feedback').count(), 0);
+    for (const select of await lab.locator('.reading-classify select, .reading-source select').all()) assert.equal(await select.inputValue(), '');
   } else {
     assert.fail(`${name}: no model-matching condition checks implemented for lab ${JSON.stringify(label)}`);
   }

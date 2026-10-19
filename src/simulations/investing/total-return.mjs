@@ -10,6 +10,7 @@ export function totalReturnFrames(options = {}) {
   if (typeof input.reinvest !== 'boolean') throw new RangeError('재투자 입력 오류');
   if (input.investorShares > input.totalShares) throw new RangeError('전체 주식보다 보유 주식이 많습니다.');
   const initialInvestment = input.initialPrice * input.investorShares;
+  if (input.initialPrice > 0 && input.investorShares > 0 && initialInvestment === 0) throw new RangeError('기초 투자액이 계산 가능한 정밀도보다 작습니다.');
   const initialWealth = initialInvestment + input.investorCash;
   let state = { price: input.initialPrice, shares: input.investorShares, cash: input.investorCash, companyCash: input.companyCash, otherShareholdersCash: 0, counterpartyCashChange: 0, otherShares: input.totalShares - input.investorShares, dividendsReceived: 0, totalDividendPaid: 0, costBasis: initialInvestment, realizedGain: 0, reinvestedCash: 0, saleProceeds: 0 };
   const frames = [];
@@ -17,7 +18,10 @@ export function totalReturnFrames(options = {}) {
     const stockValue = state.price * state.shares;
     const wealth = stockValue + state.cash;
     const unrealizedGain = stockValue - state.costBasis;
-    frames.push({ ...state, phase, status, message, cashFlows, stockValue, wealth, initialInvestment, initialWealth, unrealizedGain, totalGain: wealth - initialWealth, wealthDirection: Math.abs(wealth - initialWealth) < 1e-9 ? 'same' : wealth > initialWealth ? 'up' : 'down', totalReturn: initialInvestment === 0 ? null : (wealth - initialWealth) / initialInvestment, priceReturn: input.initialPrice === 0 ? null : (state.price - input.initialPrice) / input.initialPrice, cashTotal: state.companyCash + state.cash + state.otherShareholdersCash + state.counterpartyCashChange, totalShares: input.totalShares });
+    const totalReturn = initialInvestment === 0 ? null : (wealth - initialWealth) / initialInvestment;
+    const priceReturn = input.initialPrice === 0 ? null : (state.price - input.initialPrice) / input.initialPrice;
+    if ([totalReturn, priceReturn].some(value => value !== null && !Number.isFinite(value))) throw new RangeError('수익률이 계산 가능한 유한 범위를 벗어났습니다.');
+    frames.push({ ...state, phase, status, message, cashFlows, stockValue, wealth, initialInvestment, initialWealth, unrealizedGain, totalGain: wealth - initialWealth, wealthDirection: Math.abs(wealth - initialWealth) < 1e-9 ? 'same' : wealth > initialWealth ? 'up' : 'down', totalReturn, priceReturn, cashTotal: state.companyCash + state.cash + state.otherShareholdersCash + state.counterpartyCashChange, totalShares: input.totalShares });
   };
   push('initial', 'ready', '기초 평가액과 보유 현금입니다. 아직 배당을 받지 않았습니다.');
   const payment = input.totalShares * input.dividendPerShare;

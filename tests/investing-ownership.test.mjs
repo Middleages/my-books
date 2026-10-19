@@ -64,3 +64,33 @@ test('fractional tiles conserve all shares and huge inputs keep bounded arrays w
  const partial=ownershipFrames({investorShares:7}).frames[0].shareTiles[0];
  assert.equal(partial.fraction,.7); assert.equal(partial.shares,7);
 });
+
+test('unrepresentable positive ownership events reject atomically rather than invent cash or shares', () => {
+ const cases = [{quantity:Number.MIN_VALUE,price:0},{mode:'secondary',quantity:Number.MIN_VALUE,price:0},{quantity:.5,price:Number.MIN_VALUE},{mode:'secondary',quantity:1,price:Number.MIN_VALUE},{quantity:1,price:1e-8,buyerCash:1e-8,companyCash:1e12}];
+ for (const input of cases) {
+  const r = ownershipFrames(input), first = r.frames[0], last = r.summary;
+  assert.equal(last.status,'rejected'); assert.equal(last.cashFlow,null); assert.equal(last.shareFlow,null);
+  for (const key of ['companyCash','buyerCash','sellerCash','totalShares','investorShares','buyerShares','sellerShares','otherShares']) assert.equal(last[key], first[key]);
+  assert.match(last.message,/계산 정밀도/);
+ }
+});
+test('representable fractional, free and extremely small ownership transfers remain supported', () => {
+ for (const mode of ['issuance','secondary']) for (const values of [{quantity:13.5,price:.1},{quantity:13.5,price:0},{quantity:0}]) {
+  const r=ownershipFrames({mode,...values}); conserve(r); assert.equal(r.summary.status,'completed');
+ }
+ for (const values of [{quantity:1e-300,price:1},{quantity:1,price:1e-300}]) {
+  const r=ownershipFrames({existingShares:0,investorShares:0,sellerShares:0,companyCash:0,buyerCash:1e-300,...values});
+  assert.equal(r.summary.status,'completed'); assert.equal(r.summary.buyerShares,values.quantity);
+  assert.equal(r.summary.companyCash,1e-300); assert.equal(r.summary.buyerCash,0);
+ }
+});
+test('zero quantity and free transfers explain unchanged cash without claiming a paid movement', () => {
+ for (const mode of ['issuance','secondary']) {
+  const zero=ownershipFrames({mode,quantity:0});
+  assert.equal(zero.summary.message,'거래 수량이 0주이므로 주식과 현금은 그대로입니다.');
+  assert.equal(zero.summary.companyCashChange,0); assert.equal(zero.summary.buyerShares,0); assert.equal(zero.summary.cashFlow.amount,0);
+  const free=ownershipFrames({mode,price:0});
+  assert.equal(free.summary.message,mode==='issuance' ? '대금 0의 가상 신주 이전입니다. 전체 주식 수는 늘고 회사 현금은 그대로입니다.' : '기존 주식만 투자자 사이로 이전합니다. 대금은 0이며 회사 현금은 그대로입니다.');
+  assert.equal(free.summary.companyCashChange,0); assert.equal(free.summary.buyerShares,50); assert.equal(free.summary.cashFlow.amount,0);
+ }
+});

@@ -1,7 +1,7 @@
 # 주식과 투자 자산의 원리 — 3권 제작 계획
 
 작성일: 2026-10-19 KST. 기준 main: `a8f9d083a94fdb453bd9e13c0fcdb40f8e80c277`.
-상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 배치 C 05·06도 구현·검증·main 반영·게시 확인을 완료했으며 [C 기록](INVESTING-BATCH-C-VERIFICATION.md)을 따른다. 배치 D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. E 09·10은 구현·검토·실제 게시 검사를 완료했으며 검증·게시 상태는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에서 구분한다. 11·12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
+상태: **배치 A–D 구현·검증·main 반영·Pages 게시 확인 완료. E 09·10도 배포·실제 게시 133검사·정확한 자산 바이트와 구현 workflow의 최종 success를 확인했다. 지연된 메타데이터가 뒤늦게 확정된 경과는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에 구분했다. F 11·12와 전체 편집 점검은 구현 중이며 검증·main·게시 상태는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md)에서 구분한다.** 후속 설계와 실행 완료 기록을 혼동하지 않는다.
 선행: 돈 1권 소개·01–10과 경제 2권 소개·01–12 구현·점검·게시 완료. 착수 시 최신 main과 각 검증 기록에서 실제 상태를 다시 확인한다.
 실행 지시: [배치별 세션 프롬프트](INVESTING-SESSION-PROMPTS.md). 시리즈 지도: [돈·경제 계획](MONEY-TEXTBOOK-PLAN.md).
 
@@ -129,7 +129,7 @@
 
 ## 6. 구현·공개·검증 규칙
 
-- 본문 `src/content/investing/*.mdx`, React 조작 `src/components/investing/`, 독립 `.mjs`/`.d.mts` 모델 `src/simulations/investing/`, 테스트 `tests/investing-*.test.mjs`를 기본으로 한다. 배치 A의 소개·01·02 파일은 구현했으며 후속 장은 예약 상태다.
+- 본문 `src/content/investing/*.mdx`, React 조작 `src/components/investing/`, 독립 `.mjs`/`.d.mts` 모델 `src/simulations/investing/`, 테스트 `tests/investing-*.test.mjs`를 기본으로 한다. 현재 구현·공개·검증 상태는 이 문서 첫 상태 문단과 각 배치 기록을 따른다.
 - 기존 money/economics의 숫자 포맷·재생·정적 표를 먼저 검토한다. 같은 수익률 개념이라도 입출금·배당·비용 반영 순서가 다르면 무조건 같은 모델로 묶지 않는다. 반올림은 표시만 하고 판정·장부는 원래 값을 쓴다.
 - 시간 단위·통화·좌수/주수·총액/주당·비중/수익률·퍼센트/%p·관찰/추정을 붙인다. 배당락·할인·시장가·부도·세금은 가정과 실제 제도를 구분한다. 보유가치와 수취 현금을 이중 합산하지 않는다.
 - 각 배치 시작 시 최신 main/이전 구현·검증·게시 상태 확인. 끝나면 해당 두 장만 공개·진행률에 포함한다. 홈은 책 선택/장 선택 역할을 유지한다. 표지는 지분/자산 묶음의 자체 SVG 장식으로 설계하고 계산 그림으로 사용하지 않는다.
@@ -206,3 +206,8 @@ KRX 교육 사이트는 확인 도구에서 리디렉션 접근 제한, DART와 
 09 costs-fx·10 allocation-rebalancing을 계획의 제목·URL·readId로 추가한다. 09는 외화 가격과 환율의 곱을 면적으로 설명하고 실제 현금·보유 자산·매매수수료를 한 번씩 반영한다. 10은 같은 시점의 구성 띠와 매도→현금→매수 경로로 비중 복귀와 총액 보존을 보여 준다. 소개·카탈로그는 열 장만 포함하며 11·12는 예약 상태로 둔다. 모델의 상세 가정·공식 근거·실행 검증·게시 상태와 미검증 경계는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)을 따른다.
 
 2026-10-19 E 게시 확인: 465테스트·빌드·production132/게시133검사, 각554 PNG 생성 및 대표 실제 장면의 직접·독립 검토를 완료했다. main `cbbf6d1`의 Pages 배포 성공 로그와 게시 자산의 정확한 바이트/SHA-256 일치를 확인했다. Actions 전체 run 메타데이터는 완료 로그보다 지연되어 terminal-success를 아직 주장하지 않는다. 상세 시각·한계·남은 책 안내 문구 불일치는 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)을 따른다. 다음 구현 범위는 F11·12다.
+
+
+## 배치 F 구현 · 2026-10-19
+
+11 performance-history·12 reading-investments와 전체 편집 점검을 진행한다. 같은 종점의 이전 정점 기준 낙폭, 손실 회복의 분모, 산술평균/누적수익, 고정한 과거 선택과 이후 검토를 구분한다. 종합 장에서는 주식·일반 채권·일반 ETF의 가상 설명을 관측·기록/계산 가정/추정·평가/누락 정보로 나누고 추가 근거를 고르는 이유와 반례를 설명한다. 소개·공개 목차·읽음 대상은 구현한 열두 장에 맞춘다. 독립 검토·실제 화면·main·Pages와 미검증 경계는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md), 전체 용어·단위·수익 정의와 장간 연결은 [전체 편집 점검](INVESTING-BOOK-REVIEW.md)에 남긴다. 작성 중인 검증 항목을 통과로 기록하지 않는다.

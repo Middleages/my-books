@@ -72,3 +72,8 @@ F만 미구현이다. `catalog.ts`의 investing 책 `future` 안내에 D 당시 
 ## 미검증 경계
 
 실제 iOS/Android 기기·Safari/Firefox·스크린리더 음성 출력·독자 학습 효과는 미실행이다. Chromium 모바일 viewport와 실제 기기를 구분한다. 모델은 실제 시세·투자 적합성·개인 적정 비중을 추정하지 않으며 계좌·개인정보·실시간 API 연동을 하지 않는다.
+
+
+## F 통합 중 확인된 상태 후속 · 2026-10-19
+
+구현 [run39277937642](https://github.com/Middleages/my-books/actions/runs/39277937642)은16:22:47 UTC 갱신에서 최종 `completed/success`로 확인됐다. 위16:13 시점의 미확인은 당시 조회 기록이며, 이제 구현 workflow의 종료 상태도 확인됐다. E 최종 문서 commit `5793a1b`의 별도 자동 run 상태와 F 진행 결과는 [F 기록](INVESTING-BATCH-F-VERIFICATION.md)에서 이어서 구분한다. 이 후속 확인은 기존 실제 배포·게시 자산 증거를 변경하지 않는다.
