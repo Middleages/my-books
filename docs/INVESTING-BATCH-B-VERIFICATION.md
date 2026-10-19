@@ -14,7 +14,7 @@
 
 ## 검증 진행 상태
 
-구현·검증 진행 중이다. 아래 실행 결과가 채워지기 전에는 테스트·실제 화면·main·게시 성공으로 간주하지 않는다.
+소개·01–04 구현, 모델/빌드·실제 Chromium 화면/조작·독립 검토·main 반영·Pages 게시 확인을 완료했다. 아래 실행별 증거와 미검증 경계를 따른다.
 
 ## 미검증 경계
 
@@ -39,3 +39,14 @@
 직접 캡처 검토:1440 시장가15주에서100호가 전량/101호가 절반의 빗금과15개 매수칸,1505대금과495/1505 현금 띠를 확인했다.320 지정가100에서는101의 파란10주가 남고 초록10칸/점선5칸과 부분체결이 일치한다.320 기업 장부의 외상120/0 비교에서 사선 매출채권120+현금20과 현금140의 길이는 같은 자산140을 나타내고, 부채40/자본100 띠와 끝점이 같다. 주요 라벨은 실제 크기로 읽었고 모바일 세로 재배치와 표 내부 스크롤을 확인했다. 캡처 검토는 독자 학습효과 실험이 아니다.
 
 후속 QA 유지보수로 감싼 label의 옵션 문구에 덜 의존하도록 주문 시나리오 combobox 선택자3곳을 이름 정규식으로 바꾼다. 첫 실행도 해당 검사에 성공했으며 이 변경을 최초 실패 수정으로 기록하지 않는다. 제품 코드/빌드 자산은 변경하지 않는다. main 반영·실제 Pages 확인은 아직 대기 중이다.
+
+
+## main·Pages·실제 게시 확인
+
+QA 선택자 보강 커밋 `5d5c8a57ceed8e0a80e74a2f507c2809c5138f56`의 [Actions39256252521](https://github.com/Middleages/my-books/actions/runs/39256252521)도 성공했다. 독립 코드/본문/실제 캡처 검토에서 수정 후 남은 차단 문제는 없었다. 최신 main이 시작 SHA 그대로임을 확인하고 [PR3](https://github.com/Middleages/my-books/pull/3)를 `1d4ea4e52a553ebe5c9907cbe49d7a7a7c0f2686`로 병합했다.
+
+main [Actions39256853129](https://github.com/Middleages/my-books/actions/runs/39256853129)는 build·deploy·verify-published 모두 success다.346테스트·빌드·production63검사를 다시 통과했고,2026-10-19 13:09UTC 실제 게시본64검사·146캡처를 완료했다. artifact12189040448의 JSON/PNG를 내려받아 확인했다. HTTP200, 게시 JS `index-2Jb6q8oV.js`·CSS `index-BGd1AXy5.css`가 해당 run의 배포 artifact와 일치하며 별도 curl도 같았다. 앱 console/pageerror0.
+
+실제 게시390px 시장가15주/1505 장면과1440px 외상120의 다음 기간 회수 장면을 직접 열어 production 검토와 동일한 막대·수량·기간 전환·라벨을 확인했다. 공개 검사는 모든 기존/new 조건·예측·키보드/정지/reduced-motion·정적 표·읽음 보존·기존책 회귀를 다시 실행한 결과다.
+
+공개 [03 주문](https://middleages.github.io/my-books/#/investing/orders), [04 기업 장부](https://middleages.github.io/my-books/#/investing/financial-statements). 다음 배치 C는05·06이며 B 게시를 확인한 뒤 진행한다. 이 기록의 마감 변경은 문서 전용이며 제품 자산을 바꾸지 않는다.

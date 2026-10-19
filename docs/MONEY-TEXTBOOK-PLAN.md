@@ -2,7 +2,7 @@
 
 작성일: 2026-10-17 (KST)  
 개정: 같은 날 사용자의 요청으로 시뮬레이션·설명용 애니메이션·그림을 적극 사용하는 방향으로 변경.
-상태: **1권 소개·01–10 구현·전체 편집 점검 완료. [점검 결과](MONEY-BOOK-REVIEW.md) 참조. 2권 소개·01–12 구현·점검·게시 완료([경제 계획](ECONOMICS-TEXTBOOK-PLAN.md)). 3권 A 소개·01·02를 완료했고 B 03·04를 진행 중이다. [투자 계획](INVESTING-TEXTBOOK-PLAN.md)과 [B 검증·게시 상태](INVESTING-BATCH-B-VERIFICATION.md)를 따른다. 05 이후는 후속 범위다. 4–8권은 큰 범위만 정한 후속 계획.**
+상태: **1권 소개·01–10 구현·전체 편집 점검 완료. [점검 결과](MONEY-BOOK-REVIEW.md) 참조. 2권 소개·01–12 구현·점검·게시 완료([경제 계획](ECONOMICS-TEXTBOOK-PLAN.md)). 3권 A·B 소개·01–04 구현·검증·게시 확인을 완료했다. [투자 계획](INVESTING-TEXTBOOK-PLAN.md)과 [B 검증·게시 상태](INVESTING-BATCH-B-VERIFICATION.md)를 따른다. 05 이후는 후속 범위다. 4–8권은 큰 범위만 정한 후속 계획.**
 기준 저장소: Middleages/my-books, main `808c6e4`  
 첫 권 가제: **돈의 기초와 우리 집 재무 — 숫자로 이해하는 돈의 흐름**
 

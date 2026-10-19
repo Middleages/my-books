@@ -1,7 +1,7 @@
 # 주식과 투자 자산의 원리 — 3권 제작 계획
 
 작성일: 2026-10-19 KST. 기준 main: `a8f9d083a94fdb453bd9e13c0fcdb40f8e80c277`.
-상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04는 구현 진행 중이며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 05–12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
+상태: **배치 A 소개·01·02 구현·검증·main 반영·Pages 게시 확인 완료. 상세 실행 증거와 미검증 경계는 [배치 A 기록](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 배치 B 03·04도 구현·검증·main 반영·게시 확인을 완료했으며 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다. 05–12는 미구현/미공개 계획.** 아래 후속 설계는 구현 완료 기록이 아니다.
 선행: 돈 1권 소개·01–10과 경제 2권 소개·01–12 구현·점검·게시 완료. 착수 시 최신 main과 각 검증 기록에서 실제 상태를 다시 확인한다.
 실행 지시: [배치별 세션 프롬프트](INVESTING-SESSION-PROMPTS.md). 시리즈 지도: [돈·경제 계획](MONEY-TEXTBOOK-PLAN.md).
 
@@ -180,6 +180,8 @@ KRX 교육 사이트는 확인 도구에서 리디렉션 접근 제한, DART와 
 2026-10-19 배치 A 완료:318테스트·빌드, Chromium production45/게시46검사, 캡처 직접 검토, main 병합 및 실제 Pages 자산 일치 확인. [완료 증거](INVESTING-BATCH-A-VERIFICATION.md). 이는 A 완료 시점의 기록이다. 후속 진행은 아래를 따른다.
 
 
-## 배치 B 진행 · 2026-10-19
+## 배치 B 완료 · 2026-10-19
 
 03 orders·04 financial-statements를 추가한다. 가격별 유한 잔량과 체결 대금, 서비스 매출의 현금/매출채권 분기와 자산=부채+자본을 같은 모델 프레임으로 표시한다. 05 이후는 예약이다. 실제 검증·main 반영·게시 결과는 [B 기록](INVESTING-BATCH-B-VERIFICATION.md)을 따른다.
+
+2026-10-19 B 완료:346테스트·빌드·production63/게시64검사·146캡처와 독립 검토, main1d4ea4e 및 실제 Pages 자산 일치를 확인했다. 상세 한계는 B 기록을 따른다.
