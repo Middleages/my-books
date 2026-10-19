@@ -1,0 +1,279 @@
+.eco-cycle-plot {
+  margin: 1rem 0;
+  min-width: 0;
+}
+.eco-cycle-plot svg {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+}
+.eco-cycle-plot text {
+  font: 13px system-ui;
+  fill: #2f4650;
+}
+.eco-cycle-plot figcaption,
+.eco-sector-scene figcaption,
+.eco-potential-scene figcaption {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: #4b626a;
+  margin-top: 0.75rem;
+}
+.eco-level-versus-rate {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.eco-level-versus-rate > div {
+  padding: 1rem;
+  border-left: 5px solid #27786c;
+  background: #fff;
+  display: grid;
+  gap: 0.35rem;
+}
+.eco-level-versus-rate > div:last-child {
+  border-color: #9c7136;
+}
+.eco-level-versus-rate b {
+  font-size: 1.7rem;
+}
+.eco-sector-scene {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #b4c9c3;
+  border-radius: 12px;
+}
+.eco-index-row {
+  margin: 0.85rem 0;
+}
+.eco-index-row > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.eco-index-track {
+  position: relative;
+  height: 23px;
+  background: #dfe9e6;
+  margin-top: 0.35rem;
+}
+.eco-index-track i {
+  display: block;
+  height: 100%;
+  background: #27786c;
+}
+.eco-index-1 i {
+  background: #4b74a2;
+}
+.eco-index-2 i {
+  background: #a26988;
+}
+.eco-index-track em {
+  position: absolute;
+  top: -4px;
+  height: 31px;
+  border-left: 2px solid #334c56;
+}
+.eco-timing-strips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.eco-timing-strips figure {
+  padding: 0.4rem;
+  border-bottom: 3px solid #b7c9ce;
+}
+.eco-potential-scene {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #b5c7cf;
+  border-radius: 10px;
+}
+.eco-gap-ruler {
+  position: relative;
+  height: 130px;
+  background: linear-gradient(to right, #edf3f0, #d6e5e0);
+  border-bottom: 2px solid #496b66;
+}
+.eco-gap-ruler > span {
+  position: absolute;
+  white-space: nowrap;
+  transform: translateX(-100%);
+  padding: 0.3rem;
+  border-right: 2px solid #247569;
+  min-height: 42px;
+}
+.eco-gap-actual {
+  top: 0;
+}
+.eco-gap-ruler .eco-gap-estimate {
+  bottom: 0;
+  border-right: 2px dashed #8b5e89;
+}
+.eco-gap-ruler > i {
+  position: absolute;
+  top: 55px;
+  height: 16px;
+  background: #956689;
+}
+.eco-fictional-paper {
+  background: #fff;
+  border-top: 5px double #47616d;
+  border-bottom: 1px solid #a8bbc2;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.eco-fictional-paper h4 {
+  font-size: 1.3rem;
+  margin: 0.5rem 0;
+}
+.eco-news-evidence-scene {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin: 1.5rem 0;
+  align-items: start;
+}
+.eco-news-observed {
+  border: 2px solid #3b7386;
+  border-radius: 10px;
+  padding: 0.9rem;
+}
+.eco-news-gate {
+  border: 5px double #9b7944;
+  padding: 0.8rem;
+  background: #fff9ef;
+}
+.eco-news-reading {
+  border-left: 5px solid #397e6d;
+  padding: 0.8rem;
+  background: #e9f3ed;
+}
+.eco-news-future {
+  border: 2px dashed #8b648a;
+  border-radius: 10px;
+  padding: 0.8rem;
+  background: #f8f2fa;
+}
+.eco-news-arrow {
+  padding: 0.7rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.eco-news-lab .eco-news-focus {
+  outline: 3px solid #b4781b;
+  outline-offset: 3px;
+}
+.eco-news-lab .eco-chart {
+  max-width: 380px;
+}
+.eco-news-lab .eco-chart svg {
+  max-height: 350px;
+}
+.eco-news-classify,
+.eco-news-sources {
+  border: 1px solid #b3c8bc;
+  padding: 1rem;
+  margin: 1.3rem 0;
+  min-width: 0;
+}
+.eco-news-classify legend,
+.eco-news-sources legend {
+  font-weight: 700;
+  max-width: 100%;
+}
+.eco-news-classify > div {
+  border-bottom: 1px solid #d5dfd9;
+  padding-bottom: 0.5rem;
+}
+.eco-news-sources button[aria-pressed="true"] {
+  background: #245843;
+  color: #fff;
+}
+.eco-news-feedback {
+  padding: 0.6rem;
+  border-left: 5px solid #557b90;
+  background: white;
+}
+.eco-class-assumption {
+  border-color: #9b7944;
+}
+.eco-class-interpretation {
+  border-color: #397e6d;
+}
+.eco-class-forecast {
+  border-color: #8b648a;
+}
+.eco-news-result {
+  padding: 1rem;
+  border: 2px solid #547b68;
+  border-radius: 12px;
+  background: #fff;
+}
+.eco-news-lab .eco-table td {
+  white-space: normal;
+  min-width: 250px;
+  max-width: 410px;
+}
+.eco-news-lab .eco-table th {
+  white-space: nowrap;
+}
+.eco-news-lab .eco-table table {
+  max-width: none;
+}
+@media (max-width: 800px) {
+  .eco-timing-strips {
+    grid-template-columns: 1fr;
+  }
+  .eco-timing-strips figure {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .eco-timing-strips .eco-axis-title {
+    grid-column: 1/-1;
+  }
+  .eco-timing-strips figcaption {
+    margin: 0;
+    align-self: center;
+  }
+}
+@media (max-width: 600px) {
+  .eco-level-versus-rate,
+  .eco-news-evidence-scene {
+    grid-template-columns: 1fr;
+  }
+  .eco-timing-strips figure {
+    display: block;
+  }
+  .eco-news-observed,
+  .eco-sector-scene,
+  .eco-news-classify,
+  .eco-news-sources {
+    padding: 0.7rem;
+  }
+  .eco-potential-scene {
+    padding: 0.5rem;
+  }
+  .eco-news-classify .eco-predict {
+    margin: 0.7rem 0;
+  }
+  .eco-news-evidence-scene {
+    gap: 1.2rem;
+  }
+  .eco-cycle-plot text {
+    font-size: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eco-cycle-lab *,
+  .eco-timing-lab *,
+  .eco-potential-lab *,
+  .eco-news-lab * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

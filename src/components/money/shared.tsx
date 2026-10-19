@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 export const money = (n: number) =>
   `${n.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}만원`;
 export const signed = (n: number) => `${n > 0 ? "+" : ""}${money(n)}`;
-export function usePlayback(last: number) {
-  const [step, setStep] = useState(0),
+export function usePlayback(last: number, initialStep = 0) {
+  const [step, setStep] = useState(initialStep),
     [playing, setPlaying] = useState(false);
   useEffect(() => {
     if (!playing) return;
