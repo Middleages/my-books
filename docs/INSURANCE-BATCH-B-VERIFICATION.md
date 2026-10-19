@@ -49,3 +49,30 @@ main `14068e096327f99dce9eed20a82ccfbb20709477`의 [run39335816396](https://gith
 수정판 로컬 검증: 전체570/570테스트·TypeScript/Vite272modules·diff 검사 통과. 추가1개는850px 본문 칸의 축소 가능성과 표 스크롤 보존을 검사한다. 실제 브라우저는 보험02/03/04 표 열기·닫기와 기존 투자09 costs-fx의850px 정적표·키보드 스크롤 회귀를 함께 재실행한다. 정적 CSS 검사만으로 실제 중간폭 복구를 완료했다고 주장하지 않는다.
 
 추가 실제 PNG 검토에서 퇴직 후 미확인 상태의 사고판단 연결이 실선으로 바뀌어 범례와 어긋나는 점도 발견했다. 비금전 관계의 점선을 유지하고 물음표로 불확실성을 표시하도록 수정했다. 조건부 보험금 선은 기존의 끊긴 실선을 유지한다. 이 시각 의미 회귀1개와 실제 모든 프레임의 computed-style 검사를 추가했고 전체571테스트를 통과했다. 독립 검토자는 최초 B판의1440/390/320 핵심 장면·reduced-motion·850실패 PNG를 직접 열어 이 두 결함 외에 새로운 설명력 문제는 찾지 못했다. 수정판의 실제 화면 승인은 재실행 후 별도 기록한다.
+
+## 수정판의 실제 production·게시 검증 완료
+
+2026-10-20 KST, main `cefdf5f8eeb277a86f783aa5ab2f973644a75a3c` / tree `fb10e0d897ffa3bb43a441d2df68f262aa91359b`의 [run39337538559](https://github.com/Middleages/my-books/actions/runs/39337538559)이 build·deploy·verify-published 모두 success로 끝났다. Actions Node22의 전체571테스트·빌드, Chromium155.0.8059.84의 보험54/54 production·published 검사를 통과했다. 기존 교재 회귀는 production160/160, published에서는 같은160개와 자산 일치1개를 더한161/161을 통과했다. 보험의 앱 콘솔·페이지·리소스 오류는0이었다. 기존 회귀의 게시 검사에는 사이트 루트 favicon.ico404 한 건이 별도 비앱 리소스로 기록되었고, 앱 콘솔·페이지 오류는0이었다.
+
+보험 production artifact12227812210과 published artifact12228463993은 각각243PNG를 만들었다. 독립 검토자는 최초 실패판21개와 수정 production7개를 직접 본 뒤, 수정 published7개를 별도로 열었다. 생성 수와 직접 검토 수는 다르다. 수정 production에서850px의03·04 전체 정적표 열기/닫기,02 및 기존 투자 costs-fx의 표·키보드 스크롤 회귀를 통과했다. 본문650px·실험602px·문서850px이 유지되고 문서 scrollX는0이었다. 정적표 내부 스크롤은 내용을 숨기지 않는다.
+
+독립 검토자가 직접 확인한 수정 게시 PNG:
+
+- `1440--insurance-contract-map-1-employer-after-leaving-work-scene.png`
+- `390--insurance-contract-map-1-employer-after-leaving-work-scene.png`
+- `320--insurance-contract-map-1-employer-after-leaving-work-scene.png`
+- `850-contract-map-employer-after-leaving-work-scene.png`
+- `850-contract-map-all-static-tables-open.png`
+- `850-payout-all-static-tables-open.png`
+- `320--insurance-payout-1-third-claim-exhausted-annual-cap-scene.png`
+
+네 폭에서 퇴직 후 미확인 사고판단 연결은 점선과 물음표, 조건부 보험금은 끊긴 실선으로 구별됐다. 역할 경계·돈의 방향·특약 포함 관계가 유지된다. 반복 청구는200+100만원 지급 뒤 다음0원, 연간한도 소진과 별도 정액 약속을 서로 다른 그림으로 읽는다. 부모 검토에서도320px 퇴직 장면과390px 세 번째 청구 장면을 직접 확인했다. 동작·정지·키보드·reduced-motion 검증은 실제 Actions assertions이며 정지 PNG만으로 동작 성공을 주장하지 않는다.
+
+published results.json은 mode published, source/workflow SHA `cefdf5f`, 위 tree, sourceChanges 빈 값, 소개·01–04만의 공개경로를 기록한다. 독립 검토자는 다섯 MDX 해시와 아래 두 자산의 해시를 검토한 checkout에서 다시 계산해 일치를 확인했다. [03 게시](https://middleages.github.io/my-books/#/insurance/contract-map)와 [04 게시](https://middleages.github.io/my-books/#/insurance/payout)의 index가 가리키는 파일명뿐 아니라 전체 바이트가 배포 artifact와 같았다.
+
+| 게시 자산 | 바이트 | artifact와 게시가 일치하는 SHA-256 |
+| --- | ---: | --- |
+| index-DC8-E33G.js | 1,978,527 | c4a3a9753244effe87245ab6b542caf2d5e0c5d9eb2c7b223695ebbab605c5c2 |
+| index-DTh3dG-j.css | 223,619 | eefd87be415a04f32413c8b31da123169e18327a95c208ee590929689b3f085d |
+
+독립 최종 승인과 전체571테스트·빌드·diff 재실행까지 완료했다. B 게이트를 닫은 뒤 C05–06을 시작한다. 이 사후 기록은 C 변경과 함께 반영하며, 위 버전과 이후 배치 버전을 구분한다. 실물 기기·Safari/Firefox·스크린리더 음성·실제 계약 지급 적합성은 검증하지 않았다.

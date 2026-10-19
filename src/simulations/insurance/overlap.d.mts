@@ -1,0 +1,10 @@
+export type OverlapParams={grossLoss:number;excludedLoss:number;capA:number;capB:number;eligibleA:boolean;eligibleB:boolean;fixedA:boolean;fixedB:boolean};
+export type OverlapOptions=Partial<OverlapParams>;
+export type OverlapSegment={id:string;label:string;amount:number;leftFraction:number;fraction:number};
+export type OverlapCapacity={id:string;label:string;eligible:boolean;cap:number;eligibleCap:number;capFraction:number;eligibleFraction:number};
+export type OverlapFixed={id:string;label:string;eligible:boolean;promise:number;paid:number};
+export type OverlapFrame={index:number;phase:string;label:string;detail:string;grossLoss:number;eligibleLoss:number|null;outside:number|null;paidA:number|null;paidB:number|null;totalPaid:number|null;gap:number|null;remainingBurden:number|null;segments:OverlapSegment[];capacities:(OverlapCapacity&{observed:boolean})[];fixed:(Omit<OverlapFixed,'paid'>&{paid:number|null})[];fixedTotal:number|null;verdict:string|null};
+export type OverlapResult={params:OverlapParams;outside:number;eligibleLoss:number;eligibleCapA:number;eligibleCapB:number;capSum:number;capacityScale:number;capacities:OverlapCapacity[];paidA:number;paidB:number;totalPaid:number;gap:number;remainingBurden:number;fixed:OverlapFixed[];fixedTotal:number;verdict:string;frames:OverlapFrame[];segments:OverlapSegment[]};
+export const overlapDefaults:Readonly<OverlapParams>;
+export function projectOverlap(options?:OverlapOptions):OverlapResult;
+export function overlapScenarios():{label:string;result:OverlapResult}[];

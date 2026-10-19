@@ -240,6 +240,45 @@ async function selectWithKeyboard(page, select, value) {
   await page.keyboard.press('Tab');
   assert.equal(await select.inputValue(), value, 'Keyboard selection did not change the model input');
 }
+// C has exact day boundaries; choose the nearest keyboard origin without assigning DOM values.
+async function setExactRange(page, slider, value) {
+  const bounds = await slider.evaluate(element => ({ min: +element.min, max: +element.max, step: +(element.step || 1), current: +element.value }));
+  assert(value >= bounds.min && value <= bounds.max && Number.isInteger((value - bounds.min) / bounds.step), `Exact range value is outside the authored domain: ${value}`);
+  const origins = [{ value: bounds.current }, { value: bounds.min, key: 'Home' }, { value: bounds.max, key: 'End' }].sort((a, b) => Math.abs(value - a.value) - Math.abs(value - b.value));
+  const origin = origins[0], steps = Math.abs(value - origin.value) / bounds.step;
+  assert(Number.isInteger(steps) && steps <= 500, 'Exact keyboard input exceeds its bounded UI domain');
+  await slider.focus();
+  if (origin.key) await page.keyboard.press(origin.key);
+  for (let index = 0; index < steps; index++) await page.keyboard.press(value > origin.value ? 'ArrowRight' : 'ArrowLeft');
+  assert.equal(await slider.inputValue(), String(value), 'Keyboard input did not reach the exact model boundary');
+}
+async function assertFrameSelection(lab, frame) {
+  const button = lab.getByRole('button', { name: frame.label, exact: true });
+  assert.equal(await button.count(), 1, 'Each observation needs one directly selectable phase');
+  assert.equal(await button.getAttribute('aria-current'), 'step', 'The observed phase is not exposed as current');
+  assert.equal(await lab.locator('button[aria-current="step"]').count(), 1, 'More than one observation is marked current');
+}
+async function keyboardFrameSelection(page, lab, model, inspect) {
+  const observations = [];
+  // Seek backwards, then forwards, without needing autoplay or traversing every intermediate frame.
+  for (const index of [1, 0, model.frames.length - 1]) {
+    const frame = model.frames[index], button = lab.getByRole('button', { name: frame.label, exact: true });
+    await button.focus(); await page.keyboard.press('Tab'); await button.focus();
+    const focus = await button.evaluate(element => { const style = getComputedStyle(element); return { focused: element === document.activeElement, visible: element.matches(':focus-visible'), outline: style.outlineStyle, width: parseFloat(style.outlineWidth) }; });
+    assert(focus.focused && focus.visible && focus.outline !== 'none' && focus.width > 0, 'Direct observation selection has no visible keyboard focus');
+    await page.keyboard.press('Enter');
+    assert.equal(await lab.locator('.money-playback span').innerText(), `${index} / ${model.frames.length - 1} 단계`);
+    assert.equal(await lab.locator('.money-playback').getByRole('button', { name: '정지', exact: true }).count(), 0, 'Direct phase selection must pause playback');
+    await assertFrameSelection(lab, frame);
+    await inspect(frame, model);
+    observations.push({ index, phase: frame.phase, focus });
+    if (index === 1) {
+      await lab.locator('.money-playback').getByRole('button', { name: '재생', exact: true }).click();
+      assert(await lab.locator('.money-playback').getByRole('button', { name: '정지', exact: true }).isVisible());
+    }
+  }
+  return observations;
+}
 // Compare painted geometry, not only data attributes or CSS declarations.
 async function assertBars(locator, expected, description, childSelector = 'i') {
   const actual = await locator.evaluateAll((elements, childSelector) => elements.map(element => {
@@ -262,6 +301,233 @@ async function assertBars(locator, expected, description, childSelector = 'i') {
     assert(offset <= bar.width + 1, `${description}: model exceeds the scale`);
   });
   return actual;
+}
+// C verifiers are reused for ordinary and prefers-reduced-motion observation frames.
+async function coverageConditionsVerifier(page, lab) {
+  const { projectConditions, conditionsDefaults, conditionsBoundaryCases } = await import('../src/simulations/insurance/conditions.mjs');
+  const number = value => value.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+  const won = value => `${number(value / 10000)}만원`;
+  const benefit = value => value === null ? '미정' : won(value);
+  const percent = value => value === null ? '미정' : `${number(value * 100)}%`;
+  const states = { pending: '○ 관찰 전', pass: '✓ 충족', fail: '× 충족하지 않음', reduced: '½ 감액 구간', unknown: '? 확인 필요', invalid: '! 순서 오류' };
+  const cells = model => [
+    ...model.frames.map(frame => [frame.label, ...frame.gates.map(gate => states[gate.state]), frame.statusLabel, benefit(frame.benefit)]),
+    ...conditionsBoundaryCases().map(item => [`${item.params.eventDay}일`, `${item.params.claimDay}일`, item.statusLabel, percent(item.rate), benefit(item.benefit)]),
+  ];
+  const outcome = model => model.benefit === null ? 'unresolved' : model.rate === 0 ? 'zero' : model.rate === .5 ? 'half' : 'full';
+  const inspect = async (frame, model) => {
+    await assertFrameSelection(lab, frame);
+    assert.equal(await lab.locator('[data-conditions-status]').getAttribute('data-conditions-status'), frame.status);
+    assert.equal(await lab.locator('[data-conditions-status] > span > strong').first().innerText(), frame.statusLabel);
+    for (const [attribute, value, label] of [['data-conditions-paid', frame.benefit, benefit(frame.benefit)], ['data-conditions-rate', frame.rate, percent(frame.rate)]]) {
+      const element = lab.locator(`[${attribute}]`);
+      assert.equal(await element.getAttribute('data-value'), value === null ? 'unresolved' : String(value));
+      assert.equal(await element.innerText(), label, 'Unresolved amounts/rates must stay textual and distinct from a known zero');
+      if (value === null) assert(!/0(?:원|만원|%)/.test(await element.innerText()), 'Unknown was rendered as a zero-payment denial');
+    }
+    if (frame.phase !== 'decision') {
+      assert.equal(frame.benefit, null, 'Intermediate condition frame exposes the final amount');
+      assert.equal(frame.status, 'pending');
+      assert(!(await lab.locator('.insurance-result').innerText()).startsWith('예측과'), 'Prediction feedback appeared before all conditions were interpreted');
+    }
+    if (frame.status === 'unresolved' || frame.status === 'invalid') {
+      assert.equal(frame.benefit, null);
+      assert.match(await lab.locator('.insurance-result').innerText(), frame.status === 'invalid' ? /지급 거절 판정이 아닙니다/ : /0원이나 자동 거절을 뜻하지 않습니다/);
+    }
+    const gates = await lab.locator('[data-conditions-gate]').evaluateAll(elements => elements.map(element => {
+      const opening = element.querySelector('.conditions-gate-opening'), symbol = opening.querySelector('span'), style = getComputedStyle(element), symbolStyle = getComputedStyle(symbol);
+      return { id: element.dataset.conditionsGate, state: element.dataset.state, label: element.querySelector(':scope > strong').textContent, stateLabel: element.querySelector('.conditions-gate-state').textContent, detail: element.querySelector('p').textContent, symbol: symbol.textContent, border: style.borderTopStyle, borderWidth: parseFloat(style.borderTopWidth), symbolBorder: symbolStyle.borderBottomStyle, symbolColor: symbolStyle.color, symbolSize: parseFloat(symbolStyle.fontSize), box: element.getBoundingClientRect().toJSON(), opening: opening.getBoundingClientRect().toJSON(), posts: [...opening.querySelectorAll('i')].map(post => post.getBoundingClientRect().toJSON()) };
+    }));
+    assert.equal(gates.length, frame.gates.length);
+    gates.forEach((gate, index) => {
+      const expected = frame.gates[index];
+      assert.deepEqual([gate.id, gate.state, gate.label, gate.stateLabel, gate.detail, gate.symbol], [expected.id, expected.state, expected.label, states[expected.state], expected.detail, states[expected.state].split(' ')[0]], 'A condition gate leaks or contradicts its observed model state');
+      assert(gate.symbolSize >= 18 && gate.opening.height >= 30 && gate.opening.width >= 35, 'Gate state shape has become unreadable');
+      assert.equal(gate.posts.length, 2, 'Each gate must retain two visible boundary posts');
+      for (const post of gate.posts) assert(post.width >= 6 && post.height >= 30 && post.left >= gate.box.left && post.right <= gate.box.right + 1, 'Gate opening escaped its boundary');
+      assert.equal(gate.symbolBorder, ['fail', 'invalid'].includes(expected.state) ? 'solid' : 'dashed', 'Gate closure/uncertainty shape contradicts the current state');
+      if (expected.state === 'unknown') assert(gate.border === 'dashed' && gate.borderWidth >= 2, 'Unknown must retain a dashed uncertainty boundary');
+      if (index > 0 && page.viewportSize().width <= 650) assert(gate.box.top >= gates[index - 1].box.bottom, 'Mobile condition gates must reflow into separate readable rows');
+    });
+    for (const first of gates) for (const second of gates) {
+      if (first.state === second.state) assert.equal(first.symbolColor, second.symbolColor, 'The same condition state has inconsistent meaning colors');
+      if ((first.state === 'pass' && ['fail', 'unknown', 'reduced'].includes(second.state)) || (first.state === 'unknown' && second.state === 'fail')) assert.notEqual(first.symbolColor, second.symbolColor, 'Distinct condition states have lost their meaning colors');
+    }
+    const timeline = await lab.locator('.conditions-timeline').evaluate(element => {
+      const paint = node => { const style = getComputedStyle(node); return { color: style.backgroundColor, image: style.backgroundImage, size: style.backgroundSize }; };
+      const box = node => node.getBoundingClientRect().toJSON();
+      const track = element.querySelector('[data-conditions-timeline]');
+      return {
+        min: Number(track.dataset.min), max: Number(track.dataset.max), track: box(track), label: track.getAttribute('aria-label'),
+        contractTrack: box(element.querySelector('[data-conditions-contract-track]')),
+        contract: { box: box(element.querySelector('[data-conditions-contract]')), start: Number(element.querySelector('[data-conditions-contract]').dataset.start), end: Number(element.querySelector('[data-conditions-contract]').dataset.end) },
+        periods: [...track.querySelectorAll('[data-conditions-period]')].map(period => ({ id: period.dataset.conditionsPeriod, start: Number(period.dataset.start), end: Number(period.dataset.end), fraction: Number(period.dataset.fraction), box: box(period), paint: paint(period), keyPaint: paint(element.querySelector(`.conditions-period-key .conditions-period-${period.dataset.conditionsPeriod}`)) })),
+        boundaries: [...track.querySelectorAll('[data-conditions-boundary]')].map(boundary => ({ id: boundary.dataset.conditionsBoundary, day: Number(boundary.dataset.day), fraction: Number(boundary.dataset.fraction), box: box(boundary), border: getComputedStyle(boundary).borderLeftStyle, borderWidth: parseFloat(getComputedStyle(boundary).borderLeftWidth) })),
+        markers: [...element.querySelectorAll('[data-conditions-marker-track]')].map(row => { const marker = row.querySelector('[data-conditions-marker]'), style = marker && getComputedStyle(marker); return { id: row.dataset.conditionsMarkerTrack, track: box(row), dayLabel: element.querySelector(`[data-conditions-day="${row.dataset.conditionsMarkerTrack}"]`).textContent, marker: marker && { id: marker.dataset.conditionsMarker, day: Number(marker.dataset.day), fraction: Number(marker.dataset.fraction), box: box(marker), symbol: marker.querySelector('span').textContent, color: style.color, border: style.borderLeftStyle, borderWidth: parseFloat(style.borderLeftWidth) } }; }),
+        keys: [...element.querySelectorAll('.conditions-period-key > div')].map(key => ({ label: key.querySelector('b').textContent, range: key.querySelector('small').textContent })),
+        boundaryKeys: [...element.querySelectorAll('.conditions-boundary-key > span')].map(key => key.textContent),
+        axis: [...element.querySelectorAll('.insurance-axis span')].map(node => node.textContent), caption: element.querySelector('figcaption').textContent,
+      };
+    });
+    const t = model.timeline;
+    assert.deepEqual([timeline.min, timeline.max], [t.min, t.max]);
+    assert(timeline.track.width >= 100 && timeline.track.height >= 28, 'Timeline lost its readable common date scale');
+    for (const track of [timeline.contractTrack, ...timeline.markers.map(marker => marker.track)]) {
+      assert(Math.abs(track.left - timeline.track.left) <= 1 && Math.abs(track.width - timeline.track.width) <= 1, 'Contract, benefit, event and claim rows no longer share the same painted scale');
+    }
+    assert.equal(timeline.periods.length, t.periods.length);
+    timeline.periods.forEach((period, index) => {
+      const expected = t.periods[index];
+      assert.deepEqual([period.id, period.start, period.end, period.fraction], [expected.id, expected.start, expected.end, expected.fraction]);
+      assert(Math.abs(period.box.left - timeline.track.left - expected.leftFraction * timeline.track.width) <= 1, 'Date period starts at a different painted day');
+      assert(Math.abs(period.box.width - expected.fraction * timeline.track.width) <= 1, 'Date period length is not proportional to the model duration');
+      assert.deepEqual(period.paint, period.keyPaint, 'Timeline period and its legend swatch disagree');
+      assert(timeline.label.includes(`${expected.label}: ${expected.start}일부터 ${expected.end}일 전까지`));
+    });
+    assert.equal(new Set(timeline.periods.map(period => JSON.stringify(period.paint))).size, t.periods.length, 'Date regions need distinct meaning colors/patterns');
+    assert.equal(timeline.periods.find(period => period.id === 'normal').paint.image, 'none');
+    for (const id of ['before', 'waiting', 'reduced', 'ended']) assert.notEqual(timeline.periods.find(period => period.id === id).paint.image, 'none', `${id}: period lost its non-color pattern`);
+    assert.deepEqual(timeline.keys, t.periods.map(period => ({ label: period.label, range: `${period.start}일 이상 · ${period.end}일 미만` })));
+    assert.deepEqual(timeline.boundaryKeys, t.boundaries.map(boundary => `${boundary.day}일 ${boundary.label}`));
+    assert.deepEqual(timeline.axis, [`${t.min}일`, `${t.max}일 · 모든 행 같은 눈금`]);
+    assert.deepEqual([timeline.contract.start, timeline.contract.end], [t.contract.start, t.contract.end]);
+    assert(Math.abs(timeline.contract.box.left - timeline.contractTrack.left - t.contract.leftFraction * timeline.contractTrack.width) <= 1);
+    assert(Math.abs(timeline.contract.box.width - t.contract.fraction * timeline.contractTrack.width) <= 1, 'Contract effectiveness was confused with benefit coverage');
+    assert.equal(timeline.boundaries.length, t.boundaries.length);
+    timeline.boundaries.forEach((boundary, index) => {
+      const expected = t.boundaries[index];
+      assert.deepEqual([boundary.id, boundary.day, boundary.fraction], [expected.id, expected.day, expected.fraction]);
+      assert(Math.abs(boundary.box.left - timeline.track.left - expected.fraction * timeline.track.width) <= 1, 'Painted boundary differs from exact model day');
+      assert(boundary.border === 'solid' && boundary.borderWidth >= 1 && boundary.box.height > timeline.track.height, 'Exact date boundary lost its visible stroke');
+    });
+    assert.equal(timeline.markers.length, t.markers.length);
+    timeline.markers.forEach((row, index) => {
+      const expected = t.markers[index];
+      assert.equal(row.id, expected.id); assert.equal(row.dayLabel, expected.day === null ? '미확인' : `${expected.day}일`);
+      if (expected.fraction === null) assert.equal(row.marker, null, 'Unknown date was plotted as a real day');
+      else {
+        assert.deepEqual([row.marker.id, row.marker.day, row.marker.fraction], [expected.id, expected.day, expected.fraction]);
+        assert(Math.abs(row.marker.box.left - row.track.left - expected.fraction * row.track.width) <= 1, 'Event/claim marker is painted at the wrong model day');
+        assert.equal(row.marker.symbol, expected.id === 'event' ? '◆' : '●', 'Event and claim need distinct marker shapes');
+        assert.equal(row.marker.border, expected.id === 'event' ? 'solid' : 'dashed');
+        assert(row.marker.borderWidth >= 2 && row.marker.box.height >= 28, 'Date marker lost its readable line');
+      }
+    });
+    assert(timeline.markers[1].track.top > timeline.markers[0].track.bottom, 'Event and claim markers must stay on independent rows, including coincident days');
+    if (timeline.markers.every(row => row.marker)) assert.notEqual(timeline.markers[0].marker.color, timeline.markers[1].marker.color);
+    assert.match(timeline.caption, /◆.*사건.*●.*청구/);
+  };
+  return { projectConditions, conditionsDefaults, inspect, cells, outcome };
+}
+async function overlapVerifier(page, lab) {
+  const { projectOverlap, overlapDefaults, overlapScenarios } = await import('../src/simulations/insurance/overlap.mjs');
+  const won = value => `${(value / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}만원`;
+  const valueText = value => value === null ? '미정' : won(value);
+  const cells = model => [
+    ...model.frames.map(frame => [frame.label, ...frame.segments.map(segment => won(segment.amount)), valueText(frame.totalPaid), valueText(frame.fixedTotal)]),
+    ...overlapScenarios().map(({ label, result }) => [label, ...[result.params.grossLoss, result.outside, result.eligibleLoss, result.eligibleCapA, result.eligibleCapB, result.paidA, result.paidB, result.totalPaid, result.gap].map(won)]),
+    ...[true, false].flatMap(fixedA => [true, false].map(fixedB => { const model = projectOverlap({ fixedA, fixedB }); return [fixedA ? '충족' : '불충족', fixedB ? '충족' : '불충족', won(model.fixed[0].paid), won(model.fixed[1].paid), won(model.fixedTotal)]; })),
+  ];
+  const outcome = model => model.remainingBurden === 0 ? 'all' : 'gap';
+  const inspect = async (frame, model) => {
+    await assertFrameSelection(lab, frame);
+    const bar = lab.locator('[data-overlap-lossbar]');
+    assert.equal(await bar.count(), 1, 'Two contracts must fill exactly one gross-loss area');
+    assert.equal(Number(await bar.getAttribute('data-loss')), frame.grossLoss);
+    assert.deepEqual(await bar.locator('[data-overlap-segment]').evaluateAll(elements => elements.map(element => ({ id: element.dataset.overlapSegment, amount: Number(element.dataset.amount), fraction: Number(element.dataset.fraction), leftFraction: Number(element.dataset.left) }))), frame.segments.map(segment => ({ id: segment.id, amount: segment.amount, fraction: segment.fraction, leftFraction: segment.leftFraction })));
+    await assertBars(bar, [frame.segments.map(segment => segment.fraction)], 'A/B/gap/outside/unresolved fill the original gross loss exactly once');
+    assert.equal(await bar.locator('[data-overlap-fixed-lane], [data-overlap-fixed-total]').count(), 0, 'Fixed promises were nested into the loss partition');
+    const total = frame.segments.reduce((sum, segment) => sum + segment.amount, 0);
+    assert(Math.abs(total - frame.grossLoss) <= 1e-8 * Math.max(1, frame.grossLoss), 'Gross-loss partition creates or destroys loss');
+    assert(model.totalPaid <= model.eligibleLoss && model.paidA <= model.eligibleCapA && model.paidB <= model.eligibleCapB, 'The shared allocation exceeds eligible loss or participating caps');
+    assert.equal(model.paidA + model.paidB, model.totalPaid);
+    assert.equal(model.totalPaid + model.remainingBurden, model.params.grossLoss);
+    const signature = await lab.locator('.overlap-loss-figure').evaluate(element => {
+      const paint = node => { const style = getComputedStyle(node); return { color: style.backgroundColor, image: style.backgroundImage, size: style.backgroundSize }; };
+      return { height: element.querySelector('[data-overlap-lossbar]').getBoundingClientRect().height, label: element.querySelector('[data-overlap-lossbar]').getAttribute('aria-label'), axis: [...element.querySelectorAll('.insurance-axis span')].map(node => node.textContent), parts: [...element.querySelectorAll('[data-overlap-segment]')].map(part => { const key = element.querySelector(`.overlap-key.${part.dataset.overlapSegment}`); return { id: part.dataset.overlapSegment, paint: paint(part), keyPaint: paint(key.querySelector('i')), label: key.querySelector('span').childNodes[0].textContent, amount: key.querySelector('b').textContent }; }), caption: element.querySelector('figcaption').textContent };
+    });
+    assert(signature.height >= 60, 'The one-loss area became an unreadably thin decoration');
+    assert.deepEqual(signature.axis, ['0원', `${won(frame.grossLoss)} · 이 손실 전체`]);
+    assert.equal(signature.parts.length, frame.segments.length);
+    signature.parts.forEach((part, index) => {
+      const expected = frame.segments[index];
+      assert.deepEqual([part.id, part.label, part.amount], [expected.id, expected.label, won(expected.amount)]);
+      assert.deepEqual(part.paint, part.keyPaint, 'Loss paint differs from its semantic legend');
+      assert(signature.label.includes(`${expected.label} ${won(expected.amount)}`), 'Accessible loss description omits a model segment');
+    });
+    assert.equal(new Set(signature.parts.map(part => JSON.stringify(part.paint))).size, frame.segments.length, 'Loss components lost distinct colors/patterns');
+    assert.equal(signature.parts.find(part => part.id === 'a').paint.image, 'none');
+    for (const id of ['b', 'gap', 'outside']) assert.notEqual(signature.parts.find(part => part.id === id).paint.image, 'none', `${id}: meaning cannot be reduced to color alone`);
+    assert.match(signature.caption, /하나의 대상손실/);
+    for (const [attribute, value] of [['gross', frame.grossLoss], ['loss-value', frame.grossLoss], ['eligible-loss', frame.eligibleLoss], ['paid-a', frame.paidA], ['paid-b', frame.paidB], ['paid-total', frame.totalPaid], ['burden', frame.remainingBurden], ['fixed-total', frame.fixedTotal]]) {
+      const element = lab.locator(`[data-overlap-${attribute}]`);
+      assert.equal(await element.getAttribute('data-value'), value === null ? 'unresolved' : String(value), `${attribute}: phase visibility/data differ from model`);
+      assert.equal(await element.innerText(), valueText(value), `${attribute}: unknown value must stay distinct from a known zero`);
+    }
+    if (frame.index < 3) assert.equal(frame.totalPaid, null, 'Allocation was exposed before its observation phase');
+    if (frame.index < 4) {
+      assert.equal(frame.fixedTotal, null);
+      assert(!(await lab.locator('.insurance-result').innerText()).startsWith('예측과'), 'Final prediction feedback appeared before fixed conditions were observed');
+    }
+    assert.equal(await lab.locator('[data-overlap-capacity]').count(), frame.capacities.length);
+    const capacityWidths = [];
+    for (const capacity of frame.capacities) {
+      const row = lab.locator(`[data-overlap-capacity="${capacity.id}"]`);
+      assert.equal(await row.getAttribute('data-eligible'), String(capacity.eligible));
+      assert.equal(await row.getAttribute('data-observed'), String(capacity.observed));
+      assert.equal(await row.locator(':scope > div:first-child > strong').innerText(), `${capacity.label} · 남은 한도 ${won(capacity.cap)}`);
+      assert.equal(await row.locator(':scope > div:first-child > span').innerText(), !capacity.observed ? '적격 관찰 전' : capacity.eligible ? '✓ 이 사건에 적격' : '× 이 사건은 제외');
+      assert.equal(await row.locator(':scope > small').innerText(), capacity.observed ? `배분에 참여하는 한도 ${won(capacity.eligibleCap)}` : '배분 참여 여부는 아직 미정');
+      const geometry = await row.locator('.overlap-cap-track').evaluate(element => {
+        const track = element.getBoundingClientRect(), outline = element.querySelector('.overlap-cap-outline'), fill = element.querySelector('[data-overlap-cap-fill]');
+        const paint = node => { const style = getComputedStyle(node); return { color: style.backgroundColor, image: style.backgroundImage, size: style.backgroundSize }; };
+        return { track: track.toJSON(), outline: outline.getBoundingClientRect().toJSON(), outlineBorder: getComputedStyle(outline).borderTopStyle, fill: fill && { box: fill.getBoundingClientRect().toJSON(), fraction: Number(fill.dataset.fraction), paint: paint(fill) } };
+      });
+      capacityWidths.push(geometry.track.width);
+      assert(Math.abs(geometry.outline.width - geometry.track.width * capacity.capFraction) <= 1 && Math.abs(geometry.outline.left - geometry.track.left) <= 1, 'Capacity outline contradicts its common scale');
+      assert.equal(geometry.outlineBorder, 'dashed', 'Capacity must remain a distinct outline, not a second paid loss bar');
+      if (!capacity.observed) assert.equal(geometry.fill, null, 'An unobserved eligibility decision was painted early');
+      else {
+        assert(geometry.fill, 'Observed eligibility has no model fill');
+        assert.equal(geometry.fill.fraction, capacity.eligibleFraction);
+        assert(Math.abs(geometry.fill.box.width - geometry.track.width * capacity.eligibleFraction) <= 1 && Math.abs(geometry.fill.box.left - geometry.track.left) <= 1, 'Participating capacity fill differs from model');
+        assert.deepEqual(geometry.fill.paint, signature.parts.find(part => part.id === capacity.id).paint, 'Capacity and loss contribution use different A/B meaning colors');
+      }
+    }
+    assert(Math.max(...capacityWidths) - Math.min(...capacityWidths) <= 1, 'Capacity A and B use different painted scales');
+    const convergence = await lab.locator('.overlap-converge').evaluate(element => ({ labels: [...element.children].map(child => child.textContent), box: element.getBoundingClientRect().toJSON(), loss: element.closest('[data-insurance-lab]').querySelector('[data-overlap-lossbar]').getBoundingClientRect().toJSON() }));
+    assert.deepEqual(convergence.labels, ['A ↘', '↙ B']);
+    assert(convergence.box.bottom < convergence.loss.top, 'A/B routes no longer converge toward the single loss area');
+    assert.equal(await lab.locator('[data-overlap-fixed-lane]').count(), frame.fixed.length);
+    for (const fixed of frame.fixed) {
+      const lane = lab.locator(`[data-overlap-fixed-lane="${fixed.id}"]`), paid = lane.locator(`[data-overlap-fixed-${fixed.id}]`);
+      assert.equal(await lane.getAttribute('data-eligible'), String(fixed.eligible));
+      assert.equal(await lane.locator(':scope > div:first-child > strong').innerText(), fixed.label);
+      assert.equal(await lane.locator(':scope > div:first-child > span').innerText(), `약정 ${won(fixed.promise)}`);
+      assert.equal(await paid.getAttribute('data-value'), fixed.paid === null ? 'unresolved' : String(fixed.paid));
+      assert.equal(await paid.innerText(), valueText(fixed.paid));
+      assert.equal(await lane.locator('.overlap-promise-path > span').innerText(), fixed.paid === null ? '? 아직 관찰 전' : fixed.eligible ? '✓ 조건 충족' : '× 조건 불충족');
+      assert.equal(await lane.locator('.overlap-promise-path > i').innerText(), fixed.paid === null ? '?' : fixed.eligible ? '→' : '×');
+      const geometry = await lane.evaluate(element => {
+        const box = node => node.getBoundingClientRect().toJSON(), path = element.querySelector('.overlap-promise-path'), mark = path.querySelector('i'), style = getComputedStyle(mark), matrix = new DOMMatrixReadOnly(style.transform);
+        return { nestedInLoss: !!element.closest('[data-overlap-lossbar]'), lane: box(element), loss: box(element.closest('[data-insurance-lab]').querySelector('[data-overlap-lossbar]')), promise: box(element.firstElementChild), paid: box(element.lastElementChild), path: box(path), state: path.classList.contains('pending') ? 'pending' : path.classList.contains('open') ? 'open' : 'closed', angle: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI, border: style.borderBottomStyle, borderWidth: parseFloat(style.borderBottomWidth) };
+      });
+      assert(!geometry.nestedInLoss && geometry.lane.top > geometry.loss.bottom, 'Conditional fixed promises must remain outside the gross-loss partition');
+      assert.equal(geometry.state, fixed.paid === null ? 'pending' : fixed.eligible ? 'open' : 'closed');
+      assert.equal(geometry.border, fixed.paid === null ? 'dashed' : 'solid');
+      assert(geometry.borderWidth >= 2, 'The fixed promise connector lost its visible stroke');
+      if (page.viewportSize().width <= 650) {
+        assert(geometry.path.top > geometry.promise.bottom && geometry.paid.top > geometry.path.bottom, 'Mobile fixed promise must reflow through separate downward stages');
+        assert(Math.abs(geometry.angle - 90) < .01, 'Mobile fixed promise arrow still points across the page');
+      } else {
+        assert(geometry.path.left > geometry.promise.right && geometry.paid.left > geometry.path.right, 'Desktop fixed promise stages overlap');
+        assert(Math.abs(geometry.angle) < .01, 'Desktop fixed promise arrow lost its horizontal direction');
+      }
+      assert(geometry.promise.width > 40 && geometry.paid.width > 40, 'Fixed condition/promise labels are too narrow to read');
+    }
+    assert.deepEqual(model.fixed.map(fixed => fixed.promise), [1000000, 2000000], 'The two separate frozen fixed promises changed');
+  };
+  return { projectOverlap, overlapDefaults, inspect, cells, outcome };
 }
 async function conditionChecks(page, lab, name) {
   const { projectExpectedLoss, expectedLossDefaults } = await import('../src/simulations/insurance/probability.mjs');
@@ -763,6 +1029,124 @@ async function conditionChecks(page, lab, name) {
     for (const [slider, value] of [[loss, payoutDefaults.loss / 10000], [excluded, payoutDefaults.excluded / 10000], [deductible, payoutDefaults.deductible / 10000], [rate, payoutDefaults.insurerRate * 100], [cap, payoutDefaults.perClaimLimit / 10000]]) assert.equal(await slider.inputValue(), String(value), 'Condition reset did not restore an authored default');
     assert.equal(await fixedControl.isChecked(), true);
     await inspectYear();
+  } else if (kind === 'coverage-conditions') {
+    const { projectConditions, conditionsDefaults, inspect, cells, outcome } = await coverageConditionsVerifier(page, lab);
+    const event = lab.getByRole('slider', { name: /^사건일/ });
+    const claim = lab.getByRole('slider', { name: /^청구일/ });
+    const covered = lab.getByRole('combobox', { name: '보장 사건 여부', exact: true });
+    const excluded = lab.getByRole('combobox', { name: '제외 조건 적용', exact: true });
+    const information = lab.getByRole('combobox', { name: '자료 확인 상태', exact: true });
+    const chooseBoundary = async day => {
+      const button = lab.getByRole('button', { name: `${day}일`, exact: true });
+      await button.focus(); await page.keyboard.press('Enter');
+      assert.equal(await event.inputValue(), String(day));
+      assert.equal(await button.getAttribute('aria-pressed'), 'true', 'The selected exact-day boundary is not visibly current');
+      assert.equal(await lab.locator('button[aria-pressed="true"]').count(), 1, 'Only one exact-day boundary may be selected');
+    };
+    const run = async (scenario, options = {}, expected) => {
+      const model = projectConditions(options);
+      if (expected) assert.deepEqual([model.status, model.benefit], expected, `${scenario}: frozen date/condition meaning changed`);
+      await verify(scenario, model, outcome(model), inspect, cells);
+      assert((await lab.locator('.insurance-result').innerText()).includes(model.verdict), 'The final explanation differs from the condition model');
+      return model;
+    };
+    const frozen = projectConditions();
+    const overview = page.locator('.conditions-overview [data-conditions-timeline]');
+    assert.equal(await overview.count(), 1, 'Authored timeline overview is missing');
+    await assertBars(overview, [frozen.timeline.periods.map(period => period.fraction)], 'Static overview uses the same exact date regions', '[data-conditions-period]');
+    assert.deepEqual(await page.locator('.conditions-overview [data-conditions-marker]').evaluateAll(elements => elements.map(element => ({ id: element.dataset.conditionsMarker, day: Number(element.dataset.day), fraction: Number(element.dataset.fraction) }))), frozen.timeline.markers.map(marker => ({ id: marker.id, day: marker.day, fraction: marker.fraction })));
+    await reset();
+    const initial = await run('waiting-day-29-default', {}, ['waiting', 0]);
+    await keyboardFrameSelection(page, lab, initial, inspect);
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await lab.getByRole('button', { name: '조건 결과 보기', exact: true }).focus(); await page.keyboard.press('Enter');
+    await inspect(initial.frames.at(-1), initial);
+    await changingStopsPlayback(() => chooseBoundary(30));
+    await run('coverage-start-day-30-half-benefit', { eventDay: 30 }, ['reduced', 1000000]);
+    await chooseBoundary(89); await run('last-reduced-day-89', { eventDay: 89 }, ['reduced', 1000000]);
+    await chooseBoundary(90); await run('first-full-day-90', { eventDay: 90 }, ['full', 2000000]);
+    await changingStopsPlayback(() => setExactRange(page, claim, 430));
+    await run('late-claim-does-not-move-event-day-90', { eventDay: 90, claimDay: 430 }, ['full', 2000000]);
+    await chooseBoundary(364); await run('last-covered-day-364', { eventDay: 364, claimDay: 430 }, ['full', 2000000]);
+    await chooseBoundary(365); await run('end-day-365-is-excluded', { eventDay: 365, claimDay: 430 }, ['outside', 0]);
+    await setExactRange(page, event, -1); await run('event-before-effective-day', { eventDay: -1, claimDay: 430 }, ['outside', 0]);
+    assert.equal(await lab.locator('button[aria-pressed="true"]').count(), 0, 'A boundary preset stayed selected after a different slider day');
+    await chooseBoundary(90); await setExactRange(page, claim, 90);
+    await run('same-day-event-and-claim-use-separate-markers', { eventDay: 90, claimDay: 90 }, ['full', 2000000]);
+    await setExactRange(page, claim, 89);
+    await run('invalid-claim-before-event-is-not-denial', { eventDay: 90, claimDay: 89 }, ['invalid', null]);
+    await setExactRange(page, claim, 100);
+    await changingStopsPlayback(() => selectWithKeyboard(page, covered, 'no'));
+    await run('known-not-covered-event', { eventDay: 90, coveredEvent: false }, ['not-covered', 0]);
+    await selectWithKeyboard(page, covered, 'unknown');
+    await run('unknown-covered-event-is-unresolved', { eventDay: 90, coveredEvent: null }, ['unresolved', null]);
+    await selectWithKeyboard(page, covered, 'yes');
+    await changingStopsPlayback(() => selectWithKeyboard(page, excluded, 'yes'));
+    await run('known-exclusion-applies', { eventDay: 90, exclusionApplies: true }, ['excluded', 0]);
+    await selectWithKeyboard(page, excluded, 'unknown');
+    await run('unknown-exclusion-is-unresolved', { eventDay: 90, exclusionApplies: null }, ['unresolved', null]);
+    await selectWithKeyboard(page, excluded, 'no');
+    await changingStopsPlayback(() => selectWithKeyboard(page, information, 'unknown'));
+    await run('unconfirmed-information-is-unresolved', { eventDay: 90, informationKnown: false }, ['unresolved', null]);
+    await selectWithKeyboard(page, excluded, 'yes');
+    await run('unconfirmed-information-with-known-exclusion-stays-unresolved', { eventDay: 90, informationKnown: false, exclusionApplies: true }, ['unresolved', null]);
+    await reset(); await run('repeated-default-no-stale-date-or-gate', {}, ['waiting', 0]);
+    assert.equal(await event.inputValue(), String(conditionsDefaults.eventDay));
+    assert.equal(await claim.inputValue(), String(conditionsDefaults.claimDay));
+    assert.equal(await covered.inputValue(), 'yes'); assert.equal(await excluded.inputValue(), 'no'); assert.equal(await information.inputValue(), 'known');
+  } else if (kind === 'overlap') {
+    const { projectOverlap, overlapDefaults, inspect, cells, outcome } = await overlapVerifier(page, lab);
+    const gross = lab.getByRole('slider', { name: /^총손실/ });
+    const outside = lab.getByRole('slider', { name: /^공통 대상 밖 손실/ });
+    const capA = lab.getByRole('slider', { name: /^실손 A 남은 한도/ });
+    const capB = lab.getByRole('slider', { name: /^실손 B 남은 한도/ });
+    const eligibleA = lab.getByRole('checkbox', { name: '실손 A 적격', exact: true });
+    const eligibleB = lab.getByRole('checkbox', { name: '실손 B 적격', exact: true });
+    const fixedA = lab.getByRole('checkbox', { name: '정액 A 조건 충족', exact: true });
+    const fixedB = lab.getByRole('checkbox', { name: '정액 B 조건 충족', exact: true });
+    const toggle = async input => { await input.focus(); await page.keyboard.press('Space'); };
+    const run = async (scenario, options = {}, expected) => {
+      const model = projectOverlap(options);
+      if (expected) assert.deepEqual([model.paidA, model.paidB, model.remainingBurden], expected, `${scenario}: frozen allocation meaning changed`);
+      await verify(scenario, model, outcome(model), inspect, cells);
+      assert((await lab.locator('.insurance-result').innerText()).includes(model.verdict), 'Final overlap explanation differs from the model');
+      return model;
+    };
+    const frozen = projectOverlap();
+    const overview = page.locator('.overlap-overview [data-overlap-lossbar]');
+    assert.equal(await overview.count(), 1, 'Authored shared-loss overview is missing');
+    await assertBars(overview, [frozen.segments.map(segment => segment.fraction)], 'Static overview shares the same single-loss model');
+    assert.deepEqual(await overview.locator('[data-overlap-segment]').evaluateAll(elements => elements.map(element => Number(element.dataset.amount))), frozen.segments.map(segment => segment.amount));
+    await reset();
+    const initial = await run('equal-caps-share-one-loss', {}, [1500000, 1500000, 0]);
+    await keyboardFrameSelection(page, lab, initial, inspect);
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await lab.getByRole('button', { name: '배분 결과 보기', exact: true }).focus(); await page.keyboard.press('Enter');
+    await inspect(initial.frames.at(-1), initial);
+    await changingStopsPlayback(() => setExactRange(page, capA, 100));
+    await run('unequal-caps-one-to-three-shares', { capA: 1000000 }, [750000, 2250000, 0]);
+    await reset(); await changingStopsPlayback(() => toggle(eligibleB));
+    await run('only-a-eligible', { eligibleB: false }, [3000000, 0, 0]);
+    await changingStopsPlayback(() => toggle(eligibleA)); await run('both-ineligible-with-visible-loss', { eligibleA: false, eligibleB: false }, [0, 0, 3000000]);
+    await toggle(eligibleB); await run('only-b-eligible', { eligibleA: false }, [0, 3000000, 0]);
+    await reset(); await changingStopsPlayback(() => setExactRange(page, outside, 100));
+    await run('outside-amount-is-never-reimbursed', { excludedLoss: 1000000 }, [1000000, 1000000, 1000000]);
+    await setExactRange(page, outside, 500);
+    await run('exclusion-larger-than-gross-loss', { excludedLoss: 5000000 }, [0, 0, 3000000]);
+    await reset(); await setExactRange(page, capA, 100); await changingStopsPlayback(() => setExactRange(page, capB, 100));
+    await run('two-caps-leave-a-visible-gap', { capA: 1000000, capB: 1000000 }, [1000000, 1000000, 1000000]);
+    await setExactRange(page, capA, 0); await setExactRange(page, capB, 0);
+    await run('zero-eligible-capacity-does-not-erase-loss', { capA: 0, capB: 0 }, [0, 0, 3000000]);
+    await reset(); await changingStopsPlayback(() => setExactRange(page, gross, 0));
+    await run('zero-loss-zero-painted-partition-fixed-promises-separate', { grossLoss: 0 }, [0, 0, 0]);
+    await reset(); await changingStopsPlayback(() => toggle(fixedA));
+    await run('fixed-a-condition-false-keeps-indemnity-unchanged', { fixedA: false }, [1500000, 1500000, 0]);
+    await changingStopsPlayback(() => toggle(fixedB));
+    await run('both-fixed-conditions-false-keep-indemnity-unchanged', { fixedA: false, fixedB: false }, [1500000, 1500000, 0]);
+    await toggle(fixedA); await run('only-fixed-a-conditional-promise', { fixedB: false }, [1500000, 1500000, 0]);
+    await reset(); await run('repeated-default-no-double-allocation', {}, [1500000, 1500000, 0]);
+    for (const [slider, key] of [[gross, 'grossLoss'], [outside, 'excludedLoss'], [capA, 'capA'], [capB, 'capB']]) assert.equal(await slider.inputValue(), String(overlapDefaults[key] / 10000));
+    for (const input of [eligibleA, eligibleB, fixedA, fixedB]) assert.equal(await input.isChecked(), true);
   } else assert.fail(`No model-specific verifier exists for published lab ${JSON.stringify(kind)}`);
   await reset();
   assert.match(await controls.locator('span').innerText(), /^0 \/ /);
@@ -839,6 +1223,9 @@ async function verifyAssets() {
         const labs = page.locator('.insurance-lab');
         for (let i = 0; i < await labs.count(); i++) {
           const name = `${width}-${safe(route)}-${i + 1}`;
+          if (['coverage-conditions', 'overlap'].includes(await labs.nth(i).getAttribute('data-insurance-lab'))) {
+            await check(`static-disclosure-geometry-${name}`, page, () => tableDisclosureGeometryChecks(page, labs.nth(i), name));
+          }
           await check(`playback-${name}`, page, () => playbackChecks(page, labs.nth(i), name));
           await check(`model-conditions-${name}`, page, () => conditionChecks(page, labs.nth(i), name));
         }
@@ -886,7 +1273,7 @@ async function verifyAssets() {
       await capture(intermediatePage, '850-pooling-common-final-scene', lab);
       return { disclosures, audit: await verifyStack() };
     });
-    for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout'].includes(chapter.id))) {
+    for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout', 'coverage-conditions', 'overlap'].includes(chapter.id))) {
       await check(`intermediate-850-${chapter.id}-layout-and-model`, intermediatePage, async () => {
         await visit(intermediatePage, chapter.route);
         await domAudit(intermediatePage);
@@ -943,6 +1330,10 @@ async function verifyAssets() {
       assert.deepEqual(await motion(), [], 'Computed motion remains with reduced-motion preference');
       for (const lab of await page.locator('.insurance-lab').all()) {
         await openTables(page, lab);
+        const kind = await lab.getAttribute('data-insurance-lab');
+        const verifier = kind === 'coverage-conditions' ? await coverageConditionsVerifier(page, lab) : kind === 'overlap' ? await overlapVerifier(page, lab) : null;
+        const model = verifier ? (kind === 'coverage-conditions' ? verifier.projectConditions() : verifier.projectOverlap()) : null;
+        if (verifier) await verifier.inspect(model.frames[0], model);
         const controls = lab.locator('.money-playback');
         const step = controls.getByRole('button', { name: '한 단계 진행', exact: true });
         const frameCount = Number((await controls.locator('span').innerText()).match(/^0 \/ (\d+) 단계$/)?.[1]);
@@ -951,8 +1342,14 @@ async function verifyAssets() {
           await step.focus(); await page.keyboard.press('Enter');
           assert.equal(await controls.locator('span').innerText(), `${index} / ${frameCount} 단계`, 'Reduced motion must allow every manual observation frame');
           assert.deepEqual(await motion(), [], 'Manual observation reintroduced reduced-motion animation');
+          if (verifier) await verifier.inspect(model.frames[index], model);
         }
         assert(await step.isDisabled(), 'Reduced-motion stepping did not stop at the final frame');
+        if (verifier) {
+          assert.equal(frameCount, model.frames.length - 1, 'Reduced-motion observation count differs from its ordinary model');
+          const rows = await lab.locator('.insurance-static table tbody tr').evaluateAll(elements => elements.map(row => [...row.querySelectorAll('th,td')].map(cell => cell.textContent.trim())));
+          assert.deepEqual(rows, verifier.cells(model), 'Reduced-motion static alternative differs from the same complete model frames');
+        }
       }
       assert.deepEqual(await motion(), [], 'Stepping reintroduced reduced-motion animation');
       await capture(page, `390-${chapter.id}-reduced-motion-static`);
