@@ -54,3 +54,10 @@
 - 게시본의1440px 홈·320px 세금 헤더·390/320px 읽는 중 우선 홈을 직접 다시 열었다. 표지 밖의 분야·권차,세금5권,네트워크2권·돈1권의 읽는 중 이동 후 고정 번호,모바일 배지와 줄바꿈을 확인했다. 권차가 잘리거나 겹치지 않는다.
 
 권차의 구현·main·Pages·실제 자산·직접 시각 검토는 완료했다. 같은 run의 원래 tax 콘솔 판정은 호스트 기본 favicon404 때문에 실패했으며, 정확한 출처 진단과 앱 바이트가 같은 집중 재검증은 [세금 A 기록](TAX-BATCH-A-VERIFICATION.md)에 별도로 남겼다. 이 문서는 전체 run이 모두 성공했다고 주장하지 않는다. Safari·실기기·스크린리더 음성 출력은 여전히 미검증이다.
+
+
+## 주거 6권·DB 4권을 보존한 후속 합본 — 2026-10-20
+
+main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`의 [run39374566657](https://github.com/Middleages/my-books/actions/runs/39374566657)는 전체10개 job이 성공했다. 게시 권차 검사14/14·PNG36·오류0, sourceChanges 없음이다. [artifact12243121463](https://github.com/Middleages/my-books/actions/runs/39374566657/artifacts/12243121463)의 ZIP SHA-256 `b88b8b267b6810aabc36fac1ea3bb11aaadac16b65d69aaa087abd9774db05b4`를 대조했다. 정확한 JS/CSS는 [세금 B 최종 기록](TAX-BATCH-B-VERIFICATION.md)의 production·게시 해시와 같다.
+
+게시1440px 전체 홈과320px 세금 헤더를 직접 다시 열어 돈·경제 세금5권·주거6권, IT 데이터베이스4권, 새 읽음 분모0/4·0/2와 기존 고정 권차가 맞음을 확인했다. 이는 대표 게시 화면의 재검토이며 새36장 모두를 직접 열었다는 뜻은 아니다. 앞의 초기30장 전수 production 검토 기록과 구분한다.
