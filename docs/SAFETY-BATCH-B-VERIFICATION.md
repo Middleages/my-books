@@ -15,3 +15,7 @@ SAFETY-SOURCES B1–B3의 국가·대상·확인 범위 참조. 국내 최신 �
 
 ## 최초 전체 검증과 수정
 local135ede5/tree42df35e39634d08dfb85d3558b565c764624d42b: unit1504/1504 및 build2048 통과. 로컬 Chromium은 socket/crashpad 환경 오류로 실행 전 실패(화면 검증0). PR99 headce9dcd8의 CI39471784682 build/unit 및 book-volumes 브라우저 성공. 안전 전용 브라우저는7통과 후03 입력의 정확한 label 선택자가 일치하지 않아 중단했다. 옵션 문구가 입력 이름에 섞이지 않도록 명시적 aria-label을 추가한다. 검사를 삭제하거나 성공으로 바꾸지 않았다. 원본 화면 검토와 수정 후 CI는 대기 중이다.
+
+## 수정 후 정상 CI와 원본 검토
+PR99 head3cc57d4/tree0e8efec7f3a476dcbced20bd7fbb8edc7a0b7789, CI39472674977 정상 전체 성공. CI checkouta72bbfb와 동일 tree이며 전용 browser42/42, 4개 폭,54PNG. Artifact12288575151 ZIP8824707bytes SHA256f5d098a682c289cec63437a45986e45151fa3892fd194f2772d82b471da7e286.
+원본320-falls-door는 놀이영역이 문 이동영역과 겹치던 위치에서 분리되는 차이,1440-falls-window는 발판의 위치 차이,320-objects-storage와1440-objects-reset은 부품의 바닥/보관영역 이동과 남는 미확인·정적 대안·포커스를 직접 확인했다. 작은 글자를 축소하지 않고 세로 재배치한다. 설명의 ‘마름모’가 실제 사용한 둥근 부품 형태와 불일치하여 ‘물건 모양’으로 수정한다. 이 문구 수정 이후 정상 CI 및 최신 원본을 다시 확인한다. 실제 터치·Safari·스크린리더 음성·전문 감수·게시 완료는 여전히 미검증.
