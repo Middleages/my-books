@@ -1,0 +1,11 @@
+export type ConditionsParams = { eventDay:number|null; claimDay:number|null; coveredEvent:boolean|null; exclusionApplies:boolean|null; informationKnown:boolean; baseBenefit:number };
+export type ConditionsOptions = Partial<ConditionsParams>;
+export type ConditionsStatus = 'waiting'|'outside'|'not-covered'|'excluded'|'reduced'|'full'|'unresolved'|'invalid';
+export type ConditionsGate = {id:string;label:string;state:'pass'|'fail'|'reduced'|'unknown'|'invalid'|'pending';detail:string};
+export type ConditionsFrame = {index:number;phase:string;label:string;detail:string;gates:ConditionsGate[];status:ConditionsStatus|'pending';statusLabel:string;rate:number|null;benefit:number|null;verdict:string|null};
+export type ConditionsTimeline = { min:number;max:number;periods:{id:string;label:string;start:number;end:number;rate:number|null;leftFraction:number;fraction:number}[];boundaries:{id:string;label:string;day:number;fraction:number}[];markers:{id:string;label:string;day:number|null;fraction:number|null}[];contract:{start:number;end:number;leftFraction:number;fraction:number} };
+export type ConditionsResult = {params:ConditionsParams;boundaries:{effective:number;benefitStart:number;fullStart:number;endExclusive:number};timeline:ConditionsTimeline;gates:ConditionsGate[];dateStatus:ConditionsStatus;status:ConditionsStatus;statusLabel:string;rate:number|null;benefit:number|null;verdict:string;frames:ConditionsFrame[]};
+export const conditionsDefaults:Readonly<ConditionsParams>;
+export const conditionsBoundaries:Readonly<ConditionsResult['boundaries']>;
+export function projectConditions(options?:ConditionsOptions):ConditionsResult;
+export function conditionsBoundaryCases():ConditionsResult[];

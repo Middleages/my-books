@@ -2,7 +2,7 @@
 
 작성일: 2026-10-17 (KST)  
 개정: 같은 날 사용자의 요청으로 시뮬레이션·설명용 애니메이션·그림을 적극 사용하는 방향으로 변경.
-상태: **1권 소개·01–10 구현·전체 편집 점검 완료. [점검 결과](MONEY-BOOK-REVIEW.md) 참조. 2권 소개·01–12 구현·점검·게시 완료([경제 계획](ECONOMICS-TEXTBOOK-PLAN.md)). 3권 A·B 소개·01–04 구현·검증·게시 확인을 완료했다. [투자 계획](INVESTING-TEXTBOOK-PLAN.md)과 [B 검증·게시 상태](INVESTING-BATCH-B-VERIFICATION.md)를 따른다. 3권 C 05·06도 구현·검증·main 반영·게시 확인을 완료했다([C 기록](INVESTING-BATCH-C-VERIFICATION.md)). D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. E 09·10은 구현·검토·실제 게시 검사를 완료했으며 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에서 검증·게시 상태를 구분한다. F 11·12와 소개·01–12 전체 편집 점검, 독립 실제 화면 검토·main 반영·Pages 게시 검증도 완료했다. [F 검증](INVESTING-BATCH-F-VERIFICATION.md)과 [전체 점검](INVESTING-BOOK-REVIEW.md)을 따른다. 4권은 승인된10장·A–E 실행 계획을 확정했다([보험 계획](INSURANCE-TEXTBOOK-PLAN.md), [실행 프롬프트](INSURANCE-SESSION-PROMPTS.md)). A 소개·01–02의 구현·독립 검토·실제 화면·main/Pages 게시 검증을 완료했다([A 기록](INSURANCE-BATCH-A-VERIFICATION.md)). B03–04도 구현했으며 실제 화면·게시 검증 진행 중이다([B 기록](INSURANCE-BATCH-B-VERIFICATION.md)). 5–8권은 큰 범위만 정한 후속 계획.**
+상태: **1권 소개·01–10 구현·전체 편집 점검 완료. [점검 결과](MONEY-BOOK-REVIEW.md) 참조. 2권 소개·01–12 구현·점검·게시 완료([경제 계획](ECONOMICS-TEXTBOOK-PLAN.md)). 3권 A·B 소개·01–04 구현·검증·게시 확인을 완료했다. [투자 계획](INVESTING-TEXTBOOK-PLAN.md)과 [B 검증·게시 상태](INVESTING-BATCH-B-VERIFICATION.md)를 따른다. 3권 C 05·06도 구현·검증·main 반영·게시 확인을 완료했다([C 기록](INVESTING-BATCH-C-VERIFICATION.md)). D 07·08도 구현·검증·main 반영·게시 확인을 완료했으며 [D 기록](INVESTING-BATCH-D-VERIFICATION.md)을 따른다. E 09·10은 구현·검토·실제 게시 검사를 완료했으며 [E 기록](INVESTING-BATCH-E-VERIFICATION.md)에서 검증·게시 상태를 구분한다. F 11·12와 소개·01–12 전체 편집 점검, 독립 실제 화면 검토·main 반영·Pages 게시 검증도 완료했다. [F 검증](INVESTING-BATCH-F-VERIFICATION.md)과 [전체 점검](INVESTING-BOOK-REVIEW.md)을 따른다. 4권은 승인된10장·A–E 실행 계획을 확정했다([보험 계획](INSURANCE-TEXTBOOK-PLAN.md), [실행 프롬프트](INSURANCE-SESSION-PROMPTS.md)). A 소개·01–02의 구현·독립 검토·실제 화면·main/Pages 게시 검증을 완료했다([A 기록](INSURANCE-BATCH-A-VERIFICATION.md)). B03–04도 독립 검토·실제 화면·main/Pages 게시 검증을 완료했다([B 기록](INSURANCE-BATCH-B-VERIFICATION.md)). C05–06은 구현·628테스트·독립 소스 검토를 완료했으며 실제 화면·게시 상태는 [C 기록](INSURANCE-BATCH-C-VERIFICATION.md)을 따른다. 5–8권은 큰 범위만 정한 후속 계획.**
 기준 저장소: Middleages/my-books, main `808c6e4`  
 첫 권 가제: **돈의 기초와 우리 집 재무 — 숫자로 이해하는 돈의 흐름**
 
@@ -513,3 +513,7 @@
 ## 2026-10-19: 3권 배치 A 구현
 
 소개·01 소유권·02 총수익과 표지를 추가했다. 기존 money 분야·안정 ID·읽음 기록을 보존하며 이후 장은 공개하지 않는다. 실제 실행/게시 결과는 [투자 A 검증](INVESTING-BATCH-A-VERIFICATION.md)을 따른다. 앞의 계획 작업 절은 당시 미구현 상태의 기록이다.
+
+## 2026-10-20: 5권 세금 교재 구현
+
+『세금의 구조와 생활』은 소개와 12장으로 과세 사건·계산의 바탕·현금 시점·확인 조건을 연결한다. 실제 제도의 명칭·구조와 가상 세율·공제·정산월은 구분하며 개인별 신고·세액 확정 기능을 만들지 않는다. 로컬 전체권 구현 후에도 [상세 계획](TAX-TEXTBOOK-PLAN.md)의 A–F를 순서대로 공개하고 배치별 main·Actions·Pages·게시 자산 게이트를 기록한다. 실제 완료·미검증 범위는 [전체 편집 점검](TAX-BOOK-REVIEW.md)과 각 배치 기록을 따른다.
