@@ -18,7 +18,7 @@ export function snapshot(state) {
     appliedIds: [...state.appliedIds], openingCash: state.openingCash };
 }
 export function createLedger(opening = { cash: 500, loan: 200, capital: 300 }) {
-  if (!opening || Object.keys(opening).some(key => !accounts[key])) throw new RangeError('정의한 계정만 사용할 수 있습니다.');
+  if (!opening || Object.keys(opening).some(key => !Object.hasOwn(accounts,key))) throw new RangeError('정의한 계정만 사용할 수 있습니다.');
   const balances = Object.fromEntries(Object.keys(accounts).map(key => [key, opening[key] ?? 0]));
   if (Object.values(balances).some(value => !finite(value))) throw new RangeError('잔액은 유한한 숫자여야 합니다.');
   if (['cash', 'receivable', 'equipment', 'loan'].some(key => balances[key] < 0)) throw new RangeError('이 모형의 자산·차입금은 음수가 될 수 없습니다.');
@@ -30,13 +30,13 @@ export function post(state, event) {
   if (!event || typeof event.id !== 'string' || !event.id || !Array.isArray(event.rows) || event.rows.length < 2) throw new TypeError('사건 ID와 두 줄 이상의 기록이 필요합니다.');
   if (state.appliedIds.includes(event.id)) throw new RangeError('같은 사건을 다시 반영할 수 없습니다.');
   const rows = event.rows.map(row => ({ ...row }));
-  for (const row of rows) if (!accounts[row.account] || !['debit','credit'].includes(row.side) || !finite(row.amount) || row.amount < 0) throw new RangeError('계정·차변/대변·비음수 금액을 확인하세요.');
+  for (const row of rows) if (!Object.hasOwn(accounts,row.account) || !['debit','credit'].includes(row.side) || !finite(row.amount) || row.amount < 0) throw new RangeError('계정·차변/대변·비음수 금액을 확인하세요.');
   const total = side => rows.filter(row => row.side === side).reduce((sum,row) => sum + row.amount,0);
   if (!near(total('debit'), total('credit'))) throw new RangeError('차변과 대변 합계가 다릅니다.');
-  const next = { balances: { ...state.balances }, openingCash: state.openingCash, entries: [...state.entries,{ ...event, rows }], appliedIds: [...state.appliedIds,event.id] };
+  const next = { balances: { ...state.balances }, openingCash: state.openingCash, entries: [...state.entries.map(e=>({...e,rows:e.rows.map(r=>({...r}))})),{ ...event, rows }], appliedIds: [...state.appliedIds,event.id] };
   for (const row of rows) next.balances[row.account] += (accounts[row.account].normal === row.side ? 1 : -1) * row.amount;
-  if (next.balances.cash < -1e-9) throw new RangeError('현금 부족: 지급은 실행하지 않았습니다.');
-  if (['receivable','equipment','loan'].some(key => next.balances[key] < -1e-9)) throw new RangeError('보유한 자산·원금보다 많이 없앨 수 없습니다.');
+  if (next.balances.cash < 0) throw new RangeError('현금 부족: 지급은 실행하지 않았습니다.');
+  if (['receivable','equipment','loan'].some(key => next.balances[key] < 0)) throw new RangeError('보유한 자산·원금보다 많이 없앨 수 없습니다.');
   if (!snapshot(next).balanced) throw new Error('장부 관계가 맞지 않습니다.');
   return next;
 }

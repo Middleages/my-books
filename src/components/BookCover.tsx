@@ -20,6 +20,13 @@ export function BookCover({ bookId }: { bookId: string }) {
           <path d="M228 42h14M235 35v14" />
           <path className="home-art-signal" d="M61 50h12m-5-5 5 5-5 5M208 84h29m-7-5 7 5-7 5" />
         </>
+      ) : bookId === "housing" ? (
+        <>
+          <path d="M22 57 74 19l52 38M34 48v58h80V48M64 106V77h21v29M45 59h13v13H45zM91 59h13v13H91z" fill="currentColor" fillOpacity=".06" />
+          <path d="M160 20h70l17 18v65h-87ZM230 20v18h17M174 51h55M174 66h40M174 81h26" />
+          <circle cx="136" cy="90" r="11" /><path d="M131 90h10M136 85v10" />
+          <path className="home-art-signal" d="M120 46h30m-5-5 5 5-5 5M150 65h-30m5-5-5 5 5 5" />
+        </>
       ) : bookId === "database" ? (
         <>
           <ellipse cx="177" cy="32" rx="55" ry="16" fill="currentColor" fillOpacity=".14" />

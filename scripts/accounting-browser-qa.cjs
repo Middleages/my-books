@@ -15,15 +15,15 @@ async function check(name,fn){try{const details=await fn();report.checks.push({n
 async function snap(page,name,locator){await page.evaluate(()=>document.fonts.ready);const file=name+'.png';if(locator)await locator.screenshot({path:path.join(out,file),animations:'disabled'});else await page.screenshot({path:path.join(out,file),fullPage:true,animations:'disabled'});report.screenshots.push(file);}
 async function visit(page,route){await page.goto(base+'#'+route,{waitUntil:'networkidle'});if(route==='/')await page.locator('#home-books').waitFor();else await page.getByRole('heading',{level:1,name:chapters.find(c=>route===`/accounting/${c.id}`)?.heading||'회계와 기업의 돈',exact:true}).waitFor();}
 function observe(page,width){
- page.on('pageerror',error=>report.pageErrors.push({width,error:String(error)}));
- const record=(entry,collection)=>{const result=classifyDiagnostic({width,...entry},base);(result.kind==='application'?collection:report.hostDiagnostics).push(result);};
+ page.on('pageerror',error=>report.pageErrors.push({width,page:page.url(),error:String(error),stack:error.stack}));
+ const record=(entry,collection)=>{const result=classifyDiagnostic({width,page:page.url(),...entry},base);(result.kind==='application'?collection:report.hostDiagnostics).push(result);};
  page.on('console',message=>{if(message.type()==='error')record({type:'console',message:message.text(),source:message.location().url,line:message.location().lineNumber,column:message.location().columnNumber},report.consoleErrors);});
  page.on('response',response=>{if(response.status()>=400)record({type:'response',url:response.url(),status:response.status()},report.resourceErrors);});
  page.on('requestfailed',request=>record({type:'requestfailed',url:request.url(),error:request.failure()?.errorText},report.resourceErrors));
 }
 async function audit(page){
  const x=await page.evaluate(()=>{const visible=e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden';return{width:innerWidth,scroll:document.documentElement.scrollWidth,headings:document.querySelectorAll('main h1').length,nested:document.querySelectorAll('p p').length,inputs:[...document.querySelectorAll('main input,main select')].filter(e=>!e.labels?.length&&!e.getAttribute('aria-label')).map(e=>e.outerHTML),overflow:[...document.querySelectorAll('main *')].filter(e=>visible(e)&&!e.closest('.ac-table')&&e.getBoundingClientRect().right>innerWidth+1).slice(0,8).map(e=>({tag:e.tagName,cls:e.className?.baseVal??e.className,text:e.textContent.slice(0,60)}))};});
- assert(x.scroll<=x.width+1,JSON.stringify(x));assert.deepEqual(x.overflow,[],JSON.stringify(x));assert.equal(x.headings,1);assert.equal(x.nested,0);assert.deepEqual(x.inputs,[]);return x;
+ assert(x.scroll<=x.width+1,JSON.stringify(x));assert.deepEqual(x.overflow,[],JSON.stringify(x));assert.equal(x.headings,1);assert.equal(x.nested,0);assert.deepEqual(x.inputs,[]);const labels=await page.locator('.ac-figure svg:visible text').evaluateAll(es=>es.map(e=>({text:e.textContent,renderedFont:parseFloat(getComputedStyle(e).fontSize)*Math.hypot(e.getScreenCTM().a,e.getScreenCTM().b)})));for(const label of labels)assert(label.renderedFont>=13.5,`Unreadably scaled SVG label: ${JSON.stringify(label)}`);return{...x,svgLabels:labels};
 }
 async function assertBars(lab,frame,model){
  const bars=lab.locator('.ac-balance');assert.equal(await bars.count(),2);
@@ -39,8 +39,8 @@ async function assertBars(lab,frame,model){
 async function assertBoundary(lab,f,model){
  await assertBars(lab,f,model);const svg=lab.locator('svg:visible');assert.equal(await svg.count(),1);assert.equal(await svg.getAttribute('data-boundary-mode'),f.mode);assert.equal(await svg.getAttribute('data-committed'),String(f.committed));assert((await svg.getAttribute('aria-label')).includes(`현금 ${f.balances.cash}`));
  assert.equal(await lab.locator('.ac-result').getAttribute('data-revenue'),'0');assert.equal(await lab.locator('.ac-result').getAttribute('data-cash-change'),String(f.cashChange));
- const geometry=await svg.locator('[data-money-path]').evaluate(p=>{const start=p.getPointAtLength(0),end=p.getPointAtLength(p.getTotalLength());return{start:{x:start.x,y:start.y},end:{x:end.x,y:end.y},d:p.getAttribute('d'),dash:p.getAttribute('stroke-dasharray')};});
- assert(geometry.end.x>geometry.start.x||geometry.end.y>geometry.start.y);assert.equal(geometry.dash,f.committed?null:'6 4');
+ const geometry=await svg.locator('[data-money-path]').evaluate(p=>{const start=p.getPointAtLength(0),end=p.getPointAtLength(p.getTotalLength());const svg=p.ownerSVGElement,mobile=svg.viewBox.baseVal.width===280,target=svg.querySelector(mobile?'[data-company-boundary]':'[data-company-cash]').getBoundingClientRect(),endScreen=new DOMPoint(end.x,end.y).matrixTransform(p.getScreenCTM());return{start:{x:start.x,y:start.y},end:{x:end.x,y:end.y},d:p.getAttribute('d'),dash:p.getAttribute('stroke-dasharray'),targetGap:mobile?target.top-endScreen.y:target.left-endScreen.x,scale:svg.getBoundingClientRect().width/svg.viewBox.baseVal.width};});
+ assert(geometry.end.x>geometry.start.x||geometry.end.y>geometry.start.y);assert.equal(geometry.dash,f.committed?null:'6 4');assert(Math.abs(geometry.targetGap-8*geometry.scale)<1.1,'Arrow must stop before its actual target and not cross the mobile heading');
  return geometry;
 }
 async function assertDouble(lab,f,model){

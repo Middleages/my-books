@@ -16,18 +16,18 @@ function BalanceBars({frame,label}:{frame:Snapshot&{scale:number};label:string})
 function BoundaryScene({frame:f,mobile}:{frame:BoundaryFrame;mobile:boolean}){
  const marker=`ac-${useId().replace(/:/g,'')}`;
  const x=mobile?140:102,y=mobile?49:122,cx=mobile?140:440,cy=mobile?247:122;
- const path=mobile?'M140 118V170':'M158 122H358';
+ const path=mobile?'M140 118V150':'M158 122H358';
  const claim=f.mode==='contribution'?f.balances.capital:f.mode==='borrowing'?f.balances.loan:f.balances.receivable;
  return <svg viewBox={mobile?'0 0 280 398':'0 0 680 320'} role="img" aria-label={`${f.actor}와 회사의 경계. ${f.committed?'확정':'거래 전'} 현금 ${fmt(f.balances.cash)}, ${f.relation}의 상대 잔액 ${fmt(claim)}`} data-boundary-mode={f.mode} data-committed={f.committed}>
  <defs><marker id={marker} markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#346e82"/></marker></defs>
- <rect x={mobile?14:285} y={mobile?158:26} width={mobile?252:374} height={mobile?226:272} rx="18" fill="#f3f8f7" stroke="#397562" strokeWidth="2" strokeDasharray="8 4"/>
+ <rect data-company-boundary="true" x={mobile?14:285} y={mobile?158:26} width={mobile?252:374} height={mobile?226:272} rx="18" fill="#f3f8f7" stroke="#397562" strokeWidth="2" strokeDasharray="8 4"/>
  <text x={mobile?28:303} y={mobile?184:54} className="ac-svg-heading">작은책상 · 회사 경계 안</text>
  <g transform={`translate(${x},${y})`}>
  {f.mode==='borrowing'?<><path d="M-41-17L0-42L41-17ZM-34-12V22M-12-12V22M12-12V22M34-12V22M-43 27H43" fill="#fff1dd" stroke="#a16920" strokeWidth="3"/><text x="0" y="51" textAnchor="middle">은행</text></>:f.mode==='contribution'?<><circle cy="-18" r="17" fill="#eee4f5" stroke="#765087" strokeWidth="2"/><path d="M-34 27C-34-11 34-11 34 27Z" fill="#eee4f5" stroke="#765087" strokeWidth="2"/><text x="0" y="51" textAnchor="middle">소유주</text></>:<><path d="M-32-33H32V32L21 25L10 32L0 25L-11 32L-22 25L-32 32Z" fill="#f0ecfb" stroke="#69518d" strokeWidth="2"/><path d="M-20-18H20M-20-4H20M-20 10H8" stroke="#69518d" strokeWidth="2"/><text x="0" y="51" textAnchor="middle">고객</text></>}
  </g>
  <path d={path} fill="none" stroke={f.committed?'#236f63':'#849da6'} strokeWidth="3" strokeDasharray={f.committed?undefined:'6 4'} markerEnd={`url(#${marker})`} data-money-path="incoming"/>
  <text x={mobile?190:222} y={mobile?128:101} textAnchor="middle" className="ac-svg-heading">{fmt(f.amount)}단위</text>
- <g transform={`translate(${cx},${cy})`}><rect x="-74" y="-40" width="148" height="74" rx="9" fill="#dcefe8" stroke="#347b65" strokeWidth="2"/><path d="M-65-29H-48M48 23H65" stroke="#347b65" strokeWidth="3"/><text y="-12" textAnchor="middle">회사 현금</text><text y="18" textAnchor="middle" className="ac-svg-number">{fmt(f.balances.cash)}</text></g>
+ <g transform={`translate(${cx},${cy})`}><rect data-company-cash="true" x="-74" y="-40" width="148" height="74" rx="9" fill="#dcefe8" stroke="#347b65" strokeWidth="2"/><path d="M-65-29H-48M48 23H65" stroke="#347b65" strokeWidth="3"/><text y="-12" textAnchor="middle">회사 현금</text><text y="18" textAnchor="middle" className="ac-svg-number">{fmt(f.balances.cash)}</text></g>
  <path d={mobile?'M65 299H215':'M343 216H612'} stroke="#7f7290" strokeWidth="2"/>
  <text x={mobile?140:478} y={mobile?323:244} textAnchor="middle" className="ac-svg-heading">{f.mode==='collection'?'매출채권':f.mode==='borrowing'?'차입금':'납입자본'} {fmt(claim)}</text>
  <text x={mobile?140:478} y={mobile?348:269} textAnchor="middle">{f.committed?f.relation:'반대편 기록도 함께 확인'}</text>
