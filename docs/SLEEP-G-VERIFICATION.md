@@ -15,3 +15,12 @@
 G 단위검사/정상PR build/변경책·홈 브라우저/변경 원본 직접 검토는 실행 결과를 아래에 추가한다. 이전 배치의 원본 검토를 새 소스의 직접 검토라고 바꾸어 기록하지 않는다.
 
 의학 전문가 감수는 미실행이다. 최종 안정 main SHA/tree에서 단일 build artifact를 사용한 전체 실제 등록 suite production/published, Pages 반영·실제 게시 확인은 통합 담당의 별도 게이트다. G source/direct 마감만으로 전체 출판 완료를 선언하지 않는다.
+
+## G source/direct 마감 결과
+
+- PR91 source head43ba608b1c087ad07d78ac34020dd77ba4c38b33, treebd126231ce1091ecde2e405afd150052e359a2c8. CI39435880554의 전체 단위검사/build, 수면 production 및 권차 홈 production이 성공했다. 실제 checkoutea14911b0b49ae00b04923dad19aca37139821b6도 같은 tree/clean이다.
+- 수면114검사 성공·실패0,249PNG, page/console/resource 오류0. Artifact12272420439 ZIP SHA256f8b3dd929f688cbf9b9c56ddac54574de56a79b9c5a2f68592d05f79629f125a를 대조하고 원본ZIP을 보존했다.
+- 변경 원본5개를 직접 열었다:320--child-sleep-sleep-record,390/1440--child-sleep-sleep-pressure-and-rhythm,320--child-sleep-disrupted-days,320-home-parenting. 새 감수 고지, 기존 안전·진단 제한, 모바일 줄바꿈·그림/제어 인접성, 홈12장 표시에서 잘림·중첩을 발견하지 않았다. 링크 목적지는 출처 원문/소스 경로와 대조했고 PNG만으로 URL을 검증했다고 주장하지 않는다.
+- G 신규2검사와 범위 감사 통과:소개+12장 모두 감수 미실행 또는 아직 받지 않았다는 고지, 공식 KDCA 경로,12개 고유 slug/readId, 문서 내부링크, clean worktree. F source 대비 다른 책·카탈로그·모델·컴포넌트·공유UI는 그대로다.
+- 최초 계획의 10장 ‘담당/휴식 구간 배치’는 임의 일정 편집 대신 단독/교대/공백 합성 계획 선택으로 구현했다. 돌봄 공백은 보존하지만 담당 중복 겹침을 새로 구현했다고 주장하지 않는다. 각 배치 계약/검증 기록이 실제 조작 범위를 정의한다.
+- 이 마감 기록만 추가하는 후속 문서 commit은 위 source의 앱·QA·테스트 파일을 변경하지 않는다. source/direct 검토 범위를 이 정확한 tree에 고정하고, 최종 통합 main/live와 임상 감수 완료로 확대하지 않는다.
