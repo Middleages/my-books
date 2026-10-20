@@ -1,6 +1,6 @@
 # 회계와 기업의 돈 · F 구현 및 검증
 
-기준: **2026-10-20**. 마지막11–12장의 소스와 가상 모델을 작성했다. **첫 실제 production509/509·413 PNG와 직접 원본16개 검토를 마쳤다. 직접 검토에서 발견한 설명/표식 및 초기 학습 흐름을 보완하고 최종 재검사를 진행한다. 수정 전 전체1222개·build442는 통과했으며, 수정 후 실제 production·새 직접 검토·main 통합·Pages·exact-live·넓은 최종 회귀는 아직 대기다.** 구현 사실을 공개 배포 완료와 섞지 않는다.
+기준: **2026-10-20**. 마지막11–12장의 소스와 가상 모델을 작성했다. **직접 검토 수정 뒤 전체1222/1222·build442, actual production509/509·413 PNG·앱/host 진단0, 새 원본23개 직접 검토를 통과했다.** 첫509 통과 뒤 발견한 설명/표식 문제와 수정 이력은 아래에 보존한다. **최종 main 통합·Pages·exact-live·등록12 suite의 넓은 최종 회귀는 아직 대기다.** 전용 검증 완료와 실제 게시 완료를 섞지 않는다.
 
 ## 범위와 병행 작업 보존
 
@@ -59,12 +59,12 @@ IAS2의 판매 재고 원가와 관련 수익 기간, 개념체계의 보고 경
 - 회계 unit/SSR **100/100 통과**. 신규18개에는 명시적 control 이름·12개 예약 ID·두 비교 패널·실제 포함 괄호·별도 CVP·미확인과 정적 전체 근거 SSR을 포함한다.
 - 전체 `node --test --test-concurrency=4 tests/*.test.mjs` **1190/1190 통과**. 실행 병렬도만4이고 기존 assertion을 삭제하지 않았다. Vite SSR의 기존 HMR 포트 경고와 테스트 결과를 구별한다.
 - `npm run build`의 TypeScript/Vite 전체 빌드 **416 modules 통과**. 기존 큰 번들 경고는 남아 있으며 기능 실패와 구별한다.
-- 브라우저 검증기에 기존 A–E assertion을 유지한 채11–12를 추가했다.320/390/1440,7조건×만기3종×관찰3단계, 실제 막대·총이익 괄호 기하, 분모3반례, CVP 수량5×가격2, 문서5패킷×주장6종×모든 단계·실제 문자열·상태·연결 배치,키보드·no-autoplay·조건 변경·정적·route 정리·normal/reduced-motion,768/900·읽음12가 대상이다. 첫 실제 browser 결과는 아래에 기록한다. 직접 검토 수정 후의 최종 실제 결과는 별도 확인한다.
+- 브라우저 검증기에 기존 A–E assertion을 유지한 채11–12를 추가했다.320/390/1440,7조건×만기3종×관찰3단계, 실제 막대·총이익 괄호 기하, 분모3반례, CVP 수량5×가격2, 문서5패킷×주장6종×모든 단계·실제 문자열·상태·연결 배치,키보드·no-autoplay·조건 변경·정적·route 정리·normal/reduced-motion,768/900·읽음12가 대상이다. 첫 실제 browser 결과는 아래에 기록한다. 직접 검토 수정 후의 최종 실제 결과는 마지막 절에 따로 기록한다.
 - console의 source URL, 실패 response/request URL·status, 알려진 host-root favicon과 앱 오류의 엄격한 분류, exact HTML/전체 JS/CSS bytes 대조를 보존한다.
 
 ## 아직 끝나지 않은 항목
 
-E는 최종 production332/332·새 원본20개 직접 검토를 마쳤다. F 수정 후 실제 production·새 직접 PNG 검토, 최종 통합 main/Pages/exact-live와 모든 등록 suite의 넓은 최종 회귀가 남아 있다. 전체 소개/01–12 원고의 작성자 연결 검토는 별도 BOOK-REVIEW 기록에 남겼다. 자동 캡처 생성만으로 직접 검토를 완료했다고 쓰지 않는다.
+E는 최종 production332/332·새 원본20개 직접 검토를 마쳤다. F 수정 후 실제 production·새 직접 PNG 검토도 완료했다. 최종 통합 main/Pages/exact-live와 모든 등록 suite의 넓은 최종 회귀가 남아 있다. 전체 소개/01–12 원고의 작성자 연결 검토는 별도 BOOK-REVIEW 기록에 남겼다. 자동 캡처 생성만으로 직접 검토를 완료했다고 쓰지 않는다.
 
 넓은 최종 검사는 안정 main 창에 당시 전체 suite를 명시적으로 고정하고 한 build의 production/published를 대조한다. 가능한 수동 실행 수단 또는 read-only 검증 전용 브랜치를 쓰며, unknown-path를 일부러 만들거나 선택기를 바꿔 범위를 강제하지 않는다. 해당 검증이 실제 끝나기 전 ‘전체7권 완료’라고 보고하지 않는다. 실제 기기·Safari/Firefox·음성 스크린리더·학습효과는 미실행이다.
 
@@ -97,3 +97,55 @@ run39405591624는 최초 F 소스로 실제 성공했지만 아래 설명 개선
 - 직접 검토에서 마진 설명의 ‘이자5·세금의 생략’이 정본도 이자를 생략했다는 오해를 줄 수 있음을 발견했다. ‘영업이익에는 이자비용5가 포함되지 않고, 모형 전체의 세금은 생략했습니다’로 고쳤다. 정본 순이익65와 이자비용5를 변경하지 않았다. SSR/실제 브라우저에 정확한 문구 검사를 추가했다.
 - CVP44/45/46의 실제 좌표·차이는 맞았지만, 비등방 SVG 안의 원 표식이 가로로 늘어나45/46의 가까운 점을 과도하게 덮었다. 선·세로 차이는 기존 정확 좌표를 유지하고 표식만 같은 좌표의8 CSS px HTML 점으로 분리했다. 마름모는 분기점, 원은 선택 매출 위치로 범례를 추가했다. 표식의 크기는 금액이 아니며 근접·겹침은 정확한 숫자를 함께 읽도록 적었다. 브라우저 assertion은 표식의8×8 실제 크기와 모델 좌표 대비 화면 중심 위치를 대조한다. 검사를 제거하거나 차이를 확대해 그리지 않았다.
 - 수정 후 전체1222/1222 및 `NODE_OPTIONS=--max-old-space-size=2048 npm run build`442 modules도 통과했다. 실행 병렬도/메모리 한도만 조절했고 검사 범위는 줄이지 않았다. 수정 후 actual production과 새 원본 직접 검토는 아직 대기다. 첫509 통과를 수정 후 통과 또는 실제 게시 완료로 바꾸어 쓰지 않는다.
+
+
+## 최종 수정본 actual production과 새 직접 검토 · 10:46 UTC
+
+| 항목 | 확인한 결과 |
+| --- | --- |
+| 실행 소스 | local `c728b03e5630331929dcd92a3bb2ba471436f995`, remote `6ac904f311332e5449d762fc1151ee61947d4a81` |
+| PR 실행 | [PR59](https://github.com/Middleages/my-books/pull/59), [run39408667355](https://github.com/Middleages/my-books/actions/runs/39408667355) |
+| actual checkout | `7c6fb147212daf773cc8549a1fb9f979c4af1a0d` |
+| 같은 tree / 변경 파일 | `59c3d91c97ebc4b95e4a107ef3356926a0479c92` / 빈 문자열 |
+| 전체 unit / build | 1222/1222, TypeScript/Vite442 modules. 로컬 및 Actions 모두 성공 |
+| affected production | `book-volumes` 성공, 회계509/509·413 PNG. 나머지10 suite는 이 실행에서 생략되며 통과 아님 |
+| 진단 | page/console/resource/host 배열 모두0. URL 없는 오류 예외를 추가하지 않음 |
+| 실행 시간 | 10:33:46.961–10:42:14.173 UTC |
+| 원본 ZIP | artifact12259036852,103511346 bytes, SHA-256 `d9d9d5a501b06e2e591aa7e34bcd14baf8ab208628ff4795334f9f9102465747`, 다운로드 바이트 대조 성공 |
+| 실제 JS | `index-C8ICqGRe.js`,3279663 bytes, SHA `7d5af580f2703ed147f7b2abb17c4bb90ca6ca224f20e6983a43a004e9bcb761` |
+| 실제 CSS | `index-Beezqj7B.css`,392406 bytes, SHA `ecfdceefc0f11625b04321b46cab7b007c96b1edaee88756e344ddac797e0620` |
+| 배포 여부 | draft PR의 deploy/published는 예정대로 skipped. 실제 main/Pages 통과의 대체 증거가 아님 |
+
+새 원본23개를 직접 열어 검토했다. 다음 목록은 자동 생성 개수413과 별개의 직접 확인 범위다.
+
+- `1440-ratios-no-collection-loan40-composition.png`
+- `320-ratios-no-collection-loan40-composition.png`
+- `1440-ratios-base-loan280-margin.png`
+- `390-ratios-base-loan0-maturity.png`
+- `1440-ratios-full-collection-loan40-composition.png`
+- `320-ratios-stock-paid-loan40-composition.png`
+- `1440-cvp-price5-quantity45.png`
+- `1440-cvp-price5-quantity46.png`
+- `320-cvp-price5-quantity46.png`
+- `320-cvp-price3-quantity45.png`
+- `320-ratio-boundary-zero.png`
+- `1440-ratio-boundary-negative.png`
+- `1440-documents-missing-cost-connection-final.png`
+- `320-documents-missing-cost-cost-final.png`
+- `1440-documents-capital-revenue-capital-final.png`
+- `390-documents-next-month-cash-period-final.png`
+- `1440-documents-base-dividend-final.png`
+- `320-documents-mixed-cost-final.png`
+- `390-normal-motion-ratios.png`
+- `390-normal-motion-documents.png`
+- `1440-ratios-static.png`
+- `1440-documents-static.png`
+- `1440-ratios-period-mismatch.png`
+
+- 최초/초기화 화면이 기준225와 비교65의 다른 현금을 같은565/150과 함께 보이며 normal-motion·정적 읽기에도 같은 조건이 유지된다. 회수400의 현금465·채권0, 추가 재고 지급의 현금165·재고120, 만기0/280의 분모110/390과 동일 현금/총부채도 확인했다.
+- 마진 그림의240+90+70=400과 총이익160 포함 괄호, 영업이익에는 이자비용5를 넣지 않는 정확한 해설이 보존됐다.0 분모의 계산 불가와 음수 분모의 산술−20%/해석 유보를 분리한다.
+- 손익분기 표식의 가로 늘어짐이 사라졌다.1440에서45개 분기점과46개 선택점을 각각 작은 위치 표식으로 읽을 수 있고,320의 가까운 점 겹침은 확대하거나 숨기지 않고 매출230−비용228=이익2 및 명시적 설명으로 보완한다.45개에서는225/225·이익0, 가격3에서는 평행선·공헌0·손실90과 분기점 없음이 일치한다.
+- 문서 연결에서 원가 누락은1035 등식/영업−150 일치와 원가0대240·재고300대60 충돌을 함께 보인다. 출자350대300, M1 회수0/영업−310과 M2 회수400/새 이익0, 법적 배당 근거 부족, 다른 범위 자료의 계산 중지도 유지된다.
+- 모바일 세로 연결·줄바꿈, 키보드 포커스, normal/reduced-motion의 동일 정보와 정적 대안의 분리를 확인했다. 긴 전체 캡처는 배치·연결·선택 핵심값을 확인한 것이며 축소된 모든 글자를 정밀하게 읽었다고 하지 않는다. 이23개에서 새로운 결함을 발견하지 못했다.
+
+최종 기록만 추가할 때 실행 파일은 위 tree의 버전과 diff0을 유지한다. 실제 통합/게시 시 최신 다른 책을 보존하고 새 합본 원본도 확인한다. 최종 안정 main을 고정한 전체 등록12 suite의 production/published 검사는 아직 실행하지 않았으며, 완료 사실로 기재하지 않는다.
