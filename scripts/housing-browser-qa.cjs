@@ -98,6 +98,7 @@ async function capture(page, name, selector) {
   if (selector)
     await page
       .locator(selector)
+      .first()
       .screenshot({ path: path.join(out, file), animations: "disabled" });
   else
     await page.screenshot({
@@ -220,7 +221,7 @@ async function bars(page) {
   return rows;
 }
 async function tables(page) {
-  const lab = page.locator(".housing-lab").first(),
+  const lab = page.locator(".housing-lab"),
     main = page.locator("main");
   const before = await main.boundingBox();
   for (const summary of await lab.locator(".housing-static summary").all()) {
@@ -248,37 +249,120 @@ async function tables(page) {
   }
   return { rows: await lab.locator("tbody tr").count() };
 }
-async function playback(page) {
-  const lab = page.locator(".housing-lab").first(),
-    play = lab.getByRole("button", { name: "재생", exact: true });
+async function playback(page, selector = ".housing-lab") {
+  const lab = page.locator(selector).first(),
+    play = lab.getByRole("button", { name: "재생", exact: true }).first();
   if (!(await play.count())) return { manualOnly: true };
   await play.click();
   await delay(1800);
-  await lab.getByRole("button", { name: "정지", exact: true }).click();
-  const before = await lab.locator(".money-playback").innerText();
+  await lab.getByRole("button", { name: "정지", exact: true }).first().click();
+  const before = await lab.locator(".money-playback").first().innerText();
   await delay(1800);
   assert.equal(
-    await lab.locator(".money-playback").innerText(),
+    await lab.locator(".money-playback").first().innerText(),
     before,
     "pause timer changed frame",
   );
-  await lab.getByRole("button", { name: "한 단계 진행", exact: true }).click();
-  await lab.getByRole("button", { name: "처음부터", exact: true }).click();
-  assert.match(await lab.locator(".money-playback").innerText(), /0\s*\//);
+  await lab.getByRole("button", { name: "한 단계 진행", exact: true }).first().click();
+  await lab.getByRole("button", { name: "처음부터", exact: true }).first().click();
+  assert.match(await lab.locator(".money-playback").first().innerText(), /0\s*\//);
   await play.click();
   const reset = lab.getByRole("button", {
     name: "조건까지 초기화",
     exact: true,
   });
   if (await reset.count()) await reset.click();
-  else await lab.getByRole("button", { name: "처음부터", exact: true }).click();
+  else await lab.getByRole("button", { name: "처음부터", exact: true }).first().click();
   await delay(1800);
   const initial = await lab.getAttribute("data-housing-lab") === "mortgage-paths" ? 13 : 0;
-  assert.match(await lab.locator(".money-playback").innerText(), new RegExp(`\\b${initial}\\s*\\/`));
+  assert.match(await lab.locator(".money-playback").first().innerText(), new RegExp(`\\b${initial}\\s*\\/`));
   return { pauseReset: true, initial };
 }
 async function scenarios(page, id) {
   const lab = page.locator('.housing-lab').first();
+  if(id === 'rent-or-buy') {
+    const cases=[{}, {annualReturn:3}, {priceChange:-.2}, {priceChange:.2}, {priceChange:-1}, {months:0}, {transactionCosts:false}, {months:60,monthlyFunding:0}, {settlement:'unknown'}];
+    for(const change of cases) {
+      await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
+      const settings=lab.locator('.housing-path-settings');
+      if(!await settings.evaluate(e=>e.open)) await settings.locator('summary').click();
+      const input={...model.comparisonDefaults,...change},r=model.housingComparison(input);
+      await lab.locator('select').nth(0).selectOption(String(input.months));
+      await lab.locator('select').nth(1).selectOption(String(input.priceChange));
+      await lab.locator('select').nth(2).selectOption(String(input.annualReturn));
+      await lab.locator('select').nth(3).selectOption(input.settlement);
+      await lab.locator('input[type=checkbox]').nth(0).setChecked(input.transactionCosts);
+      await lab.locator('input[type=checkbox]').nth(1).setChecked(input.monthlyFunding>0);
+      assert.equal(await lab.getByLabel('매수 경로의 종점 가격 가정',{exact:true}).isDisabled(),input.months===0);
+      for(let step=0;step<4;step++) {
+        assert.equal(await lab.locator('[data-comparison-step]').getAttribute('data-comparison-step'),String(step));
+        const m=step===0?0:step===1?Math.floor(input.months/2):step===2?input.months:input.months+1;
+        for(const kind of ['rent','jeonse','buy']) {const f=r.paths[kind].frames[m],lane=lab.locator(`[data-comparison-kind="${kind}"]`);
+          assert.equal(Number(await lane.getAttribute('data-comparison-cash')),f.cash);
+          assert.equal(Number(await lane.getAttribute('data-comparison-debt')),f.debt);
+          assert.equal(await lane.getAttribute('data-comparison-failure'),f.failure?.kind??'none');
+          assert.deepEqual(await lane.locator('.housing-fill').evaluateAll(es=>es.map(e=>+e.dataset.value)),[f.cash,f.asset,f.debt,f.spent]);
+        }
+        await bars(page);if(step<3)await lab.getByRole('button',{name:'한 단계 진행',exact:true}).first().click();
+      }
+    }
+    await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
+    await lab.getByRole('button',{name:'정산 뒤 현금',exact:true}).click();
+    assert.match(await lab.locator('[data-comparison-kind="rent"]').innerText(),/16,100만원/);
+    const control=await lab.locator('.money-playback').first().boundingBox(),state=await lab.locator('.housing-stage').boundingBox();
+    assert(state.y-(control.y+control.height)<180,'comparison control detached from current observation');
+    await capture(page,`${page.viewportSize().width}-rent-or-buy-settled`,'.housing-comparison-scene');
+    await lab.getByRole('button',{name:'월 배정액0 · 60개월 반례',exact:true}).click();
+    assert.equal(await lab.locator('[data-comparison-kind="buy"]').getAttribute('data-comparison-failure'),'monthly-shortage');
+    assert.match(await lab.locator('[data-comparison-kind="buy"]').innerText(),/첫 부족 뒤/);
+    assert.doesNotMatch(await lab.locator('[data-comparison-kind="buy"] .housing-comparison-gate').innerText(),/조건부 순정산액/,'stopped actual ledger must not present a later planned-debt settlement');
+    await capture(page,`${page.viewportSize().width}-rent-or-buy-shortage`,'.housing-comparison-scene');
+    if(page.viewportSize().width<=800){
+      for(const kind of ['rent','jeonse','buy']) {
+        const lane=lab.locator(`[data-comparison-kind="${kind}"]`),local=lane.locator('.housing-lane-controls');
+        await local.getByRole('button',{name:'처음부터',exact:true}).click();
+        await local.getByRole('button',{name:'재생',exact:true}).click();await delay(100);
+        await local.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+        await delay(1700);
+        const expected=model.housingComparison({months:60,monthlyFunding:0});
+        for(const key of ['rent','jeonse','buy']){const f=expected.paths[key].frames[30],other=lab.locator(`[data-comparison-kind="${key}"]`);assert.equal(Number(await other.getAttribute('data-comparison-cash')),f.cash);assert.equal(Number(await other.getAttribute('data-comparison-debt')),f.debt)}
+        assert.equal(await lab.locator('[data-comparison-step]').getAttribute('data-comparison-step'),'1');
+        assert(await local.isVisible());const c=await local.boundingBox(),b=await lane.locator('.housing-comparison-holdings').boundingBox();
+        assert(b.y-(c.y+c.height)<50,'lane controls detached from its actual holdings');
+      }
+      await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
+      await lab.getByLabel('매수 경로의 종점 가격 가정',{exact:true}).selectOption('0.2');
+      assert.equal(await lab.locator('[data-comparison-step]').getAttribute('data-comparison-step'),'2');
+      assert.equal(Number(await lab.locator('[data-comparison-kind="buy"] .housing-fill.claim').getAttribute('data-value')),240e6);
+      await capture(page,`${page.viewportSize().width}-rent-or-buy-local-price`,'[data-comparison-kind="buy"]');
+    }
+  }
+  if(id === 'place-and-market') {
+    for(const days of [0,20,31]) {
+      await setRange(lab,0,days);
+      const expected=model.placeComparison({days}).extraHours;
+      assert.equal(Number(await lab.locator('[data-extra-hours]').getAttribute('data-extra-hours')),expected,'DOM must preserve the exact model time difference');
+      assert(Math.abs(expected-days)<1e-10,'round-trip minute difference must equal one hour per day within binary arithmetic error');
+      await bars(page);
+    }
+    for(const access of [false,true])for(const space of [false,true])for(const moveBy of [29,30,60]) {
+      await lab.locator('input[type=checkbox]').nth(0).setChecked(access);await lab.locator('input[type=checkbox]').nth(1).setChecked(space);await lab.locator('select').selectOption(String(moveBy));
+      assert.equal(Number(await lab.locator('[data-place-candidates]').getAttribute('data-place-candidates')),model.placeComparison({days:31,requireAccess:access,requireSpace:space,moveBy}).candidateCount);
+    }
+    assert.match(await lab.getByRole('status').innerText(),/후보 0곳/);
+    const mix=page.locator('[data-housing-lab="market-mix"]');
+    for(let step=0;step<4;step++) {
+      await mix.locator('.housing-presets button').nth(step).click();const r=model.marketMix({mix:step===1||step===3,priceRise:step>=2});
+      assert.equal(Number(await mix.locator('[data-market-mean]').getAttribute('data-market-mean')),r.mean);assert.equal(Number(await mix.locator('[data-fixed-comparison]').getAttribute('data-fixed-comparison')),r.fixedComparison);
+      assert.equal(await mix.locator('.housing-trade-dots>div').count(),6);await bars(page);
+    }
+    if(page.viewportSize().width<=800){const observed=await mix.locator('.housing-trade-baskets>.observed').boundingBox(),baseline=await mix.locator('.housing-trade-baskets>.baseline').boundingBox(),control=await mix.locator('.money-playback').boundingBox();assert(observed.y<baseline.y,'changing basket must precede baseline on mobile');assert(observed.y-(control.y+control.height)<260,'market controls detached from changing basket')}
+    await capture(page,`${page.viewportSize().width}-market-mix-changed`,'[data-housing-lab="market-mix"]');
+    const supply=page.locator('[data-housing-lab="housing-supply"]');
+    for(let step=0;step<=8;step++){const r=model.supplyFrames()[step];assert.equal(Number(await supply.locator('[data-supply-step]').getAttribute('data-supply-step')),step);assert.deepEqual(await supply.locator('[data-supply-value]').evaluateAll(es=>es.map(e=>+e.dataset.supplyValue)),[r.permission,r.construction,r.completion]);if(step<8)await supply.getByRole('button',{name:'한 단계 진행',exact:true}).click()}
+    if(page.viewportSize().width<=480){const control=await supply.locator('.money-playback').boundingBox(),last=await supply.locator('.housing-supply-stages section').last().boundingBox();assert(last.y-(control.y+control.height)<550,'supply destination too far from changing controls')}
+    await capture(page,`${page.viewportSize().width}-housing-supply-changed`,'[data-housing-lab="housing-supply"]');
+  }
   if(id === 'housing-rights') {
     for(const mode of ['rent','jeonse','buy']) {
       await lab.locator('select').selectOption(mode);
@@ -581,7 +665,7 @@ async function assets() {
       [2, 4, 6, 8, 10, 12].includes(chapters.length),
       "published chapters must be a complete batch",
     );
-    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/purchase.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/ongoing.mjs")).href)};
+    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/purchase.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/ongoing.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/comparison.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/market.mjs")).href)};
     if (process.env.LIVE_URL) base = process.env.LIVE_URL.replace(/\/?$/, "/");
     else {
       server = http.createServer((req, res) => {
@@ -631,6 +715,7 @@ async function assets() {
           await visit(page, route);
           const a = await audit(page);
           await capture(page, `${width}-${id || "intro"}-initial`, ".housing-lab");
+          if(id==='place-and-market')for(const part of ['market-mix','housing-supply'])await capture(page,`${width}-${part}-initial`,`[data-housing-lab="${part}"]`);
           if (width === 390 || width === 1440)
             await capture(page, `${width}-${id || "intro"}-full`);
           return a;
@@ -709,11 +794,13 @@ async function assets() {
         );
         assert.equal(motion, false);
         await capture(page, `390-${c.id}-reduced-static`, ".housing-lab");
+        if(c.id==='place-and-market')for(const part of ['market-mix','housing-supply'])await capture(page,`390-${part}-reduced-static`,`[data-housing-lab="${part}"]`);
       });
     }
     for (const id of selected.map(c=>c.id)) {
       await visit(page,'housing/'+id);
       await check('play-pause-reset-'+id,page,()=>playback(page));
+      if(id==='place-and-market')for(const part of ['market-mix','housing-supply'])await check('play-pause-reset-'+part,page,()=>playback(page,`[data-housing-lab="${part}"]`));
     }
     await check("keyboard-focus-and-history", page, async () => {
       await visit(page, "housing/rent-and-deposit");

@@ -9,16 +9,11 @@
 - 모바일: 좁은 container에서 세로 비교·5개씩 순위 재배치·세로 날짜, HTML 금액 라벨. 재생·정지·앞뒤·reset과 관련 입력은 실험 안에 인접한다. 사용자가 시작하기 전 자동 재생하지 않고 조건 변경/unmount 때 타이머를 정리한다. reduced-motion은 이동 없이 같은 프레임·정적 표를 제공한다.
 - 실제 금융정보·외부 API·난수 추첨·수익 추천 없음. 기존 책의 본문·ID·공개 장 수는 변경하지 않는다.
 
-## 검증 상태
+## 현재 검증 상태 (2026-10-20 08:10 UTC)
 
-아래 최종 기록을 채우기 전에는 전체 검증 완료나 게시 완료로 보고하지 않는다. 첫 책 등록은 browser suite/선택기 계약을 추가하므로 현재 정책의 넓은 회귀 대상이다. 이후 책 전용 변경은 해당 책 전체 suite와 book-volumes를 유지한다.
+PR36의 아래 동일 tree에서 전체 unit1049/1049, TypeScript/Vite build와 production browser9개 suite가 모두 성공했다. 확률83/83·홈14/14와 최종 소스 원본 PNG 직접 검토를 완료했다. 이는 해당 PR 소스의 결과이며 **최신 main 통합·Pages·실제 게시 버전 확인은 별도 대기**다. 독립 동료 리뷰·실제 기기·스크린리더 실행은 수행하지 않았다.
 
-- 소스 SHA/tree: 최종 코드 commit 후 기록 예정.
-- 의존성: 최초 기본 npm cache 경로 생성 오류(ENOENT) 후, 쓰기 가능한 작업공간 cache를 명시한 `npm ci` 재실행 성공. 이 재시도는 권한 거부 우회가 아니라 환경 경로 수정이다.
-- 전체 unit/build: 최종 코드에서 실행·결과 기록 예정.
-- production 브라우저: 확률·book-volumes 및 첫 등록 넓은 suite 결과 기록 예정.
-- 원본 화면 직접 검토: 실행 후 실제로 연 파일과 발견/수정 내용 기록 예정.
-- 공개 PR/main/Pages: 아직 A 결과를 게시하지 않았다. 직렬 공개 창에서만 통합한다.
+첫 책 등록은 suite/선택기 계약을 추가하므로 넓은 회귀를 모두 실행했다. 후속 책 전용 변경은 해당 책 전체 suite와 book-volumes를 유지한다. 아래 앞부분의 ‘예정/미완료’는 당시 실행 이력이며 현재 상태를 대신하지 않는다.
 
 ## 출처와 한계
 
@@ -60,3 +55,27 @@
 - 계획 PR31의 세 문서는 main `05602d24c6946f4e4c1b95f5f926e2e8eb51b316`에 먼저 반영됐다. A는 그 main을 자기 feature 브랜치에만 병합했다. 카탈로그의 import 삽입 충돌에서 확률 세 import와 주거 두 import를 모두 보존했다. 최신 main 기준 변경은 A 관련21파일이며 다른 교재의 본문·모델·공개 장 수를 바꾸지 않았다.
 - 로컬 병합 소스 `2327b7465879136f211229ef4a943c9fc95f4a0a`, tree `61e8969ca9c375ac0901b33fb8e31fbbe2024e36`의 전체 unit1049/1049가 통과했다. 병합 전963개와 최신 main의 추가 검사를 구분한다. 최신 main에 대한 쓰기·배포는 여전히 하지 않았다.
 - 같은 병합 소스의 TypeScript/Vite 전체 build도 성공했다. 이후 문서 보완은 실행 사실만 기록하며 앱 코드는 동일하다. 최종 원격 source/tree의 새 browser 실행과 직접 PNG 재검토는 별도로 남긴다.
+
+### 최종 PR 소스의 실제 넓은 검증
+
+- 공개 head `28c50481c4f0e2ad825d07695d9db6f150538a80`, 로컬 HEAD `86387021b39b8dccf260dea484eceeeff197dd9e`, 공통 tree `2e47f729914a24b81829731f2657cdc0b92c4d69`. [CI39388611097](https://github.com/Middleages/my-books/actions/runs/39388611097)의 가상 병합 소스 `23c37b0e74b1ba904f301bb87737ec76f93ad9c7`도 같은 tree다.
+- 전체 unit1049/1049·실패0, TypeScript/Vite build 성공. production browser의 insurance, investing, tax, book-volumes, database, kubernetes, housing, accounting, probability **9개 모두 성공**, 생략0. 보험 회귀가 마지막으로 완료될 때까지 실행 중 상태를 성공으로 처리하지 않았다.
+- probability83/83·앱/콘솔/리소스 오류0·PNG32개. book-volumes14/14·오류0. production Chromium에서1440/390/320, 중간768/900, normal/reduced-motion을 검사했다. 점 쌍 분리·축 실제 폭·손실 막대 실제 길이·입력/단계 조합·키보드·정지/reset·unmount·정적 표·읽음 새로고침·알 수 없는ID 보존을 포함한다.
+- 두 보고서와 로컬 production dist의 자산명이 같고 전체 바이트/해시가 일치했다. JS `index-BxWePgZw.js`: 2,734,480bytes, SHA256 `f20f804d5f4ff3c30aa0d671cd66372ae4524f538196bbb40879538daf7bdcbb`; CSS `index-dammzSQV.css`:342,687bytes, SHA256 `d38e7bf5da4301378a29f348f673ad93123a62aea338ec748c326965761069cb`.
+- probability artifact12248412142 ZIP SHA256 `40e289b2dd5f0376537c8005a03980384db2bbf62fc24ba1f7d3b46a61a6ce63`; book-volumes artifact12248388401 ZIP SHA256 `b1fa97f7a0ca05d7b273c36e207d14acf94a9a04401615af02cf834180123dcd`.
+
+### 최종 원본 화면 직접 검토
+
+작성자가 실제 원본 PNG를 직접 열었다. 별도 동료 리뷰는 아니다. 다음은 실제 검토한 파일이며, 생성만 된 나머지 파일까지 검토했다고 하지 않는다.
+
+- 분포: `320-distribution-median.png`, `390-distribution-first-figure.png`, `1440-distribution-median.png`. 10점 구분·가운데 두 순위·공통 금액축·평균/중앙값 차이, 금액 위치를 바꾸지 않은 충돌 방지 세로 배치, 꼬리 그림 바로 위 입력을 확인했다.
+- 손실/제어: `320-loss-date-figure.png`, `320-loss-controls.png`, `320-loss-large-figure.png`, `1440-loss-large-figure.png`, `390-normal-motion-large-figure.png`. 미래100만원 제외·200만원 단위 줄바꿈·인접 버튼/예측·0–1700만원 같은 축·충당200+부족1400·현금 경계·색 외 사선 범례를 확인했다.
+- 정적/전체: `320-loss-static.png`, `320-distribution-static.png`, `390--probability.png`, `320--probability-losses-and-liquidity.png`, `390--probability-averages-and-distributions.png`. 원자료·요약·전체 대안·단계 설명·본문/그림/해석/출처 흐름과 실제 공개2장을 확인했다.
+- 홈: book-volumes의 `320-probability-heading.png`, `390-home.png`. 돈·경제8권, 읽음 분모2와 다른 책/순서를 확인했다.
+- 이전 자동 통과가 놓친320px 점 겹침을 수정한 **뒤** 다시 본 화면이다. inspected states에서 핵심 라벨의 잘림·점 겹침이 남지 않았다. 모든 실제 장치/모든 브라우저/독자 학습효과를 검증한 것은 아니다.
+
+### 다음 통합과 게시 게이트
+
+- PR 검증 중 main은 세금F·주거E를 포함하는 `d76ed55e9969108449124a154c7c67e946068740`으로 이동했다. 위 PR 검증은 그 이후 main의 결과가 아니다. 다음 신규책 파동은 그때의 최신 main과 병행 책 변경을 보존하여 직렬 담당자가 통합한다.
+- PR의 deploy/published-browser는 skipped이며 게시 성공이 아니다. 통합된 정확한 tree의 전체 unit/build·필수 넓은 suite, Actions/Pages/verify-published와 같은 자산의 실제 게시 바이트/해시·공개2장 대조가 남아 있다.
+- 이 최종 기록은 위 검증된 tree 이후의 문서 전용 보완이다. 앱 코드·검증 스크립트는 바꾸지 않는다. 통합 후 기록 자체의 새로운 tree와 이전 앱 검증 근거를 구분한다.
