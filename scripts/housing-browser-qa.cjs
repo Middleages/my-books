@@ -262,6 +262,13 @@ async function scenarios(page, id) {
     assert.match(await lab.innerText(), /담보권 ≠ 은행의 소유 지분/);
   }
   if(id === 'rent-and-deposit') {
+    const timeline=lab.locator('.housing-rental-timeline');
+    assert.equal(await timeline.locator('.money-playback').count(),1,'timeline owns its only playback controls');
+    assert.equal(await lab.locator('.money-playback').count(),1,'no duplicate timer UI');
+    const next=timeline.getByRole('button',{name:'한 단계 진행',exact:true});
+    await next.scrollIntoViewIfNeeded();
+    const near=await next.boundingBox(), panel=await timeline.locator('.housing-offer').first().boundingBox();
+    assert(panel.y-(near.y+near.height)<260,'step control too far from changing timeline panel');
     await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
     assert.equal(await lab.locator('[data-offer-rate]').getAttribute('data-offer-rate'),'0.06');
     await lab.getByRole('button',{name:'보증금 차이 0',exact:true}).click();
