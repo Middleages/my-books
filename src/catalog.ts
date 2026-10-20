@@ -1,3 +1,16 @@
+import Withholding from "./content/tax/Withholding.mdx";
+import YearEndSettlement from "./content/tax/YearEndSettlement.mdx";
+import ValueAddedTax from "./content/tax/ValueAddedTax.mdx";
+import InvestmentTaxes from "./content/tax/InvestmentTaxes.mdx";
+import TaxAccounts from "./content/tax/TaxAccounts.mdx";
+import HousingTaxes from "./content/tax/HousingTaxes.mdx";
+import GiftsInheritance from "./content/tax/GiftsInheritance.mdx";
+import DeductionsCredits from "./content/tax/DeductionsCredits.mdx";
+import TaxTimeline from "./content/tax/TaxTimeline.mdx";
+import ReadingTaxDocuments from "./content/tax/ReadingTaxDocuments.mdx";
+import TaxIntro from "./content/tax/Intro.mdx";
+import TaxEvents from "./content/tax/TaxEvents.mdx";
+import ProgressiveTax from "./content/tax/ProgressiveTax.mdx";
 import InsuranceIntro from "./content/insurance/Intro.mdx";
 import ExpectedLoss from "./content/insurance/ExpectedLoss.mdx";
 import Pooling from "./content/insurance/Pooling.mdx";
@@ -88,6 +101,18 @@ export type Chapter = {
   Content: ComponentType;
 };
 export const chapters: Chapter[] = [
+  { id: "tax-events", bookId: "tax", readId: "tax/tax-events", number: "01", title: "세금은 어디서 발생할까", heading: "모든 돈의 이동이 같은 세금 대상일까?", description: "소득·소비·보유·이전과 단순 자금 이동의 과세 검토 지점을 구분합니다.", Content: TaxEvents },
+  { id: "progressive-tax", bookId: "tax", readId: "tax/progressive-tax", number: "02", title: "과세표준과 세율", heading: "높은 세율이 전체 금액에 적용될까?", description: "가상 과세표준의 구간별 금액과 세액·평균세율을 연결합니다.", Content: ProgressiveTax },
+  { id: "withholding", bookId: "tax", readId: "tax/withholding", number: "03", title: "소득과 원천징수", heading: "급여 총액과 실수령액은 왜 다를까?", description: "급여의 세 갈래 목적지와 세법상 총급여를 분리합니다.", Content: Withholding },
+  { id: "year-end-settlement", bookId: "tax", readId: "tax/year-end-settlement", number: "04", title: "연말정산의 구조", heading: "환급은 새로 번 돈일까?", description: "결정세액·기납부액·정산 차액을 같은 눈금으로 봅니다.", Content: YearEndSettlement },
+  { id: "value-added-tax", bookId: "tax", readId: "tax/value-added-tax", number: "05", title: "소비와 부가가치세", heading: "받은 세금을 모두 내는 걸까?", description: "공급 단계별 매입·매출 세액과 영세율·면세를 비교합니다.", Content: ValueAddedTax },
+  { id: "investment-taxes", bookId: "tax", readId: "tax/investment-taxes", number: "06", title: "금융소득과 투자 세금", heading: "모든 투자 수익이 같은 소득일까?", description: "수익 원천·과세 사건·계좌 조건의 분기점을 찾습니다.", Content: InvestmentTaxes },
+  { id: "tax-accounts", bookId: "tax", readId: "tax/tax-accounts", number: "07", title: "세금과 금융계좌", heading: "계좌의 이름만 보면 혜택을 알 수 있을까?", description: "일반계좌·ISA·연금계좌의 확인 조건과 미확인을 구분합니다.", Content: TaxAccounts },
+  { id: "housing-taxes", bookId: "tax", readId: "tax/housing-taxes", number: "08", title: "주택과 부동산 세금", heading: "집을 살 때·가질 때·팔 때는 무엇이 다를까?", description: "취득·보유·양도 사건과 세목·시점을 잇습니다.", Content: HousingTaxes },
+  { id: "gifts-inheritance", bookId: "tax", readId: "tax/gifts-inheritance", number: "09", title: "증여와 상속", heading: "옮긴 재산 전부가 과세표준일까?", description: "이전 재산의 범위·평가·합산·공제의 경계를 봅니다.", Content: GiftsInheritance },
+  { id: "deductions-credits", bookId: "tax", readId: "tax/deductions-credits", number: "10", title: "공제·감면·세액공제", heading: "같은 공제금액이 같은 세금 감소일까?", description: "과세표준을 줄이는 공제와 세액을 줄이는 공제를 비교합니다.", Content: DeductionsCredits },
+  { id: "tax-timeline", bookId: "tax", readId: "tax/tax-timeline", number: "11", title: "세금의 시간표", heading: "세금의 발생과 납부는 같은 날일까?", description: "귀속기간·정산·실제 현금의 시차를 같은 시간축에서 봅니다.", Content: TaxTimeline },
+  { id: "reading-tax-documents", bookId: "tax", readId: "tax/reading-tax-documents", number: "12", title: "세금 자료 함께 읽기", heading: "안내문에서 무엇을 더 확인해야 할까?", description: "가상 문서의 사실·가정·미확인 문장을 구분합니다.", Content: ReadingTaxDocuments },
   { id: "expected-loss", bookId: "insurance", readId: "insurance/expected-loss", number: "01", title: "같은 평균, 다른 충격", heading: "같은 기대손실이면 감당할 위험도 같을까?", description: "사건 확률과 손실 크기, 같은 평균 뒤에 남는 현금 부족을 비교합니다.", Content: ExpectedLoss },
   { id: "pooling", bookId: "insurance", readId: "insurance/pooling", number: "02", title: "보험은 위험을 어떻게 나눌까", heading: "여럿이 모이면 손실이 사라질까?", description: "공동 재원의 이동과 개별·공통 충격에서 지급 여력이 달라지는 이유를 봅니다.", Content: Pooling },
   { id: "contract-map", bookId: "insurance", readId: "insurance/contract-map", number: "03", title: "보험 계약의 지도", heading: "내 계약에서 누가 내고 누가 보장받을까?", description: "계약의 역할과 돈의 방향, 기본계약·특약의 경계를 연결합니다.", Content: ContractMap },
@@ -453,6 +478,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
+  { id: "tax", categoryId: "money", title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–12장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
   { id: "insurance", categoryId: "money", title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 위험의 크기부터 계약·유지·해지·청구 시차와 설명서 읽기까지 연결합니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
   { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–12장 공개 · 가상 실험으로 경제 뉴스의 원리와 해석 조건을 익힙니다.", Intro: EconomicsIntro },
