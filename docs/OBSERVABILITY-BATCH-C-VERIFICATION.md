@@ -11,3 +11,5 @@ Grafana Loki cardinality, OpenTelemetry traces/context propagation을2026-10-20 
 진행 중 최신 main `9c1df885218915bd368744e1420c3c17ce911fd1`을 fetch해 AGENTS·작성 지침이 기존과 동일함을 확인했다. 새4A의 main/Pages 게시 창을 변경하지 않고, C는 검증 B 기준 stacked 후보로 분리한다. 최종 코드 리뷰에서 전파가 끊긴 T-B를 T-A 자식 합에 넣지 않도록 필터를 보강했고 모델4테스트를 재통과했다. 전체1153테스트는 성공했으며 최종 build와 production/원본 시각 게이트는 아직 대기다.
 
 최종 로컬 TypeScript/Vite build도 통과했다. browser verifier 문법·diff 검사 성공. 이 소스는 B branch 기준의 별도 draft PR에서 production와 직접 PNG를 확인할 예정이다.
+
+첫 production run39404824673은 통과했지만 직접1440 원본에서 C waterfall의 obs-span-row/track 이름이 A 스타일과 충돌하여 축과 막대 시작점이 어긋남을 발견했다. C 전용 obs-rel-* 이름으로 분리하고 각 track과 시간축의 좌측·폭 오차가2px 미만인지 browser 검사에 추가한다. C 스타일이 A에 영향을 줄 가능성도 있어 수정 후 A signals 원본을 함께 재검토한다. 첫 캡처 생성만으로 시각 통과를 판정하지 않는다.
