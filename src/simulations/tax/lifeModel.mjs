@@ -301,3 +301,71 @@ export function housingRoute(index = 0) {
       "서로 다른 사건·세목입니다. 취득 때 냈다고 보유·양도 단계가 끝나지 않습니다.",
   };
 }
+export function transferBase({
+  kind = "gift",
+  value = 400,
+  prior = 50,
+  deduction = 100,
+  confirmed = true,
+} = {}) {
+  choice(kind, ["gift", "inheritance"]);
+  if (typeof confirmed !== "boolean")
+    throw new TypeError("confirmed must be boolean");
+  [value, prior, deduction].forEach((n) => amount(n));
+  if (value + prior > MODEL_LIMIT) throw new RangeError("Combined value");
+  const combined = value + prior,
+    usedDeduction = Math.min(combined, deduction),
+    base = confirmed ? combined - usedDeduction : null;
+  return {
+    kind,
+    value,
+    prior,
+    deduction,
+    combined,
+    usedDeduction,
+    base,
+    scope:
+      kind === "gift"
+        ? "가상 수증자 한 명의 이전 재산"
+        : "가상 상속재산 전체의 출발 묶음",
+    result:
+      base === null
+        ? "평가·합산·공제 조건 미확인: 과세표준 계산 보류"
+        : `가정한 과세표준 ${base} 단위. 실제 증여·상속세 계산이 아닙니다.`,
+    frames: [
+      {
+        label: "① 평가",
+        value,
+        detail: "현재 손에 든 현금이 아니라 평가해야 할 재산부터 확인합니다.",
+      },
+      {
+        label: "② 합산 후 재산",
+        value: combined,
+        detail:
+          "가상 사례에서는 이전 재산을 함께 더했습니다. 현실의 대상·기간·이미 낸 세금은 별도 확인합니다.",
+      },
+      {
+        label: "③ 공제 후 과세표준",
+        value: base,
+        detail:
+          "공제 전 재산과 공제 후 과세표준을 구분합니다. 모르는 조건을 0으로 대신하지 않습니다.",
+      },
+    ],
+  };
+}
+export function deductionComparison(base = 400, amountOff = 50) {
+  amount(base);
+  amount(amountOff);
+  const plain = settlement({ base, credit: 0, prepaid: 0 }),
+    income = settlement({ base, deduction: amountOff, credit: 0, prepaid: 0 }),
+    credit = settlement({ base, credit: amountOff, prepaid: 0 });
+  return {
+    base,
+    amountOff,
+    rows: [
+      { id: "plain", label: "공제 없음", ...plain },
+      { id: "income", label: "소득공제", ...income },
+      { id: "credit", label: "세액공제", ...credit },
+    ].map((r) => ({ ...r, saving: plain.finalTax - r.finalTax })),
+  };
+}

@@ -121,3 +121,33 @@ export declare function housingRoute(index?: number): {
   index: number;
   result: string;
 };
+export declare function transferBase(options?: {
+  kind?: string;
+  value?: number;
+  prior?: number;
+  deduction?: number;
+  confirmed?: boolean;
+}): {
+  kind: string;
+  value: number;
+  prior: number;
+  deduction: number;
+  combined: number;
+  usedDeduction: number;
+  base: number | null;
+  scope: string;
+  result: string;
+  frames: Frame[];
+};
+export declare function deductionComparison(
+  base?: number,
+  amountOff?: number,
+): {
+  base: number;
+  amountOff: number;
+  rows: (Settlement & {
+    id: string;
+    label: string;
+    saving: number;
+  })[];
+};

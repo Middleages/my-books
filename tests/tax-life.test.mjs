@@ -9,6 +9,8 @@ import {
   accountRoute,
   accountKinds,
   housingRoute,
+  transferBase,
+  deductionComparison,
 } from "../src/simulations/tax/lifeModel.mjs";
 const close = (a, b) => assert(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 test("tax payroll: cash partitions, non-taxable classification is not another outflow", () => {
@@ -179,4 +181,63 @@ test("tax housing: all events remain separate, index input bounded", () => {
   }
   for (const x of [-1, 3, 0.5, NaN, Infinity, "1", null])
     assert.throws(() => housingRoute(x), RangeError);
+});
+test("tax transfers: valuation, prior amounts and deduction bounds without invented unknowns", () => {
+  for (const kind of ["gift", "inheritance"])
+    for (const value of [0, 0.01, 20, 399.99, 400, 100000]) {
+      const r = transferBase({ kind, value });
+      close(r.combined, r.value + r.prior);
+      close(r.base + r.usedDeduction, r.combined);
+      assert(r.base >= 0);
+      const unknown = transferBase({ kind, value, confirmed: false });
+      assert.equal(unknown.base, null);
+      assert.equal(unknown.frames.at(-1).value, null);
+      assert.match(unknown.result, /보류/);
+      assert.deepEqual(
+        r.frames.map((f) => f.value),
+        [value, r.combined, r.base],
+      );
+      assert.deepEqual(transferBase({ kind, value }), r);
+    }
+  assert.equal(transferBase({ value: 0, prior: 0, deduction: 200 }).base, 0);
+  assert.equal(
+    transferBase({ value: 1000000, prior: 0, deduction: 0 }).base,
+    1000000,
+  );
+  for (const key of ["value", "prior", "deduction"])
+    for (const v of [-1, NaN, Infinity, 1000001, "400", null])
+      assert.throws(() => transferBase({ [key]: v }), RangeError);
+  assert.throws(() => transferBase({ value: 1000000, prior: 1 }));
+  assert.throws(() => transferBase({ kind: "unknown" }));
+  for (const v of ["unknown", 0, 1, null])
+    assert.throws(() => transferBase({ confirmed: v }), TypeError);
+});
+test("tax deduction comparison uses the same progressive calculation in all rows", () => {
+  const r = deductionComparison();
+  assert.deepEqual(
+    r.rows.map((x) => x.finalTax),
+    [80, 65, 30],
+  );
+  assert.deepEqual(
+    r.rows.map((x) => x.saving),
+    [0, 15, 50],
+  );
+  for (const base of [
+    0, 99.99, 100, 100.01, 299.99, 300, 300.01, 400, 600, 1000000,
+  ])
+    for (const off of [0, 0.01, 50, 150, 1000, 1000000]) {
+      const c = deductionComparison(base, off);
+      for (const row of c.rows) {
+        assert(row.finalTax >= 0);
+        close(row.saving, c.rows[0].finalTax - row.finalTax);
+        if (row.id === "income")
+          close(row.taxableBase, Math.max(0, base - off));
+        if (row.id === "credit") close(row.taxableBase, base);
+      }
+      assert.deepEqual(deductionComparison(base, off), c);
+    }
+  for (const v of [-1, NaN, Infinity, 1000001, "400", null]) {
+    assert.throws(() => deductionComparison(v, 0), RangeError);
+    assert.throws(() => deductionComparison(0, v), RangeError);
+  }
 });
