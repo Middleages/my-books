@@ -7,5 +7,5 @@ export function helpFrame(topic='location') {
 export function sharedPlanFrame(owner='A',accepted=false) {
  if(!['A','B'].includes(owner)||typeof accepted!=='boolean')throw new RangeError('Unknown handoff');
  const rows=[{id:'floor',place:'놀이 공간',fact:'성인 A가 물건 위치를 살핀 과거 기록',state:'과거 확인 기록',mark:'○'},{id:'storage',place:'보관 공간',fact:'제품·잠금 상태를 아직 살피지 못함',state:'미확인',mark:'?'},{id:'water',place:'물 사용 공간',fact:'앞선 기록 뒤 사용 조건이 바뀜',state:'재확인 필요',mark:'↻'}];
- return {scenarioId:'shared-safety-handoff',ageBand:'0–36개월 보호자',sourceIds:['F1','F2','S4'],observedFacts:rows.map(r=>`${r.place}: ${r.fact}`),hypotheses:[],unknowns:['실제 가정의 현재 상태와 관찰 지속은 미확인입니다.'],step:accepted?1:0,selectedOption:`${owner}/${accepted}`,owner,accepted,rows,handoff:accepted?`성인 ${owner}의 가상 인수 응답을 읽었습니다.`:`성인 ${owner}에게 맡기려 하지만 인수 응답은 아직 없습니다.`,explanation:'담당 변경이나 응답은 환경을 점검한 사실을 새로 만들지 않습니다. 이전 기록·미확인·재확인 필요를 그대로 남깁니다.'};
+ return {scenarioId:'shared-safety-handoff',ageBand:'0–36개월 보호자',sourceIds:['F1','F2'],observedFacts:rows.map(r=>`${r.place}: ${r.fact}`),hypotheses:[],unknowns:['실제 가정의 현재 상태와 관찰 지속은 미확인입니다.'],step:accepted?1:0,selectedOption:`${owner}/${accepted}`,owner,accepted,rows,handoff:accepted?`성인 ${owner}의 가상 인수 응답을 읽었습니다.`:`성인 ${owner}에게 맡기려 하지만 인수 응답은 아직 없습니다.`,explanation:'담당 변경이나 응답은 환경을 점검한 사실을 새로 만들지 않습니다. 이전 기록·미확인·재확인 필요를 그대로 남깁니다.'};
 }
