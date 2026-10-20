@@ -97,3 +97,24 @@ head `9f290af29a4870aff1c8f70ce46128baa788d6b3`의 [run39358068146](https://gith
 보험 담당자가 완성한 문서 전용 `5bdf203fff7b1a1cd84e901a78e6cd997c4fb709`의 보험 최종 검증·전체 점검·계획·프롬프트 네 문서도 내용 그대로 반영한다. 보험 앱·모델·검증 스크립트를 다시 바꾸지 않는다. 이 통합 후보의 test/build·새 PR matrix·직접 화면·실제 main 게시 결과는 실행한 뒤 기록한다.
 
 통합 후보의 전체 `npm test`는 827/827 통과했고 TypeScript/Vite build도 성공했다. QA 스크립트 문법과 `git diff --check`도 통과했다. 세금·권차가 추가된 새 앱 자산이므로 이전 화면 증거만으로 새 레이아웃 검증을 대신하지 않고 PR의 DB·권차 PNG를 다시 직접 검토한다.
+
+
+### 세금·권차 통합판의 DB·공통 기능 검증
+
+head `ce9f29c2539837f74f894b35dcd76608f60ef66b` / PR merge `70f621aef9f74a9c9746e8614b3b4bb6ad67263a`의 [run39364460734](https://github.com/Middleages/my-books/actions/runs/39364460734)에서 build·DB·세금·권차 production job이 성공했다. 이 확인 시점에 보험·투자 job은 진행 중이므로 전체 matrix 성공이라고 쓰지 않는다. DB는 **124/124·오류 0·42 PNG**, 권차는 **14검사·오류 0·33 PNG**였다.
+
+실제 내려받은 [DB artifact12238922199](https://github.com/Middleages/my-books/actions/runs/39364460734/artifacts/12238922199) ZIP SHA256은 `f94a1c5f858517d457d50a5935465e1f2e004099e1f7bdc65fcb7dcba77e691f`, [권차 artifact12239152628](https://github.com/Middleages/my-books/actions/runs/39364460734/artifacts/12239152628)는 `b26716ce7c8783506ff1087c1963c07e55c5713faba847598a7f7588f3a53907`로 각각 게시 digest와 일치했다. 두 결과의 sourceSha는 위 PR merge, 작업 트리는 깨끗했다.
+
+직접 연 새 PNG는 권차의 `320-database-heading.png`, `390-database-heading.png`, `1440-home.png`, `320-home.png`와 DB의 `320-key-order.png`, `390-key-all.png`, `320-files-race-final.png`, `320-constraints-null-qty-false.png`다. IT4권·돈5권과 공개 9권의 분야/권차가 구별되고, 모바일 관계선의 소속·후보 저장 경계·낡은 사본과 실제 재고가 유지된다. 320px 전체 홈 캡처는 전체 배치 확인용이며 개별 긴 페이지 전체의 작은 글자를 모두 읽었다고 주장하지 않는다. 핵심 관계/제약 장면은 별도 원본 크기로 확인했고 추가 차단 결함은 발견하지 못했다.
+
+2026-10-20 사용자 지시로 이후 보통 배치의 브라우저 범위는 추가·변경 교재와 영향받는 공통 기능에 집중한다. 전체 단위 테스트/build와 실제 게시 자산 일치 확인은 유지하며 책 완성 때 넓은 회귀를 한다. 위 실행은 그 조정 전에 전체 matrix로 시작된 기록으로 그대로 보존한다. 범위 조정을 기존 실패를 통과로 바꾸는 근거로 쓰지 않는다.
+
+### DB A·쿠버네티스 시각 보강·검사 범위 통합 후보
+
+DB A `ce9f29c`를 기준으로 쿠버네티스 PR13 head `1cbc9e1ce65f54e48e67ae817fd2028c969f67a1`과 그 최종 검증 문서 `a995825`, 영향 범위 검사 PR17 `bd9cdb285bde10e7dd5c9c2e76655c0d54215dd0` 및 주거 교재 suite 예약 `a77648f`를 보존 통합했다. 새 주거 본문·세금 B·DB B는 포함하지 않는다. 세금 A·권차·보험 최종 기록은 그대로 유지했다. 쿠버네티스 소스·전용 검사·최종 문서의 바이트가 담당자의 확정본과 같음을 독립 교차 확인했다.
+
+충돌은 두 workflow 계약 파일뿐이었으며, 고정 목록 대신 같은 build 출력으로 production/published 양쪽 matrix를 결정하는 PR17 구조를 채택했다. 현재 실제 발견 목록은 `insurance, investing, tax, book-volumes, database, kubernetes`다. 주거 검증 스크립트가 아직 없으므로 예약된 housing은 실행 목록에 들어가지 않는다. 공유 검증 기반 자체가 바뀐 이 후보는 **사용 가능한 여섯 suite 전체**가 선택되어야 하며, 후속 DB 전용 변경은 DB와 필수 `book-volumes`를 선택한다.
+
+첫 통합 단위 테스트에서 공통 문자열 `소개·01–02장 공개`를 바꾸던 fixture가 세금 대신 DB 항목을 선택하는 오류를 발견했다. 분류기는 올바르게 DB 변경을 식별했고, fixture만 세금의 `id`와 `future` 속성으로 한정해 고쳤다. 필수 assertion을 삭제하거나 검사 범위를 줄이지 않았다. 수정 후 전체 **889/889** 단위 테스트, TypeScript/Vite production build **321 modules**, 별도 선택기/workflow **14/14** 계약과 쿠버네티스 **144/144** 모델·시각 계약을 통과했다. `git diff --check`와 검증 스크립트 문법도 통과했다.
+
+이 항목은 로컬 통합 결과이며 새 후보의 Actions·실제 PNG·main·Pages 게시 성공을 미리 뜻하지 않는다. 새 CSS/JS가 만들어졌으므로 통합 실행의 DB·쿠버네티스·공통 기능 화면을 다시 확인하고, 같은 main의 게시 자산 일치까지 확인한 뒤 A를 닫는다. 환경은 기존과 같은 클라우드 작업 트리 Node 24.19이며 실제 브라우저는 GitHub Actions의 Chromium으로 검증한다. 실제 PostgreSQL/MSSQL 실행은 여전히 하지 않았다.
