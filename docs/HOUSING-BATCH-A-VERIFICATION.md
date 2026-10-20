@@ -57,3 +57,10 @@ PR #16 후보 `e30af9b9b89d855129621818c99b75df15197f60`, Actions run `393667866
 - CSS `index-D053RyVm.css`: SHA-256 `7571660db1b95bb7063a2cd16c9ca9e9568ef4cd298a02142001ee59ab8e6bff`.
 
 이는 housing 단독 변경 후보의 production 증거다. tax B와 함께 통합한 후보의 production·Pages·정확한 게시 자산은 별도로 확인하며, 아직 게시 완료를 주장하지 않는다.
+
+
+## 세금 B 합본과 엄격한 게시 진단
+
+세금 B와 합친 head `1a8370d4b9781a444c8e8a56509d6cec72972f97`의 [run39369634236](https://github.com/Middleages/my-books/actions/runs/39369634236)에서 housing 46/46·PNG 28개·오류 0을 확인했다. 통합 후보의 정확한 CSS/JS 및 앞 합본의 작성자 직접 그림 검토 범위는 [세금 B 기록](TAX-BATCH-B-VERIFICATION.md)에 남겼다. 주거 앱·본문·모델은 검증된 `6afe8c8`과 같다.
+
+게시 전에 검증기만 보강한다. 콘솔 문구에 favicon이 포함됐다는 이유로 제외하던 규칙을 없애고, 이미 실사이트에서 관찰한 정확한 `https://middleages.github.io/favicon.ico`의 404만 비애플리케이션 진단으로 별도 보존한다. 앱 안의 favicon·다른 URL/호스트/status·출처 없는 오류·요청 실패는 실패로 남는다. 일반·reduced-motion 양쪽에 콘솔 source/line/column와 실패 응답 URL/status·requestfailed 기록을 설치했다. 3개 회귀 테스트로 양성·음성 분류와 이벤트 보존을 확인했다. 새 검증기의 production 재실행 및 실제 Pages 결과는 다음 기록에 구분한다.

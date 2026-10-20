@@ -1,6 +1,6 @@
 # 세금 배치 B 검증 기록
 
-작성: 2026-10-20. 상태: 로컬 구현·검증 중, 이 배치의 main·Pages 게시 전.
+작성: 2026-10-20. 상태: 통합 production·직접 그림 검토 완료, 검증기 진단 보강 재검증 중. 이 배치의 main·Pages 게시 전.
 
 전체권을 로컬에서 선행 교차 검증한 뒤 A→B→C→D→E→F 순서로 공개한다. 각 배치에서 공개하는 장만 카탈로그·본문 링크·읽음 분모에 반영하며 선행 게시 게이트가 닫히기 전에 다음 배치를 공개하지 않는다. 현재 기록은 선행 게시를 완료했다고 주장하지 않는다.
 
@@ -49,3 +49,20 @@ DB A·Kubernetes 시각 보강·변경 범위 분류기·세금 A 최종 진단/
 - book-volumes 14/14 검사·PNG 36개·오류 0, [artifact12241180229](https://github.com/Middleages/my-books/actions/runs/39369042339/artifacts/12241180229). 1440/320 전체 홈, 320 주거·세금 권차 제목, 390 읽던 책 우선을 직접 확인했다. 주거 6권·세금 5권·DB IT 4권과 0/2·0/4 읽음 분모가 맞으며 기존 권차는 정렬해도 바뀌지 않는다.
 
 세금 03·04의 1440 초기·320 변경·390 reduced-motion/정적 표를 직접 열었다. 급여의 비례·범례는 맞았다. 정산은 선납액을 150으로 바꾸면 그림·결과·장부가 환급 80으로 바뀌지만, 예측 이유만 최초 예시의 90/20을 유지하는 작은 설명 불일치를 발견했다. 자동 통과를 그대로 게시 판정으로 쓰지 않고 수정한다. 질문을 일반 개념으로 표현하고, 이유의 선납·결정세액·환급/추가납부/0은 현재 동일 모델에서 읽는다. 브라우저 검사도 이유를 펼친 상태에서 선납 0/50/70/90/150을 차례로 바꾸며 현재 값을 대조하도록 보강했다. 변경 후 결과는 다음 실행에 별도로 기록한다.
+
+
+## 현재 입력 해설 교정 후 합본 production 재검증
+
+head `1a8370d4b9781a444c8e8a56509d6cec72972f97`, PR checkout `95ff3910b458f315efb4d0601828f8407ac9377f`, tree `da7db1385fc596848a652dd27c89319ce475b5b2`의 [run39369634236](https://github.com/Middleages/my-books/actions/runs/39369634236)에서 build와 선택한 세 suite가 모두 통과했다. 로컬 전체 902개 테스트·TypeScript·production 빌드도 통과했다.
+
+- tax 73/73·PNG 50개·오류 0·별도 비애플리케이션 진단 0, [artifact12241031868](https://github.com/Middleages/my-books/actions/runs/39369634236/artifacts/12241031868).
+- housing 46/46·PNG 28개·오류 0, [artifact12241270291](https://github.com/Middleages/my-books/actions/runs/39369634236/artifacts/12241270291).
+- book-volumes 14/14·PNG 36개·오류 0, [artifact12240499355](https://github.com/Middleages/my-books/actions/runs/39369634236/artifacts/12240499355).
+
+세금 정산 320px 변경·390px reduced-motion/정적 대안을 직접 다시 열어 이유의 선납150·결정70·환급80이 현재 그림·표와 일치함을 확인했다. 주거 320px 임차 변경과 전체 홈도 다시 열어 유지된 배치를 확인했다. 이전 합본의 직접 확인 범위는 앞 절과 같으며 모든 생성 PNG를 사람이 하나씩 검토한 것으로 주장하지 않는다.
+
+정확한 production CSS `index-4noGetxv.css`는 309708바이트, SHA-256 `f1ede4b3df8ad7867d5c441ccc0dd306a81d65b58c54fdb140945a73a20e14f8`; JS `index-BqMq_R2l.js`는 2377701바이트, SHA-256 `2191523fa3e45112528f514631933d35d00da4ad8083b15bdeb9bd596ba71f49`다. 세 suite의 대조 결과와 로컬 산출물이 같았다. 이는 합본 production 증거이며 아직 게시 증거는 아니다.
+
+게시 전에 주거 검증기의 기존 문자열 기반 favicon 제외를 제거한다. 이미 확인한 정확한 호스트 기본 favicon의 URL·404만 별도로 보존하고, 출처가 비었거나 앱 경로·다른 호스트/상태·요청 실패이면 계속 실패시킨다. 일반·reduced-motion 양쪽에서 콘솔 위치와 실제 실패 리소스 URL/status를 남긴다. 이 검증기·회귀 테스트 보강은 앱을 바꾸지 않으며 별도 scoped production 재실행과 동일 앱 바이트를 확인한다.
+
+진단 보강 후 로컬 전체 **905/905 테스트·TypeScript·Vite 빌드**가 통과했다. 재빌드한 CSS/JS의 파일명·바이트 수·위 SHA-256이 모두 같아 앱 산출물이 변하지 않았음을 확인했다. `git diff --check`와 검증기 구문 검사도 통과했다. 새 검증기의 실제 hosted production·published 결과는 별도 게이트로 남긴다.
