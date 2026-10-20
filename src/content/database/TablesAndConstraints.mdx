@@ -22,9 +22,9 @@ import { DbSource, DbGlossary } from '../../components/database/LabShared';
 
 ## 2. 이름 대신 변하지 않는 식별값으로
 
-**기본키(PK, primary key)**는 각 행을 유일하게 구별합니다. customers.id의 1은 고객 한 명을 가리킵니다. 이름이 같아도 다른 id이면 서로 다른 고객입니다. 이 예에서 이름은 필수이지만 고유할 필요는 없습니다.
+<strong>기본키(PK, primary key)</strong>는 각 행을 유일하게 구별합니다. customers.id의 1은 고객 한 명을 가리킵니다. 이름이 같아도 다른 id이면 서로 다른 고객입니다. 이 예에서 이름은 필수이지만 고유할 필요는 없습니다.
 
-**외래키(FK, foreign key)**는 다른 표의 식별값을 참조합니다. orders.customer_id=1은 customers.id=1로 이어집니다. 연결은 셀 안의 같은 값으로 생기며 화면에서 행이 가까이 놓여서 생기는 것은 아닙니다.
+<strong>외래키(FK, foreign key)</strong>는 다른 표의 식별값을 참조합니다. orders.customer_id=1은 customers.id=1로 이어집니다. 연결은 셀 안의 같은 값으로 생기며 화면에서 행이 가까이 놓여서 생기는 것은 아닙니다.
 
 </section>
 <RelationshipMap />
@@ -38,7 +38,7 @@ import { DbSource, DbGlossary } from '../../components/database/LabShared';
 
 ## 3. 잘못된 기록은 어디에서 막을까요?
 
-입력 폼이 수량을 검사해도 다른 앱이나 다른 저장 경로는 그 폼을 거치지 않을 수 있습니다. **제약조건(constraint)**은 여러 쓰기 경로가 공유하는 DB 안의 저장 규칙입니다.
+입력 폼이 수량을 검사해도 다른 앱이나 다른 저장 경로는 그 폼을 거치지 않을 수 있습니다. <strong>제약조건(constraint)</strong>은 여러 쓰기 경로가 공유하는 DB 안의 저장 규칙입니다.
 
 <DbGlossary rows={[
   ['NOT NULL · 반드시 있어야 함', '값이 없는 상태인 NULL을 허용하지 않습니다. 0이나 빈 문자열과 NULL은 다릅니다.'],
@@ -54,7 +54,7 @@ import { DbSource, DbGlossary } from '../../components/database/LabShared';
 qty integer NOT NULL CHECK (qty > 0)
 ```
 
-PostgreSQL에서 CHECK는 조건이 TRUE이거나 **UNKNOWN(NULL)**이면 통과합니다. 따라서 CHECK(qty > 0)만 남겨서는 NULL을 막지 못합니다. 양수 검사와 필수 값 검사는 서로 다른 약속입니다.
+PostgreSQL에서 CHECK는 조건이 TRUE이거나 <strong>UNKNOWN(NULL)</strong>이면 통과합니다. 따라서 CHECK(qty > 0)만 남겨서는 NULL을 막지 못합니다. 양수 검사와 필수 값 검사는 서로 다른 약속입니다.
 
 </section>
 <ConstraintLab />
@@ -70,7 +70,7 @@ PostgreSQL에서 CHECK는 조건이 TRUE이거나 **UNKNOWN(NULL)**이면 통과
 
 ## 5. 다음 조회를 준비하기
 
-고객1의 확정 주문은 2건입니다. 주문 항목은 3행이며 수량은 7개, 주문금액은 36,000원입니다. 같은 자료에서 다른 숫자가 나오는 이유는 **무엇을 한 단위로 세는지**가 다르기 때문입니다. 다음 조회 장에서 표를 연결할 때 이 차이를 이어서 살펴봅니다. 그 장은 아직 공개하지 않았습니다.
+고객1의 확정 주문은 2건입니다. 주문 항목은 3행이며 수량은 7개, 주문금액은 36,000원입니다. 같은 자료에서 다른 숫자가 나오는 이유는 **무엇을 한 단위로 세는지**가 다르기 때문입니다. [03 원하는 행을 묶어 읽기](#/database/queries-and-joins)에서 표를 연결할 때 이 차이를 이어서 살펴봅니다.
 
 <Check question="가람이라는 고객이 두 명이면 주문의 연결이 모호해지나요?" children="이 스키마에서는 그렇지 않습니다. 고객 이름이 아니라 고객 id를 외래키로 연결하기 때문입니다. 두 고객의 id가 다르면 이름이 같아도 관계는 구별됩니다." />
 <Check question="CHECK(qty > 0)가 있으니 qty=NULL도 거절될까요?" children="PostgreSQL에서는 NOT NULL이 없다면 거절되지 않을 수 있습니다. NULL과의 비교는 UNKNOWN이 되고 CHECK는 이를 허용합니다. 반드시 값이 필요하면 NOT NULL도 함께 지정합니다." />

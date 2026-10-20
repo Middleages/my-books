@@ -149,3 +149,12 @@ run39405591624는 최초 F 소스로 실제 성공했지만 아래 설명 개선
 - 모바일 세로 연결·줄바꿈, 키보드 포커스, normal/reduced-motion의 동일 정보와 정적 대안의 분리를 확인했다. 긴 전체 캡처는 배치·연결·선택 핵심값을 확인한 것이며 축소된 모든 글자를 정밀하게 읽었다고 하지 않는다. 이23개에서 새로운 결함을 발견하지 못했다.
 
 최종 기록만 추가할 때 실행 파일은 위 tree의 버전과 diff0을 유지한다. 실제 통합/게시 시 최신 다른 책을 보존하고 새 합본 원본도 확인한다. 최종 안정 main을 고정한 전체 등록12 suite의 production/published 검사는 아직 실행하지 않았으며, 완료 사실로 기재하지 않는다.
+
+
+## 정확한 main d6237bc 실제 게시 마감 — 2026-10-20
+
+[run39431780917](https://github.com/Middleages/my-books/actions/runs/39431780917)의 source `d6237bc2449e0c77894cdabe4f7fab75e6143468`, tree `46848403199c145abfc1d47a1370927a5cd24a1f`에서 전체1390/1390 단위·560 modules build, 선택8종 production과 Pages, 동일 build의 선택8종 published가 모두 성공했다. 이 책의 실제 게시 결과는 **510/510·413원본 PNG**, clean·앱/page/console/resource 오류0이다. 알려진 호스트 기본 `https://middleages.github.io/favicon.ico`의404 한 건은 원래 URL과 함께 별도 진단으로 보존하고 앱 오류를 제외하지 않았다. artifact12269182600 ZIP SHA256 `f3d859046409eb087e23502deb2c53cdf9ee0b8b995a8c83f6c018513f11eeb0`를 실제 다운로드와 대조했다. 정확한 JS/CSS 전체 바이트·단일 build 증거는 [합본 기록](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)의 실제 게시 절을 따른다.
+
+직접 연 대표 8원본 범위: 1440-ratios-no-collection-loan40-composition,320-ratios-base-loan280-margin,1440-cvp-price5-quantity46,320-cvp-price3-quantity45,1440-documents-missing-cost-connection-final,320-documents-missing-cost-cost-final,1440-documents-base-dividend-final,320-documents-mixed-cost-final. 같은565/150의 현금225/65 차이, 원금280 재분류와390분모,160=90+70 및 이자5 경계,230−228=2/단가3 평행선과−90, 원가 누락의 등식 일치와 수불 충돌, 배당 법적 근거 부족·범위 불일치 중지를 확인했고 이 범위에서 새 잘림·겹침·의미 차단점을 발견하지 않았다. native crop은 별도 원본으로 더하지 않았고, 소개 탐색 이미지는 두 선택 제어만을 보여 주므로 소개 전체 검토로 확대하지 않는다. 원본 전수 사람 검토·실기기·스크린리더 음성·실제 외부 서비스/임상 감수의 증거는 아니다.
+
+현재 상태는 **소개+12장 게시 확인 완료·전체권 마감 회귀 대기**다. 다음 준비된 기존 교재 합본의 안정된 최신 main에서 등록14종 production/published가 정확히 모두 실행되고 같은 최종 source/asset·직접 검토 조건을 충족하면 그 실행으로 최종 넓은 회귀를 통합 마감한다. 아직 수행하지 않은 넓은 회귀를 성공으로 기록하지 않는다.

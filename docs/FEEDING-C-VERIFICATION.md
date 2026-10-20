@@ -23,3 +23,10 @@
 최종 원본320-variety-confirmed-day1,390-variety-confirmed-day4,1440-variety-highlight,850-variety-confirmed-day1,320-allergy-uncertain을 직접 열어 검토했다. 첫날 확인/미확인/기록 없음의 구분, 넷째 날 메모 없음 보존, desktop 일곱 날짜의 식품군 행 정렬, 850 및 모바일 글자 가독성을 확인했다. 알레르기 미확인 정보가 원인·진단으로 바뀌지 않으며 119 안내가 기록보다 먼저 보이고 다음 정보 비활성 및 초기화 제어가 잘리지 않는다. 직접 검토한 파일 범위에서 추가 시각 결함을 발견하지 않았다.
 
 C 자체 소스와 실제 production 화면 게이트는 닫았다. main 통합·Pages·실제 게시 회귀는 별도 담당의 순차 창에서 아직 진행 전이다. 전문가 감수 미실행과 실제 아이 자료 금지는 그대로 유지한다.
+
+
+## 정확한 main d6237bc 실제 게시 마감 — 2026-10-20
+
+[run39431780917](https://github.com/Middleages/my-books/actions/runs/39431780917)의 source `d6237bc2449e0c77894cdabe4f7fab75e6143468`, tree `46848403199c145abfc1d47a1370927a5cd24a1f`에서 전체1390/1390 단위·560 modules build, 선택8종 production과 Pages, 동일 build의 선택8종 published가 모두 성공했다. 이 책의 실제 게시 결과는 **59/59·133원본 PNG**, clean·앱/page/console/resource 오류0이다. 알려진 호스트 기본 `https://middleages.github.io/favicon.ico`의404 한 건은 원래 URL과 함께 별도 진단으로 보존하고 앱 오류를 제외하지 않았다. artifact12269416063 ZIP SHA256 `432ebc4aed5b6951aeca6889b7d03a660f62bb66d9388cc9b2bc208704a7a7d7`를 실제 다운로드와 대조했다. 정확한 JS/CSS 전체 바이트·단일 build 증거는 [합본 기록](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)의 실제 게시 절을 따른다.
+
+직접 연 대표 5원본 범위: 320-variety-offered-day4,390-variety-confirmed-day1,1440-variety-highlight,320-allergy-uncertain,390-allergy-mixed. 기록 없음과 섭취 미확인·확인의 구별, 식품군 행 정렬,119 도움 안내가 기록보다 앞섬, 원인·확진·자가 재도전 미산출 경계를 확인했고 이 범위에서 새 잘림·겹침·의미 차단점을 발견하지 않았다. native crop은 별도 원본으로 더하지 않았고, 소개 탐색 이미지는 두 선택 제어만을 보여 주므로 소개 전체 검토로 확대하지 않는다. 원본 전수 사람 검토·실기기·스크린리더 음성·실제 외부 서비스/임상 감수의 증거는 아니다.

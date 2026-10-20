@@ -21,3 +21,8 @@ PR80 최종0cae080의 age-scenes.mjs/d.mts를 바이트 그대로 재사용한�
 직접 연 원본8개: 320-first-year-card-6-body, 320-first-year-card-6-hands, 320-second-year-card-15-language, 390-second-year-card-18-social, 320-third-year-card-36-body, 320-third-year-card-36-hands, 1440-first-year-2-all, 1440-third-year-30-all. 새 책 태그·원출처 영역이 함께 읽히며, 모바일 줄바꿈/잘림 문제 없음. 6개월 손 뻗기에는 원출처 인지 영역을 그대로 표시했고, 깨어 있는 바닥 놀이와 수면 자세 변경을 구분했다. 15개월 요청과18개월 관심 공유 목적, 36개월 일부 옷 스스로 입기·포크 사용, 2/30개월 전체 다섯 장면과 관찰 포인트를 확인했다.431개 전체를 사람이 직접 봤다는 뜻은 아니다.
 
 게시 인계: PR80 최소 소개/02 패치 우선, PR82에서 그 패치와 D 보존, 그 뒤 E에 이 연결 보강을 통합한다. 이 오래된 E 기반 전체 트리로 최신 카탈로그나 다른 책을 덮어쓰지 않는다. 통합 후 새 정확 소스 검증 및 main/Pages/live 게이트는 게시 담당의 별도 작업이다.
+
+
+## 연결 보강 실제 게시
+
+2026-10-20 main `d6237bc2449e0c77894cdabe4f7fab75e6143468`/Pages에서 소개·02의 기존50장면 모델과08–10의 풍부한 예시 연결이 같은 소스로 게시됐다. 실제 published128/128·486PNG, 대표9개 범위 직접 검토와 정확 자산 대조를 닫았다. 자세한 source/tree/run/ZIP과 범위는 [E 게시 기록](CHILD-DEVELOPMENT-BATCH-E-VERIFICATION.md) 및 [합본 결과](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)를 따른다. 여전히 매달 진단 기준이나 원출처 전체 목록을 제공한다는 뜻은 아니며, 실제10시점의50개 자체 일상 장면과 원출처 분류를 구별한다.

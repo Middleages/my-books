@@ -5,9 +5,9 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 const read=p=>readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 const wal=read('src/components/database/DurabilityLab.tsx'),restore=read('src/components/database/RecoveryLab.tsx'),body9=read('src/content/database/DurabilityAndWal.mdx'),body10=read('src/content/database/BackupAndRestore.mdx'),qa=read('scripts/database-browser-qa.cjs');
-test('E adds stable09/10 read identities and volume4; F not advertised as implemented',()=>{
+test('E adds stable09/10 read identities and volume4; F stable identities remain present',()=>{
  const catalog=read('src/catalog.ts');for(const[id,number,component]of[['durability-and-wal','09','DatabaseDurability'],['backup-and-restore','10','DatabaseRecovery']]){assert(catalog.includes(`id: "${id}", bookId: "database", readId: "database/${id}", number: "${number}"`));assert(catalog.includes(`Content: ${component}`));}
- assert.match(catalog,/id: "database", categoryId: "technology", volume: 4/);assert.match(catalog,/소개·01–10장 공개/);for(const id of['schema-migrations','database-troubleshooting'])assert(!catalog.includes(`id: "${id}", bookId: "database"`));
+ assert.match(catalog,/id: "database", categoryId: "technology", volume: 4/);assert.match(catalog,/소개·01–12장 공개/);for(const id of['schema-migrations','database-troubleshooting'])assert(catalog.includes(`id: "${id}", bookId: "database"`));
 });
 test('E texts distinguish physical presence, visibility, uncertain response, recovery coverage and service objectives',()=>{
  for(const token of['휘발성','pageLSN','성공을 받지 못했지만','물리적으로 존재함 ≠ 지금 조회에 보임','synchronous_commit=off','fsync=off','최근 확정 변경 손실','전체 페이지 이미지','실제 PostgreSQL 서버를 실행'])assert(body9.includes(token),token);
