@@ -273,8 +273,9 @@ async function playback(page) {
   if (await reset.count()) await reset.click();
   else await lab.getByRole("button", { name: "처음부터", exact: true }).click();
   await delay(1800);
-  assert.match(await lab.locator(".money-playback").innerText(), /0\s*\//);
-  return { pauseReset: true };
+  const initial = await lab.getAttribute("data-housing-lab") === "mortgage-paths" ? 13 : 0;
+  assert.match(await lab.locator(".money-playback").innerText(), new RegExp(`\\b${initial}\\s*\\/`));
+  return { pauseReset: true, initial };
 }
 async function scenarios(page, id) {
   const lab = page.locator('.housing-lab').first();
@@ -450,6 +451,98 @@ async function scenarios(page, id) {
     const control=await lab.locator('.money-playback').boundingBox(),scene=await lab.locator('.housing-month-cash').boundingBox();
     assert(scene.y-(control.y+control.height)<100,'monthly controls detached from cash boundary');
   }
+  if(id === 'mortgage-paths') {
+    assert.equal(await lab.locator('[data-path-month]').getAttribute('data-path-month'),'13','first scene shows the rate boundary');
+    assert.deepEqual(await lab.locator('[data-part-value]').evaluateAll(es=>es.map(e=>+e.dataset.partValue)),(()=>{const r=model.mortgagePaths();const a=r.paths.fixed.rows[13],b=r.paths.reset.rows[13];return [a.regularPrincipal,a.interest,b.regularPrincipal,b.interest]})());
+    assert.equal(await lab.locator('.housing-path-settings').evaluate(e=>e.open),false,'detailed inputs do not precede the explanation');
+    await lab.locator('.housing-path-settings summary').click();
+    const near=await lab.locator('.money-playback').boundingBox(),chart=await lab.locator('.housing-debt-chart').boundingBox();
+    assert(chart.y-(near.y+near.height)<250,'mortgage playback detached from changing time plot');
+    assert.equal(await lab.locator('.money-playback').count(),1);
+    for(const months of [120,240,360]) for(const prepayment of [0,10e6,100e6]) {
+      await lab.locator('select').nth(0).selectOption(String(months));
+      await lab.locator('select').nth(1).selectOption(String(prepayment));
+      const r=model.mortgagePaths({months,prepayment});
+      for(const month of [12,13,24]) {
+        await setRange(lab,1,month);
+        assert.equal(await lab.locator('[data-path-month]').getAttribute('data-path-month'),String(month));
+        const a=r.paths.fixed.rows[month],b=r.paths.reset.rows[month];
+        assert.equal(Number(await lab.locator('[data-fixed-balance]').getAttribute('data-fixed-balance')),a.closing);
+        assert.equal(Number(await lab.locator('[data-reset-balance]').getAttribute('data-reset-balance')),b.closing);
+        assert.deepEqual(await lab.locator('[data-part-value]').evaluateAll(es=>es.map(e=>+e.dataset.partValue)),[a.regularPrincipal,a.interest,b.regularPrincipal,b.interest]);
+        const strips=await lab.locator('[data-part-value]').evaluateAll(es=>es.map(e=>({value:+e.dataset.partValue,width:e.getBoundingClientRect().width,track:e.parentElement.clientWidth})));
+        strips.forEach(s=>assert(Math.abs(s.width-s.track*s.value/2e6)<1,JSON.stringify(s)));
+        if(prepayment===100e6) assert.equal(b.closing,0);
+      }
+    }
+    await lab.getByRole('checkbox',{name:'전체 만기까지 보기'}).check();
+    await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+    assert.equal(await lab.locator('[data-path-month]').getAttribute('data-path-month'),'360');
+    assert.equal(await lab.locator('[data-reset-balance]').getAttribute('data-reset-balance'),'0');
+    await capture(page,`${page.viewportSize().width}-mortgage-paths-paid-off`,'.housing-mortgage-paths');
+    await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
+    await setRange(lab,0,0);
+    await lab.getByRole('button',{name:'13개월 경계',exact:true}).click();
+    const zero=model.mortgagePaths({resetRate:0}).paths.reset.rows[13];
+    assert.equal(Number(await lab.locator('[data-reset-balance]').getAttribute('data-reset-balance')),zero.closing);
+    assert.equal(Number(await lab.locator('[data-part-value]').last().getAttribute('data-part-value')),0);
+    await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
+    await lab.getByRole('button',{name:'13개월 경계',exact:true}).click();
+    assert.match(await lab.innerText(),/수수료는 빚을 줄이지 않습니다/);
+  }
+  if(id === 'running-costs') {
+    const controls=await lab.locator('.money-playback').boundingBox(),current=await lab.locator('.housing-running-current').boundingBox();
+    assert(current.y-(controls.y+controls.height)<200,'running controls detached from current ledger');
+    assert.equal(await lab.locator('.money-playback').count(),1);
+    for(const documentation of ['confirmed','unknown']) {
+      await lab.locator('select').nth(1).selectOption(documentation);
+      assert.equal(await lab.locator('select').nth(2).isDisabled(),documentation==='unknown');
+      await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+      const f=model.externalCostFrames({documentation}).at(-1);
+      assert.equal(await lab.locator('[data-levy-claim]').getAttribute('data-levy-claim'),f.claim===null?'unknown':String(f.claim));
+      assert.equal(Number(await lab.locator('[data-external-cash]').getAttribute('data-external-cash')),f.cash);
+      await bars(page);
+    }
+    await capture(page,`${page.viewportSize().width}-running-costs-unconfirmed`,'.housing-running-scene');
+    await lab.locator('select').nth(1).selectOption('confirmed');
+    await lab.locator('select').nth(2).selectOption('assumed');
+    await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+    assert.equal(await lab.locator('[data-levy-claim]').getAttribute('data-levy-claim'),'0');
+    assert.equal(await lab.locator('[data-external-cash]').getAttribute('data-external-cash'),'300000');
+    assert.equal(await lab.locator('.housing-refund-route.arrived').count(),1);
+    await capture(page,`${page.viewportSize().width}-running-costs-refund`,'.housing-running-scene');
+    await lab.getByRole('checkbox',{name:'별도 항목 월2만원 포함'}).uncheck();
+    await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+    assert.equal(await lab.locator('.housing-refund-route.arrived').count(),0);
+    assert.equal(await lab.locator('.housing-refund-route [aria-hidden=true]').count(),0);
+    assert.match(await lab.locator('.housing-refund-route').innerText(),/반환 대상액 없음/);
+    await lab.locator('select').nth(0).selectOption('own');
+    for(const transfer of [100000,0]) {
+      await lab.locator('select').nth(2).selectOption(String(transfer));
+      for(const month of [6,12]) {
+        await lab.locator('select').nth(1).selectOption(String(month));
+        await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+        const f=model.ownReserveFrames({reserveTransfer:transfer,repairMonth:month}).at(-1);
+        assert.equal(await lab.locator('[data-repair-status]').getAttribute('data-repair-status'),f.status);
+        assert.equal(Number(await lab.locator('[data-own-cash]').getAttribute('data-own-cash')),f.totalCash);
+        assert.deepEqual(await lab.locator('.housing-fill').evaluateAll(es=>es.map(e=>+e.dataset.value)),[f.wallet,f.reserve,f.spent]);
+        await bars(page);
+      }
+    }
+    await lab.locator('select').nth(3).selectOption('unknown');
+    await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+    assert.equal(await lab.locator('[data-repair-status]').getAttribute('data-repair-status'),'unconfirmed');
+    await lab.getByRole('checkbox',{name:'예정 수리비120만원 포함'}).uncheck();
+    await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+    assert.equal(await lab.locator('[data-repair-status]').getAttribute('data-repair-status'),'no-payment');
+    await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
+    await lab.locator('select').nth(0).selectOption('own');
+    await lab.locator('select').nth(1).selectOption('6');
+    await lab.getByRole('button',{name:'관찰 끝',exact:true}).click();
+    assert.match(await lab.locator('.housing-warning').innerText(),/6개월의 기록/);
+    assert.match(await lab.locator('.housing-warning').innerText(),/60만원 부족/);
+    await bars(page);
+  }
   await audit(page);
   return {id,verified:true};
 }
@@ -488,7 +581,7 @@ async function assets() {
       [2, 4, 6, 8, 10, 12].includes(chapters.length),
       "published chapters must be a complete batch",
     );
-    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/purchase.mjs")).href)};
+    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/purchase.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/ongoing.mjs")).href)};
     if (process.env.LIVE_URL) base = process.env.LIVE_URL.replace(/\/?$/, "/");
     else {
       server = http.createServer((req, res) => {

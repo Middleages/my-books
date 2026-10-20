@@ -644,7 +644,7 @@ export function DeductionsLab() {
     [off, setOff] = useState(50);
   const r = deductionComparison(base, off);
   return (
-    <Lab id="deductions" title="같은 50, 서로 다른 공제 위치">
+    <Lab id="deductions" title={`같은 ${fmt(off)}, 서로 다른 공제 위치`}>
       <figure className="tax-deduction-scene">
         {r.rows.map((row) => (
           <section key={row.id} className={row.id}>
@@ -662,22 +662,15 @@ export function DeductionsLab() {
                 결정세액 <b>{fmt(row.finalTax)}</b>
               </span>
             </div>
-            <Bar
-              label="결정세액"
-              value={row.finalTax}
-              max={140}
-              color={row.id === "credit" ? "gold" : "teal"}
-            />
-            <p>기준보다 감소 {fmt(row.saving)}</p>
           </section>
         ))}
         <figcaption>
-          세 경로의 결정세액 막대는 0–140 단위 고정 눈금입니다. 소득공제는 위쪽
+          입력 아래의 비교 막대는 0–140 단위 고정 눈금입니다. 소득공제는 위쪽
           바탕, 세액공제는 아래쪽 세액을 줄입니다. 가상 세액공제는 0까지만
           줄이고 초과분 환급·이월은 없습니다.
         </figcaption>
       </figure>
-      <div className="tax-controls">
+      <div className="tax-controls tax-deduction-controls">
         <Range
           label="공제 전 과세 바탕"
           value={base}
@@ -686,6 +679,20 @@ export function DeductionsLab() {
         />
         <Range label="공제 가정액" value={off} max={150} onChange={setOff} />
       </div>
+      <section className="tax-deduction-outcomes" aria-label="같은 눈금의 결정세액 비교">
+        <h4>현재 결정세액 · 같은 0–140 눈금</h4>
+        {r.rows.map((row) => (
+          <div key={row.id}>
+            <Bar
+              label={row.label}
+              value={row.finalTax}
+              max={140}
+              color={row.id === "credit" ? "gold" : "teal"}
+            />
+            <p>공제 없음보다 감소 {fmt(row.saving)}</p>
+          </div>
+        ))}
+      </section>
       <button
         onClick={() => {
           setBase(400);

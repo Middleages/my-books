@@ -991,3 +991,19 @@
     grid-row: 2;
   }
 }
+
+/* Keep all three comparable outcomes beside the single deduction input group. */
+.tax-deduction-outcomes {
+  margin: 16px 0;
+  padding: 12px;
+  border: 1px solid #b8c9d6;
+  border-radius: 12px;
+}
+.tax-deduction-outcomes h4 { margin: 0 0 12px; }
+.tax-deduction-outcomes > div + div { border-top: 1px solid #e5ebf1; }
+.tax-deduction-outcomes p { margin: 0 0 12px; font-size: 0.88rem; }
+@media (max-width: 540px) {
+  .tax-deduction-outcomes .tax-bar { grid-template-columns: 1fr 60px; }
+  .tax-deduction-outcomes .tax-track { grid-column: 1 / -1; grid-row: 2; }
+  .tax-deduction-outcomes .tax-bar strong { grid-column: 2; }
+}
