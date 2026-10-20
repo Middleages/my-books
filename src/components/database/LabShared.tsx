@@ -19,7 +19,7 @@ export function DbPlayback({ player, count, reset }: {
 export function DbCurrent({ frame }: { frame: DbFrameText }) {
   return <div className="db-current" role="status" aria-live="polite" aria-atomic="true"><strong>{frame.title}</strong><p>{frame.detail}</p></div>;
 }
-export function DbSteps({ frames }: { frames: DbFrameText[] }) {
+export function DbSteps({ frames }: { frames: readonly DbFrameText[] }) {
   return <details className="db-static"><summary>모든 단계 · 움직임 없이 읽기</summary><ol>{frames.map((frame, i) => <li key={i}><strong>{frame.title}</strong><p>{frame.detail}</p></li>)}</ol></details>;
 }
 export function DbPrediction({ value, setValue, children }: { value: string; setValue: (s: string) => void; children: ReactNode }) {

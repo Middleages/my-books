@@ -136,7 +136,7 @@ Middleages/my-books의 『웹앱 개발자를 위한 데이터베이스』 작�
 
 고유 작업:
 1. 05는 재고5에서2개 예약하는 변경·주문·항목을 transaction 경계로 묶고 작성 session과 다른 session의 보기를 나란히 보여줘. BEGIN→변경→COMMIT/ROLLBACK에서 행과 수량이 함께 바뀌어야 해.
-2. 문장별 autocommit/하나의 transaction, 차감 뒤 실패/항목 작성 중 실패/성공을 비교해줘. 성공3개·주문1추가, rollback5개·추가0, autocommit 실패3개·주문없음의 차이를 검증해줘. 실패 transaction 상태·affectedRows=0 확인, sequence 값이 rollback해도 되돌아가지 않는 예외를 설명해줘.
+2. 문장별 autocommit/하나의 transaction, 차감 뒤 주문 헤더 INSERT 제약 오류/항목 INSERT 제약 오류/성공을 비교해줘. 앱 중단과 SQL 오류를 섞지 마. 성공은 재고3·새 헤더1·항목수량2, rollback은 재고5·추가0, autocommit 헤더 오류는 재고3·헤더0·항목0, 항목 오류는 재고3·헤더1·항목0이야. orders.status의 confirmed와 COMMIT, 빈 헤더의 스키마 유효성과 업무 완료를 구별해줘. 최신 확정 상태·미확정 변경·과거 성공 조회·실패 block을 분리하고 오류 뒤 SELECT를 성공처럼 그리지 마. 0행 UPDATE는 SQL 오류가 아니야. fixture에 sequence 기본값은 없으므로 별도 이름 있는 교육용 sequence의 nextval 사건을 명시하고, 실제 호출한 할당만 소비하며 rollback으로 되돌리지 않는다고 설명해줘.
 3. 미확정 변경 영역은 논리적 visibility 도식이지 물리 임시DB가 아니야. 이메일·외부결제·파일이 DB rollback으로 취소된다고 쓰지 마. COMMIT 응답 유실은 미확정 증거가 아니라는 질문을 남겨줘.
 4. 06은 last-item fixture(재고1)의 A/B lane, row version, snapshot, 잠금 소유/대기를 고정 교차 실행표로 보여줘. 둘 다1을 읽고 각각0을 쓰는 절대값 갱신은 BEGIN과CHECK>=0가 있어도 주문2건을 만들 수 있음을 보여줘.
 5. 안전 비교는 조건부 감소 WHERE available_qty>=요청량과 affectedRows=1 확인이야. 두 번째가 기다린 뒤 선행 commit의 최신 값에서 조건을 재평가해0행이면 주문을 쓰지 않는 과정을 보여줘. SELECT FOR UPDATE는 같은 transaction에서 잠금을 얻은 뒤 반환된 현재 재고를 다시 확인하고 처리하는 대안으로 비교해줘. 잠금 자체가 업무 검사를 대신하지 않아.

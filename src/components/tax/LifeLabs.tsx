@@ -9,6 +9,8 @@ import {
   accountKinds,
   accountRoute,
   housingRoute,
+  transferBase,
+  deductionComparison,
 } from "../../simulations/tax/lifeModel.mjs";
 import { Bar, fmt, Lab, Prediction, Range, Stage, StaticTable } from "./shared";
 export function WithholdingLab() {
@@ -538,6 +540,190 @@ export function HousingTaxLab() {
         title="부동산 사건 지도"
         headers={["사건", "시점", "세목", "추가 확인"]}
         rows={r.events.map((e) => [e.label, e.time, e.kind, e.check])}
+      />
+    </Lab>
+  );
+}
+export function GiftsLab() {
+  const [kind, setKind] = useState("gift"),
+    [value, setValue] = useState(400),
+    [confirmed, setConfirmed] = useState(true);
+  const r = transferBase({ kind, value, confirmed }),
+    p = usePlayback(2);
+  return (
+    <Lab id="gifts" title="이전된 재산과 계산할 묶음 구분">
+      <figure className="tax-transfer-scene">
+        <div className={`tax-estate ${kind}`}>
+          <h4>{r.scope}</h4>
+          <Bar label="이번 재산" value={r.value} max={650} />
+          <Bar label="합산 가정" value={r.prior} max={650} color="blue" />
+          <p>
+            합계 {fmt(r.combined)} · 공제 가정 {fmt(r.usedDeduction)}
+          </p>
+        </div>
+        <div className="tax-transfer-boundary">
+          <span>평가·합산·공제 검토</span>
+          <b>↓</b>
+          <strong>
+            {r.base === null ? "? 미확인" : `과세표준 ${fmt(r.base)}`}
+          </strong>
+        </div>
+        <figcaption>
+          막대는 같은 0–650 가상 단위입니다. 증여의 수증자별 계산과 상속재산
+          전체의 계산 출발점을 구분합니다. 이 단순 덧셈은 실제 상속인별 세액
+          배분을 재현하지 않습니다.
+        </figcaption>
+      </figure>
+      <div className="tax-controls">
+        <label>
+          이전 사건
+          <select
+            value={kind}
+            onChange={(e) => {
+              setKind(e.target.value);
+              p.rewind();
+            }}
+          >
+            <option value="gift">생전 증여</option>
+            <option value="inheritance">사망으로 상속</option>
+          </select>
+        </label>
+        <Range
+          label="새로 평가한 재산"
+          value={value}
+          max={600}
+          onChange={(n) => {
+            setValue(n);
+            p.rewind();
+          }}
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={(e) => {
+              setConfirmed(e.target.checked);
+              p.rewind();
+            }}
+          />
+          가상 평가·합산·공제 조건을 모두 확인
+        </label>
+      </div>
+      {p.controls}
+      <button
+        onClick={() => {
+          setKind("gift");
+          setValue(400);
+          setConfirmed(true);
+          p.rewind();
+        }}
+      >
+        조건까지 초기화
+      </button>
+      <Stage {...r.frames[p.step]} />
+      <p className="tax-result">{r.result}</p>
+      <Prediction
+        question="공제보다 재산이 적으면 신고 여부까지 자동으로 끝날까요?"
+        answer={false}
+        reason="가상 과세표준이 0이라는 계산과 현실의 평가·신고 의무는 다른 질문입니다."
+      />
+      <StaticTable
+        title="이전 재산의 가상 계산"
+        headers={["단계", "금액", "경계"]}
+        rows={r.frames.map((f) => [
+          f.label,
+          f.value === null ? "미확인" : f.value!,
+          f.detail,
+        ])}
+      />
+    </Lab>
+  );
+}
+export function DeductionsLab() {
+  const [base, setBase] = useState(400),
+    [off, setOff] = useState(50);
+  const r = deductionComparison(base, off);
+  return (
+    <Lab id="deductions" title={`같은 ${fmt(off)}, 서로 다른 공제 위치`}>
+      <figure className="tax-deduction-scene">
+        {r.rows.map((row) => (
+          <section key={row.id} className={row.id}>
+            <h4>{row.label}</h4>
+            <div className="tax-pipeline">
+              <span>
+                과세표준 <b>{fmt(row.taxableBase)}</b>
+              </span>
+              <i>↓ 구간별 세율</i>
+              <span>
+                산출세액 <b>{fmt(row.calculated)}</b>
+              </span>
+              <i>↓ 세액공제 {fmt(row.usedCredit)}</i>
+              <span>
+                결정세액 <b>{fmt(row.finalTax)}</b>
+              </span>
+            </div>
+          </section>
+        ))}
+        <figcaption>
+          입력 아래의 비교 막대는 0–140 단위 고정 눈금입니다. 소득공제는 위쪽
+          바탕, 세액공제는 아래쪽 세액을 줄입니다. 가상 세액공제는 0까지만
+          줄이고 초과분 환급·이월은 없습니다.
+        </figcaption>
+      </figure>
+      <div className="tax-controls tax-deduction-controls">
+        <Range
+          label="공제 전 과세 바탕"
+          value={base}
+          max={600}
+          onChange={setBase}
+        />
+        <Range label="공제 가정액" value={off} max={150} onChange={setOff} />
+      </div>
+      <section className="tax-deduction-outcomes" aria-label="같은 눈금의 결정세액 비교">
+        <h4>현재 결정세액 · 같은 0–140 눈금</h4>
+        {r.rows.map((row) => (
+          <div key={row.id}>
+            <Bar
+              label={row.label}
+              value={row.finalTax}
+              max={140}
+              color={row.id === "credit" ? "gold" : "teal"}
+            />
+            <p>공제 없음보다 감소 {fmt(row.saving)}</p>
+          </div>
+        ))}
+      </section>
+      <button
+        onClick={() => {
+          setBase(400);
+          setOff(50);
+        }}
+      >
+        조건까지 초기화
+      </button>
+      <Prediction
+        question="소득공제액만큼 세금도 반드시 같은 금액으로 줄까요?"
+        answer={false}
+        reason={`소득공제는 과세표준을 줄인 뒤 구간별 세율을 다시 적용합니다. 현재 과세 바탕 ${fmt(base)}에서 ${fmt(off)}을 공제하면 세금은 ${fmt(r.rows[0].finalTax)}에서 ${fmt(r.rows[1].finalTax)}로 ${fmt(r.rows[1].saving)} 줄어듭니다.`}
+      />
+      <StaticTable
+        title="세 가지 공제 비교"
+        headers={[
+          "조건",
+          "과세표준",
+          "산출세액",
+          "세액공제 사용",
+          "결정세액",
+          "감소액",
+        ]}
+        rows={r.rows.map((x) => [
+          x.label,
+          x.taxableBase,
+          x.calculated,
+          x.usedCredit,
+          x.finalTax,
+          x.saving,
+        ])}
       />
     </Lab>
   );

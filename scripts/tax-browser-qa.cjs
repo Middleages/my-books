@@ -473,6 +473,12 @@ async function scenarios(page, id) {
         model.deductionComparison(base, off).rows.map((r) => r.finalTax),
       );
       const rows = model.deductionComparison(base, off).rows;
+      assert.equal(await lab.locator("h3").first().innerText(), `같은 ${off}, 서로 다른 공제 위치`);
+      const controls = await lab.locator(".tax-deduction-controls").boundingBox();
+      const outcomes = await lab.locator(".tax-deduction-outcomes").boundingBox();
+      assert(outcomes.y - (controls.y + controls.height) >= 0);
+      assert(outcomes.y - (controls.y + controls.height) < 80, "Deduction outcomes must stay adjacent to inputs");
+      assert.equal(await lab.locator(".tax-deduction-outcomes .tax-fill").count(), 3);
       const explanation = await prediction.locator("[role=status]").innerText();
       assert(explanation.includes(`과세 바탕 ${base}에서 ${off}을 공제`));
       assert(

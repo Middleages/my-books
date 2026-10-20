@@ -18,7 +18,7 @@ function DotDistribution({ group, step }: { group: DistributionGroup; step: numb
     <div className="prob-dot-axis" role="img" aria-label={`${group.label}. 점 하나는 1가구. 평균 ${money(group.summary.mean)}, 중앙값 ${money(group.summary.median)}, 최대 ${money(group.summary.max)}. 공통 금액축 0–120만원.`}>
       <i className="prob-mean-line" data-mean-fraction={group.meanFraction} style={{ left: `${group.meanFraction * 100}%` }} />
       <i className="prob-median-line" data-median-fraction={group.medianFraction} style={{ left: `${group.medianFraction * 100}%` }} />
-      {group.points.map(point => <i key={point.id} className="prob-dot" data-value={point.value} data-stack={point.stack} data-fraction={point.x} style={{ left: `${point.x * 100}%`, bottom: `${12 + point.stack * 17}px` }} />)}
+      {group.points.map(point => <i key={point.id} className="prob-dot" data-value={point.value} data-stack={point.stack} data-lane={point.lane} data-fraction={point.x} style={{ left: `${point.x * 100}%`, bottom: `${12 + point.lane * 17}px` }} />)}
     </div>
     <div className="prob-axis"><span>0</span><span>30</span><span>60</span><span>90</span><span>120만원</span></div>
     <p className="prob-markers"><span>━━ 평균 {money(group.summary.mean)}</span><span>┆ 중앙값 {money(group.summary.median)}</span></p>
@@ -33,12 +33,14 @@ export function DistributionLab() {
   const reset = () => { setParams({ ...descriptiveDefaults }); setPrediction(''); play.rewind(); };
   return <section className="prob-lab" data-prob-lab="distributions" aria-label="같은 평균과 다른 분포 실험">
     <p className="prob-eyebrow">자체 가상 관측 · 같은 한 달 · 만원</p><h3>{model.equalMean ? '평균 선은 같은데 점들은 다릅니다' : '큰 값 하나가 평균선을 움직입니다'}</h3>
-    <p>모든 점은 같은 금액축에 놓입니다. 위로 쌓인 점을 사람 수로 읽고, 오른쪽 멀리 있는 지출 한 건을 찾아보세요.</p>
+    <p>모든 점은 같은 금액축에 놓입니다. 같은 세로줄의 점을 한 가구씩 세고, 오른쪽 멀리 있는 지출 한 건을 찾아보세요. 세로 높이 자체는 수치축이 아닙니다.</p>
     <figure className="prob-figure"><div className="prob-legend"><span>● 한 점 = 한 가구</span><span>실선 = 평균</span><span>점선 = 중앙값</span></div>
-      {model.groups.map(group => <DotDistribution key={group.id} group={group} step={play.step} />)}
-      <figcaption>가로 위치는 지출액, 쌓인 높이는 같은 금액의 가구 수입니다. 두 집단 모두 0–120만원의 같은 축이며 점을 무작위로 추첨한 결과가 아닙니다.</figcaption>
+      <DotDistribution group={model.groups[0]} step={play.step} />
+      <div className="prob-near-controls prob-tail-control"><label>꼬리 집단의 큰 지출 한 건<select aria-label="꼬리 집단의 큰 지출 한 건" value={params.tail} onChange={e => change({ tail: Number(e.target.value) })}><option value={110}>110만원 · 기본</option><option value={60}>60만원</option><option value={20}>20만원</option></select></label></div>
+      <DotDistribution group={model.groups[1]} step={play.step} />
+      <figcaption>가로 위치는 지출액입니다. 점은 한 가구씩이며, 세로 위치는 겹침을 피하기 위한 배치일 뿐 금액·확률 축이 아닙니다. 두 집단 모두 0–120만원의 같은 축이고 무작위 추첨 결과가 아닙니다.</figcaption>
     </figure>
-    <div className="prob-near-controls"><label>꼬리 집단의 큰 지출 한 건<select aria-label="꼬리 집단의 큰 지출 한 건" value={params.tail} onChange={e => change({ tail: Number(e.target.value) })}><option value={110}>110만원 · 기본</option><option value={60}>60만원</option><option value={20}>20만원</option></select></label>
+    <div className="prob-near-controls">
       <label>큰 값이 바뀌면 중앙값도 바뀔까요?<select aria-label="중앙값 변화 예측" value={prediction} onChange={e => setPrediction(e.target.value)}><option value="">먼저 예상하기</option><option value="same">10만원 그대로다</option><option value="change">큰 값만큼 변한다</option></select></label>{play.controls}<button className="prob-reset" onClick={reset}>전체 초기화</button></div>
     <div className="prob-current" aria-live="polite"><strong>{frame.label}</strong><p>{frame.explanation}</p></div>
     <p className="prob-verdict" data-equal-mean={model.equalMean}>{model.verdict}</p>
@@ -67,8 +69,8 @@ export function LossLiquidityLab() {
   const reset = () => { setParams({ ...lossDefaults }); setPrediction(''); play.rewind(); };
   return <section className="prob-lab" data-prob-lab="losses" aria-label="손실의 꼬리와 납기 현금 실험">
     <p className="prob-eyebrow">모형 가정 · 한 가상 기간 · 만원</p><h3>평균이 같아도 경계 밖의 손실은 다릅니다</h3>
-    <figure className="prob-figure"><div className="prob-case-grid">{model.cases.map(c => <section key={c.id} data-loss-case={c.id}><h4>{c.label}</h4><div className="prob-probability-axis"><span>0%</span><span>확률</span><span>100%</span></div>{c.rows.map(row => <div className="prob-mass-row" key={row.index}><span>손실 {money(row.loss)}</span><div className="prob-probability-track"><i data-probability={row.probability} style={{ width: `${row.probability * 100}%` }} /></div><b>{percent(row.probability)}</b></div>)}<p className="prob-equal">기대손실 <b>{money(c.expectedLoss)}</b></p></section>)}</div><figcaption>짧은 가로 막대는 확률이며 각 사례에서 합100%입니다. 1% 막대에도 직접 라벨을 붙였습니다. 실제 앞으로 100번의 결과를 배정한 표가 아닙니다.</figcaption></figure>
-    <figure className="prob-figure"><ol className="prob-timeline">{model.timeline.map((event, i) => <li key={`${event.day}-${i}`} data-day={event.day}><b>{event.day}일</b><span>{event.label}</span><strong>{event.meaning} {money(event.amount)}</strong></li>)}</ol><figcaption>처음 현금에 30일의 확정 외부 유입100만원만 추가합니다. 같은 날이면 입금 뒤 지출합니다. 이 그림은 지출 전의 날짜 비교이며 손실 후 잔액을 잇는 장부가 아닙니다. 납기 전의 돈만 셉니다.</figcaption></figure>
+    <figure className="prob-figure"><div className="prob-case-grid">{model.cases.map(c => <section key={c.id} data-loss-case={c.id}><h4>{c.label}</h4><div className="prob-probability-axis"><span>0%</span><span>확률</span><span>100%</span></div>{c.rows.map(row => <div className="prob-mass-row" key={row.index}><span>손실 {money(row.loss)}</span><div className="prob-probability-track"><i data-probability={row.probability} style={{ width: `${row.probability * 100}%` }} /></div><b>{percent(row.probability)}</b></div>)}<p className="prob-equal">기대손실 <b>{money(c.expectedLoss)}</b></p></section>)}</div><figcaption>짧은 가로 막대는 확률이며 각 사례에서 합 100%입니다. 1% 막대에도 직접 라벨을 붙였습니다. 실제 앞으로 100번의 결과를 배정한 표가 아닙니다.</figcaption></figure>
+    <figure className="prob-figure"><ol className="prob-timeline">{model.timeline.map((event, i) => <li key={`${event.day}-${i}`} data-day={event.day}><b>{event.day}일</b><span>{event.label}</span><strong>{event.meaning} {money(event.amount)}</strong></li>)}</ol><figcaption>처음 현금에 30일의 확정 외부 유입 100만원만 추가합니다. 같은 날이면 입금 뒤 지출합니다. 이 그림은 지출 전의 날짜 비교이며 손실 후 잔액을 잇는 장부가 아닙니다. 납기 전의 돈만 셉니다.</figcaption></figure>
     <div className="prob-near-controls"><div className="prob-controls"><label>처음 준비한 현금<select aria-label="처음 준비한 현금" value={params.cash} onChange={e => change({ cash: Number(e.target.value) })}>{[0, 200, 300, 1600].map(v => <option key={v} value={v}>{money(v)}</option>)}</select></label><label>지출 납기<select aria-label="지출 납기" value={params.dueDay} onChange={e => change({ dueDay: Number(e.target.value) })}>{[15, 30, 45].map(v => <option key={v} value={v}>{v}일</option>)}</select></label></div>
       <p className="prob-cash-status" data-cash-at-due={model.cashAtDue}>납기 현금 {money(model.cashAtDue)} · {model.arrived ? '30일의 100만원 포함' : '나중에 올 100만원은 제외'}</p>
       <label>큰 손실 대안에서 B의 부족액은?<select aria-label="B의 큰 손실 부족 예측" value={prediction} onChange={e => setPrediction(e.target.value)}><option value="">먼저 예상하기</option><option value="average">기대손실과 같다</option><option value="boundary">손실에서 납기 현금을 뺀 부족분이다</option></select></label>{play.controls}<button className="prob-reset" onClick={reset}>전체 초기화</button>

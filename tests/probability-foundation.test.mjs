@@ -78,3 +78,13 @@ test('probability A: only implemented reserved routes and volume8; preserve data
   assert.deepEqual(ids.map(x => [x[1], x[2]]), [['averages-and-distributions', 'probability/averages-and-distributions'], ['losses-and-liquidity', 'probability/losses-and-liquidity']]);
   for (const file of ['Intro', 'AveragesDistributions', 'LossesLiquidity']) { const text = readFileSync(new URL(`../src/content/probability/${file}.mdx`, import.meta.url), 'utf8'); assert(!text.includes('Math.random')); assert(text.includes('가상')); }
 });
+
+test('dot lanes avoid collisions without changing monetary positions or inventing a vertical measure', () => {
+  for (const tail of [20, 60, 110]) for (const group of distributionModel({ tail }).groups) {
+    for (const p of group.points) { assert.equal(p.x, p.value / 120); assert(Number.isInteger(p.lane) && p.lane >= 0); }
+    for (let i = 0; i < group.points.length; i++) for (let j = i + 1; j < group.points.length; j++) {
+      const a = group.points[i], b = group.points[j];
+      if (a.lane === b.lane) assert(Math.abs(a.value - b.value) >= 6);
+    }
+  }
+});

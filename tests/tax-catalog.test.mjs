@@ -111,3 +111,15 @@ test("tax process and amount scenes lead with the relationship, before range for
     }
   }
 });
+
+test("deduction caption and nearby comparison use current shared model values", () => {
+  const life = fs.readFileSync(new URL("../src/components/tax/LifeLabs.tsx", import.meta.url), "utf8");
+  if (!life.includes("export function DeductionsLab")) return;
+  const block = life.split("export function DeductionsLab")[1].split("export function ")[0];
+  assert(block.includes("title={`같은 ${fmt(off)}, 서로 다른 공제 위치`}"));
+  assert(block.indexOf("tax-deduction-controls") < block.indexOf("tax-deduction-outcomes"));
+  assert(block.includes("value={row.finalTax}"));
+  assert.equal((block.match(/<Bar/g) || []).length, 1, "One mapped set of bars, not duplicated UI state");
+  const qa = fs.readFileSync(new URL("../scripts/tax-browser-qa.cjs", import.meta.url), "utf8");
+  assert(qa.includes("Deduction outcomes must stay adjacent to inputs"));
+});

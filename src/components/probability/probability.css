@@ -4,3 +4,5 @@
 @media(prefers-reduced-motion:reduce){.prob-lab *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .prob-probability-axis{display:flex;justify-content:space-between;margin-right:calc(52px + .5rem);font-size:.78rem;color:#52617b}
+
+.prob-timeline strong,.prob-cash-status{word-break:keep-all}

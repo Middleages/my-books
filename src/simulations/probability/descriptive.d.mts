@@ -6,5 +6,5 @@ export function quantile(values: number[], p: number): number | null;
 export function describe(values: number[]): Summary;
 export type Bin = { lower: number; upper: number; last: boolean; count: number; fraction: number };
 export function histogram(values: number[], settings?: { min?: number; max?: number; width?: number }): Bin[];
-export type DistributionGroup = { id: string; label: string; values: number[]; summary: { [K in keyof Summary]: number }; points: { id: string; value: number; x: number; stack: number }[]; ordered: { id: string; value: number; x: number; stack: number; rank: number; middle: boolean }[]; bins: Bin[]; axisMax: number; meanFraction: number; medianFraction: number };
+export type DistributionGroup = { id: string; label: string; values: number[]; summary: { [K in keyof Summary]: number }; points: { id: string; value: number; x: number; stack: number; lane: number }[]; ordered: { id: string; value: number; x: number; stack: number; lane: number; rank: number; middle: boolean }[]; bins: Bin[]; axisMax: number; meanFraction: number; medianFraction: number };
 export function distributionModel(input?: Partial<DescriptiveParams>): { caseId: string; dataKind: string; unit: string; period: string; params: DescriptiveParams; groups: DistributionGroup[]; frames: { label: string; explanation: string }[]; equalMean: boolean; verdict: string };

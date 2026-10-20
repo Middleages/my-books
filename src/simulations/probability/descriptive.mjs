@@ -25,8 +25,8 @@ export function histogram(values, { min = 0, max = 120, width = 20 } = {}) {
   return bins.map(bin => ({ ...bin, fraction: values.length ? bin.count / values.length : 0 }));
 }
 function group(id, label, values, width) {
-  const summary = describe(values), axisMax = 120, stacks = new Map();
-  const points = values.map((value, i) => { const stack = stacks.get(value) ?? 0; stacks.set(value, stack + 1); return { id: `${id}-${i}`, value, x: value / axisMax, stack }; });
+  const summary = describe(values), axisMax = 120, stacks = new Map(), lanes = [];
+  const points = values.map((value, i) => { const stack = stacks.get(value) ?? 0; stacks.set(value, stack + 1); let lane = 0; while (lanes[lane]?.some(other => Math.abs(other - value) < 6)) lane++; (lanes[lane] ??= []).push(value); return { id: `${id}-${i}`, value, x: value / axisMax, stack, lane }; });
   const ordered = [...points].sort((a, b) => a.value - b.value || a.id.localeCompare(b.id));
   return { id, label, values, summary, points, ordered: ordered.map((p, i) => ({ ...p, rank: i + 1, middle: i === 4 || i === 5 })), bins: histogram(values, { width }), axisMax, meanFraction: summary.mean / axisMax, medianFraction: summary.median / axisMax };
 }
@@ -36,7 +36,7 @@ export function distributionModel(input = {}) {
   const groups = [group('narrow', '고른 집단', [...narrowValues], params.binWidth), group('tail', '꼬리 집단', [...Array(9).fill(10), params.tail], params.binWidth)];
   const equalMean = groups[0].summary.mean === groups[1].summary.mean;
   const frames = [
-    { label: '전체 기록을 펼치기', explanation: '점 하나가 같은 한 달의 한 가구입니다. 위로 쌓인 점도 서로 다른 가구이며 가로 위치는 지출액입니다.' },
+    { label: '전체 기록을 펼치기', explanation: '점 하나가 같은 한 달의 한 가구입니다. 가로 위치는 지출액이고, 세로 위치는 점의 겹침을 피한 배치입니다. 같은 금액은 같은 세로줄에서 셉니다.' },
     { label: '순서의 가운데 찾기', explanation: '금액순으로 세어 5번째와 6번째를 고릅니다. 가운데 두 금액의 평균이 중앙값입니다. 정렬해도 기록과 합계는 변하지 않습니다.' },
     { label: '평균과 꼬리를 함께 읽기', explanation: equalMean ? '두 집단의 평균은 20만원으로 같습니다. 하지만 꼬리 집단의 9가구는 10만원, 1가구는 110만원입니다. 대표값 하나가 이 차이를 지웁니다.' : '큰 값 하나를 바꾸면 합계와 평균이 움직입니다. 나머지 아홉 값이 10만원이므로 꼬리 집단의 중앙값은 10만원입니다.' },
   ];

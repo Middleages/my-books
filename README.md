@@ -171,17 +171,18 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 
 ## 세금의 구조와 생활 · 5권
 
-현재 소개와 01–08장을 등록했습니다. 과세 사건·계산의 바탕·현금 시점·확인 조건을 설명합니다.
+현재 소개와 01–10장을 등록했습니다. 과세 사건·계산의 바탕·현금 시점·확인 조건을 설명합니다.
 금액·세율·정산월은 교육용 가정이며 실제 신고·개인별 세액 계산이나 절세 추천을 하지 않습니다.
 전체 계획은 12장이고 A–F마다 검증 후 순차 공개합니다.
-[계획](docs/TAX-TEXTBOOK-PLAN.md) · [배치 D 검증](docs/TAX-BATCH-D-VERIFICATION.md)
+[계획](docs/TAX-TEXTBOOK-PLAN.md) · [배치 E 검증](docs/TAX-BATCH-E-VERIFICATION.md)
 
 ## 웹앱 개발자를 위한 데이터베이스 · IT 4권
 
-소개와 01–02를 등록했습니다. 작은 가상 상점의 같은 데이터를 사용해 파일의 사본·공유 저장소,
-표 사이의 키 관계와 저장 제약을 직접 관찰합니다. 전체 계획은 소개·12장이며 A–F로 두 장씩,
+소개와 01–04를 등록했습니다. 작은 가상 상점의 같은 데이터를 사용해 파일의 사본·공유 저장소,
+표 사이의 키 관계와 저장 제약, JOIN의 행 분기·집계와 인덱스의 페이지 접근을 직접 관찰합니다.
+전체 계획은 소개·12장이며 A–F로 두 장씩,
 G에서 전체 편집·선택 실습 묶음을 점검합니다. 아직 구현하지 않은 장은 공개 목차에 넣지 않습니다.
 
 브라우저 실험은 PostgreSQL 18 공식 문서를 바탕으로 한 결정적 교육 모델이며 실제 DB 실행이 아닙니다.
 실제 SQL·서버 설치·백업/복원은 미실행이고, MSSQL 차이는 해당 장에서 짧게 분리합니다.
-[계획](docs/DATABASE-TEXTBOOK-PLAN.md) · [세션 프롬프트](docs/DATABASE-SESSION-PROMPTS.md) · [배치 A 검증·게시 상태](docs/DATABASE-BATCH-A-VERIFICATION.md)
+[계획](docs/DATABASE-TEXTBOOK-PLAN.md) · [세션 프롬프트](docs/DATABASE-SESSION-PROMPTS.md) · [배치 A 검증·게시 상태](docs/DATABASE-BATCH-A-VERIFICATION.md) · [배치 B 검증·게시 상태](docs/DATABASE-BATCH-B-VERIFICATION.md)

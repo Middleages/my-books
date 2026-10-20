@@ -52,3 +52,19 @@ PR21 head `11d12fdb8a3246e861479aeae38bd32f92c47bc0`, run39372613041의 merge ch
 이 기록은 C의 production housing·직접 시각 게이트다. A→B→C의 최신 main 통합·Pages·게시 자산 확인을 대신하지 않으며 공개 완료를 뜻하지 않는다. 검증된 C 위에서 D를 별도 준비할 수 있다.
 
 같은 run39372613041의 최종 상태에서 build와 선택된 production browser7개 suite 전체가 성공한 것도 확인했다. 일부 suite 대기 중의 housing 결과와 전체 workflow 완료를 구별한다. 이 변경은 최종 증거만 덧붙인 문서 변경이며 C 앱·검증기 바이트는 그대로다.
+
+## 새 순차 합본 PR25의 별도 실행
+
+세금D·주거C·회계A 합본 source `05270dda25437a4529186ee0f3036948c352b7fb`/tree `12efd3b6a97b31c3d7dea9370da719a2682fc93f`, 실제 checkout `3633adfc4502c362cbf2f61b03fab4d3a2545313`의 run39378989127에서 전체951단위 테스트·build와 선택된8개 production suite가 성공했다. 주거는102/102, 고유PNG76(캡처 호출77), 앱 진단0이다. artifact12244203022 ZIP SHA-256 `ca713ef469d19b21324ebd22de069a17e18617902724a03cd9e317b46970937f`를 확인했다.
+
+담당자가 이 새 캡처의320 취득 현금 변경 원본/실패 crop,1440 대출한도 변경,390 reduced-static 상단 crop을 직접 열어 최초1원 부족의 실패 보존, 이미 실행한 대출, 세로 화살표·역할, 담보/연간 심사/월 생활의 다른 경계와 인접 제어를 확인했다. 모든 표 행을 직접 보았다는 주장은 아니다. 자산 해시와 전체 합본 한계는 [세금D 기록](TAX-BATCH-D-VERIFICATION.md)에 함께 남겼다. main05270dda에 반영됐지만 exact-main/Pages/live 게이트는 이 절 작성 시 진행 중이다.
+
+## 합본 main의 실제 게시·직접 확인
+
+main `05270dda25437a4529186ee0f3036948c352b7fb` / tree `12efd3b6a97b31c3d7dea9370da719a2682fc93f`, [run39381475001](https://github.com/Middleages/my-books/actions/runs/39381475001)의 전체951테스트·build·8개 production과 Pages 배포 성공 뒤 주거 실제 게시 **102/102·고유76PNG**를 확인했다. source clean·앱 오류0이며 알려진 호스트 기본favicon4041건은 정확한 URL로 별도 보존했다. artifact12246297529 ZIP SHA-256 `496ed0b837f56ebb69a5c7ce7f66b28e8f24a05843ccd00a62fe2a6f71a1a25e` 일치. 게시 JS `index-D6pLLVui.js` SHA-256 `9bcfa3b610e9c6267ff05758cc6fb5894e4a43f9614c41b215c7e9c83554148f`와 CSS `index-DBVJwIVL.css` `e497251536b81eb2add4ac6d5d72f8c70f19452b7c63783bf9cd30c58f8e6d86`는 정확한 main build와 같았다.
+
+주거 작성자는 새320 purchase-cash changed와1440 mortgage-limits changed 원본의 native 영역을 직접 열었다. 계약금·중도금이 가격의 부분임을 유지하고60일의1원 부족·이후 동결, 담보/연12개월/월 생활 단위, 가상 심사 가산2%p와 계약 납입의 구분, 월 부족18.48만원 표시를 확인했다. 이 두 화면 범위에서 시각 차단점은 없으며 전체76장 수동 검토 주장은 아니다. 07:10 UTC 기준 다른 책의 보험·투자 게시 검사가 남아 합본 전체 live 게이트는 아직 유지 중이었다.
+
+### 합본 전체 게시 게이트 마감
+
+2026-10-20 07:25:01 UTC에 마지막 보험 게시 job이 성공했다. run39381475001의 build·8개 production·Pages·8개 published, 총18개 job이 모두 성공해 앞 절의 진행 중 상태가 해소됐다. 최종 실제 게시 검사는 세금128/128·주거102/102·회계66/66·권차14/14·DB125/125·Kubernetes94/94·투자161/161·보험138/138이다. 보험 artifact12246918434 ZIP SHA-256 `a0a39a5e10fc05416abda6681d130df47091f11d500db66c2cc1789aa4417c81`를 원본과 대조했고603PNG·source05270dda/tree12efd3b6·clean·앱 오류0을 확인했다. 변경 교재의 위 실제 게시 자산/직접 화면 증거와 함께 이 배치의 공개 게이트를 닫는다. 원래 범위와 미검증 한계는 그대로 유지하며 다음 배치의 게시 완료를 대신하지 않는다.
