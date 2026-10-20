@@ -1,3 +1,5 @@
+import MovingAndShocks from "./content/housing/MovingAndShocks.mdx";
+import ReadingHousing from "./content/housing/ReadingHousing.mdx";
 import RentOrBuy from "./content/housing/RentOrBuy.mdx";
 import PlaceAndMarket from "./content/housing/PlaceAndMarket.mdx";
 import MortgagePaths from "./content/housing/MortgagePaths.mdx";
@@ -116,6 +118,8 @@ export const chapters: Chapter[] = [
   { id: "running-costs", bookId: "housing", readId: "housing/running-costs", number: "08", title: "살면서 계속 드는 비용", heading: "낸 돈·부담할 돈·내 통장에 옮긴 돈은 같을까?", description: "외부 납부·대납 청구·실제 입금과 내부 적립·수선 지급을 구별합니다.", Content: RunningCosts },
   { id: "rent-or-buy", bookId: "housing", readId: "housing/rent-or-buy", number: "09", title: "같은 조건에서 빌리기와 사기", heading: "같은 기간을 살고 나면 무엇이 남을까?", description: "공통 자금·기간·종점 정산으로 현금과 비용을 비교하고 중간 부족을 구별합니다.", Content: RentOrBuy },
   { id: "place-and-market", bookId: "housing", readId: "housing/place-and-market", number: "10", title: "위치·생활과 시장의 숫자", heading: "싼 집과 내 생활에 맞는 집은 같을까?", description: "돈·시간·필수조건과 거래 구성·가격지수·공급 시점의 다른 단위를 읽습니다.", Content: PlaceAndMarket },
+  { id: "moving-and-shocks", bookId: "housing", readId: "housing/moving-and-shocks", number: "11", title: "이사와 충격을 견디는 구조", heading: "받을 돈과 필요한 돈의 날짜가 어긋나면?", description: "반환 도착·새 지급·월 예산과 집 평가액의 서로 다른 위험을 구별합니다.", Content: MovingAndShocks },
+  { id: "reading-housing", bookId: "housing", readId: "housing/reading-housing", number: "12", title: "주거 자료 함께 읽기", heading: "문서의 숫자와 아직 모르는 사실을 어떻게 나눌까?", description: "가상 자료의 명시 내용·계산 가정·미확인을 돈·사람·날짜에 연결합니다.", Content: ReadingHousing },
 
   { id: "files-and-database", bookId: "database", readId: "database/files-and-database", number: "01", title: "파일 다음에 데이터베이스", heading: "파일도 저장하는데 DB는 무엇을 더 맡을까?", description: "같은 값을 읽은 두 사본과 공유 저장소의 변경, 데이터 관리 책임을 구분합니다.", Content: FilesAndDatabase },
   { id: "tables-and-constraints", bookId: "database", readId: "database/tables-and-constraints", number: "02", title: "표 사이의 약속", heading: "같은 이름이 아니라 어떤 값으로 관계를 지킬까?", description: "실제 행의 키 연결과 저장 경계에서 PK·FK·필수 값·범위 규칙을 살펴봅니다.", Content: TablesAndConstraints },

@@ -253,6 +253,7 @@ async function playback(page, selector = ".housing-lab") {
   const lab = page.locator(selector).first(),
     play = lab.getByRole("button", { name: "재생", exact: true }).first();
   if (!(await play.count())) return { manualOnly: true };
+  await lab.getByRole("button", { name: "처음부터", exact: true }).first().click();
   await play.click();
   await delay(1800);
   await lab.getByRole("button", { name: "정지", exact: true }).first().click();
@@ -274,12 +275,41 @@ async function playback(page, selector = ".housing-lab") {
   if (await reset.count()) await reset.click();
   else await lab.getByRole("button", { name: "처음부터", exact: true }).first().click();
   await delay(1800);
-  const initial = await lab.getAttribute("data-housing-lab") === "mortgage-paths" ? 13 : 0;
+  const initial = ({"mortgage-paths":13,"moving-and-shocks":1,"housing-shocks":2,"reading-housing":1})[await lab.getAttribute("data-housing-lab")] ?? 0;
   assert.match(await lab.locator(".money-playback").first().innerText(), new RegExp(`\\b${initial}\\s*\\/`));
   return { pauseReset: true, initial };
 }
 async function scenarios(page, id) {
   const lab = page.locator('.housing-lab').first();
+  if(id === 'moving-and-shocks') {
+    const presets={...model.movingPresets,independent:{receiptDay:20,confirmed:false,cash:90e6}};
+    for(const [kind,input] of Object.entries(presets)) {
+      await lab.locator('select').selectOption(kind);await lab.getByRole('button',{name:'처음부터',exact:true}).click();const rows=model.movingFrames(input);
+      for(let step=0;step<4;step++) {const r=rows[step],scene=lab.locator('[data-move-step]');
+        assert.equal(Number(await scene.getAttribute('data-move-step')),step);assert.equal(Number(await scene.getAttribute('data-move-cash')),r.cash);assert.equal(Number(await scene.getAttribute('data-move-old')),r.oldClaim);assert.equal(Number(await scene.getAttribute('data-move-new')),r.newClaim);assert.equal(await scene.getAttribute('data-move-status'),r.decision?.status??'not-due');
+        if(step<3)await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+      }
+      if(['partial','oneWon','unknown','unknownShort'].includes(kind))await capture(page,`${page.viewportSize().width}-moving-${kind}`,'[data-housing-lab="moving-and-shocks"]');
+    }
+    await lab.locator('select').selectOption('late');const control=await lab.locator('.money-playback').boundingBox(),gate=await lab.locator('.housing-stage').boundingBox();assert(gate.y-(control.y+control.height)<100,'moving gate detached from controls');
+    const shock=page.locator('[data-housing-lab="housing-shocks"]');
+    for(const mode of ['baseline','rate','income','repair','joint']) {await shock.locator('select').selectOption(mode);await shock.getByRole('button',{name:'처음부터',exact:true}).click();const expected={baseline:model.shockFrames({mode:'baseline'}),changed:model.shockFrames({mode})};
+      for(let step=0;step<4;step++){assert.equal(Number(await shock.locator('[data-shock-step]').getAttribute('data-shock-step')),step);for(const kind of ['baseline','changed']){const lane=shock.locator(`[data-shock-kind="${kind}"]`),r=expected[kind][step];assert.equal(Number(await lane.getAttribute('data-shock-cash')),r.cash);assert.equal(Number(await lane.getAttribute('data-shock-debt')),r.debt);assert.equal(await lane.getAttribute('data-shock-failure'),String(r.failure?.month??'none'));}await bars(page);if(step<3)await shock.getByRole('button',{name:'한 단계 진행',exact:true}).click()}
+    }
+    if(page.viewportSize().width<=800){const control=await shock.locator('.money-playback').boundingBox(),observed=await shock.locator('.housing-shock-paths>.changed').boundingBox(),baseline=await shock.locator('.housing-shock-paths>.baseline').boundingBox();assert(observed.y<baseline.y);assert(observed.y-(control.y+control.height)<240,'shock changing path detached from controls')}
+    await capture(page,`${page.viewportSize().width}-housing-shocks-changed`,'[data-housing-lab="housing-shocks"]');
+    const equity=page.locator('[data-housing-lab="housing-equity"]');for(const debt of [0,8000,18000,20000,24000])for(const change of [-100,-20,0,50]){await setRange(equity,0,debt);await setRange(equity,1,change);const r=model.housingEquity({debt:debt*10000,change:change/100});assert.equal(Number(await equity.locator('[data-equity]').getAttribute('data-equity')),r.current);assert.equal(await equity.locator('[data-equity-rate]').getAttribute('data-equity-rate'),String(r.equityRate??'undefined'));}
+    await setRange(equity,0,18000);await setRange(equity,1,-20);assert.match(await equity.innerText(),/넘는 빚/);await capture(page,`${page.viewportSize().width}-housing-equity-negative`,'[data-housing-lab="housing-equity"]');
+  }
+  if(id === 'reading-housing') {
+    for(const kind of ['rent','jeonse','buy']) {await lab.locator('select').selectOption(kind);
+      for(const revealed of [false,true]) {const r=model.readHousingPack(kind,revealed);if(revealed)await lab.getByRole('button',{name:'추가 가상 문서1개 펼치기',exact:true}).click();for(let step=0;step<3;step++){await lab.locator('.housing-document-lines button').nth(step).click();assert.equal(Number(await lab.locator('[data-evidence-step]').getAttribute('data-evidence-step')),step);assert.equal(await lab.locator('[data-pack-revealed]').getAttribute('data-pack-revealed'),String(revealed));assert.equal(await lab.locator('[data-pack-complete]').getAttribute('data-pack-complete'),'false');assert.match(await lab.locator('.housing-stage').innerText(),new RegExp(r.lines[step][0]));}
+        assert.deepEqual(await lab.locator('.housing-unresolved li').allTextContents(),r.unknown);if(kind==='jeonse')assert.equal(await lab.locator('[data-guarantee-purpose]').getAttribute('data-guarantee-purpose'),r.guaranteePurpose);if(kind==='buy')assert.equal(await lab.locator('[data-loan-date]').getAttribute('data-loan-date'),r.loanDateStatement);
+        await capture(page,`${page.viewportSize().width}-reading-housing-${kind}-${revealed?'revealed':'unknown'}`,'[data-housing-lab="reading-housing"]');
+      }
+    }
+    const control=await lab.locator('.money-playback').boundingBox(),stage=await lab.locator('.housing-stage').boundingBox();assert(stage.y-(control.y+control.height)<100,'document controls detached from selected evidence');assert.match(await lab.innerText(),/不足|부족액을0/);assert.match(await lab.innerText(),/송금이나 권리 취득 경로가 아닙니다/);
+  }
   if(id === 'rent-or-buy') {
     const cases=[{}, {annualReturn:3}, {priceChange:-.2}, {priceChange:.2}, {priceChange:-1}, {months:0}, {transactionCosts:false}, {months:60,monthlyFunding:0}, {settlement:'unknown'}];
     for(const change of cases) {
@@ -665,7 +695,7 @@ async function assets() {
       [2, 4, 6, 8, 10, 12].includes(chapters.length),
       "published chapters must be a complete batch",
     );
-    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/purchase.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/ongoing.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/comparison.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/market.mjs")).href)};
+    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/purchase.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/ongoing.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/comparison.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/market.mjs")).href),...await import(pathToFileURL(path.join(root,"src/simulations/housing/moving.mjs")).href),...await import(pathToFileURL(path.join(root,"src/simulations/housing/reading.mjs")).href)};
     if (process.env.LIVE_URL) base = process.env.LIVE_URL.replace(/\/?$/, "/");
     else {
       server = http.createServer((req, res) => {
@@ -715,6 +745,7 @@ async function assets() {
           await visit(page, route);
           const a = await audit(page);
           await capture(page, `${width}-${id || "intro"}-initial`, ".housing-lab");
+          if(id==='moving-and-shocks')for(const part of ['housing-shocks','housing-equity'])await capture(page,`${width}-${part}-initial`,`[data-housing-lab="${part}"]`);
           if(id==='place-and-market')for(const part of ['market-mix','housing-supply'])await capture(page,`${width}-${part}-initial`,`[data-housing-lab="${part}"]`);
           if (width === 390 || width === 1440)
             await capture(page, `${width}-${id || "intro"}-full`);
@@ -794,12 +825,14 @@ async function assets() {
         );
         assert.equal(motion, false);
         await capture(page, `390-${c.id}-reduced-static`, ".housing-lab");
+        if(c.id==='moving-and-shocks')for(const part of ['housing-shocks','housing-equity'])await capture(page,`390-${part}-reduced-static`,`[data-housing-lab="${part}"]`);
         if(c.id==='place-and-market')for(const part of ['market-mix','housing-supply'])await capture(page,`390-${part}-reduced-static`,`[data-housing-lab="${part}"]`);
       });
     }
     for (const id of selected.map(c=>c.id)) {
       await visit(page,'housing/'+id);
       await check('play-pause-reset-'+id,page,()=>playback(page));
+      if(id==='moving-and-shocks')await check('play-pause-reset-housing-shocks',page,()=>playback(page,'[data-housing-lab="housing-shocks"]'));
       if(id==='place-and-market')for(const part of ['market-mix','housing-supply'])await check('play-pause-reset-'+part,page,()=>playback(page,`[data-housing-lab="${part}"]`));
     }
     await check("keyboard-focus-and-history", page, async () => {

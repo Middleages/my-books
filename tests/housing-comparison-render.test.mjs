@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createServer} from 'vite';import {createElement} from 'react';import {renderToStaticMarkup} from 'react-dom/server';
+import {readFileSync} from 'node:fs';
 import {housingComparison} from '../src/simulations/housing/comparison.mjs';
 test('housing E SSR: first ledgers read model values and all four diagrams retain labelled relationships',async()=>{
  const server=await createServer({optimizeDeps:{noDiscovery:true,entries:[]},server:{middlewareMode:true,watch:null},appType:'custom',logLevel:'error'});
@@ -12,5 +13,5 @@ test('housing E SSR: first ledgers read model values and all four diagrams retai
 });
 test('housing E MDX renders complete lessons without raw punctuation emphasis or unreleased links',async()=>{
  const server=await createServer({optimizeDeps:{noDiscovery:true,entries:[]},server:{middlewareMode:true,watch:null},appType:'custom',logLevel:'error'});
- try{for(const file of ['RentOrBuy','PlaceAndMarket']){const {default:Content}=await server.ssrLoadModule(`/src/content/housing/${file}.mdx`);const html=renderToStaticMarkup(createElement(Content));assert(!html.includes('**'));assert(!/<del[ >]/.test(html));assert(!/<p\b[^>]*>\s*<p\b/.test(html));assert(!html.includes('#/housing/moving-and-shocks'));assert(html.includes('2026-10-20'));assert(html.includes('스스로 확인하기'));}}finally{await server.close()}
+ try{for(const file of ['RentOrBuy','PlaceAndMarket']){const {default:Content}=await server.ssrLoadModule(`/src/content/housing/${file}.mdx`);const html=renderToStaticMarkup(createElement(Content));assert(!html.includes('**'));assert(!/<del[ >]/.test(html));assert(!/<p\b[^>]*>\s*<p\b/.test(html));for(const [,id] of html.matchAll(/href="#\/housing\/([^"]+)"/g))assert(readFileSync(new URL('../src/catalog.ts',import.meta.url),'utf8').includes(`id: "${id}", bookId: "housing"`));assert(html.includes('2026-10-20'));assert(html.includes('스스로 확인하기'));}}finally{await server.close()}
 });
