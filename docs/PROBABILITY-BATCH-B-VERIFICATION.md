@@ -58,3 +58,10 @@
 - 작성자가 원본20개를 직접 열었다. 320px 이론·관측0건·자연빈도 나무·알림 비례막대/빈 조건·인접 제어·정적 표,390px 두 전체 장·일반움직임 결과·홈,1440px 이론/나무, A의320px 분포/납기 회귀를 포함한다. 조건부 분모와 색 외 표식, 미관측/0 구별, 읽음0/4, 기존 책을 확인했다. 일부320px 기록의 ‘건’ 단위는 두 줄이지만 잘림은 없었다. 독립 동료·실제기기·스크린리더 음성 검증으로 부르지 않는다.
 - 확률 artifact12250759322 ZIP SHA256 `0ea7dcee6a7856dbc4779190828323a828002784277fd062187c52ea75579d75`; 홈 artifact12251316668 `6eb437c85ab30a4976cf0679056b73524828dcfeb8c61770fd428a820242104f`; 선택 artifact12250808373 `17087b343fa15453b50a4314dc86a9512963b98333df1d010d4e04991b46bf8d`.
 - PR의 deploy/published jobs는 skipped다. main/Pages/실제 게시 성공이 아니다. A의 실제 게시 게이트 뒤 최신 main을 보존해 B를 직렬 통합하고 해당 새 소스의 검증과 실제 게시 확인을 해야 한다. 이 완료 기록은 검증된 B tree를 동결한 채 문서 전용 handoff로 준비했다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `a2a017730aed91c416e8ba6535c62580a6646bf4` / tree `30229911e8630785ad95f98330bb545e3718c6aa`, [run39410741375](https://github.com/Middleages/my-books/actions/runs/39410741375)의 전체1225/build·선택6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **269/269·73원본PNG**, 앱 오류0이며 정확한 host-root favicon404 한 건만 별도 진단으로 보존했다. artifact12259488688 ZIP SHA256 `5893ae8a176189c1e96fefb1006be6daf17c22a740bf1424d12715835a130bc5` 일치. 실제 JS/CSS 전체 bytes·해시는 [합본 게시 기록](FOLLOWUP-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 실제 게시 원본: `320-frequency-zero-observed,320-frequency-theory,320-conditional-empty,320-conditional-tree,320-conditional-controls,320-conditional-static`(각각.png). 작성자가 원본6개를 직접 읽었다.0/100관측≠p0, 기대1과P0=36.6032%, 양의 작은 확률,0/0미정,90/10/198/9702와 분모288, 인접 제어와 정적 표를 확인했다. 검토한 범위에 새 잘림·겹침·의미 차단점을 찾지 못했다. 모든73개를 사람이 읽었다거나 실기기·스크린리더·실제 시스템/임상 검증을 수행했다고 주장하지 않는다. 앞선 미게시 문구는 당시 소스 검증 단계의 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.

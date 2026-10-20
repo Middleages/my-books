@@ -31,3 +31,10 @@ source10bfd420b689d403357e32623e145ce1c975ad04/tree43cfb07440271a470d2a169ff6080
 ## 최종 전체 회귀 마감 · 2026-10-20 10:40 UTC
 
 CI 39406529341의 build와 production 11 suite(tax, investing, accounting, database, housing, insurance, kubernetes, child-development, child-sleep, book-volumes, child-feeding)가 모두 success로 끝났다. deploy/published는 PR 실행에서 skipped이므로 main/Pages 완료를 뜻하지 않는다. 수정 소스 10bfd420b689d403357e32623e145ce1c975ad04, tree 43cfb07440271a470d2a169ff60809344e02b1d3, 실제 merge checkout cd478c23e9d25702329304c114c4a461bc43ded7을 보존한다. 전용 26검사·53PNG와 앞서 기록한 수정 원본 4개의 직접 검토가 완료됐다. 이로써 A 자체 소스·실제 화면·전체 회귀를 닫고 직렬 게시 창에 인계한다. 의학 전문가 감수는 미실행이다.
+
+
+## 신규2권 합본의 실제 source 검증 완료
+
+[PR69](https://github.com/Middleages/my-books/pull/69) head `ecf9d67dc5a35876aa6565b8b8cabe4c2c2d79e9`의 실제 checkout `2585e5fb77bfe87876501423026f8d8fd365823c`/tree `0a9636eb65e8514d4ba6abb467c5f0aab603ba1c`, [run39412137368](https://github.com/Middleages/my-books/actions/runs/39412137368)에서 전체1268/build484·14종 production이 성공했다. 먹기 전용26/26·53원본PNG, 오류0이며 수면 안전 보강25e05f1을 포함한 최종 앱이다. 새320/390/850/1440 대표 원본을 작성자·통합 담당자가 직접 확인한 정확한 범위와 ZIP/JS/CSS 증거는 [합본 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다. 기존 독립 소스 캡처를 새 합본 캡처로 세지 않았다.
+
+main/Pages·전체14종 실제 게시 검사는 아직 별도 대기이며, 이 결과가 임상·영양 전문가 감수나 실제 아동/제품의 안전성 보증은 아니다. B 이후는 포함하지 않았다.

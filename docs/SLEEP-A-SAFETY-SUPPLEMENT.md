@@ -7,3 +7,8 @@
 정확 변경은 SafeSleepSpace.mdx에 자체 한국어 2문장 추가, 전용 verifier에 네 폭 실제 렌더 assertion/원본 PNG 추가뿐이다. 카탈로그·모델·권차·다른 장은 바꾸지 않는다. 동결 A 뒤 별도 커밋이며 B에도 동일 본문·검사 보강을 전파한다.
 
 무거운 로컬 build는 다른 작업자의 예약 창을 존중해 실행하지 않았다. 정상 PR CI의 전체 unit/build와 전용 실제 브라우저 검증 후 새 원본을 직접 검토한다. 현재 그 게이트와 main/Pages는 미완료다. 의학 전문가 감수 미실행.
+
+B 전파 브랜치의 CI39411650452에서 전체 unit/build 및 선택2 suite가 성공했고, 새 문단 원본320/390/1440을 직접 확인했다. A 통합 소스는 게시 담당의 합본14-suite와 정확한 원본 검토를 별도로 기다린다.
+
+
+A 합본 PR69/run39412137368에서 보강 뒤 전체1268/build·14 production이 성공했고, 작성자가 새320/390/1440-caregiver-boundary 원본을 실제로 열어 두 문장의 가독성과 적용 범위를 확인했다. source/tree·정확한 자산·범위 한계는 [합본 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다. 아직 main/Pages나 임상 감수 완료를 뜻하지 않는다.

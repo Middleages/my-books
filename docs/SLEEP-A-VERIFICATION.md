@@ -32,3 +32,10 @@ run39403186794의 수면 suite는22통과/4실패였다. 네 폭에서 공간 �
 ## 최초 등록 전체 회귀 완료 — 2026-10-20 10:19 UTC
 
 run39403796489의 build와 전체10 production suite(insurance,investing,tax,book-volumes,database,kubernetes,housing,accounting,child-development,child-sleep)가 모두 성공했다. 소스842dcd2d17650569de8506e7e42718bcbe1c4ab9/treeb8d9c32693829a0e5f003a0b4f2bf0842d25bd6a는 그대로 고정했다. 전용26검사·49PNG·오류0과 위 원본 직접검토를 포함해 A 소스·화면·전체 회귀 게이트를 닫는다. main·Pages·exact-live는 여전히 별도 게시 담당의 미완료 게이트이며, 전문 의학 감수는 미실행이다.
+
+
+## 신규2권 합본의 실제 source 검증 완료
+
+[PR69](https://github.com/Middleages/my-books/pull/69) head `ecf9d67dc5a35876aa6565b8b8cabe4c2c2d79e9`의 실제 checkout `2585e5fb77bfe87876501423026f8d8fd365823c`/tree `0a9636eb65e8514d4ba6abb467c5f0aab603ba1c`, [run39412137368](https://github.com/Middleages/my-books/actions/runs/39412137368)에서 전체1268/build484·14종 production이 성공했다. 수면 전용30/30·53원본PNG, 오류0이며 수면 안전 보강25e05f1을 포함한 최종 앱이다. 새320/390/850/1440 대표 원본을 작성자·통합 담당자가 직접 확인한 정확한 범위와 ZIP/JS/CSS 증거는 [합본 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다. 기존 독립 소스 캡처를 새 합본 캡처로 세지 않았다.
+
+main/Pages·전체14종 실제 게시 검사는 아직 별도 대기이며, 이 결과가 임상·영양 전문가 감수나 실제 아동/제품의 안전성 보증은 아니다. B 이후는 포함하지 않았다.

@@ -13,8 +13,8 @@ test('C catalog exposes exactly implemented chapters with stable DB identities a
   const catalog=read('src/catalog.ts');for(const[id,number,component]of[['transactions','05','DatabaseTransactions'],['concurrency','06','DatabaseConcurrency']]){
     assert(catalog.includes(`id: "${id}", bookId: "database", readId: "database/${id}", number: "${number}"`));assert(catalog.includes(`Content: ${component}`));
   }
-  assert.match(catalog,/id: "database", categoryId: "technology", volume: 4/);assert.match(catalog,/소개·01–08장 공개/);
-  for(const id of ['durability-and-wal','backup-and-restore','schema-migrations','database-troubleshooting'])assert(!catalog.includes(`id: "${id}", bookId: "database"`));
+  assert.match(catalog,/id: "database", categoryId: "technology", volume: 4/);assert.match(catalog,/소개·01–10장 공개/);
+  for(const id of ['schema-migrations','database-troubleshooting'])assert(!catalog.includes(`id: "${id}", bookId: "database"`));
 });
 test('C writing keeps SQL success, business success and history in distinct boundaries',()=>{
   for(const token of ["status = 'confirmed'",'nextval','번호 배정','0행','외부 HTTP','COMMIT 응답','savepoint'])assert(txBody.includes(token),token);
