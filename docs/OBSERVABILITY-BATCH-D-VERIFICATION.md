@@ -9,3 +9,5 @@
 공식 근거: OpenTelemetry 계측·context propagation·sampling·collector resiliency, 2026-10-20 확인. 제품 기본값·성능값·실운영 권장 설정으로 합성 수치를 제시하지 않는다. main 통합·Pages 게시 완료는 별도 게이트다.
 
 전체1158 unit tests 통과. 마지막 환경 선택 UI와 browser 검증기 연결을 포함한 정확한 소스의 build·production은 별도 draft PR CI에서 확인한다. 공용 자원을 중복 소비하지 않도록 로컬 build는 실행하지 않았다. 이 후보를 아직 게시 완료로 표시하지 않는다.
+
+첫 CI39409232556 전체 성공과 관측 원본을 확인했다. ACK 유실 반례의 방향 화살표가 고정 ‘ACK 확인’ 문구여서 실제 수신 성공처럼 읽힐 여지가 있었다. 현재 단계의 전송 실패/저장됨/ACK 유실/ACK 수신을 동적으로 표시하고 browser assertion을 추가한다. 최초 캡처를 최종 시각 통과로 사용하지 않고 수정 소스로 재검증한다.
