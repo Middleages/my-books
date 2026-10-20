@@ -1,0 +1,47 @@
+# 육아 2권 A 구현·검증 기록
+
+2026-10-20. 소개·01–02를 별도 작업트리에서 구현했다. 첫 권 A `a288e90`만 선행으로 사용했으며 첫 권 03–12는 포함하지 않는다. 최신 게시 main 합류는 직렬 게시 담당이 당시 합집합을 보존해 수행한다. 현재 main·Pages 미게시, 의학 전문가 감수 미실행.
+
+## 구현 계약
+- `child-sleep`, `parenting`, 2권. 첫 권 ID·읽음 키 보존. 소개와 정확히 두 장을 등록한다.
+- 01: 첫날 정오부터 다음날 정오까지 1440분의 고정축. 침대 구간과 관찰 상태가 다른 층. 겹친 기록 합집합, 잠/각성 상충 구간은 미확정, 관찰 없는 하루는 잠0시간으로 단정하지 않는다. 모든 fixture 합성이며 실제 입력·저장·전송 없음.
+- 02: 방 경계 안에 별도 두 수면 공간. 모바일에서는 같은 방 경계를 유지한 세로 배치. 표면 단면·등을 대고 눕힌 기호·비워 둔 표면을 각각 강조한다. 제품 인증·치수·위험률·안전 점수 없음. 첫돌 전 영아 범위를 명시한다.
+- 수면 처방·야간수유 중단·약물·고정 wake window·실제 아이 정보 기능 없음.
+
+## 근거 재확인
+2026-10-20 질병관리청 영아돌연사증후군 페이지(업데이트2026-05-12), AAP 보호자 안전수면 페이지(업데이트2026-09-11)를 직접 열어 자세·별도 표면·방 공유·물체 원칙을 대조했다. AAP 미국 제품 기준을 한국 인증으로 전환하지 않는다. 역사 통계와 위험 비율은 옮기지 않았다. 01의 분 구간 계산은 자체 교육 모델로 의료 측정이 아니다.
+
+## 실행 상태
+- 전체 unit 1,047개 통과/실패0, TypeScript/Vite production build 성공. 기존 대형 bundle 경고는 남아 있으나 오류가 아니다.
+- 새 browser suite: 320/390/850/1440, 합성 기록4종·공간4선택·읽음ID 보존·키보드·초기화·모션 대안·가로 넘침·진단 수집·원본PNG 생성 코드 작성.
+- 로컬 Chromium: 알려진 실행환경 제약 때문에 재시도하지 않는다. 정상 독립 PR CI를 사용한다.
+- 원본 PNG 직접 검토: 아직 미실행. 자동검사와 별도 게이트이다.
+- 최초 등록의 넓은 회귀: 기존9개+수면1개, 총10 suite 예정. 첫 권 전체 마감 회귀와 서로 다른 소스·실행으로 관리한다.
+
+## 초기 CI 확인 및 검증기 수정
+run39403186794의 수면 suite는22통과/4실패였다. 네 폭에서 공간 버튼을 마우스 모드의 programmatic focus로 이동한 직후 `:focus-visible`을 요구한 검증기 조건이 원인이었다. 실제 키보드 Tab 입력으로 키보드 모드에 들어간 뒤 포커스 윤곽과 Enter 조작을 검사하도록 수정한다. 실패를 통과로 보고하지 않는다. 초기 원본320 전체02·390 빈기록·1440 부분기록에서 방 경계/별도 표면과 시간층·미확인 보존을 직접 확인했다. 수정본의 모든 공간 상태와 최종 회귀는 아직 대기다. 공통 공개범위 회귀는 최고 장수뿐 아니라 중간 장 누락도 검증하도록 강화했다.
+
+## 수정본 전용 소스·실제 화면 게이트 — 2026-10-20 09:56 UTC
+
+원격 source842dcd2d17650569de8506e7e42718bcbe1c4ab9 / treeb8d9c32693829a0e5f003a0b4f2bf0842d25bd6a. 실제 CI checkoutba9e81655bae59f7687b5a646193b17c70023bca의 tree가 같다. run39403796489 build와 child-sleep 전용26검사 통과,49PNG, page/console/resource 오류0. artifact12255688508 ZIP SHA256 fb92dcc4ecd50ce7ccbd5b0cc070968dd86bde55c7d6f7ce8d9eca1007bb0d77.
+
+직접 연 원본:320-space-room,390-space-position,850-space-surface,1440-space-clear,320-record-conflict,390-record-overlap,850-record-empty,1440-home-parenting. 모바일의 세로 배치가 같은 방 경계를 유지하고, 선택별 실제 강조 경계와 키보드 윤곽이 보인다. 두 시간 층은 같은 눈금이며 상충·미확인 패턴을 보존하고 빈 관찰을 수면0으로 단정하지 않는다. 1·2권 표지/읽음 기록의 분리도 확인했다. 초기 실패와 달리 키보드 모드를 실제 입력한 후 포커스 검사가 통과했다.
+
+전체10-suite 첫 등록 회귀는 아직 진행 중이다. 완료된 전용 소스/화면 게이트와 미완료 전체 회귀·main 게시·exact-live 게이트를 구분한다. 수정 후 로컬 전체1,047 unit도 다시 성공했다. 수정 후 TypeScript/Vite production build도 성공했다.
+
+## 최초 등록 전체 회귀 완료 — 2026-10-20 10:19 UTC
+
+run39403796489의 build와 전체10 production suite(insurance,investing,tax,book-volumes,database,kubernetes,housing,accounting,child-development,child-sleep)가 모두 성공했다. 소스842dcd2d17650569de8506e7e42718bcbe1c4ab9/treeb8d9c32693829a0e5f003a0b4f2bf0842d25bd6a는 그대로 고정했다. 전용26검사·49PNG·오류0과 위 원본 직접검토를 포함해 A 소스·화면·전체 회귀 게이트를 닫는다. main·Pages·exact-live는 여전히 별도 게시 담당의 미완료 게이트이며, 전문 의학 감수는 미실행이다.
+
+
+## 신규2권 합본의 실제 source 검증 완료
+
+[PR69](https://github.com/Middleages/my-books/pull/69) head `ecf9d67dc5a35876aa6565b8b8cabe4c2c2d79e9`의 실제 checkout `2585e5fb77bfe87876501423026f8d8fd365823c`/tree `0a9636eb65e8514d4ba6abb467c5f0aab603ba1c`, [run39412137368](https://github.com/Middleages/my-books/actions/runs/39412137368)에서 전체1268/build484·14종 production이 성공했다. 수면 전용30/30·53원본PNG, 오류0이며 수면 안전 보강25e05f1을 포함한 최종 앱이다. 새320/390/850/1440 대표 원본을 작성자·통합 담당자가 직접 확인한 정확한 범위와 ZIP/JS/CSS 증거는 [합본 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다. 기존 독립 소스 캡처를 새 합본 캡처로 세지 않았다.
+
+main/Pages·전체14종 실제 게시 검사는 아직 별도 대기이며, 이 결과가 임상·영양 전문가 감수나 실제 아동/제품의 안전성 보증은 아니다. B 이후는 포함하지 않았다.
+
+## 정확한 main·Pages·전체14종 실제 게시 마감
+
+main `2c2b11d3ba9af855dd4724e91051ea775d94051b`/tree `0d6e66c955c8ae8c90195cf0f193be65a81661e4`, [run39417253750](https://github.com/Middleages/my-books/actions/runs/39417253750)에서 전체1268 단위·build484·14 production·Pages·14 published가 모두 성공했다. 이 책의 실제 게시 검사는 31/31·53원본PNG·앱 오류0이다. artifact12262918728 ZIP SHA256 `cff19e1344229a292260ca397738b0e8323354e57463590fedddcfc71ef8cc88`와 정확한 게시 JS/CSS를 대조했다. 알려진 호스트 루트 favicon404 한 건은 별도 보존했다.
+
+작성자는 실제 게시 320/390/1440-caregiver-boundary의 안전 실천 두 문장를 직접 재확인했다. 전체14종·단일 build 및9개 합본 원본의 한정 직접 검토와 미검증 범위는 [합본 최종 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다. A 소개·01–02 게시를 완료하며 B 이후는 포함하지 않는다. 의학/영양 전문가 감수나 개인의 안전성 보증은 아니다.

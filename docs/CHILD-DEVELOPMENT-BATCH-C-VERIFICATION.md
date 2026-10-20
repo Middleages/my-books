@@ -20,3 +20,10 @@
 - 브라우저 보고서: merge SHA `8b707bd8d108a81dcf8b514982bff41e5d3bdafd`, 동일 sourceTree, 77개 통과/실패 0, 241 PNG, page/console/resource 오류 0. Artifact `12251705837`.
 - 원본 PNG 직접 검토: 320 communication gesture-follow/quiet-follow, 390 gesture-redirect, 390 interaction break 0→1, 1440 engage 1, 320 unclear 2. 작은 화면에서도 제어·본문·그림이 잘리지 않으며 동일 대상/다른 대상의 점선 종점, 신호 방향, 일시정지, 모름 상태가 구별된다.
 - source/실제 화면 게이트 완료. 임상 감수와 K-DST 원문 재사용 확인, main 통합·Pages·exact-live는 별개 미완료 상태다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `358c59bb17f121889afe66fcf06f6bfad770b666` / tree `c2a9066158300ea67b72f85b65179f46ec0a5f43`, [run 39414373357](https://github.com/Middleages/my-books/actions/runs/39414373357)의 전체 1259 단위·build, 선택 6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **78/78 검사·241원본 PNG**, 앱 오류 0이다. 정확한 host-root favicon 404 한 건만 별도 진단으로 보존했다. artifact 12260644957 ZIP SHA256 `db8badc16644752b94665053844fd9576baf510f7ccfbdb7f99c8c59dd2a4a41` 일치. 실제 JS/CSS 전체 바이트·해시는 [합본 게시 기록](FOLLOWUP-SECOND-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 게시 원본: `320-communication-gesture-redirect.png, 1440-communication-sound-follow.png, 320-interaction-break-2.png, 390-interaction-unclear-2.png`. 작성자가 네 원본을 직접 재검토했다. 관심선의 아이→공/보호자→책 구별, 보호자 신호 방향, 쉬기 기호와 놀이 중단, 미확정 뜻을 모름으로 남기는 경계가 유지된다. 모바일 글자·제어 잘림과 겹침을 찾지 못했다. 검토한 범위에 새 의미·잘림·겹침 차단점을 찾지 못했다. 모든 241개를 사람이 읽었거나 실기기·스크린리더·실제 금융/시스템/임상 검증을 했다는 의미는 아니다. 앞선 미게시 상태는 작성 당시 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.

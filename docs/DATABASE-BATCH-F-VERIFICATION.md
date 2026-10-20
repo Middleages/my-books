@@ -44,3 +44,14 @@ E는 PR55 head `2adb6d71751caf3c0f89c6a16e147d81aff3ae35`, tree `82013fd09a4f032
 
 - 첫 원본 `320-f11-ddl-wait-ddl-waiting.png`의 native crop을 추가로 보니 행 위 조작부와 더 아래 잠금 그림의 거리가 길었다. 잠금 그림 바로 위에 동일 player의 이전/다음 버튼을 추가했다. 실제 계약은 DDL 대기→획득을 키보드로 넘기며 frame·포커스·controls–그림 거리·화면 경계·다시 보기까지 대조하고 그 근접 장면을 별도 캡처한다. 초기 frame에는 아직 잠금 관측이 없어 해당 패널도 없으며 첫 관측은 기존 상단 버튼으로 시작한다.
 - 잠금 근접 조작을 포함한 최종 로컬 소스도 전체1325/1325(실패·취소·skip0)를 통과했다. 앞서 경로 교정만 올린 PR 중간 실행과 구별하며, 이 최종 delta의 TypeScript/build·실제 PNG는 새 실행을 기다린다.
+
+
+## 교정 후보의 실제 검사에서 확인한 SVG 검증기 오류
+
+- 최종 앱 교정 head `4aa747992b436ae2d451a0c4e74574cae2618fd6`의 [run39421875072](https://github.com/Middleages/my-books/actions/runs/39421875072)는 최신 main `2c2b11d3ba9af855dd4724e91051ea775d94051b`를 합친 실제 checkout `f9bb875563d6751efd7a0d5ce0f82fe9c30f1e8e`, tree `626e997a7463b5b87b9c0f6c5587c15d1fc160cf`에서 실행됐다. 동일 tree의 로컬 merge는 `866304932a3f8b7818e2bce5e0eafd32274009b8`이다. 전체1334/1334와 TypeScript/Vite499모듈은 통과했다.
+- 실제 DB는613/644·655원본PNG였다.31실패의 첫 오류와 반복 원인은 새 SVG text 제목에 HTML 전용 `locator.innerText()`를 사용한 검증기 API 오류다. 페이지·console·resource·별도 진단은 모두 비어 있다. 이 결과를 앱 전체 통과로 세지 않는다. SVG용 `textContent()`와 명시적 가시성 검사로 바꾸고, HTML 전용 접근의 재발을 막는 source 회귀를 추가했다. 원래 제목 기대값·경로 집합·ID·기하학·시나리오는 그대로다.
+- DB ZIP artifact12264193464 SHA256 `d061524600d5e4e121c8247d3a5eda158bb6e74f92bee5cc78d0c0d85b404a9d`를 대조했다. 직접 본 `320-f11-ddl-lock-near-ddl-waiting.png`, `390-f11-ddl-lock-near-ddl-granted.png`에서는 조작·현재 단계·잠금 방향이 같은 작은 장면에 모였고, 종료한 SELECT와 획득했지만 적용 전인 DDL이 명확하다. 이 두 장의 교정은 확인했지만12의 새 지도 전수 계약/픽셀은 helper 수정 후 다시 확인한다.
+- 권차는14/14·57원본PNG·errors0이며 exact served JS/CSS와 dist가 같다. artifact12265110347 ZIP SHA256 `fde15b2fa93ccc6bda5e11b1b36e5bfdc95d168ab885b81d7f8f3c50161643a6`를 대조하고1440-home·320-home·320-database-heading 및320홈의 DB 카드 native crop을 직접 보았다. 표지·IT4권·0/12와 이웃 책을 보존한다.
+- 이 run의 영향 선택은 PR event base358c59bb와 최신 merge checkout 차이 때문에 새 수면/먹기 공유 변경도 포함해14종 전체가 선택됐다. 이전2종 선택 결과를 이 run에 복사하지 않는다. 모든 suite의 terminal 결과는 별도 확인하며 아직 미완료를 통과로 쓰지 않는다. 앞선 경로 교정만의 중간 run39421224449 DB는 새 push로 취소됐고 최종 증거가 아니다.
+- 이 시점의 앱 자산: JS `index-DVNV5nHp.js` 3613620bytes SHA256 `7e3f7d18a0d070d79650bc26ca9dfa39bdfead8fa4167736db9ddb76bb5da002`, CSS `index-CVtc5NXW.css` 416248bytes SHA256 `3b10b64d0b152061bc46cde9201a95803d2b3bec0fa361484b11ee0fd91481d3`. SVG 접근 교정은 harness/test/docs만 바꾸며 앱 소스를 변경하지 않는다.
+- SVG helper만 교정한 로컬 전체 검사는1335/1335(실패·취소·skip0)였다. 원본 앱 소스는 직전 실제 검사와 동일하다. DDL 근접 원본2장은 독립 교차 검토도 통과했으나 그 범위를 전체 실패 run의 통과로 확대하지 않는다.

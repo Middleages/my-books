@@ -29,3 +29,10 @@ PR54 head `f59e523165b8e0bef5053ab4f99a0cca8c65855a`, source tree `a38e7a0285259
 최종 원본320-boundaries-blocked,390-boundaries-preflight,390-tokens-expired,1440-tokens-forged,320-tokens-malformed를 직접 열었다. 조작 바로 아래 현재 사례/판정이 놓이고, 전송/처리/읽기 실패와 구조 실패 뒤 미검사 칸이 구별됐다. 320px에서 라벨·버튼·거절 원인 누락이나 겹침이 없었다. URL은 좁은 폭에서 줄바꿈되며 원문은 유지된다. 정적 표와 normal/reduced-motion·키보드·초기화·기존 읽음 보존은 production verifier가 검사했다.
 
 A→B 순서의 후속 통합, 정확 main/Pages/live 자산 확인과 실기기 접근성·실제 SSO는 아직 별도 미실행 범위다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `358c59bb17f121889afe66fcf06f6bfad770b666` / tree `c2a9066158300ea67b72f85b65179f46ec0a5f43`, [run 39414373357](https://github.com/Middleages/my-books/actions/runs/39414373357)의 전체 1259 단위·build, 선택 6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **20/20 검사·105원본 PNG**, 앱 오류 0이다. 정확한 host-root favicon 404 한 건만 별도 진단으로 보존했다. artifact 12262000465 ZIP SHA256 `23e766cec055b91f19aa6a003cf05060a97a78733295da2cace55ac3295b3dff` 일치. 실제 JS/CSS 전체 바이트·해시는 [합본 게시 기록](FOLLOWUP-SECOND-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 게시 원본: `320-boundaries-blocked.png, 390-boundaries-preflight.png, 390-tokens-expired.png`. 작성자가 세 원본의 핵심 도식과 모바일 원본 픽셀 y1800–3600 구간을 직접 확인했다. 전송·처리·읽기의 구별, preflight 뒤 실제 POST 미전송, now=exp 거절과 인접 제어를 확인했으며 선택 범위에 새 시각 회귀가 없다. 검토한 범위에 새 의미·잘림·겹침 차단점을 찾지 못했다. 모든 105개를 사람이 읽었거나 실기기·스크린리더·실제 금융/시스템/임상 검증을 했다는 의미는 아니다. 앞선 미게시 상태는 작성 당시 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.

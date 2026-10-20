@@ -66,3 +66,9 @@ main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`의 [run39374566657](https://gith
 ## 세금 C·주거 B의 게시 읽음 분모 확인
 
 main `7a935e1114a4260181891664fff4a453508784fc`와 [run39377349867](https://github.com/Middleages/my-books/actions/runs/39377349867)의 권차 게시14/14·PNG36·오류0, 정확한 production/게시 JS·CSS 일치를 확인했다. [artifact12244446103](https://github.com/Middleages/my-books/actions/runs/39377349867/artifacts/12244446103)의 ZIP SHA-256은 `1e102f4689bdd99d77f24bb1633f18690793650547fd220d34ad5b376bfbb762`다. 실제1440px 홈과320px 세금 헤더를 직접 열어 세금5권의0/6, 주거6권의0/4, DB IT4권의0/2와 고정 번호를 확인했다. 상세 자산·실행 범위는 [세금 C 최종 기록](TAX-BATCH-C-VERIFICATION.md)을 따른다.
+
+## 정확한 main·Pages·전체14종 실제 게시 마감
+
+main `2c2b11d3ba9af855dd4724e91051ea775d94051b`의 [run39417253750](https://github.com/Middleages/my-books/actions/runs/39417253750)에서 새 수면2권·먹기3권을 보존한 전체14종 검사가 production/published 모두 성공했다. 게시 권차는14/14·57원본PNG·오류0, artifact12262574300 ZIP SHA256 `300c8cb9796eafb76bbdf945a44ed314c5cd7be567115c2768481b6e131d33fd`다. 실제 서비스 JS/CSS 전체 바이트가 동일한 build artifact12262190163과 일치한다.
+
+실제1440-home 전체와320-home·390-reading-first의 native상단0–2000px를 직접 열어17권139장, 부모 분야1/2/3권, 새 책0/2, 읽는 네트워크2권·돈1권의 고정 권차와1/15·1/10 진도를 확인했다.57원본 전부의 사람 검토나 실기기·스크린리더 음성 검증으로 확대하지 않는다. 자세한 전체 게이트와 제한은 [합본 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다.
