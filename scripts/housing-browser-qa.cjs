@@ -312,6 +312,7 @@ async function scenarios(page, id) {
     const control=await lab.locator('.money-playback').boundingBox(),stage=await lab.locator('.housing-stage').boundingBox();assert(stage.y-(control.y+control.height)<100,'document controls detached from selected evidence');assert.match(await lab.innerText(),/不足|부족액을0/);assert.match(await lab.innerText(),/송금이나 권리 취득 경로가 아닙니다/);
   }
   if(id === 'rent-or-buy') {
+    assert.match(await lab.locator('.housing-cost-definition').innerText(),/공통 보유현금1억5,000만원 전부가 아닙니다/);await capture(page,`${page.viewportSize().width}-rent-or-buy-cost-definition`,'[data-housing-lab="rent-or-buy"] .housing-cost-definition');
     const cases=[{}, {annualReturn:3}, {priceChange:-.2}, {priceChange:.2}, {priceChange:-1}, {months:0}, {transactionCosts:false}, {months:60,monthlyFunding:0}, {settlement:'unknown'}];
     for(const change of cases) {
       await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
