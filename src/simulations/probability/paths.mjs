@@ -13,7 +13,7 @@ export function runPath(returns, withdrawal = 30, initial = 100) {
     const shortfall = Math.max(0, withdrawal - balance), failed = balance < withdrawal, paid = failed ? 0 : withdrawal;
     if (failed) firstFailure = period; else { balance -= withdrawal; totalPaid += withdrawal; }
     const status = failed ? 'failed' : 'paid';
-    stages.push({ index: stages.length, period, kind: 'payment', label: `${period}기 ${failed ? '지출 직전 중단' : '지출 반영'}`, before: afterReturn, amount: balance, applied: -paid, needed: withdrawal, shortfall, status });
+    stages.push({ index: stages.length, period, kind: 'payment', label: `${period}기 ${failed ? '지출 직전 중단' : '지출 반영'}`, before: afterReturn, amount: balance, applied: paid === 0 ? 0 : -paid, needed: withdrawal, shortfall, status });
     periods.push({ period, rate, before, afterReturn, requested: withdrawal, paid, ending: failed ? null : balance, shortfall, status });
   }
   return { initial, returns: returns.slice(), withdrawal, stages, periods, failed: firstFailure !== null, firstFailure, totalPaid, ending: firstFailure === null ? balance : null, stoppedBalance: balance, depleted: balance === 0, legalBankruptcy: null };

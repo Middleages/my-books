@@ -63,3 +63,19 @@ PR74 최초 remote `9ef30b343a403d2fcdbb984faac32498be154a2f`, tree `a19b6a5c9d3
 실패 artifact12261564020 ZIP SHA256 `dd047944cb5d5a57489361b8634a3f19abceac90f526ac3fd2258cb6b195d892`를 원본 그대로 보존했다. JS/CSS는 위 로컬 byte/SHA와 일치했다. home artifact12260978078 SHA256 `516f60acf4fb6a778aafee18ab3d81f37d053f66c6e081d670cab627eb0a0fc7`, scope12261027648 SHA256 `f8cc972dc76182221aa5edc73f43cb92871fb88ca9554bcbeea095033b1bf3b5`도 확인했다. 홈320px 확률8권 제목 원본을 직접 열었고 잘림이 없었다.
 
 검증기 수정 뒤11:51:53 UTC 전체unit1,121/1,121·실패/건너뜀0, 검증기 targeted10/10, node syntax와diff 공백 검사가 통과했다. 앱 소스는 그대로이므로 같은 로컬Vite를 중복 실행하지 않았으며, 새PR CI에서 전체build와실제browser를 다시 실행한다. 첫실행의12장 중 경로 장 최종 캡처는 실패 지점 뒤라 미생성·미검토로 남았다. 결정 장의320px alarm/performance 주장, unknown-p matrix/lines4장은 직접 열었고 서로다른추정대상·가림·미상≠0·전체축이 명료했다. 이 부분검토는 실패한 전체browser gate를 대신하지 않는다.
+
+## 수정된 PR gate와 원본 검토 · 12:10 UTC
+
+두 검증기 오류를 고친 remote `8da4e74a491501df38a9b412877d87812c1cac51`, local `e853c23db80676a358decfb7b73648552fb86a2b`, tree `e526440990f283c30eee57d2951ddbc730859a8e`의 CI `39418168739`는 실제 checkout `de65e0bb66cb5b6ee975ceea664001532ac00c3e`/같은 tree/clean에서 전체unit1,121/1,121·build·probability672/672·home14/14 성공, 앱 오류0이었다. 확률 원본357PNG, home42PNG이며 선택2/생략7/배포와published건너뜀을 유지한다. JS/CSS bytes와SHA는 최초 로컬과 정확히 같았다. probability artifact12263361957 ZIP SHA256 `a448e646997e8aa4804da77bf8aa70a8129a4918c94f07ecf1498499bbd0d0e3`, home12262565799 `a9ad0f7850d0fa07c0e9858fca8f610c3ca8f5d0eb3408f5c17ad1ef68b639e7`, scope12263485102 `70b3dc01c0e8f87742ccb109a2d3fa5749ee9316eda6af585b91711455c3eeb9`를 확인했다.
+
+직접 연 확률 원본17장은320paths-order30/40·ensemble2/6·static/static-end·controls/adjacent-controls,1440paths-order0,320decisions-lines3/4/1·matrix7·static-unknown/static-end·controls·claim-loss다. 두 순서의 같은축과10/55·첫실패 보유20/지급0,4/64전수 경로와조건부 분모, p0/100% 끝점과8%교차, 확률/현금시점미상과고정8을 구별할 수 있었다. 앞서 직접 본320decisions alarm/performance·matrix5/lines5의4장은 바이트 동일함을 확인했다. 전357장·64개 각표식을 모두 직접 확대감수한 주장은 아니다.
+
+이 검토에서 마지막의 소규모 마감을 찾았다. 지출0이 정적표에서JavaScript의−0으로 나타나는 것을모델의정규0으로 통일하고, 마지막관찰에서도 남던‘미래를아직펼치지않음’안내를 모든단계에 맞는 설명으로 바꾼다. 금액·실패·확률은 바꾸지 않는다. 정적표 왼쪽 캡처가 키보드 시험 뒤 중간scroll 위치였으므로 정확한scrollLeft0을단언한뒤 다시찍도록 한다. 실제표가누락된문제는아니다. 이 소규모변경뒤 전체unit/build/browser와변경원본은 새소스로 다시확인해야하며 위통과를그대로대체하지않는다.
+
+
+### 마지막 소규모 마감의 로컬 결과 · 12:17 UTC
+
+12:17:36 UTC 전체unit1,123/1,123·실패/건너뜀0과NODE2048 TypeScript/Vite build가 성공했다. targeted22/22, diff/node syntax, 비대상11개 책의AST/47,444원시바이트 보존을 재확인했다. canonical0 후모든252경로/48비용조건의JSON은이전검산입력과정확히같고별도Python10,635항목도실패0이었다. UI변경은지출0표기와전단계안내뿐이며계산결론은같다. 새PRbrowser/변경원본과최신main넓은회귀/실제게시검사는아직남았다.
+
+- `index-Csr3cPjb.css`: 372604 bytes, SHA256 `c0330e6e6e4b5c3ab791fcaf958ce9cafa4c4972987468da87f6a815361b12dc`.
+- `index-uYmPzb8j.js`: 3049695 bytes, SHA256 `5691636d69627aece524b5e9b36b3572ad9442af183acc969a74346e65716262`.

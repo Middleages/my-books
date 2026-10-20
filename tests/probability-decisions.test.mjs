@@ -15,3 +15,6 @@ test('final claims reuse prior models without leaking held-out values or changin
 
 
 test('F catalog has exactly twelve stable IDs, original prefix preserved and complete introduction',async()=>{const{readFileSync}=await import('node:fs');const catalog=readFileSync(new URL('../src/catalog.ts',import.meta.url),'utf8'),intro=readFileSync(new URL('../src/content/probability/Intro.mdx',import.meta.url),'utf8');const rows=[...catalog.matchAll(/id:\s*"([^"]+)"\s*,\s*bookId:\s*"probability"\s*,\s*readId:\s*"([^"]+)"/g)].map(m=>[m[1],m[2]]);assert.equal(rows.length,12);assert.equal(new Set(rows.map(r=>r[1])).size,12);assert.deepEqual(rows.slice(-2),[['paths-and-survival','probability/paths-and-survival'],['decisions-under-uncertainty','probability/decisions-under-uncertainty']]);for(const[id]of rows)assert(intro.includes('#/probability/'+id));assert(catalog.includes('소개·01–12장 공개'));});
+
+
+test('zero paid amounts are canonical positive zero in all recorded path stages',()=>{for(const r of [runPath([-.5,1],0),runPath([-.5,1,1],40),runPath([-1],0),runPath([-1],1)])for(const s of r.stages){if(s.applied===0)assert.equal(Object.is(s.applied,-0),false);if(s.kind==='payment'&&s.status==='failed')assert.equal(s.applied,0);}assert.equal(runPath([-.5,1],40).stages[4].applied.toLocaleString('ko-KR'),'0');});
