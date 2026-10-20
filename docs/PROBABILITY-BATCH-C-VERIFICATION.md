@@ -31,5 +31,7 @@
 - 별도 Python uint32/수학/NormalDist 계산과800개 반복의 평균·새값·포함 판정을 비교했다. 판정 전부 일치, 최대 숫자 차이7.105427357601002e-15. 같은 작성자의 독립 계산 구현이며 독립 동료 리뷰가 아니다. 작은4개 모집단의 가능한 모든 조합으로 유한 SE도 대조했다.
 - 최종 로컬 검증: targeted 23/23, 전체 `npm test` 1,092/1,092 (실패·skip 0), `npm run build`의 TypeScript/Vite 성공. 실행은 09:03 UTC에 시작해 09:08 UTC 완료를 확인했다. 빌드의 기존 큰 청크 경고는 남아 있다.
 - MDX 실제 렌더 검사에서 한국어에 인접한 강조와 물결표 범위가 raw 표기/취소선으로 해석되는 것을 찾아 명시적 strong과 자연어 범위로 수정했다. DOM 기하 계약의 selector도 실제 data-height-fraction 요소를 직접 고르게 했다. 실패한 초기 실행을 최종 통과에 포함하지 않는다.
-- production/published browser·원본 PNG는 아직 미실행이다. 구현 코드가 검사를 가진 것만으로 통과라고 쓰지 않는다. 로컬 Chromium 환경 제한은 우회하지 않고 승인된 정상 PR CI를 사용한다.
-- 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증. 원격 C 쓰기·main/Pages 게시도 아직 시도하지 않았다.
+- 첫 production CI [39398817929](https://github.com/Middleages/my-books/actions/runs/39398817929)는 tree6fc6273c8323ab08577853322e4c14eba6c97154 / checkout c0a216a4cb580c08eb54268c1ae4c9ddd9acbc23에서 full unit 1,092/1,092·build·선택된 확률/홈 2개 suite 모두 성공했다. 확률 462/462·123 PNG·page/console/resource 오류0. 보험·투자·세금·DB·쿠버네티스·주거·회계 7개 suite는 의도적 미실행이며 통과가 아니다.
+- 원본 19개를 직접 열어 320px 모집단/선택/복사/편의표본/반복 히스토그램, CI/PI/σ0/생성 결과/포함 표/0건 상한/정적 표/인접 제어, 1440px와390px normal-motion 결과, 전체 홈을 검토했다. 구간 자료 선택 상자의 긴 값이320px에서 잘리는 것을 발견해 짧은 선택명으로 바꾸고 바로 아래의 전체 조건 설명은 유지했다. canvas 텍스트 폭과 실제 선택 상자 가용 폭을 비교하는 브라우저 검사를 추가했다. 수정 후 로컬 full unit 1,092/1,092와 TypeScript/Vite build도 다시 성공했다. 수정된 원격 production 결과는 아직 없으므로 첫 성공을 최종 소스의 browser 성공으로 쓰지 않는다.
+- 로컬 Chromium 환경 제한은 우회하지 않고 승인된 정상 PR CI를 사용한다. published browser와 Pages/live는 아직 미실행이다.
+- 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증. 원격 C draft PR52만 작성했으며 main/Pages 게시를 시도하지 않았다.
