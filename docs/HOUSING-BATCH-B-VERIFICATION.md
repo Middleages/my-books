@@ -37,4 +37,22 @@
 
 ## 남은 게이트
 
-후속 문구 보정의 정확한 production 결과와 실제 모바일 PNG 확인. 이후 A 공개를 확인하고 최신 main 통합, 변경 영향 검사, Pages 성공과 게시 JS/CSS 바이트·대표 화면 대조. Safari/Firefox·실기기 터치·스크린리더 음성·학습 효과 측정은 별도 미검증이다.
+후속 보정 production·실제 모바일 PNG까지 확인했다. 이제 A 공개를 확인하고 최신 main 통합, 변경 영향 검사, Pages 성공과 게시 JS/CSS 바이트·대표 화면 대조. Safari/Firefox·실기기 터치·스크린리더 음성·학습 효과 측정은 별도 미검증이다.
+
+## 후속 보정 최종 production — 2026-10-20
+
+최종 후보 `0e5f37ef2932c874a9a3dff2bec7492149a63fd7`, PR merge checkout `d7605e787a57807e2ff56b872c1c0a786954d2af`, run `39369682423`에서 build·housing·book-volumes 모두 성공했다. housing은 Chromium155.0.8059.39, 74/74·오류0·55캡처다. artifact `12240587840` ZIP SHA-256 `ebedddc7695e53d500610d7cbc8307ceca9fe640cec68bd2793215b39a79f0dd`를 확인했다.
+
+320px 0재원의 배분3항목·현금0폭, ‘배분액 없음’, 390px ‘미현금화 원금’과 ‘현금과 원금 기록’을 담당자·독립 검토자가 각각 실제 PNG에서 확인했다. JS `index-krzT0kMD.js` 2,395,737바이트 SHA-256 `9c94c71a90273526c248a4cf64a6ef1512f15b434d63e33a355a50a548fe460e`, CSS `index-BB2fVBel.css` 312,876바이트 SHA-256 `b1fdc67a3a70f7e840f09759968be8a127ecad5b00ba81e37a81174a1e87ae2c`다. 이는 B 단독 후보 증거이며 향후 main 통합·실제 게시 증거와 구분한다.
+
+## A 최종 진단 후보와 B 사전 통합
+
+A 공개 대기 중 별도 브랜치에서 B `0e5f37e`와 A·세금B 통합 후보 `e4c0dfe`를 병합했다. A의 정확한 URL 진단과 B 시나리오를 함께 보존했다. 충돌은 카탈로그 첫 import 그룹만 양쪽 항목을 모두 유지해 해결했다. 이 통합은 main 반영이나 B 공개 완료가 아니며 A 공개 뒤 최신 main의 추가 변경을 다시 보존한다. B의 모델·본문·UI 바이트는 직전 독립 생산 검증 후보와 같다.
+
+이 사전 통합 worktree에서 housing15/15(기존 모델12·진단3), 전체910/910, TypeScript·Vite production build, verifier 문법과 diff-check가 통과했다. B 모델·본문·UI의 `git diff 0e5f37e -- src/{content,components,simulations}/housing`는 비어 있다. 통합 번들의 실제 브라우저·게시 검증은 아직 별도 게이트다.
+
+## 실제 A main 기준 재통합 — 2026-10-20
+
+- A·세금 B·DB/K8s 마감 후보가 반영된 정확한 main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`를 별도 B 작업 트리에 병합했다. B 앱(`src/content/housing`, `src/components/housing`, `src/simulations/housing`)은 기존 production 검토 후보 `0e5f37e`와 동일하다. 다른 책과 K8s 진단 보정·문서를 그대로 보존했다.
+- 최종 로컬 housing15/15·전체914/914·build·diff check 통과. housing의 엄격한 진단과 B 시나리오도 함께 유지한다. 다음 PR production은 최신 main과 B의 차이에 해당하는 주거+권차 smoke를 기본으로 한다.
+- 이 기록 시점 A exact-main·Pages 실제 게시 확인은 진행 중이다. B는 아직 main·Pages에 반영되지 않았다. 이전 단독 B 화면 증거를 보존하되 이번 공통 production 번들의 결과·원본 화면을 받은 뒤 재확인한다.

@@ -9,6 +9,7 @@ const fs = require("node:fs"),
 const { execFileSync } = require("node:child_process"),
   { createHash } = require("node:crypto"),
   { pathToFileURL } = require("node:url");
+const { classifyConsoleError } = require("./tax-browser-diagnostics.cjs");
 const root = path.resolve(__dirname, ".."),
   dist = path.join(root, "dist"),
   out = path.join(root, "artifacts/tax-browser");
@@ -47,6 +48,8 @@ const results = {
   checks: [],
   screenshots: [],
   errors: [],
+  consoleDiagnostics: [],
+  nonApplicationDiagnostics: [],
   visualReview:
     "Open scene PNGs separately. Automated checks do not prove readability or educational efficacy.",
 };
@@ -268,15 +271,13 @@ async function scenarios(page, id) {
         [...data.parts.map((p) => p.base), data.tax],
       );
       await bars(page);
-      const pieces = await lab
-        .locator(".tax-base-stack i")
-        .evaluateAll((es) =>
-          es.map((e) => ({
-            base: +e.dataset.base,
-            width: e.getBoundingClientRect().width,
-            track: e.parentElement.getBoundingClientRect().width,
-          })),
-        );
+      const pieces = await lab.locator(".tax-base-stack i").evaluateAll((es) =>
+        es.map((e) => ({
+          base: +e.dataset.base,
+          width: e.getBoundingClientRect().width,
+          track: e.parentElement.getBoundingClientRect().width,
+        })),
+      );
       assert.deepEqual(
         pieces.map((p) => p.base),
         data.parts.map((p) => p.base),
@@ -313,9 +314,32 @@ async function scenarios(page, id) {
         vals,
         r.parts.map((p) => p.value),
       );
+      const geometry = await lab.locator(".tax-stack i").evaluateAll((es) =>
+        es.map((e) => ({
+          value: +e.dataset.value,
+          width: e.getBoundingClientRect().width,
+          total: e.parentElement.getBoundingClientRect().width,
+        })),
+      );
+      for (const part of geometry)
+        assert(
+          Math.abs(part.width - (part.total * part.value) / r.gross) <= 1,
+          "Payroll strip width must represent the same cash amount",
+        );
+      assert.deepEqual(
+        await lab.locator(".tax-destinations > div span").allTextContents(),
+        ["▰", "▱", "▥"],
+        "Destination legend must not imply false spatial arrows",
+      );
+      assert.match(await lab.locator("figcaption").innerText(), /범례/);
     }
   }
   if (id === "year-end-settlement") {
+    const prediction = lab.locator(".tax-prediction");
+    await prediction.locator('input[value="no"]').check();
+    await prediction
+      .getByRole("button", { name: "이유 확인", exact: true })
+      .click();
     for (const n of [0, 50, 70, 90, 150]) {
       await setRange(lab, 0, n);
       const r = model.settlement({ prepaid: n });
@@ -324,6 +348,20 @@ async function scenarios(page, id) {
         (await lab.locator(".tax-result").innerText()).includes(
           `차감세액 ${r.difference}`,
         ),
+      );
+      const explanation = await prediction.locator("[role=status]").innerText();
+      assert(
+        explanation.includes(`기납부액 ${r.prepaid}과 결정세액 ${r.finalTax}`),
+      );
+      const outcome =
+        r.refund > 0
+          ? `환급 ${r.refund}`
+          : r.extra > 0
+            ? `추가납부 ${r.extra}`
+            : "정산 차액 0";
+      assert(
+        explanation.includes(outcome),
+        "Prediction explanation must use the current settlement, not initial 90/20",
       );
       await bars(page);
     }
@@ -552,8 +590,15 @@ async function assets() {
         page = await ctx.newPage();
       page.on("pageerror", (e) => results.errors.push(String(e)));
       page.on("console", (m) => {
-        if (m.type() === "error" && !m.text().includes("favicon"))
-          results.errors.push(m.text());
+        if (m.type() !== "error") return;
+        const entry = classifyConsoleError(
+          { source: m.location().url, message: m.text(), page: page.url() },
+          base,
+        );
+        results.consoleDiagnostics.push(entry);
+        if (entry.kind === "host-default-favicon-404")
+          results.nonApplicationDiagnostics.push(entry);
+        else results.errors.push(entry);
       });
       for (const id of ["", ...chapters.map((c) => c.id)]) {
         const route = "tax" + (id ? "/" + id : "");

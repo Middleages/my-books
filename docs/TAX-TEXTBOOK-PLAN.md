@@ -1,6 +1,6 @@
 # 세금의 구조와 생활 — 돈·경제 시리즈 5권 제작 계획
 
-작성: 2026-10-20 KST. 상태: **계획안, 구현·검증·게시 전**.
+작성: 2026-10-20 KST. 현재 상태: **A 소개·01–02 게시 확인 완료. B 03–04는 통합 production 검증을 마쳤으며 게시 전. C–F는 별도 로컬 준비 단계**. 배치별 실제 증거는 [A 검증](TAX-BATCH-A-VERIFICATION.md), [B 검증](TAX-BATCH-B-VERIFICATION.md)에 구분한다.
 상위 계획: [돈·경제 시리즈](MONEY-TEXTBOOK-PLAN.md). 공통 규칙: [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md).
 선행 교재 상태는 착수 시 최신 main과 각 검증 문서에서 재확인한다. 보험 4권의 진행 중 변경을 보존한다.
 
@@ -12,7 +12,7 @@
 
 ## 책·URL·읽음 ID
 
-예약 bookId: `tax`, 분야 `money`. 소개 `#/tax`; 장 URL `#/tax/<chapterId>`; readId `tax/<chapterId>`. 아래 ID는 **신규 예약안**이며 구현·공개 전에는 카탈로그·읽음 분모에 추가하지 않는다. 기존 모든 URL·chapter id·readId·`my-books:read:v1` 및 알 수 없는 저장 ID를 유지한다.
+bookId: `tax`, 분야 `money`, 분야 내 5권. 소개 `#/tax`; 장 URL `#/tax/<chapterId>`; readId `tax/<chapterId>`. 아래 ID는 전체 계획이며 **실제 공개된 배치만** 카탈로그·읽음 분모에 반영한다. A는 공개됐고 이 후보는 B까지 등록한다. C–F의 로컬 준비가 공개 완료를 뜻하지 않는다. 기존 모든 URL·chapter id·readId·`my-books:read:v1` 및 알 수 없는 저장 ID를 유지한다.
 
 | 배치 | 장 / chapterId | 제목 | 핵심 질문 | 눈으로 발견할 관계 |
 | --- | --- | --- | --- | --- |
@@ -62,3 +62,7 @@
 각 배치: 최신 main과 병행 작업·검증 기록 확인 → 공식 근거 확인 → 모델/테스트 → 장면/MDX → 독립 검토 → `npm test`, `npm run build`, `git diff --check` → 실제 production Chromium 1440/390/320 및 중간폭·키보드·reduced-motion·정적 표·콘솔·링크·읽음 회귀 → PNG 직접 확인 → main 통합 → Actions/Pages/게시 자산 대조. 미실행 항목은 통과로 기록하지 않는다. 실제 모바일 기기·Safari/Firefox·스크린리더 음성·학습효과는 별도 검증 전 미검증.
 
 계획 문서 작성 자체는 장 구현·브라우저 검증·Pages 게시 완료를 의미하지 않는다.
+
+## 2026-10-20 검증 범위 조정
+
+사용자의 추가 지시에 따라 B–E는 매번 모든 기존 책의 전체 브라우저 회귀를 반복하지 않는다. 전체 단위 테스트·TypeScript·production 빌드는 유지하고, 변경한 세금 장과 같은 책의 관련 상호작용, 공용 홈·권차·링크·읽음 상태의 짧은 회귀를 production과 실제 게시 환경에서 검사한다. 선택한 검사의 경계값·키보드·reduced-motion·정적 표·정확한 자산 바이트 대조·PNG 직접 검토는 줄이지 않는다. 공용 컴포넌트나 다른 책도 영향을 받으면 해당 범위를 추가한다. F의 전체권 마무리에서는 넓은 브라우저 회귀를 다시 실행한다. 이전 기록의 실제 검사 범위·결과는 그대로 보존하며, 실행하지 않은 다른 책 전체 검사를 통과했다고 적지 않는다.

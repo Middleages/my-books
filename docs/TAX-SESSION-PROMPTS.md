@@ -2,6 +2,13 @@
 
 기준: [TAX-TEXTBOOK-PLAN.md](TAX-TEXTBOOK-PLAN.md). 이 문서는 후속 세션에 복사해 사용할 범위 지시다. 최신 main의 AGENTS.md, CONTENT-AUTHORING.md, HOME-INFORMATION-ARCHITECTURE.md, MONEY-TEXTBOOK-PLAN.md 및 관련 교재·검증 기록을 매번 읽는다. 기존 책/URL/readId/읽음 기록과 병행 변경을 보존한다. 이전 완료 주장을 가정하지 않는다.
 
+현재 진행: A 소개·01–02의 게시 검증은 완료했고, B 03–04는 주거 A와 통합한 production 검증 후 main·Pages 게이트를 기다린다. C–F의 로컬 사전 구현·테스트는 다음 배치의 공개 또는 게시 검증을 대체하지 않는다. 정확한 결과는 배치별 검증 기록을 읽고 재확인한다.
+
+
+## 2026-10-20 검증 범위 조정
+
+사용자의 추가 지시에 따라 B–E는 매번 모든 기존 책의 전체 브라우저 회귀를 반복하지 않는다. 전체 단위 테스트·TypeScript·production 빌드는 유지하고, 변경한 세금 장과 같은 책의 관련 상호작용, 공용 홈·권차·링크·읽음 상태의 짧은 회귀를 production과 실제 게시 환경에서 검사한다. 선택한 검사의 경계값·키보드·reduced-motion·정적 표·정확한 자산 바이트 대조·PNG 직접 검토는 줄이지 않는다. 공용 컴포넌트나 다른 책도 영향을 받으면 해당 범위를 추가한다. F의 전체권 마무리에서는 넓은 브라우저 회귀를 다시 실행한다. 이전 기록의 실제 검사 범위·결과는 그대로 보존하며, 실행하지 않은 다른 책 전체 검사를 통과했다고 적지 않는다.
+
 ## 배치 A — 소개·01–02
 최신 main에서 계획의 예약 ID와 가상 모델을 확인하고 세금 책 소개, 01 tax-events, 02 progressive-tax만 구현한다. 돈 흐름의 과세 사건과 구간별 누진 계산을 같은 모델 프레임 기반 SVG·정적 표·조작으로 설명한다. 공식 근거는 실제 원문 확인 후 기록한다. TAX-BATCH-A-VERIFICATION.md를 새로 작성하고 모델 경계/재실행, 전체 테스트·빌드, 실제 데스크톱/모바일·키보드·reduced-motion, 기존 책/읽음 회귀를 수행한다. 최신 main 통합·Actions·Pages·실제 게시 자산까지 확인하고 미실행은 미검증으로 남긴다.
 
@@ -18,4 +25,4 @@ C 확인 후 07 tax-accounts·08 housing-taxes만 구현한다. 계좌별 조건
 D 확인 후 09 gifts-inheritance·10 deductions-credits만 구현한다. 재산 이전의 조건과 과세표준·세액에 공제가 작동하는 위치를 분리한다. E 검증과 공통 게이트를 수행한다.
 
 ## 배치 F — 11–12 및 전체 점검
-E 확인 후 11 tax-timeline·12 reading-tax-documents를 구현하고 소개·01–12의 계산 가정·공식 근거·시각 설명·모바일·정적 대안·읽음 회귀를 전체 점검한다. TAX-BATCH-F-VERIFICATION.md 및 TAX-BOOK-REVIEW.md를 작성하고 공통 게시 게이트를 수행한다.
+E 확인 후 11 tax-timeline·12 reading-tax-documents를 구현하고 소개·01–12의 계산 가정·공식 근거·시각 설명·모바일·정적 대안·읽음 회귀를 전체 점검한다. TAX-BATCH-F-VERIFICATION.md 및 TAX-BOOK-REVIEW.md를 작성하고 공통 게시 게이트와 넓은 기존 책 브라우저 회귀를 수행한다.

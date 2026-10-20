@@ -2,6 +2,38 @@
  * NODE_PATH=/tmp/insurance-qa/node_modules CHROME_PATH=/usr/bin/chromium node scripts/housing-browser-qa.cjs
  * LIVE_URL=https://middleages.github.io/my-books/ verifies exact published JS/CSS bytes first.
  */
+// Match only the observed host-root favicon 404. Unknown provenance remains fatal.
+// Reuse the reviewed tax-browser-diagnostics rule; never match console text alone.
+const { classifyConsoleError } = require('./tax-browser-diagnostics.cjs');
+function classifyResourceFailure(entry, base) {
+  const kind = entry.event === 'response' && entry.status === 404
+    ? classifyConsoleError({source:entry.source,message:'Failed to load resource: the server responded with a status of 404 ()'},base).kind
+    : 'application';
+  return {...entry,kind};
+}
+function installPageDiagnostics(page, results, base) {
+  const retain=(entry,list)=>{
+    results[list].push(entry);
+    if(entry.kind==='host-default-favicon-404') results.nonApplicationDiagnostics.push(entry);
+    else results.errors.push(entry);
+  };
+  page.on('pageerror',e=>results.errors.push({kind:'pageerror',message:String(e),page:page.url()}));
+  page.on('console',m=>{
+    if(m.type()!=='error') return;
+    const location=m.location();
+    retain(classifyConsoleError({source:location.url||'',lineNumber:location.lineNumber,columnNumber:location.columnNumber,message:m.text(),page:page.url()},base),'consoleDiagnostics');
+  });
+  page.on('response',r=>{
+    if(r.status()<400) return;
+    const request=r.request();
+    retain(classifyResourceFailure({event:'response',source:r.url(),status:r.status(),method:request.method(),resourceType:request.resourceType(),page:page.url()},base),'resourceDiagnostics');
+  });
+  page.on('requestfailed',request=>retain(classifyResourceFailure({event:'requestfailed',source:request.url(),failure:request.failure()?.errorText||'unknown failure',method:request.method(),resourceType:request.resourceType(),page:page.url()},base),'resourceDiagnostics'));
+}
+module.exports={classifyConsoleError,classifyResourceFailure,installPageDiagnostics};
+
+// Importing this verifier for diagnostic regression tests must not launch a browser.
+if (require.main === module) {
 const fs = require("node:fs"),
   path = require("node:path"),
   http = require("node:http"),
@@ -50,6 +82,9 @@ const results = {
   checks: [],
   screenshots: [],
   errors: [],
+  consoleDiagnostics: [],
+  resourceDiagnostics: [],
+  nonApplicationDiagnostics: [],
   visualReview:
     "Open scene PNGs separately. Automated checks do not prove readability or educational efficacy.",
 };
@@ -428,11 +463,7 @@ async function assets() {
           viewport: { width, height: 1000 },
         }),
         page = await ctx.newPage();
-      page.on("pageerror", (e) => results.errors.push(String(e)));
-      page.on("console", (m) => {
-        if (m.type() === "error" && !m.text().includes("favicon"))
-          results.errors.push(m.text());
-      });
+      installPageDiagnostics(page, results, base);
       for (const id of ["", ...selected.map((c) => c.id)]) {
         const route = "housing" + (id ? "/" + id : "");
         await check(`render-${width}-${id || "intro"}`, page, async () => {
@@ -501,7 +532,7 @@ async function assets() {
         reducedMotion: "reduce",
       }),
       page = await ctx.newPage();
-    page.on("pageerror", (e) => results.errors.push(String(e)));
+    installPageDiagnostics(page, results, base);
     for (const c of selected) {
       await visit(page, "housing/" + c.id);
       await check(`reduced-motion-${c.id}`, page, async () => {
@@ -594,3 +625,5 @@ async function assets() {
       failed.length || results.errors.length || results.fatal ? 1 : 0;
   }
 })();
+
+}

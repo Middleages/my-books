@@ -118,3 +118,34 @@ DB A `ce9f29c`를 기준으로 쿠버네티스 PR13 head `1cbc9e1ce65f54e48e67ae
 첫 통합 단위 테스트에서 공통 문자열 `소개·01–02장 공개`를 바꾸던 fixture가 세금 대신 DB 항목을 선택하는 오류를 발견했다. 분류기는 올바르게 DB 변경을 식별했고, fixture만 세금의 `id`와 `future` 속성으로 한정해 고쳤다. 필수 assertion을 삭제하거나 검사 범위를 줄이지 않았다. 수정 후 전체 **889/889** 단위 테스트, TypeScript/Vite production build **321 modules**, 별도 선택기/workflow **14/14** 계약과 쿠버네티스 **144/144** 모델·시각 계약을 통과했다. `git diff --check`와 검증 스크립트 문법도 통과했다.
 
 이 항목은 로컬 통합 결과이며 새 후보의 Actions·실제 PNG·main·Pages 게시 성공을 미리 뜻하지 않는다. 새 CSS/JS가 만들어졌으므로 통합 실행의 DB·쿠버네티스·공통 기능 화면을 다시 확인하고, 같은 main의 게시 자산 일치까지 확인한 뒤 A를 닫는다. 환경은 기존과 같은 클라우드 작업 트리 Node 24.19이며 실제 브라우저는 GitHub Actions의 Chromium으로 검증한다. 실제 PostgreSQL/MSSQL 실행은 여전히 하지 않았다.
+
+### 합본 production 실제 검증과 마지막 좁은 보정
+
+합본 head `49f7da4b3be7282376c028c10431b6e7973c5ece`, PR merge/source `5ccf5792822bff519045db74f2976a1a3e9ba80d`, tree `833f4339198a553e1758459fe91a382f3f21fca4`의 [run39366105381](https://github.com/Middleages/my-books/actions/runs/39366105381)은 build와 **보험·투자·세금·권차·DB·쿠버네티스 production 여섯 job 모두 성공**했다. PR이므로 deploy/published는 skipped이며 게시 증거가 아니다. 실제 selection artifact도 여섯 suite 선택, 생략 없음, 같은 source/tree를 기록했다.
+
+실제 내려받아 ZIP digest를 대조한 결과는 다음과 같다.
+
+- [DB artifact12239352925](https://github.com/Middleages/my-books/actions/runs/39366105381/artifacts/12239352925): **124/124, 42 PNG, 오류 0**. ZIP SHA256 `ee2b669d57bcd92537acdb37f63e3f32102d10e647479de5938bf72db0e35634`.
+- [권차 artifact12239815842](https://github.com/Middleages/my-books/actions/runs/39366105381/artifacts/12239815842): **14/14, 33 PNG, 오류 0**. ZIP SHA256 `e24f4b1d63574e5a5173e89a69fd7d94f2bed2720df113432728eff8f99e771d`.
+- [쿠버네티스 artifact12239472477](https://github.com/Middleages/my-books/actions/runs/39366105381/artifacts/12239472477): **94/94, 146 PNG, 오류 0**. ZIP SHA256 `08bbffea07add629ad735156aa7d056bd9f9479068f8163ae7797bad2db00c85`.
+- [범위 artifact12239815711](https://github.com/Middleages/my-books/actions/runs/39366105381/artifacts/12239815711): SHA256 `dd6b0b72824f897dcd3c72c19df2b491638adad5f990a54be76fedbb0b051fc9`.
+
+DB의 `320-key-order`, `390-key-all`, `1440-key-all`, `320-files-race-final`, `320-constraints-null-qty-false`와 권차의 `320-database-heading`, `1440-home`, `390-reading-first` 원본 PNG를 직접 보았다. FK 출발/도착과 종류별 선, NULL 후보의 저장 경계, 낡은 사본·현재 재고·성공 주문의 차이가 유지되고 추가 잘림을 발견하지 못했다. IT 4권, 공개 9권, 읽던 책 우선 정렬도 보존됐다. 쿠버네티스 담당자는 같은 artifact의 원본 24개와 긴 원본 4개의 확대 영역을 직접 재검토했다. 제어/HTTP·TLS 경계, 사라진 Pod/남은 PV, 2300/3000m 비포화 비율, Helm 이전/현재 객체와 revision, 복구 누락/미확인, 독립 trust 관계와 모바일 조작·정적 대안에 새 결함을 발견하지 못했다. 생성된 모든 PNG를 직접 보았다고 주장하지 않는다.
+
+그 뒤 세금 A 게시 진단에서 확인된 GitHub 호스트 기본 `/favicon.ico` 404만 별도 진단으로 보존하는 좁은 verifier 수정을 반영했다. 정확한 공개 base URL·오류 source URL·404 메시지가 모두 일치해야 분리하며, 앱 asset 오류·다른 origin/상태·출처 불명 오류는 계속 실패한다. 두 회귀 테스트를 추가했고 전체 **891/891**, build **321 modules**, 관련 계약 **9/9**와 `git diff --check`를 통과했다. 세금의 같은 앱 바이트에 대한 [집중 공개 검증39366690173](https://github.com/Middleages/my-books/actions/runs/39366690173)은 45/45·28 PNG·앱 오류 0이며 기본 favicon 진단 1개를 숨기지 않고 남겼다. 원래 세금 A 전체 run을 성공으로 바꾸어 기록하지 않는다. 최종 세금 A·권차 증거 문서도 함께 보존한다.
+
+보정 전후 production 자산 SHA256을 다시 대조했다. JS `index-4pJeeHWT.js`는 `8a86f7dca3b5b9e4613bcc06e3325178b8e6f7e99967b72609c3868b25146ece`, CSS `index-CTJgJCai.css`는 `62ab8c3b02a829dfac3c4d18ff35fa477c716f0ff250c96dd0147155cd3419e6`로 그대로다. 따라서 앞선 실제 합본 화면 증거는 유지되지만, 마지막 좁은 verifier/doc delta 전체가 위 PR run에서 실행된 것처럼 쓰지 않는다. 이 최종 후보의 main·Pages 증거는 아직 남아 있다.
+
+계획의 순차 게이트 표현도 현재 승인 범위에 맞췄다. 현재 배치의 모델·본문·production·직접 시각 검토가 통과하면 게시 대기 동안 **별도 로컬 브랜치**에서 다음 배치를 준비할 수 있다. 공개 순서는 A→B이며 다음 배치를 게시하기 전 이전 배치의 실제 main/Pages 검증을 마친다. 이 통합 후보에는 B 본문·모델·카탈로그가 포함되지 않는다.
+
+### A 실제 main 배포·공개 검증
+
+최종 통합 main `0071bff4c992376bea65ad3a12ce86fafbbe98be`, tree `891308ab142629e852c2d13634108e14a0084bb3`의 [run39368753907](https://github.com/Middleages/my-books/actions/runs/39368753907)에서 전체 unit/build, 보험·투자·세금·권차·DB·쿠버네티스 production 여섯 job과 Pages 배포가 성공했다. DB의 실제 공개 검사는 **125/125, 42 PNG, page/console/resource 오류 0**, 권차 공개 검사는 **14/14, 33 PNG, 오류 0**이다. DB는 소개·01–02만 공개했으며 03–12가 이 main에 있다고 쓰지 않는다.
+
+직접 내려받은 [DB 공개 artifact12240844022](https://github.com/Middleages/my-books/actions/runs/39368753907/artifacts/12240844022)의 ZIP SHA256은 `5e934324bd9807e5a11f73d8ffc0b8ecc9e0a1728032fb1818da932eae453b71`, [권차 공개 artifact12241168140](https://github.com/Middleages/my-books/actions/runs/39368753907/artifacts/12241168140)은 `9872688743fe4cc6ebb766af54e2888cd1fe96756bbdfd770f6a6887024f2383`로 게시 digest와 일치한다. 두 report는 같은 source main과 깨끗한 checkout을 기록한다. 권차와 선택 범위 report의 sourceTree/workflowSha도 위 main/tree와 일치한다. DB report에 없는 별도 provenance 필드를 있다고 꾸미지 않는다.
+
+공개 JS `index-4pJeeHWT.js`의 SHA256 `8a86f7dca3b5b9e4613bcc06e3325178b8e6f7e99967b72609c3868b25146ece`, CSS `index-CTJgJCai.css`의 SHA256 `62ab8c3b02a829dfac3c4d18ff35fa477c716f0ff250c96dd0147155cd3419e6`가 로컬 production artifact와 정확히 일치한다. 새로 확인한 공개 원본 PNG는 DB의 `320-key-order`, `320-files-race-final`과 권차의 `320-database-heading`이다. 주문 FK가 실제 source/parent 경계로 이어지고, 낡은 읽기와 현재 재고·두 예약의 차이 및 IT·기술 4권 표기가 유지된다. 생성된 전체42 PNG를 모두 직접 읽었다고 주장하지 않는다.
+
+같은 main의 원래 쿠버네티스 공개 job은 **93/94로 실패**했다. URL을 수집한 별도 strict 진단 [run39371353616](https://github.com/Middleages/my-books/actions/runs/39371353616)에서 유일 오류가 앱 경로가 아닌 `https://middleages.github.io/favicon.ico`의 HTTP404임을 확인했다. 이후 정확한 origin/path/404만 별도 보존하는 최소 verifier의 [집중 공개 run39371795483](https://github.com/Middleages/my-books/actions/runs/39371795483)은 **94/94, 146 PNG, fatal 오류 0**, 별도 host-default 진단 1개로 통과했다. JS/CSS는 위 main과 그대로다. 원래 main run 전체를 성공으로 소급하지 않으며, 좁은 verifier 보정 `3026e4b671e7c098e1a4bd160e453260b6336504`는 다음 조율된 통합에 포함한다. 자세한 원인·원문·artifact와 직접 시각 검토는 [쿠버네티스 검증 기록](KUBERNETES-VISUAL-IMPROVEMENTS-VERIFICATION.md)을 따른다.
+
+A의 본문·모델·시각·공개 자산 검증은 완료했다. 2026-10-20 05:01 UTC에 같은 main의 모든 job이 terminal임을 확인했다. 원래 공개 검사는 보험·투자·세금·권차·DB가 성공했고 쿠버네티스는 위 별도 진단/집중 성공으로 구분한다. 따라서 원래 전체 run의 conclusion은 실패로 남는다. 실행 동안 main을 유지한 뒤 다음 통합 작업에 창을 넘겼다. 실제 PostgreSQL/MSSQL·운영 DB·실제 모바일 기기·스크린리더를 검증한 것은 아니다.
