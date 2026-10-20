@@ -26,3 +26,10 @@
 최초 GitHub tree 업로드는 구현 payload의 명시 공개 승인 부족으로 거절됐다. 새 명시 승인 후 미실행 상태를 확인하고 한 번 재시도해 성공했다. PR35에서만 공개했고 main 쓰기는 하지 않았다. 계획 PR30의 5문서는 별도 직렬 창에서 main `05602d24c6946f4e4c1b95f5f926e2e8eb51b316`에 반영됐다.
 
 이 검증 기록 갱신은 로컬에만 보존한다. 실행 중 CI를 취소시키지 않기 위해 새 원격 commit을 만들지 않았다. 넓은 회귀는 완료됐다. 최신 main을 보존하는 직렬 통합과 exact-main/Pages/live 자산 일치 게이트가 필요하다. 인증 본문은 시작하지 않았으며 모델 계약 상태를 유지한다.
+
+
+## A 정확한 게시 완료 · 2026-10-20
+
+새4권 합본의 actual main `9c1df885218915bd368744e1420c3c17ce911fd1`, tree `5eaa478898fc3a7b4cab4bac2a54b13d584367ba`에서 [run39404076837](https://github.com/Middleages/my-books/actions/runs/39404076837)의 전체1166 단위/build·12 production·Pages·12 published가 모두 성공했다. 배포10:17:30 UTC, 전체 workflow 성공10:41:27 UTC, 최종 자산 검사 동안 main은 고정됐다. 관측 자체 production10 / published11 검사, 각각 원본36PNG, 앱 오류0이다. published의 정확한 host-root favicon4041건은 별도 진단으로 보존했다.
+
+작성자가 실제 게시 원본 `320-signals-missing,390-pipeline-query`를 직접 열어 앞서 검증한 의미관계·모바일 라벨과 조작부의 회귀가 없음을 해당 범위에서 확인했다. 전체 PNG나 실제기기/스크린리더·실제 시스템/개인 결과 검증으로 확대하지 않는다. 전체 ZIP digest·정확 JS/CSS·다른 suite·직접 검토 한계는 [새4권 합본 최종 기록](NEW-BOOKS-A-WAVE-VERIFICATION.md#정확한-mainpages실제-게시-게이트-완료--2026-10-20)에 남겼다. A 소개·01–02만 이 source에 포함되며 후속 배치 공개는 별도 순서를 따른다.

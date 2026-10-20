@@ -1,6 +1,6 @@
 # 확률·관측·인증·육아 A 등록 합본 검증
 
-작성:2026-10-20 UTC. 새4권의 소개·01–02만 통합한 후보이며 **아직 main/Pages/실제 게시 완료가 아니다**. 선행 main47c36cc의 DB C·회계 B·주거 F와 주거 전체권 고정 회귀가 닫히기 전 이 후보를 게시하지 않는다.
+작성 당시:2026-10-20 UTC. 새4권의 소개·01–02만 통합한 후보 기록이다. 당시 main/Pages/실제 게시 전이었으며, 최종 완료 근거는 아래 정확한 main 게이트 절에 기록했다. 선행 main47c36cc의 DB C·회계 B·주거 F와 주거 전체권 고정 회귀가 닫히기 전 이 후보를 게시하지 않는다.
 
 ## 정확한 source와 범위
 
@@ -54,3 +54,31 @@
 위 실제 표본 범위에서 새 차단 시각 회귀를 찾지 못했다. 모든 원본 또는 정적 표의 모든 열을 사람이 읽었다는 뜻은 아니다. 의료 전문가 감수나 실제 계정/시스템 검증으로 확대하지 않는다. 인증 A의 앞서 진행 중이던 단독10suite도 뒤에 성공했으며 그 별도 기록을 보존했다.
 
 선행 주거 전체권은 실제 main47 고정8×2 실행39399756955에서 전부 성공했고 마지막 자산·main lease·직접13장면 확인까지 닫혔다. 이 4A 후보에는 그 후의 검증 문서 마감만 더하며 production을 통과한 앱·모델·검증기·테스트·workflow는 바꾸지 않는다. 다음 정확한 main12개 production→Pages→12개 published와 실제 게시 원본은 아직 별도 게이트다. 후속5배치 PR57 앱은 이 공개 범위에 섞지 않는다.
+
+
+## 정확한 main·Pages·실제 게시 게이트 완료 · 2026-10-20
+
+최종 공개 source는 `9c1df885218915bd368744e1420c3c17ce911fd1`, tree `5eaa478898fc3a7b4cab4bac2a54b13d584367ba`다. [Actions39404076837](https://github.com/Middleages/my-books/actions/runs/39404076837)은 전체1166/1166 단위·419 modules build, **12개 production→Pages→12개 published를 모두 성공**했다. Pages 배포는10:17:30 UTC, 마지막 published는10:41:26, workflow는10:41:27 UTC에 성공으로 닫혔다. 마지막 산출물을 확인한10:47 UTC에도 원격 main은 위 SHA로 고정되어 있었다. 소개·01–02 네 책만 새로 공개했으며 전체15권·115장이다.
+
+원본24개 ZIP의 SHA-256을 GitHub digest와 직접 대조하고 모든 검사 상태·앱/page/console/resource 오류·소스의 clean 상태를 읽어 확인했다. source/tree 필드가 있는 report는 위 SHA/tree에 일치한다. investing의 옛 report에는 source 필드가 없으므로 같은 고정 workflow checkout과 build 산출물로 연결했다. production1434검사와 published1441검사, 합계2875검사·4762원본PNG이며 생략 suite는 없다. 아래 PNG 수는 각 실행별 수이고 검토용 crop은 포함하지 않는다.
+
+| suite | production / published 검사 | 각 원본 PNG | production / published artifact | published ZIP SHA-256 |
+| --- | --- | --- | --- | --- |
+| insurance | 138 / 138 | 603 | 12257132451 / 12259305112 | `3fbb2e8fec8ba744365416733b7cac27c1cb5669f257f65aea7d4fa3b1db73ca` |
+| probability | 83 / 84 | 32 | 12256333565 / 12256983038 | `50877dbf25cb8c90866873b0b090d1ba51b22d05404ddac7472aa774fa7ae4fa` |
+| housing | 189 / 189 | 248 | 12256284776 / 12257952681 | `4aa61ed6b57064ca2b8706bfafb4360b3065597dc9b5045a6ebfb0b729f9c323` |
+| authentication | 11 / 12 | 45 | 12256183462 / 12258116298 | `0f1f4b28e2011e4c8a591e3243a90587a23704cded3dddd9155c83dceb0fd40c` |
+| observability | 10 / 11 | 36 | 12256143372 / 12257911432 | `ff5111934ac1c6da4f63e9639deafd6197afaffc45335afa11631b6db5eb8a9e` |
+| database | 415 / 416 | 259 | 12256034961 / 12257697967 | `70c019e592e721afad8f0e70522ae5e4f6b2c60fb4a3e94db4a935bf3a59afce` |
+| child-development | 37 / 38 | 41 | 12255888602 / 12257607440 | `7b3066cf624d56c8ae3e703c959b62c0bb76e8115b08742cc46cc064fb632971` |
+| investing | 160 / 161 | 680 | 12255554193 / 12256859389 | `788df2d66bb0978e66fccfc187f29f18e4f50a7e3126b76cc24cc37a621e4d22` |
+| book-volumes | 14 / 14 | 51 | 12255528203 / 12257027836 | `0dceb440bb977524cf10b092ba3c34467334b46160a46c99380a3c63a7730f55` |
+| kubernetes | 94 / 94 | 146 | 12255468186 / 12257202894 | `87007955bd3b0e22059a3d39d699296a83edb3a482387ed3ccded637dc57fbb4` |
+| tax | 182 / 182 | 138 | 12255353618 / 12258031668 | `7b0458f3d93f73c471b37a0da3acb1ed025ade555cdd6b6fbb3f0825eb086ddf` |
+| accounting | 101 / 102 | 102 | 12255183796 / 12257946767 | `a1a22014b48ab725181578f7b46f4fe24b134d9b99f478dd39a901cb420f452a` |
+
+실제 게시 JS `index-m8-UeYgD.js`(3,071,867bytes), CSS `index-BlLHmdyO.css`(375,378bytes)는 production/build 산출물과 전체 바이트·SHA-256이 일치한다. 각각 `271f27b53eb04b82ab9abc9d50757e7fd4218cacaf758042e2cb343dc098a164`, `86419bc7431be863fd32e7b093b9aca027f4b4ee3474f93aaa54a9fda9ce46be`다. 앱 오류는0이지만 ‘모든 네트워크 오류0’이라고 주장하지 않는다. insurance·book-volumes를 제외한10개 published report에 정확한 호스트 루트 `https://middleages.github.io/favicon.ico`의404 진단1건씩이 별도 보존되어 있다. 같은 사건을 여러 진단 필드로 다시 기록한 것은 중복 합산하지 않았다. 다른 URL·상태·출처 미상의 실패를 허용하지 않는다.
+
+실제 게시 원본 직접 검토는 새 네 책12장면과 홈3장면으로 한정했다. 관측320-signals-missing/390-pipeline-query는 누락≠0·저장≠조회 성공, 인증320-session-expired/390-identity-denied는 쿠키 전송≠유효 세션·인증≠객체 인가를 유지했다. 육아320-observation-2/390-age-before-due/1440-age-initial/390--child-development는 네 관찰 상태·예정일 전 음수·13개월 보간 금지·진단 점수 아님을 유지했다. 확률320-distribution-median/320-loss-large-figure/320-loss-date-figure/320-loss-controls는 공통축10점·중앙 순위·현금200/부족1400·15일에30일 유입 제외·인접 제어를 유지했다. 홈1440 전체와320-home·390-reading-first의 native 상단0–2000px에서15권·115장·분야/고정 권차/읽는 책 우선을 확인했다. 해당 범위에 새 차단 회귀가 없었다. 기존320 홈 제목 한 글자 줄바꿈은 경미한 편집 한계로 남는다.
+
+모든2381개 게시 PNG·모든 표 행을 사람이 읽은 것은 아니며 실기기·Safari/Firefox·스크린리더 음성·실제 금융/관측/인증 시스템·의료 전문가 감수·임상 진단은 검증하지 않았다. 후속 PR57의03장 이상은 이 source에 포함되지 않는다. 이 A 게이트를 닫은 뒤 다음 배치를 별도 exact-main/Pages/live로 검증한다.

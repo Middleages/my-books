@@ -22,7 +22,7 @@
 
 diff 분류기의 선택은 book-volumes·accounting·probability·child-development·authentication·observability **6개 suite**다. insurance·investing·tax·database·kubernetes·housing·observability **7개 suite는 의도적으로 미실행**이며 통과로 기록하지 않는다. 선택된 각 suite의 기존 단언·키보드·reduced-motion·정적 대안·원본 캡처 범위는 줄이지 않는다. 전체 unit/build와 공용 홈/권차는 계속 검사한다.
 
-이 통합의 전체 단위 검사는 모든 파일을 유지한 `node --test --test-concurrency=4 tests/*.test.mjs`로관측 C 추가 뒤1259/1259 통과했다. 앞선 네 배치 후보는1255/1255 뒤 Vite467모듈 변환에서 프로세스가 Killed로 끝났으며 빌드 성공으로 기록하지 않는다. 현재 다섯 배치는 다른 무거운 빌드를 직렬화하고 `NODE_OPTIONS=--max-old-space-size=2048 npm run build`로 한 번 재검증해 TypeScript·Vite472모듈 build를 통과했다. 이 제약은 로컬 프로세스에만 적용했으며 package/workflow 기본값을 바꾸지 않았다.  실제 합본 production·새 원본 직접 검토·main/Pages·정확한 공개 JS/CSS·published 게이트는 아직 미실행이다. 작성자별 source 검증을 합본의 실제 브라우저 성공으로 대신하지 않는다.
+이 통합의 전체 단위 검사는 모든 파일을 유지한 `node --test --test-concurrency=4 tests/*.test.mjs`로관측 C 추가 뒤1259/1259 통과했다. 앞선 네 배치 후보는1255/1255 뒤 Vite467모듈 변환에서 프로세스가 Killed로 끝났으며 빌드 성공으로 기록하지 않는다. 현재 다섯 배치는 다른 무거운 빌드를 직렬화하고 `NODE_OPTIONS=--max-old-space-size=2048 npm run build`로 한 번 재검증해 TypeScript·Vite472모듈 build를 통과했다. 이 제약은 로컬 프로세스에만 적용했으며 package/workflow 기본값을 바꾸지 않았다.  이 로컬 기록 당시 합본 production·새 원본 직접 검토·main/Pages·published 게이트는 미실행이었다. 이후 source 게이트의 실제 결과는 아래에 구분해 남긴다. 작성자별 source 검증을 합본의 실제 브라우저 성공으로 대신하지 않는다.
 
 금융 예측·실제 DB/인증 시스템·실제 아이 진단을 검증하지 않는다. 실기기/스크린리더 음성·임상 감수의 증거도 없다. 검증된 구체적 화면 범위만 기록하며 모든 캡처/정적 표를 수동 검토했다고 확대하지 않는다.
 
@@ -30,3 +30,29 @@ diff 분류기의 선택은 book-volumes·accounting·probability·child-develop
 로컬 검증 앱 소스는 `e0f918c352000ee0ae92ddca2a0384b62362f951`다. 그 뒤 이 기록 추가는 실행 바이트를 바꾸지 않는다. 산출물은 다음과 같다.
 - `index-DKODbtgK.js`, 3429586 bytes, SHA-256 `7e0931a3924a4aed1d16974f2889349cc9fc17ad24857603fc602d7802f6c6a7`.
 - `index-QmcLr7Yc.css`, 404022 bytes, SHA-256 `c790afef6f9b247780d4b02ae98ad173da299a9dbba989487ddf0979304c1122`.
+
+
+## 실제 합본 production 및 직접 검토 완료
+
+[PR63](https://github.com/Middleages/my-books/pull/63) head `f9ca8065ecff294b4f903a23935ba2cfe7ac7b45`, 실제 checkout `899e10a39f4511c6205ebcc3a02b2c95d7d3ec1d`, tree `4637e434d6b082becac26e3dc229c4f873388b98`의 [run39407941449](https://github.com/Middleages/my-books/actions/runs/39407941449)이2026-10-20 10:32:44 UTC completed/success로 끝났다. 전체1259/1259·472모듈 build와 실제 선택6 production이 모두 성공했다. 합계849체크 항목·851원본PNG, 앱/page/console/resource 오류0이다. 앞서 명시한6개 생략 suite는 이번 실행에서 통과한 것이 아니다. PR의 deploy/published는 skipped이며 실제 공개 게이트가 아니다.
+
+모든6 ZIP의 GitHub SHA-256 digest와 clean source/tree, 결과를 대조했고 scope artifact의 선택6/생략6도 확인했다. JS/CSS 전체 바이트·해시는 위 로컬 산출물과 일치했다.
+
+| suite | 체크 항목 | 원본PNG | artifact | ZIP SHA-256 |
+| --- | --- | --- | --- | --- |
+| accounting | 251 | 229 | 12258785339 | `e8dbf80298846480d66186bc0f29486aa635bd26f24cbe0fed9194fab6a11917` |
+| probability | 462 | 123 | 12258083425 | `5c9d1b64bd687adf7901651e5bff1bda1373d62c2059334fd0c1cfb23f569ed4` |
+| book-volumes | 14 | 51 | 12257734208 | `05249e24a33804f835291204e7b5035c203e444e7f22d62fe59b116f92a65ee6` |
+| child-development | 77 | 241 | 12257244740 | `87920a43a82e0ff587ec16fa35321ee30b62d31bd66a551fe9d023a7bc652a8f` |
+| authentication | 19 | 105 | 12257124547 | `5eec56e588a5b916277878596cfe72da0eac81e37539ca74522c46ddb5e27f38` |
+| observability | 26 | 102 | 12256834955 | `162eecac73dd44ca0b084e1968417007cb829948fe71984c243bbe9a2c8c3163` |
+
+원본 직접 검토 범위:
+- 회계 작성자9개:1440-equipment-24-0-M1-step-2,320-equipment-48-24-M3-step-52,320-equipment-24-24-M3-step-2,1440-equipment-24-24-M3-step-4,1440-financing-loan-step-1,320-financing-capital-step-1,1440-financing-settlement-step-1,320-financing-settlement-step-2/3.650→410 단 한 번 취득 지급, M3 전 상각0/이후9, 누계216+잔존24=240, 이자5/원금20/배당10의 서로 다른 기록과 최종795=390+405·현금225를 확인했다. 이전 컨테이너 배경 충돌 재발과 모바일 잘림을 찾지 못했다.
+- 확률 작성자7개:320-sampling-biased/copied,320-interval-summary-sigma20/sigma0,320-interval-zero-events,320-interval-controls,320-sampling-controls. 편의 선택의 SE 적용 불가,100행/1가구, 같은 축의 CI/PI와σ0 한 점,0건 상한의 조건·분모와 모바일 제어를 확인했다.
+- 관측 작성자4개:1440-traces-parallel,320-traces-missing,390-traces-propagation,1440-signals-complete. 공통 시간축, 미관측≠0, 별도T-B와 A100/900ms 막대 배치를 확인했다. 통합 담당자도1440-traces-parallel의 native0–1900px를 열어30ms에 함께 시작하는100/150ms 자식과200ms 부모,0–300ms 눈금·인접 제어를 독립 확인했다.
+- 인증 작성자3개:320-boundaries-blocked,390-boundaries-preflight,390-tokens-expired. 제어 인접, 전송/처리/읽기 분리와 만료 판정 문이 유지된다.
+- 육아 작성자4개:320-communication-gesture-redirect,1440-communication-sound-follow,320-interaction-break-2,390-interaction-unclear-2. 아이→공과 보호자→책의 다른 점선 종점, 보호자→아이 응답 방향, 쉬기/종료와 모름 상태를 확인했다.
+- 통합 담당자 홈1440 전체와320-home/390-reading-first native상단0–2100px:15권·135장과 각 책 분모, 읽는 책 우선/고정 권차·모바일 필터를 확인했다. 기존320 hero의 마지막 한 글자 줄바꿈은 동일한 경미한 편집 상태다.
+
+검토한 실제 원본 범위에서 차단할 의미·가독성 회귀를 찾지 못했다. 모든851PNG, 모든 표 행, crop 밖의 본문을 수동으로 읽었다고 확대하지 않는다. 이 결과는 source production이며 **main·Pages·정확한 published 자산·실제 게시 대표 화면은 선행 새4A 및 PR57 공개 뒤 별도 게이트**로 남아 있다.
