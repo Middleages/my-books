@@ -1,3 +1,5 @@
+import EmergencyBoundary from "./content/child-safety/EmergencyBoundary.mdx";
+import SharedSafetyPlan from "./content/child-safety/SharedSafetyPlan.mdx";
 import OutsidePreparedness from "./content/child-safety/OutsidePreparedness.mdx";
 import PreparingForCare from "./content/child-safety/PreparingForCare.mdx";
 import PoisonPrevention from "./content/child-safety/PoisonPrevention.mdx";
@@ -9,6 +11,8 @@ import SmallObjects from "./content/child-safety/SmallObjects.mdx";
 import ChildSafetyIntro from "./content/child-safety/Intro.mdx";
 import SafetyLayers from "./content/child-safety/SafetyLayers.mdx";
 import ReachAndMovement from "./content/child-safety/ReachAndMovement.mdx";
+import RepairingConnection from "./content/child-emotions/RepairingConnection.mdx";
+import ObservationAndSupport from "./content/child-emotions/ObservationAndSupport.mdx";
 import TransitionsAndRoutines from "./content/child-emotions/TransitionsAndRoutines.mdx";
 import PlayingTogether from "./content/child-emotions/PlayingTogether.mdx";
 import TemperamentAndFit from "./content/child-emotions/TemperamentAndFit.mdx";
@@ -251,6 +255,8 @@ export const chapters: Chapter[] = [
   { id: "travel-safety", bookId: "child-safety", readId: "child-safety/travel-safety", number: "08", title: "차와 길에서 이동하기", heading: "한 설명서가 다른 조건까지 알려 줄까?", description: "제품·차량·아이 정보를 설치 판단과 구별합니다.", Content: TravelSafety },
   { id: "outside-and-preparedness", bookId: "child-safety", readId: "child-safety/outside-and-preparedness", number: "09", title: "집 밖과 화재 대비의 연결", heading: "사전 정보는 언제 다시 확인할까?", description: "방문 전 정보와 현장 재확인을 나눕니다.", Content: OutsidePreparedness },
   { id: "preparing-for-care", bookId: "child-safety", readId: "child-safety/preparing-for-care", number: "10", title: "진료에 가져갈 질문과 관찰", heading: "관찰과 추측을 어떻게 구별할까?", description: "합성 기록에서 사실·추측·모름을 구분합니다.", Content: PreparingForCare },
+  { id: "emergency-boundary", bookId: "child-safety", readId: "child-safety/emergency-boundary", number: "11", title: "응급 상황에서는 책을 멈추기", heading: "학습과 실제 도움은 어디서 나뉠까?", description: "신고 정보 범주와 교육 화면의 경계를 구분합니다.", Content: EmergencyBoundary },
+  { id: "shared-safety-plan", bookId: "child-safety", readId: "child-safety/shared-safety-plan", number: "12", title: "돌봄자가 바뀌어도 남는 안전 계획", heading: "담당 인수가 환경 확인도 대신할까?", description: "과거 기록·미확인·재확인과 담당 응답을 나눕니다.", Content: SharedSafetyPlan },
   { id: "feelings-and-actions", bookId: "child-emotions", readId: "child-emotions/feelings-and-actions", number: "01", title: "감정과 행동을 나누어 보기", heading: "마음을 인정하면 모든 행동을 허용할까요?", description: "관찰과 잠정 해석, 행동의 안전 경계를 구분합니다.", Content: FeelingsAndActions },
   { id: "co-regulation", bookId: "child-emotions", readId: "child-emotions/co-regulation", number: "02", title: "곁에서 함께 진정하기", heading: "곁에서 돕는 것과 결과를 정하는 것은 다를까요?", description: "아이 신호·환경·보호자 반응과 미확인 결과를 나눕니다.", Content: CoRegulation },
   { id: "noticing-signals", bookId: "child-emotions", readId: "child-emotions/noticing-signals", number: "03", title: "신호를 보고 말을 보태기", heading: "관찰이 남아도 해석은 바뀔 수 있나요?", description: "본 행동과 잠정 해석, 아직 모르는 이유를 나눕니다.", Content: NoticingSignals },
@@ -261,6 +267,8 @@ export const chapters: Chapter[] = [
   { id: "separation-and-reunion", bookId: "child-emotions", readId: "child-emotions/separation-and-reunion", number: "08", title: "헤어짐과 다시 만남", heading: "누가 돌봄을 이어받고 다시 만나나요?", description: "예고·인계·재회의 역할을 연결합니다.", Content: SeparationAndReunion },
   { id: "transitions-and-routines", bookId: "child-emotions", readId: "child-emotions/transitions-and-routines", number: "09", title: "하던 일을 마치고 다음으로", heading: "다음 활동으로 가는 길에 무엇이 있나요?", description: "예고 정보와 함께하는 도움을 구분합니다.", Content: TransitionsAndRoutines },
   { id: "playing-together", bookId: "child-emotions", readId: "child-emotions/playing-together", number: "10", title: "함께 놀며 관계 배우기", heading: "같은 공간에서 노는 것과 양보는 같을까요?", description: "놀이의 관찰·안전 경계·도움을 나눕니다.", Content: PlayingTogether },
+  { id: "repairing-connection", bookId: "child-emotions", readId: "child-emotions/repairing-connection", number: "11", title: "어긋난 뒤 다시 연결하기", heading: "어른이 책임질 일과 아이의 반응은 다를까요?", description: "책임 인정·다음 행동·미확인 회복을 구분합니다.", Content: RepairingConnection },
+  { id: "observation-and-support", bookId: "child-emotions", readId: "child-emotions/observation-and-support", number: "12", title: "우리 집의 관찰과 도움 계획", heading: "점수 대신 어떤 질문을 남길까요?", description: "본 사실·모르는 점·지원·상담 질문을 정리합니다.", Content: ObservationAndSupport },
   { id: "feeding-map", bookId: "child-feeding", readId: "child-feeding/feeding-map", number: "01", title: "먹는 일의 여러 역할", heading: "섭취량과 식사 경험은 같은 것일까?", description: "제시·탐색·섭취와 양의 미확인을 따로 읽습니다.", Content: FeedingMap },
   { id: "readiness", bookId: "child-feeding", readId: "child-feeding/readiness", number: "02", title: "시작할 때 무엇을 볼까", heading: "달력과 준비의 신호는 어떻게 함께 볼까?", description: "일반 안내와 개별 관찰, 상담 질문을 구분합니다.", Content: Readiness },
   { id: "texture-and-shape", bookId: "child-feeding", readId: "child-feeding/texture-and-shape", number: "03", title: "부드러움과 모양을 바꾸기", heading: "같은 재료라도 준비가 왜 중요할까?", description: "모양과 질감의 변화를 따로 살펴봅니다.", Content: TextureAndShape },
@@ -750,8 +758,8 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–10장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
-  { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–10장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
+  { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–12장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
+  { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–12장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
   { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–12장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
