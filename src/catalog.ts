@@ -1,3 +1,5 @@
+import PressureAndRhythm from "./content/child-sleep/PressureAndRhythm.mdx";
+import DurationAndAge from "./content/child-sleep/DurationAndAge.mdx";
 import ChildSleepIntro from "./content/child-sleep/Intro.mdx";
 import SleepRecord from "./content/child-sleep/SleepRecord.mdx";
 import SafeSleepSpace from "./content/child-sleep/SafeSleepSpace.mdx";
@@ -125,6 +127,8 @@ export type Chapter = {
 export const chapters: Chapter[] = [
   { id: "sleep-record", bookId: "child-sleep", readId: "child-sleep/sleep-record", number: "01", title: "잠든 시간과 누워 있던 시간", heading: "밤에 열 시간은 무엇을 센 말일까?", description: "침대 시간과 확인 수면, 미확인 기록을 구분합니다.", Content: SleepRecord },
   { id: "safe-sleep-space", bookId: "child-sleep", readId: "child-sleep/safe-sleep-space", number: "02", title: "안전한 잠자리의 구조", heading: "같은 방과 같은 침대는 왜 다를까?", description: "영아의 별도 수면 표면과 공간의 경계를 살펴봅니다.", Content: SafeSleepSpace },
+  { id: "sleep-pressure-and-rhythm", bookId: "child-sleep", readId: "child-sleep/sleep-pressure-and-rhythm", number: "03", title: "졸림과 하루의 리듬", heading: "오래 깨어 있으면 반드시 잘 잘까?", description: "수면 압력의 방향과 환경 시간 신호를 분리합니다.", Content: PressureAndRhythm },
+  { id: "duration-and-age", bookId: "child-sleep", readId: "child-sleep/duration-and-age", number: "04", title: "월령과 총수면 범위", heading: "밤잠만 더하면 하루 수면일까?", description: "합성 수면 구성과 출처의 연령별 참고 범위를 구분합니다.", Content: DurationAndAge },
   { id: "development-map", bookId: "child-development", readId: "child-development/development-map", number: "01", title: "발달은 한 줄의 순위가 아니다", heading: "몸·말·놀이·관계가 같은 속도로 발달할까?", description: "한 아이의 여러 영역과 관찰 상태를 점수 없이 읽습니다.", Content: DevelopmentMap },
   { id: "age-and-evidence", bookId: "child-development", readId: "child-development/age-and-evidence", number: "02", title: "개월수와 체크리스트를 읽는 법", heading: "생활 월령과 자료의 기준 연령은 어떻게 다를까?", description: "교정연령의 시간 관계와 원출처 연령의 경계를 살펴봅니다.", Content: AgeAndEvidence },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
@@ -520,7 +524,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–02장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
+  { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–04장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–08장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
