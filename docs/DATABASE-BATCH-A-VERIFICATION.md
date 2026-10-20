@@ -1,6 +1,6 @@
 # 데이터베이스 배치 A — 구현·검증 기록
 
-기록일: 2026-10-20 (KST). **소개·01–02 구현. 단위 테스트·빌드, DB production browser 124개, 실제 PNG 직접·교차 검토 통과. 기존 교재 verifier 보정의 통합·matrix 최종 결과·main 반영·Pages 게시 대기.** 이 상태를 완료·배포 성공으로 읽지 않는다.
+기록일: 2026-10-20 (KST). **소개·01–02 구현. 단위 테스트·빌드, DB production browser 124개, 실제 PNG 직접·교차 검토 통과. 보험 verifier 보정 통합 후 전체 PR production matrix도 통과. 최신 main 통합·Pages 게시 대기.** 이 상태를 완료·배포 성공으로 읽지 않는다.
 
 ## 범위와 기준
 
@@ -81,3 +81,19 @@
 보강판 PR run의 build·DB·투자 job은 성공했다. 다만 그 snapshot의 보험 검증기는 기존 main `246167308c050d797d00501fb057e2ea61de51b4`에서 이어받은 구판이었다. 보험 E 검증 중 발견된 `[open]` 조건 locator의 클릭 뒤 인덱스 변동 문제는 main `a514d0cb749d766ce19f414f92dedd90fd02bd82`에서 고쳤다. 해당 commit의 검증 스크립트·회귀 테스트·보험 E 기록만 보존 통합했다. 이는 DB 화면의 실패나 DB 모델 수정이 아니며, 보험 검사 범위를 줄이지 않는다. 새 PR snapshot의 전체 matrix 결과는 실행 후 따로 기록한다.
 
 통합 후 전체 `npm test`는 813/813, TypeScript/Vite build는 304 modules로 통과했다. 보정 전후 `dist/assets/index-C01XwLQm.css`와 `index-OpnEYXtt.js`의 SHA256을 대조해 모두 동일함을 확인했다. 앱 자산은 바뀌지 않았으므로 앞서 직접 검토한 DB 그림의 증거는 유지하며, 새 전체 matrix 실행을 대신하지는 않는다.
+
+
+### 보험 보정 통합 snapshot의 전체 PR 게이트
+
+head `9f290af29a4870aff1c8f70ce46128baa788d6b3`의 [run39358068146](https://github.com/Middleages/my-books/actions/runs/39358068146)은 build·DB·투자·보험 production job이 모두 성공했다. PR 실행이므로 deploy와 published job은 의도대로 skipped다. DB 검사는 다시 124/124, PNG 42개였고 [artifact12236470737](https://github.com/Middleages/my-books/actions/runs/39358068146/artifacts/12236470737)에 보관됐다. 이 artifact의 게시 digest는 `9d39bf7db4cb2a074b193310734844956b8464178b371bde641d2c05e01308e6`이며, 이 기록에서는 새 ZIP을 내려받아 직접 검토했다고 주장하지 않는다. 앱 자산의 동일성 확인과 앞선 직접·교차 시각 검토를 함께 사용한다.
+
+이로써 해당 PR snapshot의 전체 production 게이트는 통과했다. 이후 세금 A·권차 등 최신 main 통합과 해당 공개본의 실제 Pages 검증은 별도로 남아 있다.
+
+
+### 세금 A·분야별 권차 보존 통합 후보
+
+최신 main `da333eb71e2e5c5f00ba70bbddb2f36c1ce50b9f`의 세금 A와 분야별 권차를 보존 통합했다. catalog·표지 충돌은 두 책을 모두 남기고, DB는 기존 공통 메타데이터의 `technology / volume: 4`를 사용한다. 양쪽 검증 matrix와 계약 테스트는 `insurance, investing, tax, book-volumes, database`를 동일하게 유지한다. 독립 `book-volumes` suite도 제거하지 않았다. DB browser에서도 홈·소개가 `IT·기술 4권`을 표시하는지 추가 확인한다.
+
+보험 담당자가 완성한 문서 전용 `5bdf203fff7b1a1cd84e901a78e6cd997c4fb709`의 보험 최종 검증·전체 점검·계획·프롬프트 네 문서도 내용 그대로 반영한다. 보험 앱·모델·검증 스크립트를 다시 바꾸지 않는다. 이 통합 후보의 test/build·새 PR matrix·직접 화면·실제 main 게시 결과는 실행한 뒤 기록한다.
+
+통합 후보의 전체 `npm test`는 827/827 통과했고 TypeScript/Vite build도 성공했다. QA 스크립트 문법과 `git diff --check`도 통과했다. 세금·권차가 추가된 새 앱 자산이므로 이전 화면 증거만으로 새 레이아웃 검증을 대신하지 않고 PR의 DB·권차 PNG를 다시 직접 검토한다.

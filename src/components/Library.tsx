@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { books, chapters, bookCategories, type BookCategory } from "../catalog";
+import { books, chapters, bookCategories, bookVolumeLabel, type BookCategory } from "../catalog";
 import "./library.css";
 import { BookCover } from "./BookCover";
 
@@ -74,6 +74,7 @@ export function Library({ read }: { read: string[] }) {
             ? " · 읽는 중인 책부터 보여드려요."
             : " · 각 책에서 소개와 전체 목차를 볼 수 있어요."}
         </p>
+        <p className="home-order-note">권차는 분야별 권장 학습 순서예요.</p>
         <div id="home-books" className="home-books">
           {visible.map(({ book, total, completed, active }) => (
             <a key={book.id} className="home-book" href={`#/${book.id}`}>
@@ -85,7 +86,7 @@ export function Library({ read }: { read: string[] }) {
               </div>
               <div className="home-book-body">
                 <div className="home-book-meta">
-                  <small>{book.category}</small>
+                  <small className="home-book-volume">{bookVolumeLabel(book)}</small>
                   {active && <span className="home-badge">읽는 중</span>}
                 </div>
                 <h3>{book.title}</h3>

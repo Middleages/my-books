@@ -1,6 +1,6 @@
 # 웹앱 개발자를 위한 데이터베이스 — 교재 계획
 
-작성일·공식 자료 확인일: **2026-10-20 (KST)**. 상태: **A 소개·01–02의 본문·모델·UI 구현, 단위 테스트·빌드·DB production browser 124개·시각 검토 통과. 최신 main 통합·게시 게이트 미완료. B–G 미구현. 실제 DB 미실행**.
+작성일·공식 자료 확인일: **2026-10-20 (KST)**. 상태: **A 소개·01–02의 본문·모델·UI 구현, 단위 테스트·빌드·DB production browser 124개·시각 검토 통과. 전체 PR production matrix도 통과. 최신 main 통합·게시 게이트 미완료. B–G 미구현. 실제 DB 미실행**.
 기획 시 확인한 main: `609e6f2cef1c449ee8760f92c98b01ace238d5e1`. 구현은 이 SHA에 고정하지 않고 항상 최신 main과 병행 작업을 확인한다.
 
 관련 기준: [AGENTS.md](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [네트워크 계획](NETWORK-TEXTBOOK-PLAN.md), [쿠버네티스 계획](KUBERNETES-TEXTBOOK-PLAN.md), [독립 실행 프롬프트](DATABASE-SESSION-PROMPTS.md).
@@ -85,7 +85,7 @@ G는 새 번호 장이 아니라 전체 편집·통합 검토와 선택 실습 �
 
 ## 4. 고정 목차·주소
 
-bookId는 `database`, categoryId는 기존 `technology`, 제목은 **웹앱 개발자를 위한 데이터베이스**다. 소개는 `#/database`, 장은 `#/database/<id>`, readId는 `database/<id>`로 예약한다. 소개는 번호 장/읽음 분모에 넣지 않는다. 최초 공개 후 ID를 유지한다.
+bookId는 `database`, categoryId는 기존 `technology`, 분야별 권차는 `volume: 4`, 제목은 **웹앱 개발자를 위한 데이터베이스**다. 소개는 `#/database`, 장은 `#/database/<id>`, readId는 `database/<id>`로 예약한다. 소개는 번호 장/읽음 분모에 넣지 않는다. 최초 공개 후 ID를 유지한다.
 
 | 배치·장 | 고정 chapter id / 예정 MDX | 제목 | 독자가 답할 핵심 질문 |
 | --- | --- | --- | --- |
@@ -346,7 +346,7 @@ A에서 정한 환경 기록을 사용하고, G에서 제공할 경우 `examples
 
 - 기획 완료: 12장의 질문·시각 관계·조작/전환·모델/반례·공식 근거, 고정 식별자·fixture·구조·세션별 인계/검증 계획과 독립 실행 프롬프트.
 - A 구현 완료: 소개·01–02 본문, 공통 fixture와 파일 경쟁/관계/제약 모델, 시각 UI, 카탈로그의 공개 2장·표지, 검증 스크립트와 기록. 단위 테스트·빌드, DB production browser 124개와 실제 PNG 직접·교차 검토를 통과했다. 세부 기준 commit·실행 환경·결과는 [배치 A 검증 기록](DATABASE-BATCH-A-VERIFICATION.md)을 따른다.
-- A 출판 대기: 기존 교재를 포함한 PR matrix 최종 결과, 세금·권차 등 최신 main 통합, 해당 main의 Actions와 실제 Pages 자산/장 URL 확인. PR 검증을 게시 완료로 간주하지 않는다.
+- A 출판 대기: 기존 교재를 포함한 PR matrix는 통과했다. 세금·권차 등 최신 main 통합, 해당 main의 Actions와 실제 Pages 자산/장 URL 확인. PR 검증을 게시 완료로 간주하지 않는다.
 - 미구현: B–F의 03–12 본문·모델·시각 UI와 G 전체 편집/선택 실습 묶음. 미공개 장은 카탈로그에 등록하지 않는다.
 - 미실행: 실제 PostgreSQL/MSSQL·컨테이너/서버 설치·SQL·두 세션·성능 측정·backup/restore. 브라우저 모델과 실제 DB 실행을 구분한다.
 - 최초 기획 문서만의 검사는 경로/링크·목차/ID·수치/시나리오·지침 일관성과 `git diff --check`였다. 이후 A 구현·테스트·시각 검토 결과는 별도 기록이며 과거 문서 검사에서 실행한 것으로 소급하지 않는다.
