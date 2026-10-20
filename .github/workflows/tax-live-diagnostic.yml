@@ -1,0 +1,36 @@
+name: Focused tax A live diagnosis
+on:
+  push:
+    branches: [verify/tax-a-live-20261020]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tax-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install isolated browser verifier
+        run: |
+          npm install --prefix "$RUNNER_TEMP/tax-live-qa" --no-save --ignore-scripts playwright@1.56.1
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Diagnose exact published tax A assets and interactions
+        env:
+          NODE_PATH: ${{ runner.temp }}/tax-live-qa/node_modules
+          CHROME_PATH: /usr/bin/google-chrome
+          LIVE_URL: https://middleages.github.io/my-books/
+        run: node scripts/tax-browser-qa.cjs
+      - name: Save diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tax-a-live-diagnostic
+          path: artifacts/tax-browser/
+          if-no-files-found: error

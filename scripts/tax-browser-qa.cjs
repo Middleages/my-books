@@ -552,8 +552,8 @@ async function assets() {
         page = await ctx.newPage();
       page.on("pageerror", (e) => results.errors.push(String(e)));
       page.on("console", (m) => {
-        if (m.type() === "error" && !m.text().includes("favicon"))
-          results.errors.push(m.text());
+        if (m.type() === "error")
+          results.errors.push({ source: m.location().url, message: m.text(), page: page.url() });
       });
       for (const id of ["", ...chapters.map((c) => c.id)]) {
         const route = "tax" + (id ? "/" + id : "");
