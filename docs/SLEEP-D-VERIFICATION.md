@@ -16,3 +16,7 @@
 PR85 run39426900650의 전체 단위·build·수면·권차 production이 성공했다. 실제 checkout f703622e42c71acce61c66c07eb0d8f3f45b3fe6/tree b728edd6e9971f5a7f58eb93c51ade5baaae53af, clean. 수면82검사/165PNG, 앱·콘솔·리소스 오류0. artifact12266776546 ZIP SHA256575fb1f70578225092d97b2f72045a0fbc2dd3eb2ddddd8aff20d1d7118dddd6.
 
 320-waking-sound,850/1440-waking-after,320-choices-single,390/1440-choices-shared 원본을 직접 보았다. 사실/질문 경계, 강조 변화, 가족 역할과 질문 보존은 확인했다. 모바일 세로 재배치에서도 그림 설명이 좌우를 고정 지칭하던 불일치를 발견해 방향 중립 문구로 고친다. 보완 소스의 CI와 직접 원본은 다시 확인하며 아직 닫힌 것으로 기록하지 않는다. 임상 감수와 전체 등록 suite 넓은 회귀 및 실제 게시 게이트는 별도다.
+
+## D source/direct 마감
+
+보완 source remote b0052d9eaa1350e460686e1659db25f95a2ddc2f/local508dec0/tree534e1845608a21d25f1179012ce08d5bc08e3cd9의 정상 PR85/run39427396855가 build·전체 단위·수면·권차 production 성공했다. 실제 checkout d39ddd27d1727d9ba9857c1568606ac6d87515f2, 동일 tree, clean. 수면82/82·165PNG·앱/콘솔/리소스 오류0. artifact12266018486 ZIP SHA2560f3f2e9021132098991825c2da3b245b4510284410050e6f0fbd6227eddf2401을 보존했다. 보완320-waking-sound·390-waking-seen·1440-waking-after 원본을 직접 열어 방향 중립 설명과 사실/질문 분리의 가독성을 확인했다. 앞선850 및 가족선택 원본 검토와 함께 D source/direct 게이트를 닫는다. 전체 사이트 넓은 회귀 및 main·Pages·실제 게시 완료를 뜻하지 않는다.

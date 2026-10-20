@@ -1,3 +1,5 @@
+import DisruptedDays from "./content/child-sleep/DisruptedDays.mdx";
+import CaregiverRest from "./content/child-sleep/CaregiverRest.mdx";
 import WakingAndCare from "./content/child-sleep/WakingAndCare.mdx";
 import SettlingOptions from "./content/child-sleep/SettlingOptions.mdx";
 import ChangingNaps from "./content/child-sleep/ChangingNaps.mdx";
@@ -137,6 +139,8 @@ export const chapters: Chapter[] = [
   { id: "bedtime-routine", bookId: "child-sleep", readId: "child-sleep/bedtime-routine", number: "06", title: "잠들기 전의 익숙한 순서", heading: "익숙한 순서는 무엇을 도울까?", description: "가족의 활동 순서와 바뀌지 않는 돌봄 경계를 살펴봅니다.", Content: BedtimeRoutine },
   { id: "waking-and-care", bookId: "child-sleep", readId: "child-sleep/waking-and-care", number: "07", title: "밤중 깨기와 필요한 돌봄", heading: "깼다는 사실과 이유를 안다는 것은 같을까?", description: "확인 사실과 추가로 살펴볼 맥락을 분리합니다.", Content: WakingAndCare },
   { id: "settling-options", bookId: "child-sleep", readId: "child-sleep/settling-options", number: "08", title: "재우는 방식과 가족의 선택", heading: "재우는 방법을 고를 때 효과만 물으면 될까?", description: "가상 가족의 여건과 안전·돌봄의 경계를 살펴봅니다.", Content: SettlingOptions },
+  { id: "disrupted-days", bookId: "child-sleep", readId: "child-sleep/disrupted-days", number: "09", title: "아픈 날과 일정이 달라진 날", heading: "평소와 다른 밤에는 무엇을 먼저 적을까?", description: "사건의 맥락과 확인 수면을 나누어 읽습니다.", Content: DisruptedDays },
+  { id: "caregiver-rest", bookId: "child-sleep", readId: "child-sleep/caregiver-rest", number: "10", title: "돌보는 사람도 쉬는 계획", heading: "아이의 잠과 보호자의 휴식은 같을까?", description: "담당과 휴식 기회, 돌봄 공백을 구분합니다.", Content: CaregiverRest },
   { id: "development-map", bookId: "child-development", readId: "child-development/development-map", number: "01", title: "발달은 한 줄의 순위가 아니다", heading: "몸·말·놀이·관계가 같은 속도로 발달할까?", description: "한 아이의 여러 영역과 관찰 상태를 점수 없이 읽습니다.", Content: DevelopmentMap },
   { id: "age-and-evidence", bookId: "child-development", readId: "child-development/age-and-evidence", number: "02", title: "개월수와 체크리스트를 읽는 법", heading: "생활 월령과 자료의 기준 연령은 어떻게 다를까?", description: "교정연령의 시간 관계와 원출처 연령의 경계를 살펴봅니다.", Content: AgeAndEvidence },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
@@ -532,7 +536,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–08장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
+  { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–10장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–08장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
