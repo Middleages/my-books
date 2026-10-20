@@ -2,9 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { isBuiltin } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import scope from '../scripts/browser-verification-scope.cjs';
 
 const workflow = readFileSync(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
-const suites = ['insurance', 'investing', 'tax', 'book-volumes'];
+const suites = scope.availableSuites(fileURLToPath(new URL('../', import.meta.url)));
+const matrixExpression = '${{ fromJSON(needs.build.outputs.browser-matrix) }}';
 const mainOnly = "github.ref == 'refs/heads/main' && github.event_name != 'pull_request'";
 
 // Inspect the workflow's small, explicit block layout without adding a YAML
@@ -43,34 +46,41 @@ test('Pages workflow retains triggers, read-only default permissions and ref can
 
 test('build tests once and uploads the sole Pages artifact without a separate browser build', () => {
   const job = fields('build');
-  assert.deepEqual(Object.keys(job), ['runs-on', 'steps']);
+  assert.deepEqual(Object.keys(job), ['runs-on', 'outputs', 'steps']);
   assert.equal(job['runs-on'].value, 'ubuntu-latest');
   const build = steps('build');
-  assert.equal(build.length, 6);
+  assert.equal(build.length, 8);
+  assert.deepEqual(values(mapping(job.outputs.body, 6)), { 'browser-matrix': '${{ steps.browser-scope.outputs.matrix }}' });
   assert.deepEqual(build.map(step => Object.keys(step)), [
-    ['uses'], ['uses', 'with'], ['run'], ['run'], ['run'], ['uses', 'with'],
-  ], 'Build steps must preserve default checkout, shell failure handling and unconditional execution');
+    ['uses', 'with'], ['uses', 'with'], ['run'], ['name', 'id', 'run'], ['run'], ['run'], ['uses', 'with'], ['name', 'if', 'uses', 'with'],
+  ], 'Build steps must preserve the triggering checkout, shell failure handling and unconditional tests');
   assert(action(build[0], 'actions/checkout@v4'));
+  assert.deepEqual(values(config(build[0])), { 'fetch-depth': '0' }, 'Full diff history must not change the triggering checkout ref');
   assert(action(build[1], 'actions/setup-node@v4'));
   assert.deepEqual(values(config(build[1])), { 'node-version': '22', cache: 'npm' });
-  assert.deepEqual(build.slice(2, 5).map(run), ['npm ci', 'npm test', 'npm run build']);
-  assert(action(build[5], 'actions/upload-pages-artifact@v3'));
-  assert.deepEqual(values(config(build[5])), { path: 'dist' });
-  for (const step of build) assert(!step.if && !step.env, 'Build/test/upload cannot be conditionally skipped or overridden');
+  assert.equal(run(build[2]), 'npm ci');
+  assert.deepEqual(values(build[3]), { name: 'Select affected browser suites', id: 'browser-scope', run: 'node scripts/browser-verification-scope.cjs' });
+  assert.deepEqual(build.slice(4, 6).map(run), ['npm test', 'npm run build']);
+  assert(action(build[6], 'actions/upload-pages-artifact@v3'));
+  assert.deepEqual(values(config(build[6])), { path: 'dist' });
+  for (const step of build.slice(0, -1)) assert(!step.if && !step.env, 'Build/test/upload cannot be conditionally skipped or overridden');
+  assert(action(build[7], 'actions/upload-artifact@v4'));
+  assert.equal(build[7].if.value, 'always()');
+  assert.deepEqual(values(config(build[7])), { name: 'browser-verification-scope', path: 'artifacts/browser-scope/', 'if-no-files-found': 'error' });
   assert.equal([...workflow.matchAll(/actions\/upload-pages-artifact@/g)].length, 1);
   assert.equal([...workflow.matchAll(/run: npm run build/g)].length, 1);
 });
 
-test('both isolated browser matrices run all fixed suites and propagate failures', () => {
+test('both isolated browser matrices consume the exact same nonempty build selection and propagate failures', () => {
   for (const id of ['verify-production', 'verify-published']) {
     const job = fields(id);
     assert.deepEqual(Object.keys(job), id === 'verify-production'
       ? ['name', 'needs', 'runs-on', 'strategy', 'steps']
       : ['name', 'if', 'needs', 'runs-on', 'strategy', 'steps']);
     assert.equal(job['runs-on'].value, 'ubuntu-latest');
-    assert.equal(job.strategy.body, '      fail-fast: false\n      matrix:\n        suite: [insurance, investing, tax, book-volumes]',
-      'All suites must run independently without fail-fast cancellation, exclusions or dynamic matrix input');
-    assert.equal(job.needs.value, id === 'verify-production' ? 'build' : 'deploy');
+    assert.equal(job.strategy.body, `      fail-fast: false\n      matrix: ${matrixExpression}`,
+      'Only the tested build classifier may select suites; no exclusions, alternate inputs or fail-fast cancellation');
+    assert.equal(job.needs.value, id === 'verify-production' ? 'build' : '[build, deploy]');
     assert.equal(job.if?.value, id === 'verify-production' ? undefined : mainOnly);
     const browserSteps = steps(id);
     assert.equal(browserSteps.length, 7);
@@ -124,15 +134,15 @@ test('all original browser evidence names survive failures without masking a che
     });
     for (const suite of suites) artifactNames.push(withValues.name.replace('${{ matrix.suite }}', suite));
   }
-  assert.deepEqual(artifactNames, ['insurance-browser-local', 'investing-browser-local', 'tax-browser-local', 'book-volumes-browser-local', 'insurance-browser-published', 'investing-browser-published', 'tax-browser-published', 'book-volumes-browser-published']);
-  assert.equal([...workflow.matchAll(/always\(\)/g)].length, 2, 'Only evidence uploads may bypass success()');
+  assert.deepEqual(artifactNames, ['local', 'published'].flatMap(suffix => suites.map(suite => `${suite}-browser-${suffix}`)));
+  assert.equal([...workflow.matchAll(/always\(\)/g)].length, 3, 'Only browser evidence and scope uploads may bypass success()');
 });
 
-test('deployment requires the full production matrix and preserves its existing narrow access', () => {
+test('deployment requires every selected production suite and preserves its existing narrow access', () => {
   const deploy = fields('deploy');
   assert.deepEqual(Object.keys(deploy), ['if', 'needs', 'runs-on', 'permissions', 'environment', 'steps']);
   assert.equal(deploy.if.value, mainOnly);
-  assert.equal(deploy.needs.value, '[build, verify-production]', 'A failed or skipped production suite must block deployment');
+  assert.equal(deploy.needs.value, '[build, verify-production]', 'A failed or skipped selected production suite must block deployment');
   assert.equal(deploy['runs-on'].value, 'ubuntu-latest');
   assert.deepEqual(values(mapping(deploy.permissions.body, 6)), { pages: 'write', 'id-token': 'write' });
   assert.deepEqual(values(mapping(deploy.environment.body, 6)), {
