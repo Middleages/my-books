@@ -45,3 +45,34 @@
 .prob-empty-selection{min-height:80px;display:grid;place-items:center;text-align:center;border:2px dashed #67789a;padding:1rem}
 @container (max-width:500px){.prob-truth-branches{grid-template-columns:1fr;border-top:0;border-left:2px solid #8498b8;padding:0 0 0 .75rem;gap:1.25rem}.prob-count-branch:before{top:1.5rem;left:-.75rem;width:.75rem;height:2px}.prob-count-root:after{display:block;left:-2px;top:100%;height:1rem}.prob-count-root{margin-bottom:1rem}.prob-count-leaves{gap:.4rem}.prob-count-leaf{padding:.6rem .2rem}.prob-record-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem}.prob-frequency-mass{grid-template-columns:1fr}.prob-frequency-mass>strong{grid-column:1;grid-row:1}.prob-frequency-mass>span{grid-column:1;grid-row:3}.prob-frequency-mass>.prob-probability-track{grid-row:2}.prob-selected-counts{padding-left:1rem}}
 @media(prefers-reduced-motion:reduce){.prob-record-meter>i,.prob-alert-parts>i{transition:none}}
+/* C: household identity, repeated sample means and distinct interval targets. */
+.prob-household-grid{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:4px;margin:1rem 0}
+.prob-household-grid>span{display:grid;place-items:center;min-height:28px;border:1px solid #b8c6da;background:#fff;font-size:.78rem;font-variant-numeric:tabular-nums}
+.prob-household-grid>span.selected{border:3px double #3f5d98;background:#e8effb;font-weight:800}
+.prob-selected-values{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
+.prob-selected-values>span{background:#edf2fb;border:1px solid #adbed9;text-align:center;font-size:.8rem;padding:.15rem 0}
+.prob-sample-mean-axis{height:48px;margin:1rem 5px 0;position:relative;border-bottom:2px solid #8393ad;background:linear-gradient(90deg,transparent 24.8%,#e6ebf3 25%,transparent 25.2%,transparent 49.8%,#e6ebf3 50%,transparent 50.2%,transparent 74.8%,#e6ebf3 75%,transparent 75.2%)}
+.prob-population-marker{position:absolute;height:100%;bottom:0;width:0;border-left:2px dashed #936320;pointer-events:none}
+.prob-sample-marker{position:absolute;bottom:2px;transform:translateX(-50%);font-style:normal;color:#3b548a;line-height:1;font-size:22px;transition:left .3s ease}
+.prob-mean-histogram{display:flex;align-items:stretch;height:160px;position:relative;border-bottom:2px solid #8393ad;border-top:1px dashed #b6c3d6;margin-top:1.4rem;background:linear-gradient(to top,transparent 49.7%,#edf1f7 50%,transparent 50.3%)}
+.prob-mean-bin{flex:1;min-width:0;display:flex;align-items:flex-end}
+.prob-mean-bin>i{display:block;width:100%;background:#5278a4;border-right:1px solid #f7f9fd;transition:height .3s ease}
+.prob-interval-row{margin:1.2rem 0 1.6rem}.prob-interval-row>strong{display:block;margin-bottom:.35rem}
+.prob-interval-track{height:50px;border-bottom:1px solid #8294af;position:relative;margin-inline:8px;background:linear-gradient(90deg,transparent calc(50% - .5px),#e2e8f2 calc(50% - .5px),#e2e8f2 calc(50% + .5px),transparent calc(50% + .5px))}
+.prob-interval-segment{position:absolute;top:18px;height:16px;background:#445f96;border-inline:2px solid #304878;transition:width .3s ease,left .3s ease}
+.prob-interval-row[data-kind=pi] .prob-interval-segment{height:22px;top:15px;background:repeating-linear-gradient(135deg,#bb8740 0 4px,#f5e1bd 4px 8px);border:2px solid #906628;border-bottom:0}
+.prob-interval-mean,.prob-interval-future{position:absolute;top:2px;transform:translateX(-50%);font-size:18px;line-height:1;color:#263d65;transition:left .3s ease}
+.prob-interval-future{top:31px;color:#8a5124}.prob-interval-truth{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed #2d6659}
+.prob-coverage-grid{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:3px}
+.prob-coverage-grid>span{display:grid;place-items:center;min-height:22px;font-size:.85rem;border:1px solid #aabbd2;color:#334c77;background:#edf2fb}
+.prob-coverage-grid>span[data-covered=false]{background:repeating-linear-gradient(135deg,#fff4df 0 5px,#efd4a5 5px 8px);color:#704509;font-weight:800}
+.prob-coverage-grid>span.current{outline:2px solid #3d567e;outline-offset:1px}
+.prob-zero-event-row{display:grid;gap:.35rem;grid-template-columns:1fr auto;padding:.7rem 0;border-bottom:1px solid #d9e1ed;font-size:.87rem}
+.prob-zero-event-row>.prob-probability-track{grid-column:1 / -1;grid-row:2}
+.prob-zero-event-row>span{grid-column:2;grid-row:1}
+@container probability (max-width:600px){.prob-household-grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}.prob-household-grid>span{font-size:.7rem;border-width:1px;min-height:26px}.prob-household-grid>span.selected{border-width:3px}.prob-selected-values{grid-template-columns:repeat(5,minmax(0,1fr))}.prob-coverage-grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}.prob-zero-event-row{grid-template-columns:1fr}.prob-zero-event-row>span{grid-column:1;grid-row:3}.prob-interval-row>p{font-size:.88rem}.prob-mean-histogram{height:140px}}
+@media(prefers-reduced-motion:reduce){.prob-sample-marker,.prob-mean-bin>i,.prob-interval-segment,.prob-interval-mean,.prob-interval-future{transition:none}}
+.prob-interval-row .prob-interval-segment[data-width="0"]{border:0;height:0;background:none}
+@container probability (max-width:340px){.prob-household-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.prob-household-grid>span{font-size:.85rem;min-height:28px}}
+
+.prob-hist-max-label,.prob-hist-min-label{position:absolute;right:0;font-size:.74rem;color:#52617b;background:white;line-height:1.2}.prob-hist-max-label{top:-1.25rem}.prob-hist-min-label{bottom:2px}

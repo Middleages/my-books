@@ -137,4 +137,4 @@ E 게시 검사는 production132/게시133개를 통과했고 실제 자산 바�
 
 ## 확률 여덟 번째 책 후보 — 2026-10-20
 
-`probability`를 기존 `money` 분야의 명시적 `volume: 8`로 등록한다. 이번 B 후보는 소개·01–04를 포함하며 읽음 분모는 4다. 03 관측 횟수/가정 확률과 04 알림의 조건 분모를 추가했다. 표지의 점 분포·조건 경계·분할 표는 자체 장식이며 실제 수익 예측을 나타내지 않는다. 홈의 책 선택 역할과 기존 모든 권차·URL·readId·읽음 저장 키·알 수 없는 ID를 보존한다. 미구현 장은 등록하거나 링크하지 않는다. 실제 구현·검증·게시 상태는 [확률 A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)과 [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)에 구분해 남긴다.
+`probability`를 기존 `money` 분야의 명시적 `volume: 8`로 등록한다. 이번 C 후보는 소개·01–06를 포함하며 읽음 분모는 6이다. 05 표본평균/선택 방식과 06 평균 CI/새 결과 PI를 추가했다. 표지의 점 분포·조건 경계·분할 표는 자체 장식이며 실제 수익 예측을 나타내지 않는다. 홈의 책 선택 역할과 기존 모든 권차·URL·readId·읽음 저장 키·알 수 없는 ID를 보존한다. 미구현 장은 등록하거나 링크하지 않는다. 실제 구현·검증·게시 상태는 [확률 A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)·[B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)·[C 검증 기록](PROBABILITY-BATCH-C-VERIFICATION.md)에 구분해 남긴다.
