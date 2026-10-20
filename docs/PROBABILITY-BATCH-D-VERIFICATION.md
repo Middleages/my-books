@@ -27,14 +27,14 @@
 
 [SEC Investor.gov 분산 설명](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)의 보유 중복 경계만 확인했다. 자산 배분·재조정 처방·미국 상품/제도·실제 시장 통계를 가져오지 않는다. 모든 계절·공동 사건·세 점 사례와 산술은 자체 작성이며 기관의 실제 연구결과로 쓰지 않는다. 심프슨 현상의 전문 논문을 열람했다거나 경험적 효과를 검증했다고 주장하지 않는다.
 
-## 실제 실행과 남은 검사
+## 초기 로컬 실행 기록 · 후속 결과는 아래 구분
 
 - D 순수 모델 첫5/5 성공. 가중평균/빈 분모, 작은 정수 결합표 전수,9개 관계×보유비중 정본, 비선형/상수/큰 수 상관 경계 포함.
 - 실제 MDX 렌더·C 모델/등록 보존을 포함한 초기 targeted22/22 성공. 첫 TypeScript noEmit 성공. 이후 D browser 계약을 추가했으므로 이 실행을 최종 전체 결과로 대신하지 않는다.
 - 독립 Python Fraction 구현과 관측/표준화/9개 결합분포의 숫자134개를 대조해 최대 차이0을 확인했다. 같은 작성자의 다른 계산 구현이며 독립 동료 검토는 아니다.
 - 09:48 UTC 로컬 최종 `npm test` 전체1,099/1,099 성공(실패·건너뜀0), `npm run build`의 TypeScript noEmit·Vite build 성공, `node --check scripts/probability-browser-qa.cjs`와 `git diff --check` 성공. 기존 번들 크기 경고는 남아 있다.
-- 정상 production browser·원본 PNG는 아직 미실행이다. 브라우저 검사를 작성한 것과 실행 성공을 구별한다. 로컬 Chromium 환경 제한은 우회하지 않는다.
-- D 원격 source 쓰기·PR·main/Pages/live는 아직 시도하지 않았다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증이다.
+- 당시 정상 production browser·원본 PNG는 아직 미실행이었다. 브라우저 검사를 작성한 것과 실행 성공을 구별한다. 로컬 Chromium 환경 제한은 우회하지 않는다.
+- 당시 D 원격 source 쓰기·PR·main/Pages/live는 아직 시도하지 않았다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증이다.
 
 ## 로컬 빌드 자산 정본
 
@@ -42,3 +42,16 @@
 - `index-oboS8N2f.css`: 361305 bytes, SHA256 `4bed89f1d7feb8dcf15f0e59e30baa923d5cc995e4f14b2fe6d07e88494f1335`.
 
 이 값은 로컬 빌드의 정본이며, 향후 실제 CI checkout/tree와 브라우저가 읽은 자산을 별도로 대조한다.
+
+## 첫 실제 PR 검사와 원본 발견 · 10:25 UTC
+
+PR61/head360313255a890ce275a75bb5174889ca87be77c0/tree730d5c1d, CI39405858949의 실제 checkout6589a78d767805ac4bedf236c6409cb3b9656979에서 전체unit1,099/build 및 선택한 확률·홈 production이 성공했다. 확률533/533·앱 오류0·179PNG이며, 보험/투자/세금/DB/Kubernetes/주거/회계7suite는 생략이지 통과가 아니다. deploy/published는 skipped다.
+
+직접 원본을 연 뒤320px 손실 정적표의 긴 결과명과 확률이 붙어 읽히는 문제를 발견했다. 해당 표만 자동 열 너비와 최소 읽기 폭을 두고, 표 영역의 가로 이동·키보드 안내를 추가했다. 실제 셀 텍스트 경계와 열의 경계, 키보드 가로 이동과 마지막 기말 열 접근을 검증기에 추가했다. 이 보강의 전체unit/build·후속CI·수정 원본 검토는 아직 완료 전이다. 위 첫 실행의 성공을 수정본의 성공으로 대신하지 않는다.
+
+## 정적표 보강 로컬 검사 · 10:35 UTC
+
+10:26 시작했던 전체 검사는 공유 빌드 순서를 지키기 위해 중단(exit130)했으며 성공으로 세지 않는다. 지정된10:32 이후 다시 실행한 전체unit1,099/1,099(실패·건너뜀0), NODE_OPTIONS=--max-old-space-size=2048의 TypeScript/Vite build, node syntax 및 diff 검사가 성공했다. 번들 경고는 남는다. 수정본의 정상 PR CI와 새 원본 검토는 아직 대기이며 첫 실행 결과로 대신하지 않는다.
+
+- `index-B2HZ6IOp.css`: 361467 bytes, SHA256 `91afa14ee2b0628b837a348dc10ad9889843c66e42b433e0a74359ed008dde81`.
+- `index-D76sIJOv.js`: 2943984 bytes, SHA256 `10f3aab90c7a4bd908703d62759a098e664bfb1832a3c18a09cc0cc5f9312050`.

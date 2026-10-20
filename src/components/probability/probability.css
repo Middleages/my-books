@@ -110,3 +110,6 @@
 .prob-nonlinear-example>.prob-axis{max-width:420px;margin-inline:auto}.prob-nonlinear-example>table{width:100%;border-collapse:collapse;font-size:.9rem}.prob-nonlinear-example>table th,.prob-nonlinear-example>table td{padding:.5rem;border-bottom:1px solid #dce4f0;text-align:left}
 @container(max-width:340px){.prob-joint-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.prob-joint-mass{height:140px}.prob-cause-branches{height:65px}}
 @media(prefers-reduced-motion:reduce){.prob-sales-track>i,.prob-joint-amount-track>i,.prob-joint-mass>i{transition:none}}
+
+/* Keep long outcome labels separate from numeric columns in the scrollable static table. */
+.prob-dependence .prob-joint-static-table{table-layout:auto;min-width:36rem}.prob-dependence .prob-table-hint{font-size:.9rem;max-width:100%;margin:.4rem 0 .8rem}

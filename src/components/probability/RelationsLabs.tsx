@@ -126,7 +126,7 @@ export function DependenceLab() {
     {frame.compare && <p className="prob-verdict">{model.verdict}</p>}
     {frame.compare && prediction && <p className="prob-feedback">{prediction === 'different' ? '예측과 같습니다.' : '반반 보유에서 q0%와20%를 비교해 보세요.'} 이름을 나눈 것과 함께 손실 나지 않는 조건은 다릅니다.</p>}
     <StaticTable title="확률·보유 금액·모든 결과와 단계 읽기">
-      <table><caption>한 기간의 가정 · 확률과 금액의 단위를 구별</caption><thead><tr><th>결과</th><th>확률</th><th>A 손실</th><th>B 손실</th><th>합 손실</th><th>기말</th></tr></thead><tbody>{model.outcomes.map(o => <tr key={o.id}><th>{o.label}</th><td>{percent(o.probability)}</td><td>{number(o.lossA)}</td><td>{number(o.lossB)}</td><td>{number(o.loss)}</td><td>{number(o.ending)}</td></tr>)}</tbody></table>
+      <p className="prob-table-hint">아래 긴 표는 좌우로 이동해 기말 금액까지 읽습니다. 표 영역에 포커스를 두면 방향키로도 이동할 수 있습니다.</p><table className="prob-joint-static-table"><caption>한 기간의 가정 · 확률과 금액의 단위를 구별</caption><thead><tr><th>결과</th><th>확률</th><th>A 손실</th><th>B 손실</th><th>합 손실</th><th>기말</th></tr></thead><tbody>{model.outcomes.map(o => <tr key={o.id}><th>{o.label}</th><td>{percent(o.probability)}</td><td>{number(o.lossA)}</td><td>{number(o.lossB)}</td><td>{number(o.loss)}</td><td>{number(o.ending)}</td></tr>)}</tbody></table>
       <table><caption>묶음 손실의 확률분포</caption><thead><tr><th>손실</th><th>확률</th></tr></thead><tbody>{model.distribution.map(r => <tr key={r.loss}><th>{r.loss}</th><td>{percent(r.probability)}</td></tr>)}</tbody></table>
       <ol>{model.frames.map(f => <li key={f.label}><strong>{f.label}</strong> · {f.explanation}</li>)}</ol>
     </StaticTable>
