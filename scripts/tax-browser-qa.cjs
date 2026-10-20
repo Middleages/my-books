@@ -314,15 +314,13 @@ async function scenarios(page, id) {
         vals,
         r.parts.map((p) => p.value),
       );
-      const geometry = await lab
-        .locator(".tax-stack i")
-        .evaluateAll((es) =>
-          es.map((e) => ({
-            value: +e.dataset.value,
-            width: e.getBoundingClientRect().width,
-            total: e.parentElement.getBoundingClientRect().width,
-          })),
-        );
+      const geometry = await lab.locator(".tax-stack i").evaluateAll((es) =>
+        es.map((e) => ({
+          value: +e.dataset.value,
+          width: e.getBoundingClientRect().width,
+          total: e.parentElement.getBoundingClientRect().width,
+        })),
+      );
       for (const part of geometry)
         assert(
           Math.abs(part.width - (part.total * part.value) / r.gross) <= 1,
@@ -337,6 +335,11 @@ async function scenarios(page, id) {
     }
   }
   if (id === "year-end-settlement") {
+    const prediction = lab.locator(".tax-prediction");
+    await prediction.locator('input[value="no"]').check();
+    await prediction
+      .getByRole("button", { name: "이유 확인", exact: true })
+      .click();
     for (const n of [0, 50, 70, 90, 150]) {
       await setRange(lab, 0, n);
       const r = model.settlement({ prepaid: n });
@@ -345,6 +348,20 @@ async function scenarios(page, id) {
         (await lab.locator(".tax-result").innerText()).includes(
           `차감세액 ${r.difference}`,
         ),
+      );
+      const explanation = await prediction.locator("[role=status]").innerText();
+      assert(
+        explanation.includes(`기납부액 ${r.prepaid}과 결정세액 ${r.finalTax}`),
+      );
+      const outcome =
+        r.refund > 0
+          ? `환급 ${r.refund}`
+          : r.extra > 0
+            ? `추가납부 ${r.extra}`
+            : "정산 차액 0";
+      assert(
+        explanation.includes(outcome),
+        "Prediction explanation must use the current settlement, not initial 90/20",
       );
       await bars(page);
     }
@@ -574,9 +591,13 @@ async function assets() {
       page.on("pageerror", (e) => results.errors.push(String(e)));
       page.on("console", (m) => {
         if (m.type() !== "error") return;
-        const entry = classifyConsoleError({ source: m.location().url, message: m.text(), page: page.url() }, base);
+        const entry = classifyConsoleError(
+          { source: m.location().url, message: m.text(), page: page.url() },
+          base,
+        );
         results.consoleDiagnostics.push(entry);
-        if (entry.kind === "host-default-favicon-404") results.nonApplicationDiagnostics.push(entry);
+        if (entry.kind === "host-default-favicon-404")
+          results.nonApplicationDiagnostics.push(entry);
         else results.errors.push(entry);
       });
       for (const id of ["", ...chapters.map((c) => c.id)]) {

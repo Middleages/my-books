@@ -39,3 +39,13 @@ DB A·Kubernetes 시각 보강·변경 범위 분류기·세금 A 최종 진단/
 통합 애플리케이션·테스트에서 `npm test` 902개와 TypeScript·Vite 빌드를 통과했다. 이후 병합한 main의 차이는 DB 검증·계획 문서뿐이며 애플리케이션·테스트 바이트는 같음을 확인했다. DB/Kubernetes의 컴포넌트·본문·모델·브라우저 스크립트와 공통 workflow/분류기는 기준 main과 같다. 주거 컴포넌트·본문·모델·검증 스크립트와 표지는 검증된 주거 원본을 유지했다. 충돌한 카탈로그·README·홈 설명만 양쪽 공개 범위를 보존해 합쳤다.
 
 실제 분류기를 정확한 main `0071bff`와 비교해 실행한 결과는 `affected`, 선택 suite는 `tax`, `book-volumes`, `housing`다. 보험·투자·데이터베이스·Kubernetes 전체 브라우저 검사는 이 다음 실행에서 의도적으로 생략되며 통과로 기록하지 않는다. 전체 단위 테스트와 빌드, 모든 책의 공통 목차/권차/읽음 smoke는 유지한다. 통합 PR production, 직접 PNG 재검토와 main·Pages·게시 바이트 게이트는 다음 실제 실행 결과에 기록한다.
+
+## 합본 production 통과와 입력 연동 설명 교정
+
+통합 head `e85d06bb38a36894c84d4f475f0647f5b8dec4c1`, PR checkout `bd8f4e3e28f8ad8004b256d54a457e263227a896`, tree `898b989d8fbe358a3e9594f8b70c025a1d5081d1`의 [run39369042339](https://github.com/Middleages/my-books/actions/runs/39369042339)에서 build와 선택한 세 suite가 모두 통과했다. 실제 selection artifact도 `tax`, `book-volumes`, `housing`만 선택하며 다른 4개 suite를 생략했다고 명시한다.
+
+- tax 73/73 검사·PNG 50개·오류 0, [artifact12240337599](https://github.com/Middleages/my-books/actions/runs/39369042339/artifacts/12240337599).
+- housing 46/46 검사·PNG 28개·오류 0, [artifact12240422288](https://github.com/Middleages/my-books/actions/runs/39369042339/artifacts/12240422288). 주거 작성자가 합본의 1440/320 권리 변경, 390 임차 reduced-motion/정적 표, 320 임차 변경, 390 임차 초기 그림을 직접 열어 경로·방향·단계 제어 인접을 재확인했다.
+- book-volumes 14/14 검사·PNG 36개·오류 0, [artifact12241180229](https://github.com/Middleages/my-books/actions/runs/39369042339/artifacts/12241180229). 1440/320 전체 홈, 320 주거·세금 권차 제목, 390 읽던 책 우선을 직접 확인했다. 주거 6권·세금 5권·DB IT 4권과 0/2·0/4 읽음 분모가 맞으며 기존 권차는 정렬해도 바뀌지 않는다.
+
+세금 03·04의 1440 초기·320 변경·390 reduced-motion/정적 표를 직접 열었다. 급여의 비례·범례는 맞았다. 정산은 선납액을 150으로 바꾸면 그림·결과·장부가 환급 80으로 바뀌지만, 예측 이유만 최초 예시의 90/20을 유지하는 작은 설명 불일치를 발견했다. 자동 통과를 그대로 게시 판정으로 쓰지 않고 수정한다. 질문을 일반 개념으로 표현하고, 이유의 선납·결정세액·환급/추가납부/0은 현재 동일 모델에서 읽는다. 브라우저 검사도 이유를 펼친 상태에서 선납 0/50/70/90/150을 차례로 바꾸며 현재 값을 대조하도록 보강했다. 변경 후 결과는 다음 실행에 별도로 기록한다.

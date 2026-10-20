@@ -133,9 +133,9 @@ export function SettlementLab() {
         }}
       />
       <Prediction
-        question="환급 20이면 새 소득 20을 번 걸까요?"
+        question="환급받는 돈은 새로 번 소득일까요?"
         answer={false}
-        reason="이미 낸 90 중 최종 부담 70보다 많은 20이 돌아오는 것입니다."
+        reason={`환급은 새 소득이 아니라 이미 낸 돈을 최종 부담과 맞추는 정산입니다. 현재 기납부액 ${fmt(r.prepaid)}과 결정세액 ${fmt(r.finalTax)}을 비교하면 ${r.refund > 0 ? `환급 ${fmt(r.refund)}` : r.extra > 0 ? `추가납부 ${fmt(r.extra)}` : "정산 차액 0"}입니다.`}
       />
       {p.controls}
       <button
