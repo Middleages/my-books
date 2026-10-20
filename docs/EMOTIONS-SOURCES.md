@@ -20,3 +20,7 @@
 ## D 추가 근거 (2026-10-20 실제 열람)
 - E5 미국 Office of Head Start, Introduction to Temperament: https://headstart.gov/mental-health/article/introduction-temperament . 기질과 보호자 기대/돌봄의 맞춤 개념만 참고, 유형·검사·점수 생성 제외. 대상 범위는 https://headstart.gov/mental-health/article/infant-toddler-temperament-tool-it3-supporting-goodness-fit 의 출생–3세 개요를 별도로 확인. 07장 근거이며 개인 반응 예측·효과를 뒷받침하지 않는다.
 - E6 AAP HealthyChildren, How to Ease Your Child’s Separation Anxiety, 2026-05-11 표시: https://www.healthychildren.org/English/ages-stages/toddler/Pages/soothing-your-childs-separation-anxiety.aspx . 영유아 개인차·예고/재회 설명·지속 우려 상담을 참고. 특정 월령·완료일·울음 감소 보장을 채택하지 않는다. 08장 자체 인계 그림은 기관 안전 절차 인증이 아니다.
+
+## E 추가 근거 (2026-10-20 실제 열람)
+- E7 미국 Head Start, Supporting Transitions Both Big and Small: https://headstart.gov/publication/supporting-transitions-both-big-small . 영아·유아 돌봄의 일과/유연함/예고 원칙만 채택. 고정 시간표·성공률·수면 물건·차량 물건 권고로 확대하지 않음.09장 자체 다리 그림은 효과 모델이 아니다.
+- E8 미국 CDC, Milestones by 30 Months: https://www.cdc.gov/act-early/milestones/30-months.html . 2026-05 표시. 또래 옆/함께 놀이와 도움, 표준 선별검사 대체 금지 및 우려 상담만 참고.10장은30개월 합성 장면이며 다른 연령의 합격선·양보 마감·진단검사를 구현하지 않는다.
