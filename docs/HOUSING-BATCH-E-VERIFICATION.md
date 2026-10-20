@@ -59,3 +59,10 @@ PR26 head `64e114ca36beb66395419847a861a971c1991a69`, 실제 checkout `aa3453a39
 PR29 head `df0b68f361da90f9a0d0c7dd4d037e332916c77a` / tree `262a9d477235c5d5d00de915a14a220b5afe3806`, [run39384781174](https://github.com/Middleages/my-books/actions/runs/39384781174)의 checkout `2f05a0d27eaf587c87c66fc1ce92bf1b244e6a0b`는 같은 tree·clean이었다. 전체1061테스트/build와 tax·housing·book-volumes production이 성공했다. 주거160/160·고유 원본160PNG(169capture호출)·앱/console/resource진단0, 권차14/14·39PNG다. artifact12246529193 ZIP SHA-256 `47287a9c79a18962703b1ce54e9248ab490e3bdae106fbfffb3c4b76de60de9c`를 원본과 대조했다. JS `index-DyxQeQd2.js` SHA-256 `b017248f59b8a9f59a0d21ec352066fd20097fb3059785676cf36be4f6d7f74c`, CSS `index-sYxM-qHK.css` `b370b942359b5a14defc7a9012531c85c6854223b37ca56b51c4bdf72e151723`가 정확한 build와 일치했다.
 
 주거 작성자가 새320 rent-or-buy-local-price,320 market-mix changed,1440 shortage의 원본/native 영역3개를 직접 확인했다.24개월 공통 시점과 가격 선택의 인접성·집2억4,000만원/빚7,455.95만원, 변화 묶음 우선 배치·자체110과 거래평균의 구분,39개월 마지막 반영·40개월 부족 유지·정산완료 미표시가 읽힌다. 검토용crop은160원본 수에 포함하지 않으며, 이 범위의 직접 검토에서 차단점은 없었다. 이는 주거D 공개 뒤에 쓸 E 합본 production 증거다. E의 실제 main/Pages/게시 자산 확인 및 F의 순차 공개와 최종 전체권 회귀는 별도다.
+
+
+## E 실제 공개 마감
+
+main `d76ed55e9969108449124a154c7c67e946068740`/tree `2d361e04d653c1c541fe2e345aa0973baaf271c3`, [run39389395940](https://github.com/Middleages/my-books/actions/runs/39389395940)의 전체1061단위/build·3개 production·Pages·3개 published가 성공했다. Pages07:58:33 UTC, 주거160/160·고유160PNG·앱 오류0, 정확한 호스트 기본 favicon404 한 건 별도 보존을 확인했다. 실제 JS/CSS/ZIP 바이트 근거는 [세금F 공개 기록](TAX-BATCH-F-VERIFICATION.md)을 따른다.
+
+담당자가 실제1440-rent-or-buy-shortage 전체,320-market-mix-changed0–2100px,390-housing-supply-reduced-static 전체를 직접 열었다.39개월 마지막 원장/40개월 부족/60개월 정산 미완료, 변화 바구니 우선·평균36,666.67와 고정구성110 구별, 같은100호의 단계 보존·인접 제어·준공과 실제 입주의 분리가 읽혔다. 이3원본의 명시한 범위에 차단점이 없으며 모든160장 직접 검토로 확대하지 않는다. E09–10까지 순차 게시 완료이고 주거 F는 별도 후보·검증·게시 순서를 따른다.

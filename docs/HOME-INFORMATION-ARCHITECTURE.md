@@ -125,7 +125,7 @@ E 게시 검사는 production132/게시133개를 통과했고 실제 자산 바�
 
 ## 주거 여섯 번째 책 — 2026-10-20
 
-`housing`을 기존 `money` 분야·명시적 `volume: 6`으로 등록한다. 소개·01–10의 E 후보이며 읽음 분모는 10이다. 집·계약 문서·양방향 교환의 자체 SVG 표지를 추가하고 가격 상승 화살표나 투자 추천을 넣지 않는다. 기존 분야·권차·홈의 책 선택 역할·장 URL·저장 키·알 수 없는 읽음 ID는 유지한다. 실제 실행·미검증·게시 상태는 [주거 A 검증 기록](HOUSING-BATCH-A-VERIFICATION.md), [B 기록](HOUSING-BATCH-B-VERIFICATION.md), [C 기록](HOUSING-BATCH-C-VERIFICATION.md), [D 기록](HOUSING-BATCH-D-VERIFICATION.md), [E 기록](HOUSING-BATCH-E-VERIFICATION.md)을 따른다.
+`housing`을 기존 `money` 분야·명시적 `volume: 6`으로 등록한다. 소개·01–12의 F 후보이며 읽음 분모는12이다. 집·계약 문서·양방향 교환의 자체 SVG 표지를 추가하고 가격 상승 화살표나 투자 추천을 넣지 않는다. 기존 분야·권차·홈의 책 선택 역할·장 URL·저장 키·알 수 없는 읽음 ID는 유지한다. 실제 실행·미검증·게시 상태는 [주거 A 검증 기록](HOUSING-BATCH-A-VERIFICATION.md), [B 기록](HOUSING-BATCH-B-VERIFICATION.md), [C 기록](HOUSING-BATCH-C-VERIFICATION.md), [D 기록](HOUSING-BATCH-D-VERIFICATION.md), [E 기록](HOUSING-BATCH-E-VERIFICATION.md), [F 기록](HOUSING-BATCH-F-VERIFICATION.md)을 따른다.
 
 ## 데이터베이스 네 번째 IT 책 — 2026-10-20
 
