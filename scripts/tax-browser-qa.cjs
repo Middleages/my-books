@@ -268,15 +268,13 @@ async function scenarios(page, id) {
         [...data.parts.map((p) => p.base), data.tax],
       );
       await bars(page);
-      const pieces = await lab
-        .locator(".tax-base-stack i")
-        .evaluateAll((es) =>
-          es.map((e) => ({
-            base: +e.dataset.base,
-            width: e.getBoundingClientRect().width,
-            track: e.parentElement.getBoundingClientRect().width,
-          })),
-        );
+      const pieces = await lab.locator(".tax-base-stack i").evaluateAll((es) =>
+        es.map((e) => ({
+          base: +e.dataset.base,
+          width: e.getBoundingClientRect().width,
+          track: e.parentElement.getBoundingClientRect().width,
+        })),
+      );
       assert.deepEqual(
         pieces.map((p) => p.base),
         data.parts.map((p) => p.base),
@@ -313,6 +311,26 @@ async function scenarios(page, id) {
         vals,
         r.parts.map((p) => p.value),
       );
+      const geometry = await lab
+        .locator(".tax-stack i")
+        .evaluateAll((es) =>
+          es.map((e) => ({
+            value: +e.dataset.value,
+            width: e.getBoundingClientRect().width,
+            total: e.parentElement.getBoundingClientRect().width,
+          })),
+        );
+      for (const part of geometry)
+        assert(
+          Math.abs(part.width - (part.total * part.value) / r.gross) <= 1,
+          "Payroll strip width must represent the same cash amount",
+        );
+      assert.deepEqual(
+        await lab.locator(".tax-destinations > div span").allTextContents(),
+        ["▰", "▱", "▥"],
+        "Destination legend must not imply false spatial arrows",
+      );
+      assert.match(await lab.locator("figcaption").innerText(), /범례/);
     }
   }
   if (id === "year-end-settlement") {

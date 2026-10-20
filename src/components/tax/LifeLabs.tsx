@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { usePlayback } from "../money/shared";
-import {
-  payroll,
-  settlement,
-} from "../../simulations/tax/lifeModel.mjs";
+import { payroll, settlement } from "../../simulations/tax/lifeModel.mjs";
 import { Bar, fmt, Lab, Prediction, Range, Stage, StaticTable } from "./shared";
 export function WithholdingLab() {
   const [withheld, setWithheld] = useState(15);
@@ -36,16 +33,17 @@ export function WithholdingLab() {
         <div className="tax-destinations">
           {r.parts.map((part, i) => (
             <div key={part.id} className={["net", "social", "tax"][i]}>
-              <span aria-hidden="true">↓</span>
+              <span aria-hidden="true">{["▰", "▱", "▥"][i]}</span>
               <b>{part.label}</b>
               <strong>{fmt(part.value)}</strong>
             </div>
           ))}
         </div>
         <figcaption>
-          청록 ▰ 통장 · 금색 ▱ 사회보험 본인부담 · 파랑 ▥ 원천징수 세금. 세율을
-          역산하는 그림이 아닙니다. 그림은 선택한 조건의 전체 배분이며, 관찰
-          단계는 지급 과정을 따로 보여줍니다.
+          띠는 왼쪽부터 청록 ▰ 통장 · 금색 ▱ 사회보험 본인부담 · 파랑 ▥ 원천징수
+          세금입니다. 아래 목적지 표시는 범례이며 그 폭은 금액 눈금이 아닙니다.
+          세율을 역산하지 않습니다. 전체 배분과 지급 과정의 관찰 단계는
+          구분합니다.
         </figcaption>
       </figure>
       <Range
