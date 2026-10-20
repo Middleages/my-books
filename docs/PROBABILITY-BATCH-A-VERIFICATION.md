@@ -35,3 +35,13 @@
 
 - 코드 commit `5017a3eb750814155ba495336b72aca1cb2a745f`, tree `3ff5b20d3fcc8becf88196b0b04040d22cfe48da`: 전체 unit960/960, TypeScript/Vite 전체 build 성공. 별도 핵심 모델/verifier 계약9개도 모두 통과했다. targeted9개는 전체960개의 대체가 아니다.
 - 이 뒤의 이 문서 보완은 검증 상태만 기록하며 앱 코드를 바꾸지 않는다. 앱 브라우저·직접 PNG 검토·전체9 suite 실행·PR CI·게시 게이트는 여전히 미완료다.
+
+### 정상 PR CI에서 발견한 결함과 수정
+
+- 공개 승인 뒤 draft PR [#36](https://github.com/Middleages/my-books/pull/36)을 만들었다. 첫 원격 head `c3ebdd6c7cef629cd42c742329e485c8d0fb4898`, tree `939ef9b45cd20d527bfa9bbe90497360d48c84bc`; 로컬 코드와 동일한 tree다. PR의 가상 병합 소스는 `77d3a4700e957b4b491e641332bc530306aba34d`였다. main 쓰기나 Pages 게시를 하지 않았다.
+- [CI 39385832013](https://github.com/Middleages/my-books/actions/runs/39385832013)의 build 단계(전체 unit, TypeScript/Vite build 포함)는 성공했다. probability browser는 5개 검사 통과 뒤 6개 실패, 선택자 timeout으로 남은 검사를 중단했다. 이는 실패한 실행이며 전체 browser 통과가 아니다.
+- 실패 원인1: 괄호로 끝나는 한국어 용어의 Markdown 강조가 문자 `**`로 노출됐다. `사분위 범위(IQR)`를 명시적인 `<strong>`으로 고쳤고, 세 MDX 문서를 실제 MDX/React 정적 렌더해 원시 강조·취소선이 남지 않는 회귀 검사를 추가했다.
+- 실패 원인2: 감싼 label의 선택 항목 텍스트까지 접근성 이름에 포함되어 ‘지출 납기’ exact 선택자가 찾지 못했다. 눈에 보이는 이름과 같은 명시적 aria-label을 네 조건 선택 상자에 연결했다. 테스트를 느슨하게 하거나 검사를 제거하지 않았다.
+- 첫 실행 원본 PNG `1440-distribution-first-figure.png`, `1440-distribution-static.png`, `1440--probability-losses-and-liquidity.png`를 직접 열었다. 같은 물리적 금액축·겹친 점의 쌓기·원자료와 가운데 요약은 읽혔다. 확률 그림의 축 범위를 더 즉시 알 수 있도록 각 사례에 0%–100% 축 라벨을 보강했다. 모바일 원본은 timeout으로 생성되지 않아 아직 검토하지 않았다.
+- normal-motion 검사도 0 손실 프레임에서 끝내지 않고 작은 손실·큰 손실 및 되감기 뒤 실제 막대 geometry를 검증하도록 확장했다. 후속 전체 unit/build와 새 CI·원본 PNG 검토가 끝나기 전 준비 완료로 보고하지 않는다.
+- 이 수정 소스의 전체 `npm test`는 962/962 통과했고, `npm run build`도 성공했다. 알려진 번들 크기 경고는 그대로다. 이 결과는 후속 원격 브라우저 실행 결과와 별개다.
