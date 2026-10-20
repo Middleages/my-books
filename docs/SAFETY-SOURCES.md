@@ -23,3 +23,10 @@ https://www.ciss.go.kr/DATA/bbs/83/20190819012254674.pdf 는 검색 발췌를 �
 - 건물·화재 조건별 공식 행동요령. 보편 탈출 알고리즘이나 해외 긴급번호를 국내 기본값으로 제공하지 않음.
 
 본문 구현·응급 술기 검증·의학 감수·제품 시험·브라우저 검증·원격 게시는 하지 않았다. 이 계획은 일반 예방 교육이며 개인 응급도/처치 판단 도구가 아니다.
+
+## B 배치 추가 확인 · 2026-10-20
+- B1 / publisher: 한국소비자원 / title: 어린이 안전사고 주요유형 및 예방법 / url: https://www.isafe.go.kr/children/Child_Safety_Guide.pdf / country: 한국 / targetAge: 어린이(0–36개월 전용 아님) / reviewedScope: 공식 검색 색인의 문 끼임 위험 종류 / limitations: PDF 직접 열람 시간 초과. 설치법·치수·장치 권고 채택 안 함 / chapterIds: falls-and-entrapment.
+- B2 / publisher: 한국소비자원 / title: 소비자시대 2021년 10월 단추형 전지 안전 / url: https://www.kca.go.kr/webzine/board/view?div=kca_2110&linkId=350&menuId=MENU00307 / country: 한국 / targetAge: 자료가 강조하는 0–3세 / reviewedScope: 공식 검색 색인에 제공된 전지함 파손·폐전지·삼킴 의심 시 즉시 진료 / limitations: 직접 열기는 시간 초과. 현행 규격·처치 절차는 미채택 / chapterIds: small-objects.
+- B3 / publisher: CPSC / title: Magnets / url: https://www.cpsc.gov/Safety-Education/Safety-Education-Centers/Magnets / country: 미국 / targetAge: toddler through teen / reviewedScope: 본문 직접 열람, 자석 삼킴 의심 시 즉시 의료 도움 경계 / limitations: 미국 법규·의학적 처치 절차·사고 통계 미채택 / chapterIds: small-objects.
+- 2026-05-11 한국소비자원 삼킴 사고 주의보 https://www.kca.go.kr/home/sub.do?menukey=4006&mode=view&no=1004463127 는 게시일·첨부 존재를 직접 확인. 첨부 PDF는 시간 초과로 세부 내용 미채택. 최신 자료의 존재를 이전 자료의 현행성 검증으로 쓰지 않는다.
+- S4 NHS 낙상·문 끼임·작은 부품·자석·비닐봉투 예방 부분 재열람. 영국 치수·제품 규격·응급번호 미채택. 전문 감수 미실행.
