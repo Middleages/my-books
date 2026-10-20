@@ -1,6 +1,6 @@
 # 회계와 기업의 돈 · C 구현 및 검증
 
-기준: 2026-10-20. **05–06장 로컬 구현 후보다. 실제 production·PNG 직접 검토·main·Pages 완료를 뜻하지 않는다.** B의 전용 production·직접 검토를 마친 소스에서 이어 가며, B가 main에 들어가기 전에는 B 브랜치를 대상으로 한 별도 draft PR에서 검사한다. 실제 게시 순서는 B 다음 C이며 자동 병합하지 않는다.
+기준: 2026-10-20. **05–06장 전용 production·원본 PNG 직접 검토를 통과했다. main·Pages 완료를 뜻하지 않는다.** B의 전용 production·직접 검토를 마친 소스에서 이어 가며, B가 main에 들어가기 전에는 B 브랜치를 대상으로 한 별도 draft PR에서 검사한다. 실제 게시 순서는 B 다음 C이며 자동 병합하지 않는다.
 
 ## 공개 범위와 보존
 
@@ -62,7 +62,7 @@
 - MDX/SSR은 구현된 링크만 존재하는지, 문단 중첩·Markdown 잔류·취소선·고유 입력 이름·정적 단계의 같은 잔액을 검사한다.
 - production 검증기는 기존 A/B를 보존하고 C의 모든3원가×4수량×5단계 및5조건×3회수×7단계를320/390/1440에서 실제 DOM 수량과 금액 길이에 대조한다. 모바일 경계 재배치, 실패 행의 지속, 키보드·no-autoplay·정지·시나리오 초기화·route 정리·정적 읽기·normal/reduced-motion과768/900 렌더를 포함한다.
 - URL을 보존한 기존 엄격 console/response/requestfailed 진단 및 게시 자산 전체 바이트 비교를 유지한다. 출처 없는404나 앱 오류를 favicon으로 묶어 숨기지 않는다.
-- Chromium 실행과 원본 PNG 직접 검토는 코드/SSR 검사와 별도다. C의 actual production 결과가 아직 없으므로 통과로 쓰지 않는다. 실기기·Safari/Firefox·음성 스크린리더·학습효과 검사는 미실행이다.
+- Chromium 실행과 원본 PNG 직접 검토는 코드/SSR 검사와 별도다. 아래 actual production 결과와 직접 검토를 별도로 확인했다. 실기기·Safari/Firefox·음성 스크린리더·학습효과 검사는 미실행이다.
 
 전체 단위·빌드 및 실제 production의 확인된 결과는 실행 뒤 이 기록에 덧붙인다. 다른 책의 상세 브라우저를 이 배치에서 검사했다고 주장하지 않는다. 정상 선택 범위는 accounting+book-volumes이며 공통 통합 diff가 생기면 최신 분류기의 선택을 따른다.
 
@@ -72,4 +72,20 @@
 - 전체 테스트 파일을 `node --test --test-concurrency=4 tests/*.test.mjs`로 실행해 **982/982 통과**했다. 병렬도만 제한했으며 테스트·assertion을 제외하지 않았다. 새 C 모델10개에는303수량/원가 조합과15운전자금 조건의 모든 관찰 단계가 포함된다.
 - 전체 TypeScript/Vite `npm run build` **362 modules 통과**. 기존 큰 번들 경고는 남는다. 빌드 뒤 공통 T08 대조 단위 검사와 브라우저의 컨테이너 내부폭 기준 assertion만 추가·보강했고 전체982개와 검증기 구문 검사를 다시 통과했다. 실행 UI 소스는 빌드 시점과 같다.
 - `git diff --check`, 기존 다른 책의 카탈로그 행 구조 비교, 선택적 기존 계획 문서 diff0, 변경 파일의 비밀 패턴 후보0을 확인했다. 신규 의존성을 추가하지 않았다.
-- C production·직접 원본 검토는 아직 미실행이며 로컬 테스트를 그 대체로 쓰지 않는다. 전용 브라우저와 book-volumes를 실제 실행한 뒤 결과를 별도로 기록한다.
+- 다음 actual production은 로컬 코드·SSR 검사와 별도로 실행한 결과다.
+
+
+## 실제 production 및 직접 원본 검토
+
+- [별도 초안 PR37](https://github.com/Middleages/my-books/pull/37)은 B의 `write/accounting-b-source-20261020` 브랜치를 base로 삼는다. main-ready 병합으로 표시하지 않으며 B 게시 뒤 최신 main과 통합 검사가 필요하다.
+- 실행 소스: 로컬 `7a5bf1be31fab18ca6f18ac5a735aa8a2a0eb3cc`, 대응 공개 head `5aa865f56a664d7f056da2da5b1d62b745d56055`, tree `d5cf3f074a5e1c61f4903fa266b160ccb617229a`.
+- [Actions run39387538161](https://github.com/Middleages/my-books/actions/runs/39387538161)의 실제 checkout은 `76551e143d405585bf411333af8ccec9a49ded7f`이며 같은 tree이고 작업 트리 변경은 없다. build·accounting·book-volumes 모두 성공했다. draft PR이므로 deploy·published 검사는 실행하지 않았다.
+- 회계 검증 **200/200 통과**, 실패0. pageErrors·consoleErrors·resourceErrors·hostDiagnostics 모두0이다. 시작07:36:42, 종료07:40:43 UTC. URL 없는 오류를 성공으로 바꾼 예외는 없다.
+- 원본 artifact `12248232006`, ZIP SHA-256 `d31ec10f5a10d04852ed7347962c06999d53d0be6e3efc877ad0773de1147b2b`를 다운로드 바이트와 대조했다. 원본 PNG173개 중 다음 **16개를 직접 열어 검토**했다. 모든173개를 사람이 읽었다는 뜻은 아니다.
+  - 1440 inventory single80 매입/인도 단계1·2, 320 FIFO60 인도 단계2, 390 average60 지급 뒤 단계4.
+  - 1440 working base160 말일, 320 due-before160 부족 당시/말일, 390 due-after160 말일.
+  - 1440 stock-credit160/stock-paid160 말일, 320 inventory single80 지급 뒤, 390 normal-motion working-capital.
+  - 1440/390 working 정적 전 과정, 320 inventory 정적 전 과정, 390 normal-motion inventory.
+- 수량10개 묶음의 창고/인도 경계, 300·350 원가 눈금, 모바일 세로 화살표, 채권·재고·채무의 같은800 눈금, 지급 시점의 부족10과 이후 회수 뒤에도 남는 실패 기록을 읽을 수 있었다. 추가 재고를 외상으로만 늘린 경우와60 더 지급한 경우의 현금300/240 차이가 실제 막대에 나타났다. 주요 그림·컨트롤에서 겹침·잘림을 발견하지 않았다.
+- 긴 정적 모바일 원본은 전체 배치·줄바꿈을 확인한 것이며 축소된 한 이미지에서 모든 문장을 읽었다고 주장하지 않는다. 정적 단계의 수치·실패 이력은 모델/SSR/실제 DOM 검증과 함께 확인했다.
+- 이 후속 기록은 위 실행 소스를 바꾸지 않는 문서만의 변경이다. main 통합·Pages·정확한 공개 자산 대조는 아직 대기 상태다. 다른 모든 책의 브라우저를 이 C 배치에서 다시 검사한 것은 아니다.
