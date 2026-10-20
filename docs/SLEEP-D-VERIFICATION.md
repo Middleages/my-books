@@ -10,3 +10,9 @@
 - main 통합·Pages·실제 게시 회귀는 별도 직렬 게이트이며 여기서 완료로 표시하지 않는다.
 
 로컬 build 후속: NODE2048 제한 build1회가 exit0으로 완료되었다(2026-10-20 11:58 UTC 확인). 기존 큰 청크 경고는 남았다. 사용자 최신 첫권 월령 행동 예시 보강 요청을 우선하여 D는 로컬 checkpoint에서 보류한다. 원격 PR·실제 브라우저·PNG 검토는 아직 실행하지 않았다.
+
+## 정상 source CI와 직접 검토 후 보완
+
+PR85 run39426900650의 전체 단위·build·수면·권차 production이 성공했다. 실제 checkout f703622e42c71acce61c66c07eb0d8f3f45b3fe6/tree b728edd6e9971f5a7f58eb93c51ade5baaae53af, clean. 수면82검사/165PNG, 앱·콘솔·리소스 오류0. artifact12266776546 ZIP SHA256575fb1f70578225092d97b2f72045a0fbc2dd3eb2ddddd8aff20d1d7118dddd6.
+
+320-waking-sound,850/1440-waking-after,320-choices-single,390/1440-choices-shared 원본을 직접 보았다. 사실/질문 경계, 강조 변화, 가족 역할과 질문 보존은 확인했다. 모바일 세로 재배치에서도 그림 설명이 좌우를 고정 지칭하던 불일치를 발견해 방향 중립 문구로 고친다. 보완 소스의 CI와 직접 원본은 다시 확인하며 아직 닫힌 것으로 기록하지 않는다. 임상 감수와 전체 등록 suite 넓은 회귀 및 실제 게시 게이트는 별도다.
