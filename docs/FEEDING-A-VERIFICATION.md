@@ -38,3 +38,9 @@ CI 39406529341의 build와 production 11 suite(tax, investing, accounting, datab
 [PR69](https://github.com/Middleages/my-books/pull/69) head `ecf9d67dc5a35876aa6565b8b8cabe4c2c2d79e9`의 실제 checkout `2585e5fb77bfe87876501423026f8d8fd365823c`/tree `0a9636eb65e8514d4ba6abb467c5f0aab603ba1c`, [run39412137368](https://github.com/Middleages/my-books/actions/runs/39412137368)에서 전체1268/build484·14종 production이 성공했다. 먹기 전용26/26·53원본PNG, 오류0이며 수면 안전 보강25e05f1을 포함한 최종 앱이다. 새320/390/850/1440 대표 원본을 작성자·통합 담당자가 직접 확인한 정확한 범위와 ZIP/JS/CSS 증거는 [합본 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다. 기존 독립 소스 캡처를 새 합본 캡처로 세지 않았다.
 
 main/Pages·전체14종 실제 게시 검사는 아직 별도 대기이며, 이 결과가 임상·영양 전문가 감수나 실제 아동/제품의 안전성 보증은 아니다. B 이후는 포함하지 않았다.
+
+## 정확한 main·Pages·전체14종 실제 게시 마감
+
+main `2c2b11d3ba9af855dd4724e91051ea775d94051b`/tree `0d6e66c955c8ae8c90195cf0f193be65a81661e4`, [run39417253750](https://github.com/Middleages/my-books/actions/runs/39417253750)에서 전체1268 단위·build484·14 production·Pages·14 published가 모두 성공했다. 이 책의 실제 게시 검사는 27/27·53원본PNG·앱 오류0이다. artifact12263701439 ZIP SHA256 `7aee1840c706b092e54ecff37bfe067f6e778693b21dfaf40a9a4f971642bcbc`와 정확한 게시 JS/CSS를 대조했다. 알려진 호스트 루트 favicon404 한 건은 별도 보존했다.
+
+작성자는 실제 게시 850-experience-mouth의 공통 막대 기준선,320-meal-unknown의 미확인≠0/행선지18g,390-readiness-preterm의 개별 상담 경계를 직접 재확인했다. 전체14종·단일 build 및9개 합본 원본의 한정 직접 검토와 미검증 범위는 [합본 최종 기록](CHILD-NEW-A-WAVE-VERIFICATION.md)을 따른다. A 소개·01–02 게시를 완료하며 B 이후는 포함하지 않는다. 의학/영양 전문가 감수나 개인의 안전성 보증은 아니다.

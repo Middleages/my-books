@@ -1,6 +1,6 @@
 # 육아 2·3권 A 신규 등록 합본 검증
 
-2026-10-20. 육아 2권 《잠과 생활 리듬》과 3권 《먹는 법을 배우는 시간》의 소개·01–02만 추가한 합본이다. **아래 첫 부분은 구현 당시 기록이며 최신 합본 production·직접 원본 완료는 마지막 절을 따른다. main/Pages/실제 게시 검증은 별도 대기**이다. 선행 PR57과 PR63의 각 exact-main/live 게이트 뒤에만 게시한다. 두 책 B 이후와 첫권의 미래 장을 섞지 않는다.
+2026-10-20. 육아 2권 《잠과 생활 리듬》과 3권 《먹는 법을 배우는 시간》의 소개·01–02만 추가한 합본이다. **아래 앞부분은 단계별 당시 기록이며, 최신 A main·Pages·전체14종 실제 게시 완료는 마지막 절을 따른다.** 선행 PR57과 PR63의 각 exact-main/live 게이트 뒤에만 게시한다. 두 책 B 이후와 첫권의 미래 장을 섞지 않는다.
 
 ## 정확한 범위와 보존
 
@@ -74,3 +74,37 @@
 검토한 서로 다른12개 원본의 명시한 범위에서 의미·잘림·겹침 차단점을 찾지 못했다. 작성자/통합 담당자가 공통으로 본850 먹기 원본은 중복해서 원본 수에 더하지 않는다. 기존320 홈 hero의 한 글자 줄바꿈은 경미한 미관 한계로 남는다.3183개 전부·모든 표행·실제 기기/스크린리더·의학/영양 전문가 감수를 수행했다는 뜻은 아니다. 새 본문은 일반 교육이며 개인의 안전/발달/영양 판정이 아니다.
 
 이후 실제 main358c59bb의 이전 배치 게시 마감 문서를 보존 병합했고 앱·모델·테스트·검증기·workflow 바이트는 위 PR69와 같다. 이 합본의 main/Pages·14종 실제 게시 자산·대표 화면은 선행5배치의 live 게이트 뒤에 수행한다. A만 포함하고 B 이후는 별도 후보로 유지한다.
+
+## 정확한 main·Pages·전체14종 실제 게시 마감
+
+실제 main `2c2b11d3ba9af855dd4724e91051ea775d94051b`, tree `0d6e66c955c8ae8c90195cf0f193be65a81661e4`의 [run39417253750](https://github.com/Middleages/my-books/actions/runs/39417253750)이 build·전체14 production·Pages·전체14 published, 총30개 job을 모두 성공했다. 전체1268/1268 단위·484 modules build가 성공했고 Pages job 완료는 `2026-10-20T12:09:35Z`다. production 2179검사/3183원본PNG, published 2188검사/3183원본PNG로 총4367검사·6366원본PNG다. 생략 suite는 없다. 두 책은 소개·01–02까지만 공개하며 후속 B는 포함하지 않는다.
+
+28개 browser ZIP과 scope·단일 Pages build ZIP의 GitHub SHA256을 실제 다운로드 바이트와 대조했다. source 필드가 있는13종 report의 정확한 main과 clean 상태, 기록된 sourceTree를 확인했다. 투자 report에는 source 필드가 없어 각 실제 job118609509266/118618787162의 checkout `2c2b11d3ba9af855dd4724e91051ea775d94051b`와 같은 build artifact12262190163 다운로드 성공 로그를 함께 확인했다. build ZIP SHA256은 `5066f49ab77646e58bb86918ea54a3f334ef215aa3f8121dbd62c172a5da9436`이며 tar의 JS/CSS 전체 바이트가 앞서 검증한 로컬·PR69 최종 자산과 같다. 실제 게시 홈의 두 자산 전체 바이트·해시 비교도 성공했다.
+
+- JS `index-nWgtlK9n.js`: 3469492bytes, SHA256 `73057201aacf30c4108391cdcf189f7efe8637b8e83ca83491cd6fb82ef83b9b`.
+- CSS `index-8riXVrno.css`: 409780bytes, SHA256 `a10b9af0369d046f3d47fbcbbed326ac44cc8011eb5900814a5f15e5d837fcf0`.
+
+| suite | production / published 검사 | production / published 원본 PNG | 게시 artifact | 게시 ZIP SHA256 |
+| --- | --- | --- | --- | --- |
+| insurance | 138 / 138 | 603 / 603 | 12264996431 | `1d91269c0058b7a0736a92813485d242cfe3d5a1d3a1707eb33069ba5636033b` |
+| investing | 160 / 161 | 680 / 680 | 12262814394 | `00adfb471bd9f37fa206f431728cf58c75eb832bd8eac312491199a4e38c72b0` |
+| tax | 182 / 182 | 138 / 138 | 12262558413 | `ffe25bea3d4540ef6f0229836970550bbeb38ff352cc679efaca7228c4c506d2` |
+| book-volumes | 14 / 14 | 57 / 57 | 12262574300 | `300c8cb9796eafb76bbdf945a44ed314c5cd7be567115c2768481b6e131d33fd` |
+| database | 511 / 512 | 405 / 405 | 12262624753 | `bc60e9cb3e318d4a353fcb02b8b1d52e338d4c14fc33677d2c4bedcb46517d06` |
+| kubernetes | 94 / 94 | 146 / 146 | 12263563211 | `3e1a6841dba165c8dfcd88ed44e610f2f44a52c182275e1f7de3233fa558bfc3` |
+| housing | 189 / 189 | 248 / 248 | 12262873888 | `5c526c4aa6a764c44817253cc5ced5693c66dc29b0f4f2a74fbc1de6ef7eb73f` |
+| accounting | 251 / 252 | 229 / 229 | 12263463399 | `cfc54f004defab5e5ebe2c1680a16ce0426065fac6f07080b72da96921c496b5` |
+| probability | 462 / 463 | 123 / 123 | 12263677556 | `bd221942590a46810330bd0b20f179ed48c80a02f354aef42f94ebe534f6458a` |
+| observability | 26 / 27 | 102 / 102 | 12263478338 | `7fcfdbc0a94b0fc3c98abda01e2f989e86f1b83a580269d20845468bcaf8721d` |
+| child-development | 77 / 78 | 241 / 241 | 12263527712 | `ccfce2031b8beefbaca4757a198bb880c8db2470001fd5fe86853ede89eed0e0` |
+| authentication | 19 / 20 | 105 / 105 | 12262574124 | `0b78550e7aee5070044104d9c416d2c5ececf4080757db13731cc008aed9bfe3` |
+| child-sleep | 30 / 31 | 53 / 53 | 12262918728 | `cff19e1344229a292260ca397738b0e8323354e57463590fedddcfc71ef8cc88` |
+| child-feeding | 26 / 27 | 53 / 53 | 12263701439 | `7aee1840c706b092e54ecff37bfe067f6e778693b21dfaf40a9a4f971642bcbc` |
+
+앱 page/console/resource 오류는0이며 production 별도 진단도0이다. published의 child-feeding, probability, kubernetes, child-development, observability, accounting, child-sleep, housing, investing, database, authentication, tax에 기록된 알려진 `https://middleages.github.io/favicon.ico`의404는 출처·페이지·메시지를 확인해 별도로 보존했다. 모든 호스트 진단이0이라고 쓰지 않으며, 앱 경로·다른 호스트·미확인 출처·다른 상태는 제외하지 않았다.
+
+### 실제 게시 원본의 직접 검토
+
+작성자가 수면320/390/1440-caregiver-boundary와 먹기850-experience-mouth·320-meal-unknown·390-readiness-preterm의6원본을 직접 열었다. 안전 실천 두 문장,850 공통 막대 기준선,320 섭취 미확인≠0 및 행선지 미확인18g, 조산 사례의 개별 상담 경계를 확인했다. 통합 담당자는1440-home 전체와320-home·390-reading-first 원본의 native상단0–2000px를 직접 열어17권139장·육아1/2/3권·새 책0/2와 읽는 책 우선 이동 뒤 고정 권차/진도를 확인했다.
+
+서로 다른9개 원본의 위 범위에서 새 의미·잘림·겹침 차단점은 없었다. 기존320px 홈 hero의 마지막 한 글자 줄바꿈은 경미한 미관 한계다. 전체 원본 전수 사람 검토·실제 기기·스크린리더 음성·의학/영양 전문가 감수·개인 아동/제품의 안전성 검증을 뜻하지 않는다. 이 정확한 A 게시 게이트를 닫고, 후속 장은 각 배치의 별도 검증과 순차 공개를 따른다.
