@@ -1,0 +1,10 @@
+export const rhythmSource={source:'NIH/NHLBI How Sleep Works',version:'2022-03-24 업데이트',country:'미국',targetPopulation:'일반 수면 생리 설명',checkedAt:'2026-10-20',limitations:'영아별 성숙 시점·입면 시각·각성 시간 처방을 계산하지 않음'};
+export const pressureScenes=[{id:'awake',label:'깨어 있는 동안',direction:'↑',meaning:'수면 압력이 높아지는 방향'},{id:'rested',label:'수면 뒤',direction:'↓',meaning:'수면 압력이 낮아지는 방향'}];
+export const timeCues=[{id:'day',label:'낮의 빛',symbol:'☀',meaning:'낮이라는 환경 신호'},{id:'evening',label:'저녁의 어두움',symbol:'☾',meaning:'어두워지는 환경 신호'}];
+export function rhythmFrame(pressureId,cueId){return {pressure:{...(pressureScenes.find(x=>x.id===pressureId)||pressureScenes[0])},cue:{...(timeCues.find(x=>x.id===cueId)||timeCues[0])},prediction:null};}
+export const durationCases=[{id:'nine-three',label:'밤 9시간 + 낮 3시간',night:540,nap:180},{id:'ten-two',label:'밤 10시간 + 낮 2시간',night:600,nap:120},{id:'unknown',label:'밤 9시간 + 낮 미확인',night:540,nap:null}];
+export function durationFrame(id){const c=durationCases.find(x=>x.id===id)||durationCases[0];return {...c,total:c.night===null||c.nap===null?null:c.night+c.nap,known:(c.night??0)+(c.nap??0),window:1440};}
+export const durationSource={source:'AASM 소아 수면량 합의문',version:'2016',country:'미국',targetPopulation:'소아 연령군의 규칙적인 24시간 수면, 낮잠 포함',checkedAt:'2026-10-20',limitations:'개별 하루의 진단·수면의 질 평가·개인 목표가 아님. 4개월 미만 수치 권고 없음.'};
+export const referenceRows=[{id:'infant',label:'4–12개월',minHours:12,maxHours:16},{id:'toddler',label:'1–2세',minHours:11,maxHours:14},{id:'preschool',label:'3–5세',minHours:10,maxHours:13}];
+export const referenceViews=[{id:'under-four',label:'4개월 미만',rowIds:[]},{id:'four-eleven',label:'4–11개월',rowIds:['infant']},{id:'twelve',label:'12개월 경계',rowIds:['infant','toddler']},{id:'one-two',label:'13–35개월',rowIds:['toddler']},{id:'three',label:'36개월 · 3세',rowIds:['preschool']}];
+export function referenceFrame(id){const view=referenceViews.find(v=>v.id===id)||referenceViews[0];return {...view,rowIds:[...view.rowIds],rows:referenceRows.filter(r=>view.rowIds.includes(r.id)).map(r=>({...r})),overlap:view.id==='twelve',source:{...durationSource}};}
