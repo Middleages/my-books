@@ -61,6 +61,7 @@ export const diagnosticCases=[
  {id:'tls',label:'사례 H · 인증서 검증 실패',best:'tls'},
 ];
 function caseData(id){
+ const certificateSan='other.example.test', ruleHost='study.example.test';
  const resource=last(resourceFrames());
  const s=last(serviceFrames({selector:id==='selector'?'other':'study-web',ready:id!=='ready',targetPort:id==='port'?9090:8080}));
  const edge=last(ingressFrames({host:id==='ingress'?'other.example.test':'study.example.test',outerValid:id!=='tls'}));
@@ -72,9 +73,10 @@ function caseData(id){
  selector:{zone:3,symptom:'Service 이름은 조회되지만 앱으로 연결되지 않습니다.',evidence:`같은 books-lab: Service selector app=other, Pod label app=study-web. 선택된 EndpointSlice 주소 ${s.endpoints.length}개. Pod 자체는 Ready.`,conclusion:s.result.reason+'입니다. 이 사례는 라벨 선택 경계에서 어긋납니다.',next:'의도한 대상 라벨을 먼저 확인하고 배포 원본의 selector/label을 맞춥니다. EndpointSlice 주소·ready와 Service를 통한 연결을 재확인합니다.'},
  port:{zone:3,symptom:'DNS 정상, ready 대상 존재, Service 연결 실패.',evidence:`ready 대상 ${s.eligible.length}개. targetPort ${s.service.targetPort}, 앱이 실제 listen하는 포트 ${s.pods[0].listenPort}. 같은 호출 환경의 직접 앱 포트 연결은 성공했습니다.`,conclusion:s.result.reason+'입니다. Service 설정이 앱의 listen 포트를 바꾸지는 않습니다.',next:'의도한 targetPort와 앱 포트를 맞춘 뒤 동일한 호출 위치에서 Service 연결을 다시 확인합니다. ready는 모든 포트가 열렸다는 보장이 아닙니다.'},
  ingress:{zone:4,symptom:'클러스터 내부 Service 연결은 되지만 외부 URL이 실패합니다.',evidence:`외부 TLS 성공, controller 도달 확인. 실제 Host other.example.test, 규칙 study.example.test / Exact. 규칙 일치 ${edge.route?'예':'아니요'}.`,conclusion:'이 사례는 HTTP host/path 분기 불일치입니다. 특정 404/502 코드 하나로 이 원인을 확정한 것이 아닙니다.',next:'전달된 Host·path와 controller가 읽는 Ingress class/규칙을 비교하고 URL·규칙 중 의도와 다른 쪽을 수정한 뒤 같은 외부 요청을 재확인합니다.'},
- tls:{zone:4,symptom:'클라이언트 인증서 이름 검증 실패 · HTTP 응답 전 중단.',evidence:`브라우저→controller 구간 실패. 요청 이름 study.example.test, 제시 인증서 SAN other.example.test. 체인·신뢰·기간은 정상으로 별도 확인한 사례. 외부 TLS ${edge.outer.status}.`,conclusion:'이 사례는 외부 TLS 이름 불일치입니다. HTTP 상태 코드가 아니며 backend Pod의 오류 로그가 없어도 이상하지 않습니다.',next:'이름에 맞는 인증서와 SNI·TLS Secret 선택을 확인합니다. 검증을 끄지 말고 같은 클라이언트에서 다시 검증합니다. 호스트 프록시를 쓰면 외부/내부 TLS 검증을 별개로 조사합니다.'},
+ tls:{zone:4,symptom:'클라이언트 인증서 이름 검증 실패 · HTTP 응답 전 중단.',evidence:`브라우저→controller 구간 실패. 요청 이름 study.example.test, 제시 인증서 SAN ${certificateSan}. 체인·신뢰·기간은 정상으로 별도 확인한 사례. 외부 TLS ${edge.outer.status}.`,conclusion:'이 사례는 외부 TLS 이름 불일치입니다. HTTP 상태 코드가 아니며 backend Pod의 오류 로그가 없어도 이상하지 않습니다.',next:'이름에 맞는 인증서와 SNI·TLS Secret 선택을 확인합니다. 검증을 끄지 말고 같은 클라이언트에서 다시 검증합니다. 호스트 프록시를 쓰면 외부/내부 TLS 검증을 별개로 조사합니다.'},
  };
- return cases[id];
+ const scene=id==='pending'?{kind:'resource',resource:resource.node.cpu}:['ready','selector','port'].includes(id)?{kind:'service',service:s}:['ingress','tls'].includes(id)?{kind:'ingress',ingress:edge,comparison:{actual:edge.host,expected:id==='tls'?certificateSan:ruleHost,label:id==='tls'?'제시 인증서 SAN':'Ingress Host 규칙',scope:id==='tls'?'이름 검증 경계':'/ Exact 또는 /health Prefix'}}:id==='image'?{kind:'image',requested:'repository:missing-tag',registry:'manifest unknown',running:false}:{kind:'crash',key:'APP_MESSAGE',provided:false,exitCode:1,restarts:4};
+ return {...cases[id],scene};
 }
 export function diagnosisFrames({scenario='pending',observation='get'}={}){
  const selected=diagnosticCases.find(c=>c.id===scenario),obs=observations.find(o=>o.id===observation);
@@ -85,7 +87,7 @@ export function diagnosisFrames({scenario='pending',observation='get'}={}){
  return ['증상부터 기록','선택한 관측의 증거','증거가 지지하는 범위','다음 조사와 재검증'].map((title,i)=>({
  title,detail:i===0?'상태 문자열은 조사 시작점입니다. 다음 관측을 선택한 뒤 한 단계 진행하세요.':i===1?evidence:matched?(i===2?data.conclusion:data.next):'현재 증거만으로 원인을 확정할 수 없습니다. 다른 관측을 선택하고 비교하세요.',
  symptom:data.symptom,evidence:i>=1?evidence:null,conclusion:i>=2&&matched?data.conclusion:null,next:i>=3?(matched?data.next:`추천 관측: ${observations.find(o=>o.id===selected.best).label}. 증거를 얻은 뒤 같은 증상을 다시 확인하세요.`):null,
- matched,command:obs.command,where:obs.where,question:obs.question,
+ scene:i>=1&&matched?data.scene:null,scenario,observed:i>=1,matched,command:obs.command,where:obs.where,question:obs.question,
  zones:['배포·배정','컨테이너 실행','준비 상태','Service','Ingress·TLS'].map((label,n)=>({label,state:i>=2&&matched&&n===data.zone?'focus':'unknown'})),
  }));
 }

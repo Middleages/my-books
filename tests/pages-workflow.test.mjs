@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { isBuiltin } from 'node:module';
 
 const workflow = readFileSync(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
-const suites = ['insurance', 'investing'];
+const suites = ['insurance', 'investing', 'kubernetes'];
 const mainOnly = "github.ref == 'refs/heads/main' && github.event_name != 'pull_request'";
 
 // Inspect the workflow's small, explicit block layout without adding a YAML
@@ -68,7 +68,7 @@ test('both isolated browser matrices run all fixed suites and propagate failures
       ? ['name', 'needs', 'runs-on', 'strategy', 'steps']
       : ['name', 'if', 'needs', 'runs-on', 'strategy', 'steps']);
     assert.equal(job['runs-on'].value, 'ubuntu-latest');
-    assert.equal(job.strategy.body, '      fail-fast: false\n      matrix:\n        suite: [insurance, investing]',
+    assert.equal(job.strategy.body, '      fail-fast: false\n      matrix:\n        suite: [insurance, investing, kubernetes]',
       'Both suites must run independently without fail-fast cancellation, exclusions or dynamic matrix input');
     assert.equal(job.needs.value, id === 'verify-production' ? 'build' : 'deploy');
     assert.equal(job.if?.value, id === 'verify-production' ? undefined : mainOnly);
@@ -124,7 +124,7 @@ test('all original browser evidence names survive failures without masking a che
     });
     for (const suite of suites) artifactNames.push(withValues.name.replace('${{ matrix.suite }}', suite));
   }
-  assert.deepEqual(artifactNames, ['insurance-browser-local', 'investing-browser-local', 'insurance-browser-published', 'investing-browser-published']);
+  assert.deepEqual(artifactNames, ['insurance-browser-local', 'investing-browser-local', 'kubernetes-browser-local', 'insurance-browser-published', 'investing-browser-published', 'kubernetes-browser-published']);
   assert.equal([...workflow.matchAll(/always\(\)/g)].length, 2, 'Only evidence uploads may bypass success()');
 });
 

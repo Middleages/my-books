@@ -1,3 +1,5 @@
+import { ConnectedScene } from './ConnectedScene';
+import { clusterDiagram } from '../../simulations/kubernetes/visual-explanations.mjs';
 import { useState } from "react";
 import { Playback, useFoundationPlayback } from "../network/FoundationPlayback";
 import {
@@ -338,48 +340,11 @@ export function ClusterLab() {
           <option value="outside">이 앱 HTTP 경로에 참여하지 않음</option>
         </select>
       </label>
-      <div className="k8-map">
-        <div className="k8-users">
-          <Node id="operator" detail="원하는 상태를 요청" frame={f} />
-          <Node id="browser" detail="앱 HTTP 주소에 접속" frame={f} />
-        </div>
-        <div className="k8-boundary">
-          <h3>단일 VM · 역할들은 함께 살 수 있음</h3>
-          <div className="k8-plane">
-            <h4>Control plane · 상태 저장과 조정</h4>
-            <div className="k8-chain">
-              <Node id="controller" detail="차이를 관찰·조정" frame={f} />
-              <span className="k8-link">↔</span>
-              <Node id="api" detail="요청 검사 · 상태의 접점" frame={f} />
-              <span className="k8-link">↔</span>
-              <Node id="scheduler" detail="Pod의 노드 배정" frame={f} />
-            </div>
-            <p className="k8-store">
-              API ↔ datastore · 클러스터 상태 저장 (k3s 단일 서버 후보: SQLite)
-            </p>
-          </div>
-          <div className="k8-worker">
-            <h4>Node의 실행 역할</h4>
-            <div className="k8-chain">
-              <Node id="kubelet" detail="API 관찰 · 실행 관리" frame={f} />
-              <span className="k8-link">→</span>
-              <Node id="runtime" detail="CRI 요청으로 실행" frame={f} />
-              <span className="k8-link">→</span>
-              <Node id="app" detail="컨테이너 HTTP :8080" frame={f} />
-            </div>
-          </div>
-          <div className="k8-http">
-            <Node id="entry" detail="외부 진입 · 설정된 HTTP 경로" frame={f} />
-            <p>
-              웹 사용자 ↔ 외부 진입 ↔ Service의 대상 Pod
-              <br />
-              <small>
-                Service :80 → targetPort :8080 · 네트워크 구현을 요약한 논리적
-                경로
-              </small>
-            </p>
-          </div>
-        </div>
+      <Playback player={player} count={frames.length} reset={reset} />
+      <div className="k8v-cluster-scene" data-scene="cluster">
+        <h3>실습 클러스터 · 단일 VM의 역할 지도</h3>
+        <ConnectedScene {...clusterDiagram(f,path)} label={path==='control'?'제어 관계 · API를 중심으로 따로 관찰하고 기록':'HTTP 연결 · API를 지나지 않는 앱 경로'} />
+        <p className="k8v-model-note">{path==='control'?'API·controller·scheduler는 control plane, kubelet·runtime·앱은 노드 실행 역할입니다. 이 실습에서는 한 VM에 함께 있으며 위아래 길이는 거리나 시간을 뜻하지 않습니다. HTTP 요청은 별도 경로에서 관찰합니다.':'이미 실행 중인 같은 study-web 앱의 요청 경로입니다. Service는 대상 선택을 요약한 논리적 접점이며 API·scheduler·controller가 HTTP 중계 사슬에 끼지 않습니다.'}</p>
       </div>
       <p className="k8-edge">
         이번 전달:{" "}
@@ -391,7 +356,7 @@ export function ClusterLab() {
         직접 호출 사슬이 아닙니다. ●는 현재 관찰 대상이며 다른 구성 요소가
         꺼졌다는 뜻이 아닙니다.
       </p>
-      <Playback player={player} count={frames.length} reset={reset} />
+
       <Explanation frame={f} index={player.index} />
       {player.index === frames.length - 1 && prediction && (
         <p className="k8-feedback">
