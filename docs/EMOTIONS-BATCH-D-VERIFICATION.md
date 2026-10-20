@@ -8,3 +8,6 @@ Head Start Introduction to Temperament와 Infant Toddler Temperament Tool 개요
 
 ## 로컬 실행
 fc8f6dd 기준 독립모델3/3, 전체 node --test --test-concurrency=4 tests/*.test.mjs1510/1510, NODE_OPTIONS=--max-old-space-size=2048 npm run build 통과. C의 원본 검토에서 발견한 모바일 방향 수정을 포함하고07의 모바일 환경간격도 구분한다. PR CI와 D 원본 PNG는 대기. 공개는 C 이후 직렬 게이트를 따른다.
+
+## 첫 정상 CI와 원본 시각 수정
+PR102 run39474022939 성공. 원본1440/320 직접검토에서07의 좁은 화면 연결선이 두 사람 아래로 밀린 문제를 발견해 사람 사이의 세로 연결로 재배치했다.08은 현재 돌봄자와 아이가 같은 공간 경계를 실제 공유하도록 그룹을 강화했다. 수정 후 CI와 원본 재검토가 끝나기 전 최종 시각 통과로 기록하지 않는다.
