@@ -1,0 +1,36 @@
+name: Database B first-failure diagnosis
+on:
+  push:
+    branches: [verify/database-b-first-failure]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Install isolated browser verifier
+        run: |
+          npm install --prefix "$RUNNER_TEMP/database-qa" --no-save --ignore-scripts playwright@1.56.1
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Preserve the first failure without changing assertions
+        env:
+          NODE_PATH: ${{ runner.temp }}/database-qa/node_modules
+          CHROME_PATH: /usr/bin/google-chrome
+          DB_FAIL_FAST: '1'
+        run: node scripts/database-browser-qa.cjs
+      - name: Save partial diagnosis honestly
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-first-failure
+          path: artifacts/database-browser/
+          if-no-files-found: error
