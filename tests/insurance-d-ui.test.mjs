@@ -139,6 +139,7 @@ test('D CSS retains proportional zero geometry, patterned semantics and explicit
   assert.match(timelines, /\.timelines-cursor\{[^}]*width:0/);
   assert.match(timelines, /\.timelines-premium\[data-paid=false\]\{opacity:\.4/);
   assert.match(timelines, /\.timelines-renewal-period\[data-active=false\]\{[^}]*border-style:dashed/);
+  assert.match(timelines, /\.timelines-year-axis span\{[^}]*white-space:nowrap/);
   assert.match(timelines, /repeating-linear-gradient/); assert.match(timelines, /@media\(prefers-reduced-motion:reduce\)/);
   const surrender = readFileSync(new URL('../src/components/insurance/surrender.css', import.meta.url), 'utf8');
   assert.match(surrender, /\.surrender-difference\{border:2px dashed/);

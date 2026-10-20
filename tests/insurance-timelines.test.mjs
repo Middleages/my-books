@@ -1,6 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { projectTimelines, timelinesDefaults, timelinesTerms, timelineBoundaryCases } from '../src/simulations/insurance/timelines.mjs';
+
+test('numeric timeline ticks cannot shrink or break at the right edge and retain inward anchoring', () => {
+  const css = readFileSync(new URL('../src/components/insurance/timelines.css', import.meta.url), 'utf8');
+  const ticks = css.match(/\.timelines-year-axis span\{([^}]+)\}/)?.[1];
+  assert(ticks, 'Timeline tick rule must be present.');
+  for (const declaration of ['width:max-content', 'white-space:nowrap', 'overflow-wrap:normal', 'word-break:normal', 'transform:translateX(-50%)']) assert(ticks.includes(declaration), `Missing tick layout safeguard: ${declaration}`);
+  assert.match(css, /\.timelines-year-axis \[data-edge=start\]\{transform:none\}/);
+  assert.match(css, /\.timelines-year-axis \[data-edge=end\]\{transform:translateX\(-100%\)\}/);
+});
 
 function checkModel(result) {
   assert.equal(result.frames.length, 13);

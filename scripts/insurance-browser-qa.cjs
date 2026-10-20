@@ -547,7 +547,7 @@ async function timelinesVerifier(page, lab) {
         tracks: [...element.querySelectorAll('[data-timelines-track]')].map(track => ({ kind: track.dataset.timelinesTrack, contract: track.dataset.contract, box: rect(track), height: track.clientHeight, width: track.clientWidth, top: parseFloat(getComputedStyle(track).borderTopWidth), label: track.getAttribute('aria-label'), marker: (() => { const m = track.querySelector('[data-timelines-marker]'); return { year: Number(m.dataset.year), position: Number(m.dataset.position), box: rect(m), border: getComputedStyle(m).borderLeftStyle }; })(), payments: [...track.querySelectorAll('[data-timelines-payment]')].map(mark => ({ year: Number(mark.dataset.year), amount: Number(mark.dataset.amount), position: Number(mark.dataset.position), heightFraction: Number(mark.dataset.heightFraction), paid: mark.dataset.paid, box: rect(mark), paint: paint(mark), point: rect(mark.querySelector('b')) })), coverage: (() => { const c = track.querySelector('[data-timelines-coverage]'); return c && { start: Number(c.dataset.start), end: Number(c.dataset.end), fraction: Number(c.dataset.fraction), box: rect(c), paint: paint(c), endpoints: [...c.querySelectorAll('b')].map(node => ({ box: rect(node), background: getComputedStyle(node).backgroundColor, border: getComputedStyle(node).borderTopStyle })) }; })() })),
         periods: [...element.querySelectorAll('[data-timelines-period]')].map(period => ({ index: Number(period.dataset.timelinesPeriod), active: period.dataset.active, position: Number(period.dataset.position), fraction: Number(period.dataset.fraction), box: rect(period), paint: paint(period) })),
         renewals: [...element.querySelectorAll('[data-timelines-renewal]')].map(mark => ({ year: Number(mark.dataset.timelinesRenewal), state: mark.dataset.state, position: Number(mark.dataset.position), symbol: mark.textContent, box: rect(mark), font: parseFloat(getComputedStyle(mark).fontSize) })),
-        axes: [...element.querySelectorAll('.timelines-year-axis')].map(axis => ({ box: rect(axis), labels: [...axis.children].map(node => ({ text: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize) })) })),
+        axes: [...element.querySelectorAll('.timelines-year-axis')].map(axis => ({ box: rect(axis), labels: [...axis.children].map(node => ({ text: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize), lineHeight: parseFloat(getComputedStyle(node).lineHeight) })) })),
         current: [...element.querySelectorAll('[data-timelines-current]')].map(row => ({ id: row.dataset.timelinesCurrent, premium: Number(row.dataset.premium), cumulative: Number(row.dataset.cumulative), covered: row.dataset.covered, values: [...row.querySelectorAll('dd')].map(node => node.textContent), box: rect(row) })),
         renewalStatus: element.querySelector('[data-timelines-renewal-status]').dataset.timelinesRenewalStatus,
         renewalLabel: element.querySelector('[data-timelines-renewal-status] strong').textContent,
@@ -611,7 +611,10 @@ async function timelinesVerifier(page, lab) {
     assert.equal(painted.axes.length, painted.tracks.length);
     painted.axes.forEach(axis => {
       assert.deepEqual(axis.labels.map(label => label.text), model.axis.ticks.map(tick => String(tick.year)));
-      for (const label of axis.labels) assert(label.font >= 11 && label.box.left >= axis.box.left - 1 && label.box.right <= axis.box.right + 1, 'Year labels spill beyond the readable axis');
+      for (const label of axis.labels) {
+        assert(label.font >= 11 && label.box.left >= axis.box.left - 1 && label.box.right <= axis.box.right + 1, 'Year labels spill beyond the readable axis');
+        assert(Number.isFinite(label.lineHeight) && label.box.height <= label.lineHeight + 1, `Numeric year tick ${label.text} wraps into multiple lines`);
+      }
     });
     assert.equal(painted.current.length, model.contracts.length);
     painted.current.forEach((row, index) => {
@@ -666,7 +669,7 @@ async function surrenderVerifier(page, lab) {
         cut: rect(element.querySelector('.surrender-cut')),
         segments: [...coverage.querySelectorAll('[data-surrender-coverage-segment]')].map(node => ({ id: node.dataset.surrenderCoverageSegment, start: Number(node.dataset.start), end: Number(node.dataset.end), fraction: Number(node.dataset.fraction), paint: paint(node), legend: paint(element.querySelector(`.surrender-legend .${node.dataset.surrenderCoverageSegment}`), '::before') })),
         paymentTrack: rect(payments), payments: [...payments.querySelectorAll('[data-surrender-payment]')].map(node => ({ year: Number(node.dataset.surrenderPayment), paid: node.dataset.paid, symbol: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize) })),
-        timeAxis: [...element.querySelectorAll('.surrender-time-axis span')].map(node => ({ label: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize) })),
+        timeAxis: [...element.querySelectorAll('.surrender-time-axis span')].map(node => ({ label: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize), lineHeight: parseFloat(getComputedStyle(node).lineHeight) })),
         coverageCaption: element.querySelector('.surrender-coverage figcaption').textContent,
       };
     });
@@ -703,7 +706,10 @@ async function surrenderVerifier(page, lab) {
       assert(mark.font >= 16);
     });
     assert.deepEqual(painted.timeAxis.map(tick => tick.label), ['0년', '2년', '4년', '6년', '8년', '10년', '12년']);
-    for (const tick of painted.timeAxis) assert(tick.font >= 10 && tick.box.left >= painted.coverage.left - 1 && tick.box.right <= painted.coverage.right + 1);
+    for (const tick of painted.timeAxis) {
+      assert(tick.font >= 10 && tick.box.left >= painted.coverage.left - 1 && tick.box.right <= painted.coverage.right + 1);
+      assert(Number.isFinite(tick.lineHeight) && tick.box.height <= tick.lineHeight + 1, `Numeric year tick ${tick.label} wraps into multiple lines`);
+    }
     assert.match(painted.coverageCaption, /해지 전 사건/); assert.match(painted.coverageCaption, /먼저 낸 다음 해지/);
     assert.equal(frame.cumulativePremium, frame.exitValue + frame.difference, 'Returned money was subtracted twice or added to premiums');
     if (frame.exitYear === 0) assert(frame.cumulativePremium === 100000 && frame.exitValue === 0 && frame.coverageSegments[0].fraction === 0, 'Year0 must keep the first premium while removing all later new-event coverage');
