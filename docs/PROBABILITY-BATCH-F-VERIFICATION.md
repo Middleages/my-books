@@ -52,3 +52,14 @@ AGENTS·CONTENT-AUTHORING·HOME·browser scope·MONEY·확률 계획과 이전 �
 - `index-DpYO0xEh.js`: 3049670 bytes, SHA256 `f3ac76d033a670820a532234de231654c396ebd299a937fd46059a638ff5b167`.
 
 실제PR production·직접원본·최종최신main 넓은회귀·Pages/published는 아직 남아 있다. 이 stacked 후보의등록suite는9개이며 최신main에추가된책을 누락한 상태로 전체사이트완료를 주장하지 않는다. 최종직렬통합에서 현재등록전체suite를 같은 artifact로 실행해야 한다.
+
+
+## 첫 PR browser 실행과 검증기 수정 · 11:49 UTC
+
+PR74 최초 remote `9ef30b343a403d2fcdbb984faac32498be154a2f`, tree `a19b6a5c9d3d76585dcae9ad2964787bdf068524`, CI `39415963719`의 실제 checkout은 `135bf01842f91d570c436cbfa3b47f182d64f81d`이며 같은 tree·clean이었다. 전체 unit1,120/1,120·build·home14/14는 성공했다. 확률 browser는633통과·39실패·313PNG·앱 오류0으로 실패했다. 선택은probability/home뿐이며 나머지7suite는 생략, 배포/published는 건너뜀이다. 실패를 성공으로 합치지 않는다.
+
+37개 실패는 닫힌details 안의 경로 정적행을 `innerText`로 읽은 검증기 오류에 집중됐다. 이미 다른 정적값에 쓰던 `allTextContents`로 같은 자료를 읽고, 첫 실패·총지출·기말값을 정확한 열별 값으로 대조하도록 강화한다. 정적표를 직접 펼쳐 픽셀/키보드/양끝을 확인하는 검사는 그대로 남긴다. 나머지2개는390/320폭의p100% 끝점에서 부모1px테두리와 반올림한clientWidth를 섞은 좌표 기준 문제다. 소수 bounding rect에서 실제 테두리를 뺀 padding-box 좌표를 사용하며1.2px허용 오차를 늘리지 않는다. p0/100% 양끝 원본 캡처도 추가한다. 모델·UI·본문·카탈로그는 바꾸지 않는다. 수정 후 전체 unit/build/browser 결과는 새 실행으로 확인해야 한다.
+
+실패 artifact12261564020 ZIP SHA256 `dd047944cb5d5a57489361b8634a3f19abceac90f526ac3fd2258cb6b195d892`를 원본 그대로 보존했다. JS/CSS는 위 로컬 byte/SHA와 일치했다. home artifact12260978078 SHA256 `516f60acf4fb6a778aafee18ab3d81f37d053f66c6e081d670cab627eb0a0fc7`, scope12261027648 SHA256 `f8cc972dc76182221aa5edc73f43cb92871fb88ca9554bcbeea095033b1bf3b5`도 확인했다. 홈320px 확률8권 제목 원본을 직접 열었고 잘림이 없었다.
+
+검증기 수정 뒤11:51:53 UTC 전체unit1,121/1,121·실패/건너뜀0, 검증기 targeted10/10, node syntax와diff 공백 검사가 통과했다. 앱 소스는 그대로이므로 같은 로컬Vite를 중복 실행하지 않았으며, 새PR CI에서 전체build와실제browser를 다시 실행한다. 첫실행의12장 중 경로 장 최종 캡처는 실패 지점 뒤라 미생성·미검토로 남았다. 결정 장의320px alarm/performance 주장, unknown-p matrix/lines4장은 직접 열었고 서로다른추정대상·가림·미상≠0·전체축이 명료했다. 이 부분검토는 실패한 전체browser gate를 대신하지 않는다.
