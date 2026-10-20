@@ -54,3 +54,13 @@
 - 안전한 원격 접속, 최소 노출·권한·인증, 업데이트·관측·장애 진단과 운영 문서.
 
 현재는 주제 후보 등록뿐이다. 장 수·권차·제품 선택은 미확정이며 실제 설치, 포트 개방, DNS/VPN/라우터 변경, 실계정·비밀번호 이전이나 데이터 업로드는 수행하지 않는다. 홈서버 상세 본문 구현은 이번 관측 A 작업에 포함하지 않는다.
+
+### 홈서버 구성·앱 추가 후보
+
+검토할 기본 구성은 Proxmox 위 Linux VM+Compose에 일상 운영 앱을 두고, 별도 VM의 k3s는 실험용으로 분리하며 백업 사본은 별도 장치에 두는 방식이다. 단순 운영 대안은 bare Linux+Compose다. 이는 확정 설치안이 아니며 같은 물리호스트의 VM 분리는 호스트 장애에 대한 HA가 아니다.
+
+추가 앱 후보로 [Paperless-ngx](https://docs.paperless-ngx.com/)(문서 정리), [Uptime Kuma](https://github.com/louislam/uptime-kuma)(가용성 확인), [restic](https://restic.net/)(백업)을 다룰 수 있다. 비밀번호 관리에서는 공식 Bitwarden과 비공식 호환 서버 [Vaultwarden](https://github.com/dani-garcia/vaultwarden)의 지원·호환성과 운영 책임을 구별한다. 추천 후보 등록이 설치나 비밀번호 이전 승인은 아니다.
+
+[Immich의 공식 Kubernetes 설치/Helm 안내](https://docs.immich.app/install/kubernetes/)와 Compose 경로를 함께 비교하고, [Memos Compose 안내](https://usememos.com/docs/deploy/docker-compose)를 참고한다. [Immich 복구 안내](https://docs.immich.app/administration/backup-and-restore/)를 바탕으로 앱 DB와 원본 사진을 함께 보관/복구하는 조건을 다루며 DNS 필터링 앱이 중단됐을 때 인터넷 전체가 끊긴 듯 보이는 상황의 복구 경로도 계획한다.
+
+위 공식/프로젝트 1차 자료는 2026-10-20 비교 조사에서 확인한 후보 근거다. 아직 실제 설치·복구·제품 호환성을 실행 검증하지 않았다. 상세 교재 계획과 본문은 별도 후속 범위다.
