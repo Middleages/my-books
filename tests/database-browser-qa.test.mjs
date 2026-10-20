@@ -219,6 +219,8 @@ test('new animated labs cover keyboard, pause, no-autoplay, settings, reset, sta
   assert.match(source, /snapNearEffect\(page, `\$\{width\}-b03-controls-and-fork`/);
   assert.match(source, /snapNearEffect\(page, `\$\{width\}-b04-controls-and-pointer`/);
   assert.match(source, /await lab\.locator\('\.db-controls'\)\.scrollIntoViewIfNeeded\(\)/);
+  assert(source.includes('${spec.lab}-normal-paused'), 'Normal-motion paused scene needs direct screenshot evidence');
+  assert(source.includes('${spec.lab}-${motion}-static-open'), 'Expanded static alternatives need screenshot evidence in both motion settings');
 });
 
 test('B selects expose the visible control label without concatenating option text', () => {
@@ -244,4 +246,13 @@ test('a blocking browser timeout preserves a partial failure instead of repeatin
   assert(source.includes('throw error;'));
   assert(source.includes("report.fatal=String(error.stack||error);process.exitCode=1"));
   assert(source.includes("if(report.failed||report.fatal)process.exitCode=1"));
+});
+
+test('chapter 03 introductory SQL keeps its meaning with narrow-screen line breaks', () => {
+  const mdx = readFileSync(new URL('../src/content/database/QueriesAndJoins.mdx', import.meta.url), 'utf8');
+  const sql = mdx.match(/```sql\n([\s\S]*?)\n```/)?.[1];
+  assert(sql);
+  assert.equal(sql.replace(/\s+/g, ' '), "SELECT id FROM orders WHERE customer_id = 1 AND status = 'confirmed' ORDER BY id;");
+  for (const line of sql.split('\n')) assert(line.length <= 28, `Introductory SQL line is too long: ${line.length}`);
+  assert(source.includes('assert.deepEqual(x.overflow,[],JSON.stringify(x))'), 'Keep actual browser overflow checks strict');
 });

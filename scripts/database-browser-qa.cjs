@@ -415,12 +415,14 @@ async function exerciseBPlayback(page, spec, motion) {
   assert.equal(await lab.locator('.db-step-count').innerText(), frozen);
   assert.equal(await (await visibleScene(lab)).innerHTML(), drawing, 'Pause changed the diagram');
   assert.equal(await lab.evaluate(e => e.getAnimations({ subtree: true }).filter(a => a.playState === 'running').length), 0);
+  if (motion === 'no-preference') await snapBState(page, `${page.viewportSize().width}-b-${spec.lab}-normal-paused`, lab);
   await lab.getByRole('button', { name: '다시 보기', exact: true }).click();
   await spec.assertion(lab, spec.initial[0], spec.initial.length);
   const summary = lab.locator('.db-static > summary');
   if (!await summary.evaluate(e => e.parentElement.open)) { await summary.focus(); await page.keyboard.press('Enter'); }
   assert.deepEqual(await lab.locator('.db-static li strong').allTextContents(), spec.initial.map(frame => frame.title));
   assert.deepEqual(await lab.locator('.db-static li p').allTextContents(), spec.initial.map(frame => frame.detail));
+  await snapBState(page, `${page.viewportSize().width}-b-${spec.lab}-${motion}-static-open`, lab);
   if (spec.prediction) await lab.getByLabel('먼저 예상해 보세요', { exact: true }).selectOption(spec.prediction);
   await lab.getByRole('button', { name: '재생', exact: true }).click();
   const setting = lab.getByLabel(spec.setting, { exact: true });

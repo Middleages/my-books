@@ -86,3 +86,17 @@ favicon 예외도 검증기 안에서 좁혔다. 정확한 공개 base·호스�
 명시적 이름 수정 후 단독 B 후보의 전체 단위 테스트는 **964/964**, build는 **329 modules**를 통과했다. 이후 최신 main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`를 통합했다. 세금03–04·주거 소개/01–02·권차·쿠버네티스의 좁은 공개 진단 수정과 A 공개 완료 기록을 보존했다. 카탈로그는 최신 main의 다른 책을 그대로 두고 DB03–04 두 import/목차와 DB 공개 범위만 추가했다. 공유 workflow·검사 선택기를 되돌리지 않았다.
 
 이 통합 소스의 전체 `npm test`는 **982/982**, `npm run build`는 **340 modules**, `git diff --check`는 통과했다. 이는 로컬 코드·빌드 결과이며 실제 B 브라우저 통과가 아니다. 원래 B 실행의 선택 상자 timeout, 후속 접근성 수정, 최신 통합 실행을 서로 다른 증거로 남긴다. A는 공개 검증을 완료했지만 B는 아직 PR의 production·직접 PNG 검토 및 이후 조율된 main/Pages 게이트를 기다린다.
+
+## 최신 통합의 실제 B 검사와 320px 본문 수정
+
+통합 head `9520feb69c4d22e557b90678750bb191f4e61afc`, tree `ed98fed70422782d1819fecd36093f92a8c54f01`의 [run39375792447](https://github.com/Middleages/my-books/actions/runs/39375792447)은 build·권차14/14를 통과했다. DB는 **299통과·39실패·338검사**, PNG105개, page/console/resource 오류0이었다. 39개 실패는 모두320px의03장 첫 본문 SQL에서 `WHERE … AND …` 한 줄이 code 영역을 길게 만드는 같은 문제였다. 이 전체 실행은 실패이며 통과로 합산하지 않는다. 앞선 exact-name 조작 문제는 재현되지 않았고 모든 인덱스 경로·geometry·수명·키보드/재생 검사는 실행됐다.
+
+[DB artifact12243526892](https://github.com/Middleages/my-books/actions/runs/39375792447/artifacts/12243526892) ZIP SHA256 `056e5246069054eddeb2ef14e6f06e0b21a8474689d5266ea91c4b52926c6bcf`를 대조했다. 정확한 PR merge source는 `6cbc7aa1b9e32ebed790c7c1cd37239b0332bdde`, 깨끗한 checkout이었다. selection artifact12243725553은 DB·권차만 선택하고 보험·투자·세금·쿠버네티스·주거는 의도적 미실행임을 확인했다. 권차 artifact12243028767은14/14·36PNG·오류0이며, 직접 본1440-home과320-database-heading에서 최신 주거/세금 및 DB IT4권·공개4장 표시를 확인했다.
+
+첫 SQL의 AND 앞에 줄바꿈만 추가해 문장 의미를 유지했다. 소스 회귀 검사는 공백을 정규화한 SQL 동일성과 짧은 줄을 확인한다. 실제320px overflow assertion은 완화하지 않으며 새 build·실제 browser/PNG로 수정 결과를 확인한다. 최초 실패로 생성되지 않은320px 조회 최종 PNG는 아직 검토했다고 세지 않는다.
+
+SQL 줄바꿈 수정 후보는 전체983/983 단위 테스트·340 modules build·diff check를 통과했다. 새 실제 브라우저 결과는 아직 대기 중이다.
+
+같은 실패 artifact의 의미 장면25개(1440px6개·390px9개·320px10개)를 독립적으로 직접 검토했다. 주문2→항목3·DISTINCT 묶음·NULL/빈 그룹·ON/WHERE 결과 경계, 정확한 인덱스 포인터·키33 미접근·8/12/13 눈금·L0→L3/인덱스 없음·복합3→1구간에서 추가 차단 결함을 찾지 못했다. 이는 검토한 장면의 결과이며 실패 run 전체나 아직 없는320px 조회 최종 장면의 합격이 아니다.
+
+검토 중 펼친 정적 단계와 정상 motion 설정의 전용 PNG가 없음을 확인했다. 기존 키보드/정지/정적 텍스트 assertion 통과와 직접 픽셀 검토를 혼동하지 않도록, 이번 재실행에는 폭별 펼친 정적 단계와390px 정상 motion의 정지 장면을 추가 캡처한다. 기존 assertion을 줄이거나 생략하지 않는다.
