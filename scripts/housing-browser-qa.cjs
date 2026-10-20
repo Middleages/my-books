@@ -360,6 +360,7 @@ async function scenarios(page, id) {
     await capture(page,`${page.viewportSize().width}-market-mix-changed`,'[data-housing-lab="market-mix"]');
     const supply=page.locator('[data-housing-lab="housing-supply"]');
     for(let step=0;step<=8;step++){const r=model.supplyFrames()[step];assert.equal(Number(await supply.locator('[data-supply-step]').getAttribute('data-supply-step')),step);assert.deepEqual(await supply.locator('[data-supply-value]').evaluateAll(es=>es.map(e=>+e.dataset.supplyValue)),[r.permission,r.construction,r.completion]);if(step<8)await supply.getByRole('button',{name:'한 단계 진행',exact:true}).click()}
+    if(page.viewportSize().width<=480){const control=await supply.locator('.money-playback').boundingBox(),last=await supply.locator('.housing-supply-stages section').last().boundingBox();assert(last.y-(control.y+control.height)<550,'supply destination too far from changing controls')}
     await capture(page,`${page.viewportSize().width}-housing-supply-changed`,'[data-housing-lab="housing-supply"]');
   }
   if(id === 'housing-rights') {

@@ -47,3 +47,5 @@
 /* Local mobile controls share the single comparison playback state and timer. */
 .housing-lane-controls{display:none}.housing-observed-index{font-size:.9rem;border-left:3px solid #42766d;padding-left:.7rem}
 @media(max-width:800px){.housing-lane-controls{display:block;border-top:1px solid #bdd0cb;padding:.5rem 0}.housing-lane-controls>strong{display:block;font-size:.9rem}.housing-lane-controls label{display:block;margin:.6rem 0}.housing-lane-controls select{display:block;width:100%;margin-top:.4rem}.housing-trade-baskets>.observed{order:-1}}
+/* Keep the three chronological supply stages together beside mobile controls. */
+@media(max-width:480px){.housing-supply-stages section{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.3rem .6rem;padding:.6rem}.housing-supply-stages section>b,.housing-supply-stages section>strong{grid-column:1}.housing-supply-cohort{grid-column:2;grid-row:1/3;align-content:center;min-height:0}.housing-supply-stages section>span{grid-column:1/-1;font-size:.82rem}}
