@@ -1,0 +1,4 @@
+export const ssoCases:Readonly<Record<string,{label:string;idp:boolean;a:boolean;b:boolean}>>;
+export function ssoFrame(step?:number,scenario?:string):{step:number;scenario:string;label:string;idpSession:boolean;appASession:boolean;appBSession:boolean;transactionStarted:boolean;prompted:boolean|null;validated:boolean;reusedB:boolean;syntheticReauthentication:boolean;stage:string};
+export const policyMatrix:Readonly<Record<string,readonly string[]>>;
+export function authorizationFrame(step?:number,options?:{role?:string;action?:string;owner?:string;tenant?:string;stale?:boolean}):{step:number;currentRole:string;claimRole:string;action:string;owner:string;tenant:string;policyVersion:number;claimVersion:number;checks:{role:boolean|null;tenant:boolean|null;object:boolean|null};decision:string;staleOnlyDecision:string};
