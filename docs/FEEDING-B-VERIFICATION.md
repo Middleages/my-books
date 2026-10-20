@@ -25,3 +25,10 @@ CI39411121963 build+선택2 production suite(book-volumes, child-feeding) 성공
 Artifact12260635073 ZIP SHA2568e3b1c05f1e11aa78ee8623dbeb52dda4c9389beabb8be57bd94353d87a6076d 확인. 수정 원본320-mealtime-unknown.png,390-mealtime-seated.png,850-mealtime-unknown.png,1440-mealtime-moving.png,320-preparation-cut.png를 직접 열었다. 320/390의 중앙 라벨이 짧고 읽기 쉽게 바뀌었으며 네 폭의 핵심 라벨14px 하한을 실제 검사했다. 관찰 방향·모름, 이동 중 식사하지 않기, 단단함의 빗금과 모양 변화가 보존됐다. 원본85개 전부 직접 검토로 주장하지 않는다.
 
 main/Pages는 직렬 게시 창의 별도 검증이다. 이 B 변경에는 다른 책 본문/공통 등록을 덮어쓰는 변경이 없으며, 최신 합본에서 수면 A의 이후 안전 보강을 보존해야 한다. 의학 전문가 감수는 미실행이다.
+
+
+## 최신 여덟 배치 합본 production 확인 — 2026-10-20
+
+[PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **42/42 검사·85원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12261546757 ZIP SHA256 `d85477f7de466fd274f0f7282990c5c06c449d7748d6ca44e7b2ed1321d81cbe` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
+
+직접 연 새 원본: `320-mealtime-unknown.png, 1440-mealtime-moving.png, 320-preparation-cut.png`. 작성자가 세 원본에서14px 관찰/모름 라벨, 이동 중 식사 회피, 자르기≠부드러움을 직접 확인했다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 85개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.

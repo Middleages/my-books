@@ -74,3 +74,10 @@
 ## 미실행과 경계
 
 로컬 Chromium 환경 문제를 통과로 세지 않는다. 실제 브라우저는 GitHub Actions의 production 빌드로 검증한다. 실물 기기·실제 스크린리더·PostgreSQL 엔진/driver·장치 crash·backup/restore·성능 측정은 미검증이다. 기본은 fsync on, synchronous_commit on, 정상 장치, 복제 없음이며 위험 설정을 실제 서버에 적용하지 않는다. 공식 근거와 확인일은 각 장에 분리했다.
+
+
+## 최신 여덟 배치 합본 production 확인 — 2026-10-20
+
+[PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **576/576 검사·581원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12261799256 ZIP SHA256 `3a3fe21f9dbcf58d03c7a123818e8381b8d6e6aa01d97e6872ad9a1d3055cabb` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
+
+직접 연 새 원본: `1440-e09-uncommitted-page-final.png, 390-e09-sync-after-flush-before-ack-final.png, 320-e09-local-visibility.png, 320-e10-physical-continuous-final.png, 390-e10-missing-wal-final.png, 1440-e10-validation-failure-final.png`. 작성자가 여섯 원본과 긴 모바일 세 개의 native 범위를 직접 확인했다. 저장 버전·확정·응답 불명 및 선택된 새 조회를 구별하고,09:58/10:00 라벨 분리, 연속11/시간차4와 누락7→연속6/시간차9, 복구 뒤 검증 실패의 서비스 미복구 경계를 확인했다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 581개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.

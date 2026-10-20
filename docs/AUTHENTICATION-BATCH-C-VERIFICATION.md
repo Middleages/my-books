@@ -19,3 +19,10 @@ OAuth는 네 논리 역할, scope·audience·객체 정책의 독립 검사, 위
 최종 원본1440-delegation-scope-denied,1440-oidc-normal,320-delegation-object-denied,390-oidc-nonce,320-session-expired,390-tokens-expired를 직접 열어 핵심 영역을 검토했다. 발급 서버 문장이 테두리 안에 들어오고, 모바일 위임 범위/객체 거절 및 nonce 실패 후 세션 미생성이 구별된다. OIDC6단계와 기존A/B4단계 제어가 유지되고 token 원문을 브라우저가 보관하지 않는 선택 구조가 명시된다. 캡처 생성만으로 통과를 판단하지 않았다.
 
 이 마감은 B 선행 소스의 production 검사다. 최신 main 통합·Pages 실제 게시·운영 SSO 검증은 별도이며 이 기록은 해당 완료를 주장하지 않는다.
+
+
+## 최신 여덟 배치 합본 production 확인 — 2026-10-20
+
+[PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **27/27 검사·150원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12262066348 ZIP SHA256 `b00591ccb0d11b83278605ee21b53bd64dabb081072b888957dbe07bb3e21beb` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
+
+직접 연 새 원본: `1440-oidc-nonce.png, 320-delegation-object-denied.png, 390-oidc-normal.png`. 작성자가 세 원본의 핵심 도식을 직접 읽었다. nonce 실패 뒤 세션 미실행, scope 통과≠소유권, front/back 경로와 별도 API 인가를 확인했다. 모바일은 원본 y1800–3600 범위도 분할해 읽었다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 150개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.
