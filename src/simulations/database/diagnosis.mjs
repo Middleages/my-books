@@ -28,7 +28,7 @@ export function diagnosisFrames(options={}){
    const plan=explainFrames({example:'growth-count',observed:true,estimate:'low'}).at(-1);
    push('second-request','Q1은 예상보다 많은 행을 냈습니다','Q1은 별도 실행 Q에서 수집한 계획입니다. 예상4행과 scan 관측40행이 다릅니다. R2의 대기 시간을 Q1의 처리량에 붙이지 않습니다.',{add:ev('compound-plan','Q · Q1 계획 관측','plan','Q','Q1','plan',plan),known:['plan'],reach:[...links,...edges('Q','Q1',['session','plan'])],supported:['실행 A의 반환 누락과 실행 Q의 행 수 과소추정은 별도 증거입니다.'],checks:['반환 경로 교정은 별도 재실험으로 확인하고, Q1의 조건·통계·접근 경로는 별도로 확인합니다.'],verdict:'multiple'});
    const normal=poolFrames({size:1,scenario:'normal'}).at(-1);
-   push('controlled-rerun','새 실행 B에서는 반환됐지만','반환 경로를 다르게 둔 별도 교육 실행 B에서는4요청이 완료됩니다. 실행 A가 중간부터 저절로 회복한 그림이 아닙니다. Q1의 계획 증거는 그대로 남습니다.',{add:ev('pool-rerun','B · 별도 정상 반환 실행','pool','B','R1–R4','pool',normal),known:['pool','session'],reach:[...edges('B','R2',['request','pool','session']),...edges('Q','Q1',['session','plan'])],supported:['새 실행 B의 반환 이력은 정상입니다.','Q의 계획 과소추정은 이 교정으로 해결됐다는 증거가 없습니다.'],checks:['Q1을 같은 입력·조건으로 다시 관측하고 변경 전후 행 수·일·부작용을 비교합니다.'],verdict:'partial'});
+   push('controlled-rerun','새 실행 B에서는 반환됐지만','반환 경로를 다르게 둔 별도 교육 실행 B에서는4요청이 완료됩니다. 실행 A가 중간부터 저절로 회복한 그림이 아닙니다. Q1의 계획 증거는 그대로 남습니다.',{add:ev('pool-rerun','B · 별도 정상 반환 실행','pool','B','R1–R4','pool',normal),known:['pool','session'],reach:[...links,...edges('B','R2',['request','pool','session'])],supported:['새 실행 B의 반환 이력은 정상입니다.','Q의 계획 과소추정은 이 교정으로 해결됐다는 증거가 없습니다.'],checks:['Q1을 같은 입력·조건으로 다시 관측하고 변경 전후 행 수·일·부작용을 비교합니다.'],verdict:'partial'});
   }
  }else if(scenario==='row-lock'){
   const all=concurrencyFrames({strategy:'conditional-update',firstOutcome:'commit'}),wait=all.find(f=>f.phase==='B-wait'),resume=all.find(f=>f.phase==='B-resume');
