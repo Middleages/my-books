@@ -66,3 +66,13 @@ head `1a8370d4b9781a444c8e8a56509d6cec72972f97`, PR checkout `95ff3910b458f315ef
 게시 전에 주거 검증기의 기존 문자열 기반 favicon 제외를 제거한다. 이미 확인한 정확한 호스트 기본 favicon의 URL·404만 별도로 보존하고, 출처가 비었거나 앱 경로·다른 호스트/상태·요청 실패이면 계속 실패시킨다. 일반·reduced-motion 양쪽에서 콘솔 위치와 실제 실패 리소스 URL/status를 남긴다. 이 검증기·회귀 테스트 보강은 앱을 바꾸지 않으며 별도 scoped production 재실행과 동일 앱 바이트를 확인한다.
 
 진단 보강 후 로컬 전체 **905/905 테스트·TypeScript·Vite 빌드**가 통과했다. 재빌드한 CSS/JS의 파일명·바이트 수·위 SHA-256이 모두 같아 앱 산출물이 변하지 않았음을 확인했다. `git diff --check`와 검증기 구문 검사도 통과했다. 새 검증기의 실제 hosted production·published 결과는 별도 게이트로 남긴다.
+
+## 엄격한 진단을 포함한 최종 production 및 게시 전 통합
+
+진단 보강 head `e4c0dfe90b7db204419baceb01e908e80843e8b9`, checkout `1d985a42cb7790845e0713c492bd5bd58a35940f`, tree `7c68b9458917e4c86fc67e0bfba91d5b1f738c54`의 [run39372275782](https://github.com/Middleages/my-books/actions/runs/39372275782)는 build와 선택한 세 production suite를 모두 통과했다. tax 73/73·PNG 50개, housing 46/46·PNG 28개, 권차 14/14·PNG 36개다. 오류 0이며 주거의 console/resource/non-application 진단 배열도 모두 비어 있다. 실제 selector는 tax·book-volumes·housing만 선택했고 나머지 네 suite는 생략으로 남겼다.
+
+[세금 artifact12242166905](https://github.com/Middleages/my-books/actions/runs/39372275782/artifacts/12242166905), [주거 artifact12241712007](https://github.com/Middleages/my-books/actions/runs/39372275782/artifacts/12241712007), [권차 artifact12241846563](https://github.com/Middleages/my-books/actions/runs/39372275782/artifacts/12241846563)의 ZIP SHA-256을 각각 `be051c36b5e94a77184580eeec372b07315be3de85ebe6aef705dab24006356e`, `69ebe151116e5f2371a83d9a4f78d293ee884ec727d12a8cf46be10a51cc963c`, `89a701cf88416284c7f50299a834f4e04b204ed637c115f3afb4f7abee3bff11`로 대조했다. 세 suite의 정확한 앱 자산은 앞 절의 CSS/JS와 같다. 320px 정산 변경, 주거 임차 변경, 전체 홈 원본 PNG를 다시 열어 현재 입력 해설·시간축 제어 인접·권차와 읽음 분모를 확인했다.
+
+다음 게시 통합에는 main `0071bff4c992376bea65ad3a12ce86fafbbe98be`를 그대로 조상으로 보존하고 K8s의 최소 진단/회귀/최종 기록 `3026e4b671e7c098e1a4bd160e453260b6336504`와 DB A의 문서 전용 마감 `17d4f2f28287b759444d3ec42c1808d698efce17`만 추가한다. K8s의 실제 엄격한 focused 94/94 및 원래 run의 실패 구분은 [그 기록](KUBERNETES-VISUAL-IMPROVEMENTS-VERIFICATION.md)을 따른다. DB B·주거 B·세금 C·회계 A는 포함하지 않는다. K8s verifier가 바뀌므로 최종 main 범위에는 Kubernetes도 추가하며, 보험·투자·DB 전체 브라우저 검사는 재실행했다고 주장하지 않는다. 이 최종 main의 CI·Pages·정확한 게시 바이트는 실행 후 별도로 기록한다.
+
+최종 진단/문서 통합 후 전체 **909/909 테스트**, 세금·주거·K8s의 집중 진단 회귀 **9/9**, TypeScript·Vite production 빌드와 `git diff --check`를 통과했다. CSS `f1ede4b3…`, JS `2191523f…`의 전체 SHA-256과 파일 크기가 앞서 검토한 production과 다시 일치했다. 실제 분류기는 `affected`: tax·book-volumes·kubernetes·housing, 생략은 insurance·investing·database로 확인했다. main 반영 뒤 production과 published 결과는 별도다.
