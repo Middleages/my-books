@@ -1,0 +1,2 @@
+export function networkFrame(id?:string):{id:string;label:string;groups:{owner:string;roles:string[]}[];support:string;unknown:string;roles:{role:string;owner:string}[];limit:string};
+export function workFrame(planner?:string,executor?:string,accepted?:boolean):{planner:string;executor:string;accepted:boolean;task:string;steps:{id:string;label:string;detail:string;owner:string|null;status:string}[];handover:string;unknown:string};
