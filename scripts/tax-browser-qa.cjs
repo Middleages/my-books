@@ -268,15 +268,13 @@ async function scenarios(page, id) {
         [...data.parts.map((p) => p.base), data.tax],
       );
       await bars(page);
-      const pieces = await lab
-        .locator(".tax-base-stack i")
-        .evaluateAll((es) =>
-          es.map((e) => ({
-            base: +e.dataset.base,
-            width: e.getBoundingClientRect().width,
-            track: e.parentElement.getBoundingClientRect().width,
-          })),
-        );
+      const pieces = await lab.locator(".tax-base-stack i").evaluateAll((es) =>
+        es.map((e) => ({
+          base: +e.dataset.base,
+          width: e.getBoundingClientRect().width,
+          track: e.parentElement.getBoundingClientRect().width,
+        })),
+      );
       assert.deepEqual(
         pieces.map((p) => p.base),
         data.parts.map((p) => p.base),
@@ -352,6 +350,22 @@ async function scenarios(page, id) {
     for (const k of model.investmentKinds) {
       await lab.locator("select").nth(0).selectOption(k.id);
       assert.equal(await lab.locator(".tax-tree-root").innerText(), k.label);
+      const branches = lab.locator(".tax-route-branch");
+      assert.equal(await branches.count(), model.investmentKinds.length);
+      const selected = lab.locator('.tax-route-branch[data-selected="true"]');
+      assert.equal(await selected.getAttribute("data-kind"), k.id);
+      for (const branch of model.investmentKinds) {
+        const nodes = await lab
+          .locator(`.tax-route-branch[data-kind="${branch.id}"] li strong`)
+          .allTextContents();
+        assert.deepEqual(
+          nodes,
+          model
+            .investmentRoute(branch.id)
+            .nodes.slice(0, 3)
+            .map((node) => node.detail),
+        );
+      }
     }
     await lab.locator("select").nth(1).selectOption("special");
     assert.match(await lab.innerText(), /특례계좌의 가입/);

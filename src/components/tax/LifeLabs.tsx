@@ -55,8 +55,8 @@ export function WithholdingLab() {
         </div>
         <figcaption>
           청록 ▰ 통장 · 금색 ▱ 사회보험 본인부담 · 파랑 ▥ 원천징수 세금. 세율을
-          역산하는 그림이 아닙니다. 아래 전체 배분은 비교용으로 고정되며, 위
-          관찰 단계에서 지급 과정을 따로 따라갑니다.
+          역산하는 그림이 아닙니다. 그림은 선택한 조건의 전체 배분이며, 관찰
+          단계는 지급 과정을 따로 보여줍니다.
         </figcaption>
       </figure>
       <Range
@@ -299,24 +299,57 @@ export function InvestmentTaxLab() {
     >
       <figure className="tax-route-tree">
         <div className="tax-tree-root">{r.label}</div>
-        <div className="tax-route-options">
+        <p className="tax-route-guide">
+          네 경로를 나란히 비교하세요. ●와 파란 경계는 선택한 사건이며, 화살표는
+          원천 → 사건 → 분류를 확인하는 순서입니다.
+        </p>
+        <div className="tax-route-branches">
           {investmentKinds.map((k) => (
-            <span key={k.id} data-selected={id === k.id}>
-              {k.label}
-            </span>
+            <section
+              className="tax-route-branch"
+              key={k.id}
+              data-kind={k.id}
+              data-selected={id === k.id}
+            >
+              <h4>
+                <span aria-hidden="true">{id === k.id ? "●" : "○"}</span>{" "}
+                {k.label}
+              </h4>
+              <ol>
+                {investmentRoute(k.id, account)
+                  .nodes.slice(0, 3)
+                  .map((node, i) => (
+                    <li
+                      key={node.label}
+                      data-current={id === k.id && p.step === i}
+                      data-phase={i}
+                    >
+                      <small>{node.label}</small>
+                      <strong>{node.detail}</strong>
+                      {i < 2 && (
+                        <span className="tax-route-arrow" aria-hidden="true">
+                          ↓
+                        </span>
+                      )}
+                    </li>
+                  ))}
+              </ol>
+            </section>
           ))}
         </div>
-        <ol className="tax-route-steps">
-          {r.nodes.map((n, i) => (
-            <li key={n.label} data-current={i === p.step}>
-              <strong>{n.label}</strong>
-              <span>{n.detail}</span>
-            </li>
-          ))}
-        </ol>
+        <div className="tax-route-account" data-current={p.step === 3}>
+          <span className="tax-route-question" aria-hidden="true">
+            ?
+          </span>
+          <div>
+            <strong>{r.nodes[3].label}</strong>
+            <p>{r.nodes[3].detail}</p>
+          </div>
+        </div>
         <figcaption>
-          갈림길은 분류 기준입니다. 줄 길이·단계 수는 세금 크기나 처리시간을
-          뜻하지 않습니다.
+          각 경로 끝의 소득 분류는 검토 출발점입니다. 선택한 사건도 계좌·납세자
+          조건의 점선 경계를 통과해야 합니다. 평가 변화는 지급·실현과 구별하며,
+          줄 길이·단계 수는 세금 크기나 처리시간이 아닙니다.
         </figcaption>
       </figure>
       <div className="tax-controls">
@@ -641,7 +674,7 @@ export function DeductionsLab() {
           </section>
         ))}
         <figcaption>
-          세 행의 결정세액 막대는 0–140 단위 고정 눈금입니다. 소득공제는 위쪽
+          세 경로의 결정세액 막대는 0–140 단위 고정 눈금입니다. 소득공제는 위쪽
           바탕, 세액공제는 아래쪽 세액을 줄입니다. 가상 세액공제는 0까지만
           줄이고 초과분 환급·이월은 없습니다.
         </figcaption>
