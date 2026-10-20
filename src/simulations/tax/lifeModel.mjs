@@ -118,3 +118,98 @@ export function settlement({
     ],
   };
 }
+export function vatChain({ sale = 300, mode = "taxable" } = {}) {
+  amount(sale);
+  choice(mode, ["taxable", "zero", "exempt"]);
+  if (sale < 200) throw new RangeError("Sale below model minimum");
+  const prices = [100, 200, sale],
+    rate = 0.1;
+  const stages = prices.map((price, i) => {
+    const input = i === 0 ? 0 : prices[i - 1] * rate;
+    const output = i === 2 && mode !== "taxable" ? 0 : price * rate;
+    const credit = i === 2 && mode === "exempt" ? 0 : input;
+    return {
+      id: i,
+      label: ["원재료", "제조", "소매"][i],
+      price,
+      input,
+      output,
+      credit,
+      remit: output - credit,
+      costTax: input - credit,
+      consumerPayment: price + output,
+    };
+  });
+  return {
+    sale,
+    mode,
+    rate,
+    stages,
+    totalRemit: stages.reduce((s, r) => s + r.remit, 0),
+    consumerTax: stages[2].output,
+    embeddedTax: stages[2].costTax,
+    frames: stages.map((r, i) => ({
+      label: `${i + 1}단계 · ${r.label}`,
+      value: r.remit,
+      detail: `매출세액 ${r.output} − 공제 매입세액 ${r.credit} = ${r.remit}. ${r.remit < 0 ? "음수는 모형의 환급 계산이며 실제 환급 요건은 별도입니다." : "받은 세액 전체와 납부 계산액을 구분합니다."}`,
+    })),
+  };
+}
+export const investmentKinds = [
+  {
+    id: "interest",
+    label: "예금 이자",
+    origin: "원금의 대가",
+    event: "이자 지급",
+    category: "이자소득 검토",
+    question: "거주자 여부·비과세·원천징수 및 종합과세 조건",
+  },
+  {
+    id: "dividend",
+    label: "회사 배당",
+    origin: "이익 분배",
+    event: "배당 지급",
+    category: "배당소득 검토",
+    question: "배당 종류·국내외 원천·원천징수·합산 대상",
+  },
+  {
+    id: "gain",
+    label: "주식 매도",
+    origin: "취득과 양도의 차이",
+    event: "매도·실현",
+    category: "양도소득 등 검토",
+    question: "국내외·상장 여부·대주주 요건·손익통산·거래세",
+  },
+  {
+    id: "unrealized",
+    label: "보유 주가 상승",
+    origin: "평가액 변화",
+    event: "아직 매도하지 않음",
+    category: "평가와 실현 구분",
+    question:
+      "상품 구조·과세 사건·계좌 규칙을 확인. 평가이익을 현금 입금으로 세지 않음",
+  },
+];
+export function investmentRoute(id = "interest", account = "ordinary") {
+  choice(account, ["ordinary", "special"]);
+  const item = investmentKinds.find((r) => r.id === id);
+  if (!item) throw new RangeError("Unknown income");
+  const nodes = [
+    { label: "① 수익의 원천", detail: item.origin },
+    { label: "② 사건과 시점", detail: item.event },
+    { label: "③ 소득 분류", detail: item.category },
+    {
+      label: "④ 계좌와 조건",
+      detail:
+        account === "special"
+          ? "특례계좌의 가입·상품·해지 조건을 추가 확인"
+          : item.question,
+    },
+  ];
+  return {
+    ...item,
+    account,
+    nodes,
+    result: "자료 부족 · 세율과 최종세액은 확정하지 않음",
+  };
+}

@@ -158,7 +158,7 @@ export function queryFrames(options = {}) {
     ["source", "원본 행과 키", "선택한 고객의 원본을 관찰합니다. 같은 주문 행을 아직 항목 수만큼 늘리지 않습니다."],
     ["order-match", "고객과 주문의 짝", "ON 조건을 만족하는 주문을 연결합니다. LEFT는 맞는 주문이 없는 고객에 NULL 자리를 남깁니다."],
     ["item-join", "항목마다 만들어진 결과행", "주문 1행에 항목이 여러 개면 같은 주문 id가 여러 결과행에 나타납니다. LEFT는 항목 없는 주문도 남깁니다."],
-    ["aggregate", "고객별 묶음과 세 가지 COUNT", "같은 결과행에서 COUNT(*)·COUNT(o.id)·COUNT(DISTINCT o.id)와 수량·금액을 계산합니다."],
+    ["aggregate", "고객별 묶음과 세 가지 COUNT", "같은 결과행에서 COUNT(*), COUNT(o.id), COUNT(DISTINCT o.id)와 수량·금액을 계산합니다."],
   ];
   const base = {
     scenarioId: `query:${customerId}:${join}:${status}:${metric}`,

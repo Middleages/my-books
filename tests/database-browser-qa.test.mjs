@@ -13,8 +13,8 @@ import { createFixture } from '../src/simulations/database/fixture.mjs';
 const source = readFileSync(new URL('../scripts/database-browser-qa.cjs', import.meta.url), 'utf8');
 const pure = source.match(/\/\/ BEGIN B-QA CONTRACT HELPERS([\s\S]*?)\/\/ END B-QA CONTRACT HELPERS/)?.[1];
 assert(pure, 'Keep pure verifier contracts separate from the browser runner');
-const { expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic, isBlockingBrowserError } =
-  runInNewContext(`${pure}\n({ expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic, isBlockingBrowserError })`, { assert });
+const { expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic, isBlockingBrowserError, assertTextLineBounds } =
+  runInNewContext(`${pure}\n({ expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic, isBlockingBrowserError, assertTextLineBounds })`, { assert });
 const plain = value => JSON.parse(JSON.stringify(value));
 
 test('database verifier preserves every preexisting A scenario and assertion byte-for-byte', () => {
@@ -255,4 +255,22 @@ test('chapter 03 introductory SQL keeps its meaning with narrow-screen line brea
   assert.equal(sql.replace(/\s+/g, ' '), "SELECT id FROM orders WHERE customer_id = 1 AND status = 'confirmed' ORDER BY id;");
   for (const line of sql.split('\n')) assert(line.length <= 28, `Introductory SQL line is too long: ${line.length}`);
   assert(source.includes('assert.deepEqual(x.overflow,[],JSON.stringify(x))'), 'Keep actual browser overflow checks strict');
+});
+
+
+test('explanation line geometry rejects hidden text overflow even if its element fits the viewport', () => {
+  const box = { left: 25, right: 210 };
+  assertTextLineBounds([{ text: 'wrapped', box, lines: [{ left: 25, right: 150 }, { left: 25, right: 200 }] }]);
+  assert.throws(() => assertTextLineBounds([{ text: 'long token', box, lines: [{ left: 25, right: 260 }] }]), /own explanation box/);
+  assert.throws(() => assertTextLineBounds([{ text: 'left overflow', box, lines: [{ left: 20, right: 150 }] }]), /own explanation box/);
+  assert(source.includes("await assertExplanationBounds(lab, '.db-current p')"));
+  assert(source.includes("await assertExplanationBounds(lab, '.db-static li p')"));
+  const detail = queries.queryFrames().at(-1).detail;
+  assert(detail.includes('COUNT(*), COUNT(o.id), COUNT(DISTINCT o.id)'));
+  assert(!detail.includes('COUNT(*)·COUNT'));
+  const css = readFileSync(new URL('../src/components/database/database.css', import.meta.url), 'utf8');
+  assert.match(css, /\.db-lab p\{[^}]*overflow-wrap:anywhere/);
+  assert(!css.includes('word-break:break-all'), 'Keep normal word boundaries when they fit');
+  assert(source.includes('320 long SQL-term explanation wrapping regression'));
+  assert(source.includes('restoredBeforeScenariosAndScreenshots: true'));
 });

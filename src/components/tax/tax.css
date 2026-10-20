@@ -330,57 +330,94 @@
   border: 2px solid var(--tax-blue);
   border-radius: 40px;
 }
-.tax-route-options {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  border-top: 2px solid #99acbf;
-  margin: 22px 0;
-  padding-top: 14px;
+/* Compare all four income branches, not just replacement text in one box. */
+.tax-route-guide {
+  margin: 20px 0 12px;
 }
-.tax-route-options span {
-  font-size: 0.85rem;
-  padding: 8px;
-  border: 1px solid #aab8c7;
-  border-radius: 8px;
-}
-.tax-route-options span[data-selected="true"] {
-  background: #dfeefb;
-  border: 2px solid var(--tax-blue);
-}
-.tax-route-steps {
-  list-style: none;
-  padding: 0 0 0 24px !important;
-  margin: 20px 0;
-  border-left: 3px solid #90a5bd;
-}
-.tax-route-steps li {
-  position: relative;
+.tax-route-branches {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 12px;
-  margin: 20px 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.tax-route-branch {
+  min-width: 0;
+  border: 2px solid #c4d0dc;
+  border-radius: 12px;
   padding: 12px;
-  background: #f4f7fa;
-  border-radius: 8px;
+}
+.tax-route-branch[data-selected="true"] {
+  border-color: var(--tax-blue);
+  background: #f4f8fd;
+}
+.tax-route-branch h4 {
+  margin: 0 0 16px;
+}
+.tax-route-branch ol {
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+.tax-route-branch li {
+  position: relative;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+  margin: 0 0 26px;
   color: #203047;
+  background: #edf2f6;
+  border-radius: 28px;
 }
-.tax-route-steps li:before {
-  content: "";
-  position: absolute;
-  left: -31px;
-  top: 24px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #7388a0;
+.tax-route-branch li[data-phase="1"] {
+  border-radius: 5px;
+  border-left: 3px solid #7388a0;
 }
-.tax-route-steps li[data-current="true"] {
+.tax-route-branch li[data-phase="2"] {
+  border-radius: 0;
+  border: 1px dashed #7388a0;
+  margin-bottom: 0;
+}
+.tax-route-branch li[data-current="true"] {
   outline: 2px solid var(--tax-blue);
+  outline-offset: 2px;
 }
-.tax-route-steps li[data-current="true"]:before {
-  background: var(--tax-blue);
+.tax-route-branch small {
+  font-size: 0.78rem;
+}
+.tax-route-branch strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+  word-break: keep-all;
+}
+.tax-route-arrow {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #203047;
+  font-size: 1.2rem;
+}
+.tax-route-account {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border: 2px dashed #a56b18;
+  padding: 16px;
+  background: #fff9ed;
+  margin-top: 20px;
+}
+.tax-route-account[data-current="true"] {
+  outline: 2px solid var(--tax-blue);
+  outline-offset: 2px;
+}
+.tax-route-account p {
+  margin: 6px 0 0;
+}
+.tax-route-question {
+  font-size: 2rem;
+  color: #935c06;
 }
 .tax-vault {
   border: 3px double #586b80;
@@ -750,6 +787,10 @@
   margin-top: 20px;
 }
 @media (max-width: 900px) {
+  .tax-route-branches {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
   .tax-vat-chain,
   .tax-deduction-scene {
     grid-template-columns: 1fr;
@@ -824,8 +865,11 @@
   .tax-destinations strong {
     text-align: right;
   }
-  .tax-route-steps li {
-    grid-template-columns: 1fr;
+  .tax-route-branch {
+    padding: 8px;
+  }
+  .tax-route-branch li {
+    padding: 8px;
   }
   .tax-housing-scene ol {
     grid-template-columns: 1fr;

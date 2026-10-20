@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import {
   payroll,
   settlement,
+  vatChain,
+  investmentRoute,
+  investmentKinds,
 } from "../src/simulations/tax/lifeModel.mjs";
 const close = (a, b) => assert(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 test("tax payroll: cash partitions, non-taxable classification is not another outflow", () => {
@@ -56,4 +59,60 @@ test("tax settlement validates all money fields", () => {
   for (const key of ["base", "deduction", "credit", "prepaid"])
     for (const v of [-1, NaN, Infinity, 1000001])
       assert.throws(() => settlement({ [key]: v }), RangeError);
+});
+test("tax VAT: telescoping taxation and price tax separation", () => {
+  for (const sale of [200, 200.01, 299.99, 300, 350.75, 500, 1000000]) {
+    const r = vatChain({ sale });
+    close(r.totalRemit, r.consumerTax);
+    close(r.consumerTax, sale / 10);
+    for (const s of r.stages) {
+      close(s.output - s.credit, s.remit);
+      close(s.price + s.output, s.consumerPayment);
+    }
+    assert.deepEqual(r.stages.slice(0, 2), vatChain().stages.slice(0, 2));
+    assert.deepEqual(
+      r.frames.map((f) => f.value),
+      r.stages.map((s) => s.remit),
+    );
+    assert.deepEqual(vatChain({ sale }), r);
+  }
+});
+test("tax VAT: zero-rated refund differs from exempt embedded input tax", () => {
+  const zero = vatChain({ mode: "zero" }),
+    exempt = vatChain({ mode: "exempt" });
+  assert.equal(zero.stages[2].remit, -20);
+  assert.equal(zero.totalRemit, 0);
+  assert.equal(exempt.stages[2].remit, 0);
+  assert.equal(exempt.embeddedTax, 20);
+  assert.equal(exempt.totalRemit, 20);
+  assert.equal(exempt.consumerTax, 0);
+  for (const sale of [200, 200.01, 299.99, 500, 1000000])
+    for (const mode of ["zero", "exempt"]) {
+      const r = vatChain({ sale, mode });
+      close(r.totalRemit, mode === "zero" ? 0 : 20);
+      close(r.stages[2].credit, mode === "zero" ? 20 : 0);
+      close(r.embeddedTax, mode === "zero" ? 0 : 20);
+      close(r.stages[2].consumerPayment, sale);
+    }
+  assert.throws(() => vatChain({ mode: "made-up" }));
+  for (const sale of [199, 199.99, -1, NaN, Infinity, 1000001, "300", null])
+    assert.throws(() => vatChain({ sale }), RangeError);
+});
+test("tax investment routes keep all four income kinds and unknown final tax", () => {
+  for (const k of investmentKinds)
+    for (const account of ["ordinary", "special"]) {
+      const r = investmentRoute(k.id, account);
+      assert.equal(r.nodes.length, 4);
+      assert.equal(r.nodes[0].detail, k.origin);
+      assert.equal(r.nodes[1].detail, k.event);
+      assert.equal(r.nodes[2].detail, k.category);
+      assert.equal(r.account, account);
+      if (account === "ordinary") assert.equal(r.nodes[3].detail, k.question);
+      else assert.match(r.nodes[3].detail, /가입·상품·해지/);
+      assert.match(r.result, /자료 부족/);
+      assert(!("tax" in r));
+      assert.deepEqual(investmentRoute(k.id, account), r);
+    }
+  assert.throws(() => investmentRoute("bogus"));
+  assert.throws(() => investmentRoute("interest", "bogus"));
 });

@@ -25,6 +25,12 @@ async function assertFileFrame(lab,f){
 // BEGIN B-QA CONTRACT HELPERS
 // These pure contracts are unit tested without starting a browser. They are not browser evidence.
 function isBlockingBrowserError(error) { return error?.name === 'TimeoutError'; }
+function assertTextLineBounds(samples) {
+  for (const sample of samples) for (const line of sample.lines) {
+    assert(line.left >= sample.box.left - 1 && line.right <= sample.box.right + 1,
+      `Text overflows its own explanation box: ${JSON.stringify(sample)}`);
+  }
+}
 function expectedReadFocus(frame, selectedRowId = '') {
   if (!frame.finished || !frame.returnedRowIds.length) return frame.selectedEntry;
   const id = selectedRowId ? Number(selectedRowId) :
@@ -137,10 +143,19 @@ async function assertGeometry(svg, edges) {
   }
   return measured;
 }
+async function assertExplanationBounds(lab, selector) {
+  const samples = await lab.locator(selector).evaluateAll(elements => elements.filter(e => e.getClientRects().length).map(e => {
+    const box = e.getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(e);
+    return { text: e.textContent, box: { left: box.left, right: box.right },
+      lines: [...range.getClientRects()].map(r => ({ left: r.left, right: r.right })) };
+  }));
+  assertTextLineBounds(samples);
+}
 async function assertFrameText(lab, frame, count) {
   assert.equal(await lab.locator('.db-step-count').innerText(), `${frame.step + 1} / ${count}단계`);
   assert.equal(await lab.locator('.db-current strong').innerText(), frame.title);
   assert.equal(await lab.locator('.db-current p').innerText(), frame.detail);
+  await assertExplanationBounds(lab, '.db-current p');
 }
 async function assertQueryFrame(lab, f, count) {
   await assertFrameText(lab, f, count);
@@ -422,6 +437,7 @@ async function exerciseBPlayback(page, spec, motion) {
   if (!await summary.evaluate(e => e.parentElement.open)) { await summary.focus(); await page.keyboard.press('Enter'); }
   assert.deepEqual(await lab.locator('.db-static li strong').allTextContents(), spec.initial.map(frame => frame.title));
   assert.deepEqual(await lab.locator('.db-static li p').allTextContents(), spec.initial.map(frame => frame.detail));
+  await assertExplanationBounds(lab, '.db-static li p');
   await snapBState(page, `${page.viewportSize().width}-b-${spec.lab}-${motion}-static-open`, lab);
   if (spec.prediction) await lab.getByLabel('먼저 예상해 보세요', { exact: true }).selectOption(spec.prediction);
   await lab.getByRole('button', { name: '재생', exact: true }).click();
@@ -454,6 +470,18 @@ function bPlaybackSpecs(queryModel, indexModel) {
 }
 async function runBatchB(page, width, queryModel, indexModel, fixtureModel) {
   await visit(page, '/database/queries-and-joins'); const queries = page.locator('[data-db-lab=queries]');
+  if (width === 320) await check('320 long SQL-term explanation wrapping regression', async () => {
+    const explanation = queries.locator('.db-current p'), original = await explanation.textContent();
+    const samples = ['COUNT(*)·COUNT(o.id)·COUNT(DISTINCT o.id)', 'COUNT(DISTINCT order_items.order_id)'];
+    try {
+      for (const text of samples) {
+        await explanation.evaluate((e, value) => { e.textContent = value; }, text);
+        await assertExplanationBounds(queries, '.db-current p');
+      }
+    } finally { await explanation.evaluate((e, value) => { e.textContent = value; }, original); }
+    assert.equal(await explanation.textContent(), original);
+    return { syntheticStyleFixture: true, restoredBeforeScenariosAndScreenshots: true, samples };
+  });
   const queryShots = new Map([
     ['1:inner:confirmed:count-star', 'fork-count3'], ['1:inner:confirmed:count-distinct-order', 'distinct2'],
     ['3:left:confirmed:count-star', 'left-null-sum-null'], ['3:inner:confirmed:count-star', 'inner-no-group'],

@@ -76,3 +76,23 @@ head `1a8370d4b9781a444c8e8a56509d6cec72972f97`, PR checkout `95ff3910b458f315ef
 다음 게시 통합에는 main `0071bff4c992376bea65ad3a12ce86fafbbe98be`를 그대로 조상으로 보존하고 K8s의 최소 진단/회귀/최종 기록 `3026e4b671e7c098e1a4bd160e453260b6336504`와 DB A의 문서 전용 마감 `17d4f2f28287b759444d3ec42c1808d698efce17`만 추가한다. K8s의 실제 엄격한 focused 94/94 및 원래 run의 실패 구분은 [그 기록](KUBERNETES-VISUAL-IMPROVEMENTS-VERIFICATION.md)을 따른다. DB B·주거 B·세금 C·회계 A는 포함하지 않는다. K8s verifier가 바뀌므로 최종 main 범위에는 Kubernetes도 추가하며, 보험·투자·DB 전체 브라우저 검사는 재실행했다고 주장하지 않는다. 이 최종 main의 CI·Pages·정확한 게시 바이트는 실행 후 별도로 기록한다.
 
 최종 진단/문서 통합 후 전체 **909/909 테스트**, 세금·주거·K8s의 집중 진단 회귀 **9/9**, TypeScript·Vite production 빌드와 `git diff --check`를 통과했다. CSS `f1ede4b3…`, JS `2191523f…`의 전체 SHA-256과 파일 크기가 앞서 검토한 production과 다시 일치했다. 실제 분류기는 `affected`: tax·book-volumes·kubernetes·housing, 생략은 insurance·investing·database로 확인했다. main 반영 뒤 production과 published 결과는 별도다.
+
+
+## 정확한 main·Pages·실제 게시 완료 — 2026-10-20
+
+main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`, tree `6d5e0496559139986a1c89f7eb753321261eb1f8`의 [run39374566657](https://github.com/Middleages/my-books/actions/runs/39374566657)는 build·선택한 네 production suite·Pages 배포·네 published suite, 총 10개 job이 모두 성공했다. 전체 단위 테스트 909/909와 빌드를 통과한 정확한 통합본이다. 실제 selection은 `affected`, `tax`, `book-volumes`, `kubernetes`, `housing`이며 보험·투자·DB 전체 브라우저 검사는 이번 실행에서 의도적으로 생략했다. 생략을 통과로 해석하지 않는다.
+
+게시 artifact의 sourceSha는 모두 위 main, sourceChanges는 비어 있으며 Chromium155.0.8059.39다.
+
+- tax **73/73 검사·PNG 50개**, [artifact12243366034](https://github.com/Middleages/my-books/actions/runs/39374566657/artifacts/12243366034), ZIP SHA-256 `9daf84f3d82d1a8f07ef4851628b3a9911b996ecf8e9effcad357cc4bbb6b784`.
+- housing **46/46·PNG 28개**, [artifact12243091719](https://github.com/Middleages/my-books/actions/runs/39374566657/artifacts/12243091719), ZIP `1337eef124f9ff5c0e3693ee3677d11c0d67b13f9c1e1e887b5ec41dd2701e9e`.
+- kubernetes **94/94·PNG 146개**, [artifact12242663256](https://github.com/Middleages/my-books/actions/runs/39374566657/artifacts/12242663256), ZIP `8958bfbcf2c7f00f6f12994175bfdd2d392ad809ee7c1a3e124d926a4cbeacf5`. 같은 main의 production도94/94·PNG146·오류0이다.
+- book-volumes **14/14·PNG 36개·오류 0**, [artifact12243121463](https://github.com/Middleages/my-books/actions/runs/39374566657/artifacts/12243121463), ZIP `b88b8b267b6810aabc36fac1ea3bb11aaadac16b65d69aaa087abd9774db05b4`.
+
+세금·주거·Kubernetes 게시 검사는 각각 애플리케이션 오류 0이다. 각 suite에서 정확히 관찰한 `https://middleages.github.io/favicon.ico`의 404 한 건은 비애플리케이션 진단에 URL·문구와 함께 보존했다. 따라서 전체 콘솔 오류가 모두 0이라고 주장하지 않는다. 앱 경로, 미확인 URL, 다른 상태와 요청 실패는 계속 실패 대상이다.
+
+네 게시 suite가 내려받아 대조한 JS `index-BqMq_R2l.js` 2377701바이트의 SHA-256은 `2191523fa3e45112528f514631933d35d00da4ad8083b15bdeb9bd596ba71f49`, CSS `index-4noGetxv.css` 309708바이트는 `f1ede4b3df8ad7867d5c441ccc0dd306a81d65b58c54fdb140945a73a20e14f8`이다. 앞서 직접 검토한 최종 production과 같은 앱 바이트다.
+
+게시 원본 PNG에서 세금03·04 각각의 1440px 초기, 320px 변경, 390px reduced-motion/정적 표를 직접 열었다. 지급액300의215+25+60 분할, 범례 폭과 금액 눈금의 구분, 결정70·선납150·환급80과 현재 입력 이유가 일치했다. 주거01의320px 변경과02의390px reduced-motion/정적 표, Kubernetes의390px desired-state 정적 대안,1440px 전체 홈과320px 세금 소개 헤더도 직접 확인했다. 모바일 경로·반환·원금/월세 눈금, 단계 제어의 인접, UID 교체·Ready2, 고정 권차와 읽음 분모가 유지됐다. 모든 생성 PNG를 사람이 하나씩 본 것으로 주장하지 않는다.
+
+이로써 B03–04와 주거 A의 main·Pages·정확한 게시 자산·해당 화면의 직접 검토를 완료했다. 실제 Safari/Firefox·터치 기기·스크린리더 음성 출력·학습 효과는 미검증이며 C05–06의 후보 검증과 공개는 별도 게이트다.

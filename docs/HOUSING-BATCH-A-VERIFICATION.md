@@ -66,3 +66,14 @@ PR #16 후보 `e30af9b9b89d855129621818c99b75df15197f60`, Actions run `393667866
 게시 전에 검증기만 보강한다. 콘솔 문구에 favicon이 포함됐다는 이유로 제외하던 규칙을 없애고, 이미 실사이트에서 관찰한 정확한 `https://middleages.github.io/favicon.ico`의 404만 비애플리케이션 진단으로 별도 보존한다. 앱 안의 favicon·다른 URL/호스트/status·출처 없는 오류·요청 실패는 실패로 남는다. 일반·reduced-motion 양쪽에 콘솔 source/line/column와 실패 응답 URL/status·requestfailed 기록을 설치했다. 3개 회귀 테스트로 양성·음성 분류와 이벤트 보존을 확인했다. 새 검증기의 production 재실행 및 실제 Pages 결과는 다음 기록에 구분한다.
 
 엄격한 진단 보강 후 [run39372275782](https://github.com/Middleages/my-books/actions/runs/39372275782)의 정확한 checkout `1d985a42cb7790845e0713c492bd5bd58a35940f`에서 housing 46/46·PNG 28개를 다시 통과했다. errors·consoleDiagnostics·resourceDiagnostics·nonApplicationDiagnostics는 모두 0이며 앱 SHA-256은 이전 합본과 같다. 작성자가 전달한 최소 패치만 적용됐고 320px 임차 변경 원본을 직접 다시 검토했다. artifact와 최종 게시 전 통합 범위는 [세금 B 기록](TAX-BATCH-B-VERIFICATION.md)의 마지막 절에 남긴다. 이 production 통과와 실제 Pages 통과는 구분한다.
+
+
+## 정확한 main과 실제 게시 완료 — 2026-10-20
+
+세금 B와 함께 main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`(tree `6d5e0496559139986a1c89f7eb753321261eb1f8`)에 통합했다. [run39374566657](https://github.com/Middleages/my-books/actions/runs/39374566657)의 전체10개 job이 성공했다. 전체909/909 단위 테스트·빌드와 선택한 tax·housing·Kubernetes·권차 production 및 실제 게시 검증을 구분해 통과했다. 이번 실행에서 보험·투자·DB 전체 브라우저 회귀를 한 것은 아니다.
+
+housing published는 **46/46 검사·PNG28개·애플리케이션 오류0**이며 sourceSha가 위 main, sourceChanges가 비어 있다. [artifact12243091719](https://github.com/Middleages/my-books/actions/runs/39374566657/artifacts/12243091719)의 ZIP SHA-256은 `1337eef124f9ff5c0e3693ee3677d11c0d67b13f9c1e1e887b5ec41dd2701e9e`다. 정확히 관찰한 호스트 기본 `https://middleages.github.io/favicon.ico`의404 한 건만 URL과 함께 별도 진단으로 남겼으며 전체 콘솔 오류0으로 표현하지 않는다. 미확인·앱 오류는 여전히 실패한다.
+
+게시 JS `index-BqMq_R2l.js` SHA-256 `2191523fa3e45112528f514631933d35d00da4ad8083b15bdeb9bd596ba71f49`, CSS `index-4noGetxv.css` SHA-256 `f1ede4b3df8ad7867d5c441ccc0dd306a81d65b58c54fdb140945a73a20e14f8`는 직접 검토한 합본 production과 같다. 통합 담당자가 게시320px 권리 변경·390px 임차 reduced-motion/정적 표와 홈을 직접 열어 방향 중립 경로·현금/채무·원금/월세의 별도 눈금·24개월 반환·시간축 인접 제어·주거6권 및0/2 읽음 분모를 확인했다. 이전 작성자·독립 검토자의 production 검토는 앞 절대로 유지된다.
+
+A 소개·01–02의 공개 게이트는 완료했다. B 이후는 별도 후보와 순차 공개 게이트를 따르며 실제 기기·Safari·스크린리더 음성 출력은 미검증이다. 합본의 다른 suite와 정확한 검증 범위는 [세금 B 최종 기록](TAX-BATCH-B-VERIFICATION.md)을 따른다.
