@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [insurance, investing, kubernetes]
+        suite: [insurance, investing, tax, book-volumes, kubernetes]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -82,7 +82,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [insurance, investing, kubernetes]
+        suite: [insurance, investing, tax, book-volumes, kubernetes]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

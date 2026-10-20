@@ -50,6 +50,19 @@ read-only 리뷰에서 DNS 실패 화살표, 현재 API 연결의 양방향 표�
 
 2026-10-20: [ConfigMap 전달·env/subPath](https://kubernetes.io/docs/concepts/configuration/configmap/), [Deployment revision](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [K3s datastore와 token](https://docs.k3s.io/datastore/backup-restore), [NGINX upstream TLS 검증](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/). 기존 버전 계약·실습 패키지·미실행 범위는 변경하지 않는다.
 
+## 두 번째 실제 production 검증
+
+- [run 39357733843](https://github.com/Middleages/my-books/actions/runs/39357733843): build, insurance, investing, kubernetes 모두 성공. PR이므로 deploy/published job은 의도대로 skipped다.
+- head `f257819ba8ebbf9009829919dfa970733d79195c`, 실제 PR merge checkout `3ff59afa7a9e3ef0a57a6c7ddf273f9f09e7ca29`, tree `f3594688477b8488be88babbd431224e5e9d3b29`. 이 tree는 보험 harness 수정 main `a514d0c`를 보존 통합한 로컬 tree와 일치한다.
+- Kubernetes 94/94 checks, 113 PNG. Chromium 155.0.8059.84. [검증 artifact](https://github.com/Middleages/my-books/actions/runs/39357733843/artifacts/12236201830)의 ZIP SHA-256은 `8b710a85d06760f6d67837ad2df28da55f970583aec2f422f93aa309006be350`으로 다운로드 후 대조했다.
+- 1440/390/320에서 모든 route, 실제 node/선 연결, 비포화 비율, 키보드 재생·정지·재실행·초기화, 실제 열린 정적 대안, 390 reduced-motion, 읽음 기록 보존, console 및 텍스트 glyph 넘침 검사 통과. 로컬 main 보존 합본의 전체 Node 테스트는 836/836.
+- 실제 PNG에서 API 중심 제어와 별도 HTTP, source/file v2와 앱 v1, 사라진 Pod ghost와 남은 PV, TLS의 별도 실패, Helm 2 / Deployment 1, 진단의 CPU·포트 경계, 누락 PV와 독립 trust store를 확인했다.
+- 독립 픽셀 검토에서 남은 작은 표시 문제 2건을 찾았다. VM 진입선이 경계 제목을 통과해 제목을 오른쪽으로 옮겼고, 모바일에서 복구 `?`까지 회전하던 CSS를 방향 화살표만 회전하도록 바꿨다. 선–제목 교차와 물음표 transform 검사를 추가했다. 이 두 수정은 후속 캡처로 확인해야 한다.
+
+### 긴 장면과 조작 거리
+
+두 번째 run의 닫힌 초기 lab 전체 높이(CSS px)는 04: 1440 폭 1743, 390 폭 2944, 320 폭 3171; 05: 1686 / 2378 / 2577이다. 핵심 장면 자체는 04: 785 / 1318 / 1471; 05: 670 / 693 / 778이다. 두 장 모두 재생 조작의 아래 경계에서 핵심 장면 위 경계까지 16px이다. 02도 같은 조작 간격을 확인했다. 원 감사의 1180/393 폭·다른 DPR/스크롤바 관측과 직접적인 감소율로 비교하지 않는다. 모바일에서는 여전히 본문과 조작이 길지만 선택 관계·TLS 구간을 서로 떨어진 설명 카드에서 재조립할 필요가 없도록 묶었다.
+
 ## 남은 검증
 
-Actions PNG 및 실제 DOM 결과의 검토·필요한 수정, 최종 전체 test/build, 최신 main 보존 통합, 허가된 게시 창에서 Actions/Pages/실제 자산 검증이 남는다. 실제 클러스터 설치·Helm install/upgrade·복원·사내망 연결, 실제 모바일 기기·Safari·스크린리더 음성은 이 작업에서 실행하지 않는다.
+VM 제목·물음표 수정의 실제 픽셀 확인, Helm rollback 전후와 나머지 진단 사례·token 누락의 추가 PNG, 최종 전체 test/build 및 병행 작업의 최신 main 보존 통합이 남는다. 허가된 게시 창 전에는 main/Pages를 갱신하지 않는다. 게시 뒤에만 실제 자산·published QA 결과를 기록한다. 실제 클러스터 설치·Helm install/upgrade·복원·사내망 연결, 실제 모바일 기기·Safari·스크린리더 음성은 이 작업에서 실행하지 않는다.

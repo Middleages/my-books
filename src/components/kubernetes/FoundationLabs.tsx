@@ -325,7 +325,7 @@ export function ClusterLab() {
       <Playback player={player} count={frames.length} reset={reset} />
       <div className="k8v-cluster-scene" data-scene="cluster">
         <h3>클러스터 역할과 바깥의 호출자</h3>
-        <ConnectedScene {...clusterDiagram(f,path)} boundaryLabel="단일 VM의 내부 역할" label={path==='control'?'제어 관계 · API를 중심으로 따로 관찰하고 기록':'HTTP 연결 · API를 지나지 않는 앱 경로'} />
+        <ConnectedScene {...clusterDiagram(f,path)} boundaryLabel="단일 VM 내부" label={path==='control'?'제어 관계 · API를 중심으로 따로 관찰하고 기록':'HTTP 연결 · API를 지나지 않는 앱 경로'} />
         <p className="k8v-model-note">{path==='control'?'API·controller·scheduler는 control plane, kubelet·runtime·앱은 노드 실행 역할입니다. 이 실습에서는 한 VM에 함께 있으며 위아래 길이는 거리나 시간을 뜻하지 않습니다. HTTP 요청은 별도 경로에서 관찰합니다.':'이미 실행 중인 같은 study-web 앱의 요청 경로입니다. Service는 대상 선택을 요약한 논리적 접점이며 API·scheduler·controller가 HTTP 중계 사슬에 끼지 않습니다.'}</p>
       </div>
       <p className="k8-edge">

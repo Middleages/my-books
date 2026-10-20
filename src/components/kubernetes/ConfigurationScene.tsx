@@ -12,7 +12,7 @@ export function ConfigurationScene({f}:{f:ConfigurationFrame}){
    <div className={`k8v-transfer ${!flow.deliveryCurrent?'k8v-transfer-stale':''}`} data-transfer="delivery"><b aria-hidden="true">↓</b><span>{flow.deliveryCurrent?'값 일치':'전달 안 됨'}<br/>{f.delivery==='env'?'새 프로세스 생성 시':f.delivery==='subpath'?'새 Pod 연결 시':'파일 갱신 단계'}</span></div>
    <div className="k8c-process"><h3>Pod: {flow.pod}</h3>
     <div className={`k8c-value k8v-value-v${flow.delivered.version}`} data-config="delivered"><small>② {f.delivery==='env'?'실행 환경변수':f.delivery==='subpath'?'subPath 파일':'/config 일반 볼륨 파일'}</small><Token {...flow.delivered}/></div>
-    <div className={`k8v-transfer ${!flow.readCurrent?'k8v-transfer-stale':''}`} data-transfer="read"><b aria-hidden="true">↓</b><span>{flow.readCurrent?'읽은 값 일치':'✕ 아직 읽지 않은 값'} · 파일 변경 ≠ 메모리 변경</span></div>
+    <div className={`k8v-transfer ${!flow.readCurrent?'k8v-transfer-stale':''}`} data-transfer="read"><b aria-hidden="true">↓</b><span>{flow.readCurrent?'읽은 값 일치':'✕ 아직 읽지 않은 값'} · {f.delivery==='env'?'환경변수는 프로세스 생성 시 받음':'파일 변경 ≠ 메모리 변경'}</span></div>
     <div className={`k8c-value k8c-memory k8v-value-v${flow.app.version}`} data-config="app"><small>③ 앱 프로세스 메모리</small><Token {...flow.app}/><span>{flow.process}</span></div>
    </div>
   </div>
