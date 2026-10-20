@@ -9,14 +9,27 @@ const catalog=fs.readFileSync(path.join(root,'src/catalog.ts'),'utf8');
 const chapters=[...catalog.matchAll(/\bid:\s*"([^"]+)"\s*,\s*bookId:\s*"kubernetes"\s*,\s*readId:\s*"([^"]+)"/g)].map(m=>({id:m[1],readId:m[2]}));
 const appendices=['lab-first-deployment','lab-recovery','lab-airgap'];
 const routes=['',...chapters.map(c=>c.id),...appendices];
-const results={sourceSha:git('rev-parse','HEAD'),sourceTree:git('rev-parse','HEAD^{tree}'),changes:git('status','--porcelain'),started:new Date().toISOString(),checks:[],screenshots:[],errors:[],visualReview:'PNG generation is not visual approval. Inspect actual pixels; no cluster, real-device or screen-reader certification.'};
+const results={sourceSha:git('rev-parse','HEAD'),sourceTree:git('rev-parse','HEAD^{tree}'),changes:git('status','--porcelain'),started:new Date().toISOString(),checks:[],screenshots:[],errors:[],diagnostics:[],nonApplicationDiagnostics:[],visualReview:'PNG generation is not visual approval. Inspect actual pixels; no cluster, real-device or screen-reader certification.'};
 const delay=ms=>new Promise(r=>setTimeout(r,ms));let browser,server,base;
-function attachDiagnostics(page,label){
- page.on('pageerror',e=>results.errors.push({kind:'pageerror',label,page:page.url(),message:String(e)}));
- page.on('console',m=>{if(m.type()==='error')results.errors.push({kind:'console',label,page:page.url(),source:m.location().url,line:m.location().lineNumber,column:m.location().columnNumber,message:m.text()});});
- page.on('requestfailed',r=>results.errors.push({kind:'requestfailed',label,page:page.url(),source:r.url(),resourceType:r.resourceType(),message:r.failure()?.errorText}));
- page.on('response',r=>{if(r.status()>=400)results.errors.push({kind:'http',label,page:page.url(),source:r.url(),status:r.status(),resourceType:r.request().resourceType()});});
+// Observed by the strict live probe: only the host-root default favicon 404.
+// App assets, unknown locations, other origins/statuses, page and request errors stay fatal.
+function classifyDiagnostic(entry,url){
+ const knownHostDefault=url==='https://middleages.github.io/my-books/'
+  && entry.kind==='console' && entry.source==='https://middleages.github.io/favicon.ico'
+  && /^Failed to load resource: the server responded with a status of 404(?: \([^)]*\))?$/.test(entry.message);
+ return {...entry,classification:knownHostDefault?'host-default-favicon-404':'application'};
 }
+function attachDiagnostics(page,label,report=results,url=base){
+ const record=raw=>{const entry=classifyDiagnostic(raw,url);report.diagnostics.push(entry);
+  if(entry.classification==='host-default-favicon-404')report.nonApplicationDiagnostics.push(entry);
+  else report.errors.push(entry);
+ };
+ page.on('pageerror',e=>record({kind:'pageerror',label,page:page.url(),message:String(e)}));
+ page.on('console',m=>{if(m.type()==='error')record({kind:'console',label,page:page.url(),source:m.location().url,line:m.location().lineNumber,column:m.location().columnNumber,message:m.text()});});
+ page.on('requestfailed',r=>record({kind:'requestfailed',label,page:page.url(),source:r.url(),resourceType:r.resourceType(),message:r.failure()?.errorText}));
+ page.on('response',r=>{if(r.status()>=400)record({kind:'http',label,page:page.url(),source:r.url(),status:r.status(),resourceType:r.request().resourceType()});});
+}
+module.exports={classifyDiagnostic,attachDiagnostics};
 
 async function shot(page,name,locator){await page.evaluate(()=>document.fonts.ready);const file=name.replace(/[^a-z0-9_-]/gi,'-')+'.png';await (locator||page).screenshot({path:path.join(out,file),...(locator?{}:{fullPage:true}),animations:'disabled'});results.screenshots.push(file);}
 async function check(name,page,fn){try{results.checks.push({name,status:'passed',details:await fn()});}catch(e){results.checks.push({name,status:'failed',error:e.stack});if(page)await shot(page,`FAIL-${name}`).catch(()=>{});}console.log(results.checks.at(-1).status,name);}
@@ -77,7 +90,7 @@ async function scenarios(page,width){
  await check(`${width}-backup-and-trust-boundaries`,page,async()=>{await visit(page,'lab-recovery');const lab=page.locator('.k8-lab');await select(lab,'보관한 재료','no-pv');await end(page,lab);assert.equal(await lab.locator('[data-coverage="pv"].k8v-coverage-missing').count(),1);assert.equal(await lab.locator('[data-coverage="api"].k8v-coverage-missing').count(),0);assert.equal(await lab.locator('[data-coverage="db"] .k8v-coverage-arrow').evaluate(e=>getComputedStyle(e).transform),'none');await shot(page,`${width}-14-missing-pv`,lab.locator('[data-scene="recovery"]'));await select(lab,'보관한 재료','no-token');await end(page,lab);assert.equal(await lab.locator('[data-coverage="api"].k8v-coverage-missing').count(),1);await shot(page,`${width}-14-missing-token`,lab.locator('[data-scene="recovery"]'));await visit(page,'lab-airgap');assert.equal(await page.locator('[data-trust]').count(),4);assert.equal(await page.locator('[data-trust="proxy"]').count(),1);await shot(page,`${width}-15-trust-boundaries`,page.locator('[data-scene="airgap"]'));return audit(page);});
 }
 async function assets(){const hash=b=>createHash('sha256').update(b).digest('hex');const context=await browser.newContext();try{const expected=fs.readFileSync(path.join(dist,'index.html'),'utf8');const names=s=>[...s.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css))["']/g)].map(m=>path.basename(m[1])).sort();let actual;const until=Date.now()+(process.env.LIVE_URL?180000:0);do{actual=await (await context.request.get(base+'?qa='+Date.now())).text();if(JSON.stringify(names(actual))===JSON.stringify(names(expected)))break;await delay(5000);}while(Date.now()<until);assert.deepEqual(names(actual),names(expected));const files=[];for(const name of names(expected)){const response=await context.request.get(base+'assets/'+name+'?qa='+Date.now()),received=await response.body(),local=fs.readFileSync(path.join(dist,'assets',name));assert.equal(response.status(),200);assert.equal(hash(received),hash(local));files.push({name,sha256:hash(local),bytes:local.length});}return files;}finally{await context.close();}}
-(async()=>{try{
+if(require.main===module)(async()=>{try{
  assert.equal(chapters.length,12,'All twelve existing chapter IDs must remain');
  if(process.env.LIVE_URL)base=process.env.LIVE_URL.replace(/\/?$/,'/');else{server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(pathname.endsWith('favicon.ico')){res.writeHead(204);return res.end();}const relative=pathname.replace(/^\/my-books\/?/,'')||'index.html',file=path.resolve(dist,relative);if(!file.startsWith(dist+path.sep)||!fs.existsSync(file)||fs.statSync(file).isDirectory()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'})[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);});await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});base=`http://127.0.0.1:${server.address().port}/my-books/`;}
  const {chromium}=require('playwright');browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});results.browser=browser.version();results.base=base;
