@@ -150,6 +150,22 @@ async function setRange(lab, index, value) {
   await delay(250);
 }
 async function bars(page) {
+  // Let the finite CSS transition reach its endpoint before comparing geometry.
+  // Values may update immediately while an old width is still interpolating.
+  await page.waitForFunction(
+    () =>
+      [...document.querySelectorAll(".tax-fill")].every((e) => {
+        const value = +e.dataset.value,
+          max = +e.dataset.max;
+        const actual = e.getBoundingClientRect().width,
+          track = e.parentElement.getBoundingClientRect().width;
+        return value === 0
+          ? actual < 0.01
+          : Math.abs(actual - (track * Math.abs(value)) / max) <= 1;
+      }),
+    undefined,
+    { timeout: 3000 },
+  );
   const rows = await page.locator(".tax-fill").evaluateAll((es) =>
     es.map((e) => ({
       value: +e.dataset.value,
@@ -160,7 +176,7 @@ async function bars(page) {
   );
   for (const b of rows)
     assert(
-      Math.abs(b.width / b.track - Math.abs(b.value) / b.max) < 0.02,
+      Math.abs(b.width - (b.track * Math.abs(b.value)) / b.max) <= 1,
       JSON.stringify(b),
     );
   return rows;
@@ -244,7 +260,39 @@ async function scenarios(page, id) {
             .tax.toLocaleString("ko-KR", { maximumFractionDigits: 4 }),
         ),
       );
+      const data = r.progressiveTax(n);
+      assert.deepEqual(
+        await lab
+          .locator(".tax-fill")
+          .evaluateAll((es) => es.map((e) => +e.dataset.value)),
+        [...data.parts.map((p) => p.base), data.tax],
+      );
       await bars(page);
+      const pieces = await lab
+        .locator(".tax-base-stack i")
+        .evaluateAll((es) =>
+          es.map((e) => ({
+            base: +e.dataset.base,
+            width: e.getBoundingClientRect().width,
+            track: e.parentElement.getBoundingClientRect().width,
+          })),
+        );
+      assert.deepEqual(
+        pieces.map((p) => p.base),
+        data.parts.map((p) => p.base),
+      );
+      for (const piece of pieces)
+        assert(Math.abs(piece.width - (piece.track * piece.base) / 600) <= 1);
+      const stack = await lab.locator(".tax-base-stack").boundingBox(),
+        track = await lab
+          .locator(".tax-bracket-row .tax-track")
+          .first()
+          .boundingBox();
+      assert(
+        Math.abs(stack.x - track.x) < 1 &&
+          Math.abs(stack.width - track.width) < 1,
+        "total stack and bracket axes must coincide",
+      );
     }
     await lab.getByRole("button", { name: "0", exact: true }).click();
     assert.match(await lab.locator(".tax-result").innerText(), /정의되지 않음/);
@@ -284,6 +332,12 @@ async function scenarios(page, id) {
     for (const mode of ["taxable", "zero", "exempt"]) {
       await lab.locator("select").selectOption(mode);
       const r = model.vatChain({ mode });
+      assert.deepEqual(
+        await lab
+          .locator(".tax-fill")
+          .evaluateAll((es) => es.map((e) => +e.dataset.value)),
+        r.stages.flatMap((s) => [s.output, s.credit]),
+      );
       assert(
         (await lab.locator(".tax-result").innerText()).includes(
           `납부 계산의 합 ${r.totalRemit}`,
@@ -394,6 +448,23 @@ async function scenarios(page, id) {
         );
       }
     }
+  }
+  for (const prediction of await lab.locator(".tax-prediction").all()) {
+    await prediction.locator('input[value="yes"]').check();
+    await prediction
+      .getByRole("button", { name: "이유 확인", exact: true })
+      .click();
+    assert(
+      (await prediction.locator('[role="status"]').innerText()).length > 25,
+    );
+    await prediction.locator('input[value="no"]').check();
+    assert.equal(await prediction.locator('[role="status"]').count(), 0);
+    await prediction
+      .getByRole("button", { name: "이유 확인", exact: true })
+      .click();
+    assert(
+      (await prediction.locator('[role="status"]').innerText()).length > 25,
+    );
   }
   await audit(page);
   return { id, verified: true };
@@ -517,7 +588,11 @@ async function assets() {
         await page.evaluate(() =>
           localStorage.setItem(
             "my-books:read:v1",
-            JSON.stringify(["future/unknown", "network/packets"]),
+            JSON.stringify([
+              "future/unknown",
+              "network/addressing",
+              "parallel",
+            ]),
           ),
         );
         await visit(page, "tax/tax-events");
@@ -531,7 +606,8 @@ async function assets() {
         );
         assert(read.includes("tax/tax-events"));
         assert(read.includes("future/unknown"));
-        assert(read.includes("network/packets"));
+        assert(read.includes("network/addressing"));
+        assert(read.includes("parallel"));
         await visit(page, "");
         const progress = await page
           .locator('.home-book[href="#/tax"] progress')
@@ -583,6 +659,13 @@ async function assets() {
       await visit(page, "tax/progressive-tax");
       const range = page.locator(".tax-lab input[type=range]");
       await range.focus();
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Shift+Tab");
+      assert(
+        await range.evaluate(
+          (e) => document.activeElement === e && e.matches(":focus-visible"),
+        ),
+      );
       assert.notEqual(
         await range.evaluate((e) => getComputedStyle(e).outlineStyle),
         "none",
@@ -607,7 +690,14 @@ async function assets() {
     ])
       await check("existing-" + route, page, async () => {
         await visit(page, route);
-        assert((await page.locator("main").innerText()).length > 1000);
+        assert(allRoutes.has("#/" + route));
+        assert((await page.locator("main h1").innerText()).length > 3);
+        assert.equal(
+          await page
+            .getByRole("button", { name: "읽음으로 표시", exact: true })
+            .count(),
+          1,
+        );
       });
     await ctx.close();
     assert.deepEqual(results.errors, [], "console/page errors");

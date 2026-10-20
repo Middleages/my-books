@@ -24,31 +24,6 @@ export function TaxEventsLab() {
       title="돈의 화살표와 과세 검토 지점"
       note="과세 여부를 단정하지 않는 사건 지도입니다. 화살표는 현금·재산 이동 또는 보유 관계이며 세금 납부 경로가 아닙니다."
     >
-      <label>
-        생활 속 사건
-        <select
-          value={id}
-          onChange={(event) => {
-            setId(event.target.value);
-            p.rewind();
-          }}
-        >
-          {events.map((x) => (
-            <option key={x.id} value={x.id}>
-              {x.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      {p.controls}
-      <button
-        onClick={() => {
-          setId("salary");
-          p.rewind();
-        }}
-      >
-        조건까지 초기화
-      </button>
       <figure className={`tax-event-scene ${id}`}>
         <div className="tax-origin">
           <span aria-hidden="true">
@@ -79,6 +54,31 @@ export function TaxEventsLab() {
           존재와 세액 확정은 다릅니다.
         </figcaption>
       </figure>
+      <label>
+        생활 속 사건
+        <select
+          value={id}
+          onChange={(event) => {
+            setId(event.target.value);
+            p.rewind();
+          }}
+        >
+          {events.map((x) => (
+            <option key={x.id} value={x.id}>
+              {x.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      {p.controls}
+      <button
+        onClick={() => {
+          setId("salary");
+          p.rewind();
+        }}
+      >
+        조건까지 초기화
+      </button>
       <Stage {...phases[p.step]} />
       <Prediction
         question="내 계좌 사이 원금 이체도 그만큼 새 소득일까요?"
@@ -104,6 +104,50 @@ export function ProgressiveTaxLab() {
         같은 0–600 단위 눈금입니다. 아래 세액 막대는 별도의 0–180 눈금으로
         표시합니다.
       </p>
+      <figure className="tax-progressive-scene">
+        <h4>과세표준 분할 · 길이 0–600</h4>
+        <div className="tax-base-grid">
+          <span>전체 {fmt(amount)}</span>
+          <div
+            className="tax-stack tax-base-stack"
+            role="img"
+            aria-label={`구간별 과세 금액 ${r.parts.map((x) => fmt(x.base)).join(", ")}`}
+          >
+            {r.parts.map((v, i) => (
+              <i
+                className={["teal", "blue", "gold"][i]}
+                key={i}
+                data-base={v.base}
+                style={{ width: `${(v.base / 600) * 100}%` }}
+              />
+            ))}
+          </div>
+          <span>0–600</span>
+        </div>
+        {r.parts.map((v, i) => (
+          <div
+            key={i}
+            className="tax-bracket-row"
+            data-current={p.step === i + 1}
+          >
+            <Bar
+              label={`${i + 1}구간 · ${v.rate * 100}%`}
+              value={v.base}
+              max={600}
+              color={["teal", "blue", "gold"][i]}
+            />
+            <p>
+              {fmt(v.base)} × {v.rate * 100}% = 세액 {fmt(v.tax)}
+            </p>
+          </div>
+        ))}
+        <h4>전체 산출세액 · 길이 0–180</h4>
+        <Bar label="세액 합계" value={r.tax} max={180} />
+        <figcaption>
+          청록: 0–100 / 파랑: 100–300 / 금색: 300 초과. 위의 분할 띠는 실제 금액
+          비율을 보존하며 빈 부분은 아직 없는 과세표준입니다.
+        </figcaption>
+      </figure>
       <Range
         label="과세표준"
         value={amount}
@@ -141,46 +185,6 @@ export function ProgressiveTaxLab() {
       >
         조건까지 초기화
       </button>
-      <figure className="tax-progressive-scene">
-        <h4>과세표준 분할 · 길이 0–600</h4>
-        <div
-          className="tax-stack tax-base-stack"
-          role="img"
-          aria-label={`구간별 과세 금액 ${r.parts.map((x) => fmt(x.base)).join(", ")}`}
-        >
-          {r.parts.map((v, i) => (
-            <i
-              className={["teal", "blue", "gold"][i]}
-              key={i}
-              data-base={v.base}
-              style={{ width: `${(v.base / 600) * 100}%` }}
-            />
-          ))}
-        </div>
-        {r.parts.map((v, i) => (
-          <div
-            key={i}
-            className="tax-bracket-row"
-            data-current={p.step === i + 1}
-          >
-            <Bar
-              label={`${i + 1}구간 · ${v.rate * 100}%`}
-              value={v.base}
-              max={600}
-              color={["teal", "blue", "gold"][i]}
-            />
-            <p>
-              {fmt(v.base)} × {v.rate * 100}% = 세액 {fmt(v.tax)}
-            </p>
-          </div>
-        ))}
-        <h4>전체 산출세액 · 길이 0–180</h4>
-        <Bar label="세액 합계" value={r.tax} max={180} />
-        <figcaption>
-          청록: 0–100 / 파랑: 100–300 / 금색: 300 초과. 위의 분할 띠는 실제 금액
-          비율을 보존하며 빈 부분은 아직 없는 과세표준입니다.
-        </figcaption>
-      </figure>
       <Stage
         label={`${p.step}/3 구간 관찰`}
         detail={

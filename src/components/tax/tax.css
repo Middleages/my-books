@@ -13,6 +13,11 @@
 .tax-lab * {
   box-sizing: border-box;
 }
+.tax-lab h3,
+.tax-lab h4 {
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
 .tax-lab h3 {
   margin-top: 0;
 }
@@ -549,13 +554,6 @@
   padding: 0 4px 26px;
   border-left: 2px solid #8b9bb0;
   border-bottom: 2px solid #8b9bb0;
-  background: repeating-linear-gradient(
-    to top,
-    transparent 0,
-    transparent 42px,
-    #e4e9ef 43px,
-    #e4e9ef 44px
-  );
 }
 .tax-time-columns button {
   width: 0;
@@ -584,10 +582,36 @@
   transform: translateX(-50%);
   font-size: 0.72rem;
 }
-.tax-time-columns button[data-current="true"] {
-  outline: 3px solid #b55b19;
-  outline-offset: 0;
-  background: #fff4dc;
+.tax-time-chart {
+  position: relative;
+  padding-left: 34px;
+  margin-top: 32px;
+}
+.tax-time-axis {
+  position: absolute;
+  left: 0;
+  top: -7px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: right;
+  width: 28px;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+.tax-time-columns button[data-current="true"]::after {
+  content: "▼";
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #a64c0c;
+  font-size: 16px;
+}
+.tax-time-columns button[data-current="true"] span {
+  font-weight: 800;
+  text-decoration: underline;
 }
 .tax-time-columns button[data-adjustment="refund"] i {
   background: var(--tax-teal);
@@ -710,11 +734,11 @@
   grid-column: 1/-1;
 }
 .tax-bracket-row {
-  padding: 6px 12px;
-  border-left: 4px solid transparent;
+  padding: 6px 0;
+  border-radius: 6px;
 }
 .tax-bracket-row[data-current="true"] {
-  border-color: var(--tax-blue);
+  box-shadow: inset 0 0 0 2px var(--tax-blue);
   background: #edf4fa;
   color: #203047;
 }
@@ -896,5 +920,30 @@
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* The total stack and each bracket use identical physical 0–600 axes. */
+.tax-base-grid {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 80px;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.88rem;
+}
+.tax-base-grid > span:last-child {
+  text-align: right;
+}
+@media (max-width: 540px) {
+  .tax-base-grid {
+    grid-template-columns: 1fr 70px;
+  }
+  .tax-base-grid > span:last-child {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .tax-base-stack {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 }

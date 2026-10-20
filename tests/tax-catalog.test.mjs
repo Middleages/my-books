@@ -89,3 +89,25 @@ test("tax visual source keeps static tables, focus and reduced-motion alternativ
   assert.match(shared, /aria-label=\{title\}/);
   assert.match(shared, /<caption>/);
 });
+
+test("tax process and amount scenes lead with the relationship, before range forms and playback", () => {
+  for (const file of ["TaxLabs.tsx", "LifeLabs.tsx"]) {
+    const path = new URL(`../src/components/tax/${file}`, import.meta.url);
+    if (!fs.existsSync(path)) continue;
+    for (const block of fs
+      .readFileSync(path, "utf8")
+      .split(/^export function /m)
+      .slice(1)) {
+      const figure = block.indexOf("<figure");
+      assert(figure >= 0);
+      for (const marker of ["<Range", "<Prediction", "{p.controls}"]) {
+        const control = block.indexOf(marker);
+        if (control >= 0)
+          assert(
+            figure < control,
+            `${block.split("(")[0]} must show its relationship before ${marker}`,
+          );
+      }
+    }
+  }
+});

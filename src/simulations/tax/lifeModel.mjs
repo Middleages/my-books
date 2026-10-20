@@ -339,13 +339,13 @@ export function transferBase({
         detail: "현재 손에 든 현금이 아니라 평가해야 할 재산부터 확인합니다.",
       },
       {
-        label: "② 합산 가정",
+        label: "② 합산 후 재산",
         value: combined,
         detail:
           "가상 사례에서는 이전 재산을 함께 더했습니다. 현실의 대상·기간·이미 낸 세금은 별도 확인합니다.",
       },
       {
-        label: "③ 공제 가정",
+        label: "③ 공제 후 과세표준",
         value: base,
         detail:
           "공제 전 재산과 공제 후 과세표준을 구분합니다. 모르는 조건을 0으로 대신하지 않습니다.",
