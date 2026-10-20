@@ -1,3 +1,5 @@
+import DrinksAndSnacks from "./content/child-feeding/DrinksAndSnacks.mdx";
+import SelectiveEating from "./content/child-feeding/SelectiveEating.mdx";
 import ResponsiveFeeding from "./content/child-feeding/ResponsiveFeeding.mdx";
 import ToolsAndSelfFeeding from "./content/child-feeding/ToolsAndSelfFeeding.mdx";
 import FoodVariety from "./content/child-feeding/FoodVariety.mdx";
@@ -140,6 +142,8 @@ export const chapters: Chapter[] = [
   { id: "allergens-and-records", bookId: "child-feeding", readId: "child-feeding/allergens-and-records", number: "06", title: "알레르기 정보를 읽고 대응 준비하기", heading: "음식 뒤에 생긴 일은 곧 알레르기일까?", description: "재료·관찰 사실과 진단의 경계를 살펴봅니다.", Content: AllergensAndRecords },
   { id: "responsive-feeding", bookId: "child-feeding", readId: "child-feeding/responsive-feeding", number: "07", title: "배고픔과 포만감에 반응하기", heading: "신호와 반응을 어떻게 구분할까?", description: "본 사실과 보호자 반응, 다음 관찰을 연결합니다.", Content: ResponsiveFeeding },
   { id: "tools-and-self-feeding", bookId: "child-feeding", readId: "child-feeding/tools-and-self-feeding", number: "08", title: "컵·숟가락·손으로 먹기", heading: "흘리는 것은 언제나 실패일까?", description: "도구 경험과 음식의 행선지를 따로 읽습니다.", Content: ToolsAndSelfFeeding },
+  { id: "drinks-and-snacks", bookId: "child-feeding", readId: "child-feeding/drinks-and-snacks", number: "09", title: "우유·물·간식의 자리", heading: "같은 음료라고 역할도 같을까?", description: "종류·사용 목적·라벨의 기준량을 구분합니다.", Content: DrinksAndSnacks },
+  { id: "selective-eating", bookId: "child-feeding", readId: "child-feeding/selective-eating", number: "10", title: "낯선 음식과 선택적인 식사", heading: "한 번 거부하면 앞으로도 안 먹을까?", description: "제시·탐색·섭취와 맥락을 여러 날에 걸쳐 읽습니다.", Content: SelectiveEating },
   { id: "sleep-record", bookId: "child-sleep", readId: "child-sleep/sleep-record", number: "01", title: "잠든 시간과 누워 있던 시간", heading: "밤에 열 시간은 무엇을 센 말일까?", description: "침대 시간과 확인 수면, 미확인 기록을 구분합니다.", Content: SleepRecord },
   { id: "safe-sleep-space", bookId: "child-sleep", readId: "child-sleep/safe-sleep-space", number: "02", title: "안전한 잠자리의 구조", heading: "같은 방과 같은 침대는 왜 다를까?", description: "영아의 별도 수면 표면과 공간의 경계를 살펴봅니다.", Content: SafeSleepSpace },
   { id: "development-map", bookId: "child-development", readId: "child-development/development-map", number: "01", title: "발달은 한 줄의 순위가 아니다", heading: "몸·말·놀이·관계가 같은 속도로 발달할까?", description: "한 아이의 여러 영역과 관찰 상태를 점수 없이 읽습니다.", Content: DevelopmentMap },
@@ -537,11 +541,11 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–08장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
+  { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–10장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
   { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–02장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
-  { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–08장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
+  { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
   { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–04장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
   { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–10장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
