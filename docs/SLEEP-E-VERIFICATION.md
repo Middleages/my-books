@@ -13,3 +13,7 @@
 PR88 run39430418007에서 전체 unit/build 및 권차 suite 성공. 수면 suite는21통과 뒤 새 선택상자의 정확한 accessible name이 일치하지 않아 중단됐다(앱/콘솔/리소스 오류0, 전체통과 아님). select의 명시적 aria-label을 보완하고 정상 CI에서 재검증한다. 로컬 NODE2048 build1회는 exit0으로 완료했다. 첫 ZIP artifact12267174330/SHA25671ceaa566be263e3df29063d59de51c020623941d2d806957b218a03552d40e4를 보존했다. 원본 직접검토와 source 게이트는 아직 열려 있다.
 
 보완 run39431198892: 실제130a0d0d3bd797bc9f23e0e568c09a6cbd0689b3/treebcfaa7689616389cdcdf3be6809aea3f3b828837 clean, 수면98/98·205PNG·진단0. ZIP artifact12267044702 SHA256659b08ce450baf77b531ee42f11343b9079bebbe69dc0ba2c6349ce6cd89ce25 보존. 320/390 변화일,1440 정적,320 공백,390 혼자,850/1440 교대 원본을 직접 보았다. 가독성과 역할 분리는 확인했으나 정적 설명에 추정 구간의 정확한 시간대가 누락된 점을 발견했다. 이를 추가하고 사건 메모 상자 폭이 기간이 아님을 명시한 소스로 다시 CI/원본을 확인한다. 게이트 아직 열림.
+
+## E source/direct 마감
+
+최종 보완 remote d68bf3c9094b569e2037c03deec623e7d486a07a/local43176d7/treea47fdf2539f0a6186f4d19ec9d3376e00113f447의 PR88/run39431993841이 전체 unit/build·수면·권차 production 성공. 실제 checkout f58a4f8674064abcfc775fee26b9d8941156e28a, 동일tree clean. 수면98/98·205PNG·앱/콘솔/리소스 오류0. ZIP artifact12268257534 SHA25689d3e548aaa5d8ee2f8567188389c07b7a8d4156cc9bff075895137f71a72eef 보존. 새320/1440-changes-static 및390-changes-illness 원본에서 정확한 추정0–2시와 사건상자 폭의 비시간 의미·모바일 줄바꿈을 직접 확인했다. 앞선 변경없는 휴식 장면320/390/850/1440 및320홈 원본과 함께 E 자체 게이트를 닫는다. 카탈로그 AST 비교로 다른 책의 모든 partition/shared 선언 보존도 검사했다. 최종 전체등록suite·main/Pages/실제게시 게이트와 임상감수는 별도이며 여기서 완료로 주장하지 않는다.
