@@ -33,3 +33,12 @@ test('E keeps source links breakable and clock legend inside a padded scene with
  assert(wal.includes('onStep={player.go}'));assert(wal.includes('가시성 그림에서 다음 단계'));assert(qa.includes('E09 local visibility keyboard controls share one frame and pause'));
  assert(qa.includes('s.bottom<=s.height+2'));assert(qa.includes('E rendered MDX must not retain literal emphasis markers'));
 });
+
+test('E recovery time labels keep both nearby timestamps and use stroke-only continuity edges',()=>{
+ const component=readFileSync(new URL('../src/components/database/RecoveryLab.tsx',import.meta.url),'utf8');
+ const qa=readFileSync(new URL('../scripts/database-browser-qa.cjs',import.meta.url),'utf8');
+ assert(component.includes('data-recovery-tick={t}'));assert(component.includes('y={t===0?"69":"37"}'));
+ assert(component.includes('data-backup-duration x={x(-2)} y="82"'));assert(component.includes('data-dump-snapshot cx={x(-2)} cy="91"'));
+ assert(/data-wal-continuity[^\n]+fill="none"/.test(component));
+ assert(qa.includes('Recovery time labels must not overlap'));assert(qa.includes("getComputedStyle(e).fill"));
+});
