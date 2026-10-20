@@ -1,3 +1,5 @@
+import BrowserBoundaries from "./content/authentication/BrowserBoundaries.mdx";
+import TokensAndJwt from "./content/authentication/TokensAndJwt.mdx";
 import AuthenticationIntro from "./content/authentication/Intro.mdx";
 import IdentityAndPermission from "./content/authentication/IdentityAndPermission.mdx";
 import CookiesAndSessions from "./content/authentication/CookiesAndSessions.mdx";
@@ -129,6 +131,8 @@ export type Chapter = {
 export const chapters: Chapter[] = [
   { id: "identity-and-permission", bookId: "authentication", readId: "authentication/identity-and-permission", number: "01", title: "누구인가와 무엇을 할 수 있는가", heading: "로그인 성공은 모든 문서의 열쇠일까요?", description: "주체 확인과 자원·행동 정책의 두 문을 구별합니다.", Content: IdentityAndPermission },
   { id: "cookies-and-sessions", bookId: "authentication", readId: "authentication/cookies-and-sessions", number: "02", title: "브라우저와 서버가 기억하는 것", heading: "새 요청에서도 서버는 나를 어떻게 알아볼까요?", description: "쿠키 전송과 서버 세션 기록·수명을 따로 관찰합니다.", Content: CookiesAndSessions },
+  { id: "browser-boundaries", bookId: "authentication", readId: "authentication/browser-boundaries", number: "03", title: "브라우저의 경계 읽기", heading: "보냈는데 응답을 못 읽을 수 있을까요?", description: "origin·site·쿠키 범위와 세 결과를 분리합니다.", Content: BrowserBoundaries },
+  { id: "tokens-and-jwt", bookId: "authentication", readId: "authentication/tokens-and-jwt", number: "04", title: "토큰의 내용과 신뢰", heading: "JWT 내용을 읽으면 믿어도 될까요?", description: "읽기와 서명·대상·시간·용도 검증을 구별합니다.", Content: TokensAndJwt },
   { id: "signals", bookId: "observability", readId: "observability/signals", number: "01", title: "서비스에 무슨 일이 일어났을까?", heading: "세 신호는 무엇을 다르게 남길까?", description: "사건·집계·요청별 시간을 같은 원본에서 비교합니다.", Content: Signals },
   { id: "pipeline", bookId: "observability", readId: "observability/pipeline", number: "02", title: "수집·저장·조회는 다른 일", heading: "받았는데 왜 화면에 안 보일까?", description: "Alloy와 신호별 저장소·Grafana의 경계를 연결합니다.", Content: Pipeline },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
@@ -527,7 +531,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–02장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
+  { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–04장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
   { id: "observability", categoryId: "technology", volume: 5, title: "눈으로 이해하는 관측·로그·모니터링", category: "IT·기술 · 신호와 증거", cover: "OBSERVABILITY", description: "느림과 실패를 어떤 증거로 설명할까요?", overview: "로그·지표·트레이스와 수집·저장·조회의 경계를 눈으로 연결합니다.", future: "소개·01–02장 공개 · 합성 교육 모델이며 실제 관측 스택은 미실행입니다.", Intro: ObservabilityIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
