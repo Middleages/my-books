@@ -47,6 +47,7 @@ async function audit(page){
   await visit(page,'/child-sleep/safe-sleep-space');const space=page.locator('[data-sl-lab=space]');
   await check(`${width} distinct room boundaries, all concept controls, keyboard focus and reset`,async()=>{
    assert.equal(await space.locator('.sl-room .sl-parent').count(),1);assert.equal(await space.locator('.sl-room .sl-infant').count(),1);
+   await page.keyboard.press('Tab'); // Enter keyboard modality before inspecting :focus-visible.
    for(const part of model.spaceParts){const btn=space.getByRole('button',{name:part.label,exact:true});await btn.focus();assert.notEqual(await btn.evaluate(el=>getComputedStyle(el).outlineStyle),'none');await page.keyboard.press('Enter');assert.equal(await btn.getAttribute('aria-pressed'),'true');assert((await space.locator('.sl-result').innerText()).includes(part.explanation));await snap(page,`${width}-space-${part.id}`,space);await audit(page);}
    await space.getByRole('button',{name:'공간 초기화',exact:true}).click();assert.equal(await space.getByRole('button',{name:'같은 방',exact:true}).getAttribute('aria-pressed'),'true');await space.locator('summary').click();assert.equal(await space.locator('details li').count(),4);
   });
