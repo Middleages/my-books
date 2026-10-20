@@ -9,6 +9,7 @@ const fs = require("node:fs"),
 const { execFileSync } = require("node:child_process"),
   { createHash } = require("node:crypto"),
   { pathToFileURL } = require("node:url");
+const { classifyConsoleError } = require("./tax-browser-diagnostics.cjs");
 const root = path.resolve(__dirname, ".."),
   dist = path.join(root, "dist"),
   out = path.join(root, "artifacts/tax-browser");
@@ -47,6 +48,8 @@ const results = {
   checks: [],
   screenshots: [],
   errors: [],
+  consoleDiagnostics: [],
+  nonApplicationDiagnostics: [],
   visualReview:
     "Open scene PNGs separately. Automated checks do not prove readability or educational efficacy.",
 };
@@ -570,8 +573,11 @@ async function assets() {
         page = await ctx.newPage();
       page.on("pageerror", (e) => results.errors.push(String(e)));
       page.on("console", (m) => {
-        if (m.type() === "error" && !m.text().includes("favicon"))
-          results.errors.push(m.text());
+        if (m.type() !== "error") return;
+        const entry = classifyConsoleError({ source: m.location().url, message: m.text(), page: page.url() }, base);
+        results.consoleDiagnostics.push(entry);
+        if (entry.kind === "host-default-favicon-404") results.nonApplicationDiagnostics.push(entry);
+        else results.errors.push(entry);
       });
       for (const id of ["", ...chapters.map((c) => c.id)]) {
         const route = "tax" + (id ? "/" + id : "");

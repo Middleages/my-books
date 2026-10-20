@@ -12,26 +12,39 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      browser-matrix: ${{ steps.browser-scope.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Select affected browser suites
+        id: browser-scope
+        run: node scripts/browser-verification-scope.cjs
       - run: npm test
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+      - name: Save browser selection and intentionally omitted scope
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-verification-scope
+          path: artifacts/browser-scope/
+          if-no-files-found: error
   verify-production:
     name: Production browser (${{ matrix.suite }})
     needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        suite: [insurance, investing, tax, book-volumes]
+      matrix: ${{ fromJSON(needs.build.outputs.browser-matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -77,12 +90,11 @@ jobs:
   verify-published:
     name: Published browser (${{ matrix.suite }})
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: deploy
+    needs: [build, deploy]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        suite: [insurance, investing, tax, book-volumes]
+      matrix: ${{ fromJSON(needs.build.outputs.browser-matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

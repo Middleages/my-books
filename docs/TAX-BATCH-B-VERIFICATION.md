@@ -23,3 +23,19 @@
 PR [#15](https://github.com/Middleages/my-books/pull/15)의 head `a011d17c34762e6fea7ac1df72ea0678bf87622a`, 실제 checkout `7ec27dea7a5937cac44ed7635a10315cc605ab62`(변경 없음), [run39364238654](https://github.com/Middleages/my-books/actions/runs/39364238654)의 tax suite는 73/73 검사·콘솔 오류 0·PNG 50개를 기록했다. Chromium155.0.8059.84. [artifact12238407390](https://github.com/Middleages/my-books/actions/runs/39364238654/artifacts/12238407390)의 두 장 데스크톱 초기·320px 변경·390px reduced-motion 표를 직접 열었다.
 
 정산의 공통 눈금·최종70 유지·환급 방향과 정적 표는 읽을 수 있었다. 급여 비례 띠의 값은 맞지만, 데스크톱에서 목적지 카드 위의 균등 간격 화살표가 실제 분할 띠의 다른 구간에서 내려오는 것처럼 보일 여지가 있었다. 자동 수치 통과를 시각 의미 통과로 간주하지 않고 이 부분을 보류했다. 화살표를 목적지별 범례 기호로 바꾸고, 왼쪽부터의 순서와 범례 폭이 금액 눈금이 아님을 명시한다. 브라우저 검사는 지급액·각 구간의 실제 픽셀 폭이 같은 모델의 비례를 따르는지와 잘못된 화살표가 다시 생기지 않는지 추가 확인한다. 수정 후 production·직접 PNG 검토는 다음 실행에서 별도로 기록한다.
+
+## 범례 교정 후 재검증
+
+- head `2200ecc0cba0608405ed5653c82e2b654dcac7dd`, 실제 checkout `7c82d71189ed648bae4755d9236f5d2cce951285`(변경 없음), [run39364775720](https://github.com/Middleages/my-books/actions/runs/39364775720), Chromium155.0.8059.39.
+- 로컬 799개 테스트·TypeScript·production 빌드 통과. tax production 73/73 검사·오류 0·PNG 50개. [artifact12238763172](https://github.com/Middleages/my-books/actions/runs/39364775720/artifacts/12238763172).
+- 급여 1440px 초기·850px 변경·320px 변경·390px reduced-motion/정적 표를 직접 다시 열었다. 비례 띠·통장215/사회보험25/원천징수60·범례 기호가 연결되고 잘못된 분기 화살표가 없다. 선택 입력은 그림 다음에 있으며 결과 장부와 반복해서 비교할 수 있다. 정산의 데스크톱·모바일·reduced-motion과390px 전체 본문도 확인했다. 공통 눈금·환급 방향·결정70 유지·단계별 표·정답 이유·출처 경계가 읽힌다.
+- production CSS `index-BtYRxD5H.css`: SHA-256 `8376b31a6c55b8fe0cf257a4dd0ab6ab08b979ae859e94473100e8ef202a59d5`; JS `index-thD6E3oe.js`: `33a4859f6edee925a41538f1caf63e2805af98b3d1992e826accb71f0b0383bb`. 이는 PR production의 바이트 증거이며 B 게시 증거는 아니다.
+- 이후 병행 변경·검증 범위 조정은 최신 main을 보존하여 통합한다. [계획의 2026-10-20 범위 조정](TAX-TEXTBOOK-PLAN.md)을 적용하며, 다른 책 전체 브라우저 회귀를 매 B–E마다 재실행한 것으로 주장하지 않는다. B main/Pages/실제 게시 자산 게이트는 아직 미완료다.
+
+## 최신 main·주거 A와 통합한 다음 후보
+
+DB A·Kubernetes 시각 보강·변경 범위 분류기·세금 A 최종 진단/문서를 포함한 main `0071bff4c992376bea65ad3a12ce86fafbbe98be`를 보존했다. 이번 공개 후보는 세금 B의 03–04와 별도 검증을 마친 주거 A의 소개·01–02를 함께 묶는다. 미래 DB B·세금 C·주거 B는 포함하지 않는다. 주거의 독립 원본은 `6afe8c83801470b88778009edc9a8cfb40e351ba`이며 정확한 production·직접 PNG 증거는 [주거 A 기록](HOUSING-BATCH-A-VERIFICATION.md)을 따른다.
+
+통합 애플리케이션·테스트에서 `npm test` 902개와 TypeScript·Vite 빌드를 통과했다. 이후 병합한 main의 차이는 DB 검증·계획 문서뿐이며 애플리케이션·테스트 바이트는 같음을 확인했다. DB/Kubernetes의 컴포넌트·본문·모델·브라우저 스크립트와 공통 workflow/분류기는 기준 main과 같다. 주거 컴포넌트·본문·모델·검증 스크립트와 표지는 검증된 주거 원본을 유지했다. 충돌한 카탈로그·README·홈 설명만 양쪽 공개 범위를 보존해 합쳤다.
+
+실제 분류기를 정확한 main `0071bff`와 비교해 실행한 결과는 `affected`, 선택 suite는 `tax`, `book-volumes`, `housing`다. 보험·투자·데이터베이스·Kubernetes 전체 브라우저 검사는 이 다음 실행에서 의도적으로 생략되며 통과로 기록하지 않는다. 전체 단위 테스트와 빌드, 모든 책의 공통 목차/권차/읽음 smoke는 유지한다. 통합 PR production, 직접 PNG 재검토와 main·Pages·게시 바이트 게이트는 다음 실제 실행 결과에 기록한다.
