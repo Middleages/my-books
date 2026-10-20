@@ -13,3 +13,11 @@ Grafana Loki cardinality, OpenTelemetry traces/context propagation을2026-10-20 
 최종 로컬 TypeScript/Vite build도 통과했다. browser verifier 문법·diff 검사 성공. 이 소스는 B branch 기준의 별도 draft PR에서 production와 직접 PNG를 확인할 예정이다.
 
 첫 production run39404824673은 통과했지만 직접1440 원본에서 C waterfall의 obs-span-row/track 이름이 A 스타일과 충돌하여 축과 막대 시작점이 어긋남을 발견했다. C 전용 obs-rel-* 이름으로 분리하고 각 track과 시간축의 좌측·폭 오차가2px 미만인지 browser 검사에 추가한다. C 스타일이 A에 영향을 줄 가능성도 있어 수정 후 A signals 원본을 함께 재검토한다. 첫 캡처 생성만으로 시각 통과를 판정하지 않는다.
+
+## 수정 후 소스 게이트 마감
+
+2026-10-20 run39406104808 completed/success. 공개 PR58 head `c83bc647867f30ae211a206403e3c256d63f85ef`, tree `fa1e72ce242af388bed7fe312e1f324a8669dfb4`, 실제 checkout `d149e0a3d391b23994ca68aea0a4e1241f4dcfbf`의 tree가 일치한다. 로컬 전체1153테스트와 TypeScript/Vite build가 재통과했고 production 관측26검사·102PNG·오류0 및 book-volumes 검사가 성공했다. Chromium155.0.8059.39. artifact12257710925 ZIP SHA256 `4253ad1709e0b21497953b933b5bdd759a13d8bd4f6438fddf67e4c9a8083731`.
+
+새 원본1440-traces-parallel,320-traces-missing,390-traces-propagation,1440-labels-request,1440-signals-initial,1440-signals-complete를 직접 열어 핵심 영역을 확인했다. trace 축과 모든 track의 시작·폭이 일치하고 병렬 시작30ms와 부모200ms를 같은 축으로 읽을 수 있다. 모바일 미관측은 길이0으로 표시하지 않고, 별도trace는 색과T-B 라벨로 구별된다. 같은12사건의6→12구획 분할이 유지된다. A signals의100/900ms 막대도 기존 배치로 유지되어 C CSS 영향이 제거됐다. 첫 실패 캡처는 최종 통과 증거로 사용하지 않았다.
+
+이 마감은 B 의존 소스의 production 게이트이며 최신 main 통합 및 실제 Pages 게시 검증과는 별개다. 실제 수집 스택 실습은 미실행이다.
