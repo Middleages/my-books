@@ -50,3 +50,10 @@ JS index-Ce1P-HIY.js는2,898,148bytes/SHA25684ae6d9f5f0ea55b0eb6cfea2a1baae0ff99
 최종 artifact ZIP SHA256: probability12254813964=12ca0f9a05fb0da16044ada09c786a83b737741ef6da36fe3823c5748ed06077, home12255038052=fb750a6a8c3d22a9a6e9c662466e4f1375d51bf5bf61d862740853b86a75762d, scope12253613881=0bc603ba6aae0fb0c0eddc3b975b9e3660453e31234c96054c25b600d08c6ed1.
 
 최종 source는 동결한다. 이 마지막 기록은 별도 docs-only 인수 패치이며 검증된 tree에 반영한 척하지 않는다. 최신 main 통합과 A→B→C 순차 Pages/live 검증은 남아 있다. deploy/published jobs의 skipped를 배포 성공으로 세지 않는다. 실제 기기·다른 브라우저·스크린리더 음성·독립 학습효과는 여전히 미검증이다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `358c59bb17f121889afe66fcf06f6bfad770b666` / tree `c2a9066158300ea67b72f85b65179f46ec0a5f43`, [run 39414373357](https://github.com/Middleages/my-books/actions/runs/39414373357)의 전체 1259 단위·build, 선택 6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **463/463 검사·123원본 PNG**, 앱 오류 0이다. 정확한 host-root favicon 404 한 건만 별도 진단으로 보존했다. artifact 12261636683 ZIP SHA256 `5d7b435ed41eadfcf931ac283fd0c3a8fa5e72074da0079866a551190ebf0828` 일치. 실제 JS/CSS 전체 바이트·해시는 [합본 게시 기록](FOLLOWUP-SECOND-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 게시 원본: `320-sampling-biased.png, 320-sampling-copied.png, 320-interval-summary-sigma20.png, 320-interval-summary-sigma0.png, 320-interval-zero-events.png, 320-interval-controls.png, 320-sampling-controls.png`. 작성자가 요청한 320px 원본 7개를 직접 재검토했다. 분모와 적용하지 않음, CI/PI 공통 축, σ0 점, 관측0의 조건부 상한, 인접 제어가 명료했고 선택 범위에서 차단점을 찾지 못했다. source·tree·clean 및 463/463, 앱 오류0과 별도 favicon404 한 건, PR63과 일치하는 JS/CSS 해시도 확인했다. 검토한 범위에 새 의미·잘림·겹침 차단점을 찾지 못했다. 모든 123개를 사람이 읽었거나 실기기·스크린리더·실제 금융/시스템/임상 검증을 했다는 의미는 아니다. 앞선 미게시 상태는 작성 당시 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.

@@ -1,3 +1,9 @@
+import ChildFeedingIntro from "./content/child-feeding/Intro.mdx";
+import FeedingMap from "./content/child-feeding/FeedingMap.mdx";
+import Readiness from "./content/child-feeding/Readiness.mdx";
+import ChildSleepIntro from "./content/child-sleep/Intro.mdx";
+import SleepRecord from "./content/child-sleep/SleepRecord.mdx";
+import SafeSleepSpace from "./content/child-sleep/SafeSleepSpace.mdx";
 import Labels from "./content/observability/Labels.mdx";
 import Traces from "./content/observability/Traces.mdx";
 import Logs from "./content/observability/Logs.mdx";
@@ -159,6 +165,10 @@ export type Chapter = {
   Content: ComponentType;
 };
 export const chapters: Chapter[] = [
+  { id: "feeding-map", bookId: "child-feeding", readId: "child-feeding/feeding-map", number: "01", title: "먹는 일의 여러 역할", heading: "섭취량과 식사 경험은 같은 것일까?", description: "제시·탐색·섭취와 양의 미확인을 따로 읽습니다.", Content: FeedingMap },
+  { id: "readiness", bookId: "child-feeding", readId: "child-feeding/readiness", number: "02", title: "시작할 때 무엇을 볼까", heading: "달력과 준비의 신호는 어떻게 함께 볼까?", description: "일반 안내와 개별 관찰, 상담 질문을 구분합니다.", Content: Readiness },
+  { id: "sleep-record", bookId: "child-sleep", readId: "child-sleep/sleep-record", number: "01", title: "잠든 시간과 누워 있던 시간", heading: "밤에 열 시간은 무엇을 센 말일까?", description: "침대 시간과 확인 수면, 미확인 기록을 구분합니다.", Content: SleepRecord },
+  { id: "safe-sleep-space", bookId: "child-sleep", readId: "child-sleep/safe-sleep-space", number: "02", title: "안전한 잠자리의 구조", heading: "같은 방과 같은 침대는 왜 다를까?", description: "영아의 별도 수면 표면과 공간의 경계를 살펴봅니다.", Content: SafeSleepSpace },
   { id: "identity-and-permission", bookId: "authentication", readId: "authentication/identity-and-permission", number: "01", title: "누구인가와 무엇을 할 수 있는가", heading: "로그인 성공은 모든 문서의 열쇠일까요?", description: "주체 확인과 자원·행동 정책의 두 문을 구별합니다.", Content: IdentityAndPermission },
   { id: "cookies-and-sessions", bookId: "authentication", readId: "authentication/cookies-and-sessions", number: "02", title: "브라우저와 서버가 기억하는 것", heading: "새 요청에서도 서버는 나를 어떻게 알아볼까요?", description: "쿠키 전송과 서버 세션 기록·수명을 따로 관찰합니다.", Content: CookiesAndSessions },
   { id: "browser-boundaries", bookId: "authentication", readId: "authentication/browser-boundaries", number: "03", title: "브라우저의 경계 읽기", heading: "보냈는데 응답을 못 읽을 수 있을까요?", description: "origin·site·쿠키 범위와 세 결과를 분리합니다.", Content: BrowserBoundaries },
@@ -590,6 +600,8 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
+  { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–02장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
+  { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–02장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–04장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
   { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–06장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
   { id: "observability", categoryId: "technology", volume: 5, title: "눈으로 이해하는 관측·로그·모니터링", category: "IT·기술 · 신호와 증거", cover: "OBSERVABILITY", description: "느림과 실패를 어떤 증거로 설명할까요?", overview: "로그·지표·트레이스와 수집·저장·조회의 경계를 눈으로 연결합니다.", future: "소개·01–06장 공개 · 합성 교육 모델이며 실제 관측 스택은 미실행입니다.", Intro: ObservabilityIntro },

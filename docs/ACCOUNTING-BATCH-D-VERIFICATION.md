@@ -89,3 +89,10 @@ D actual production·accounting+book-volumes·원본 PNG 직접 검토는 아래
 - 직접 검토 파일: `1440-equipment-24-0-M1-step-1.png`, `1440-equipment-24-0-M1-step-2.png`, `320-equipment-48-24-M3-step-4.png`, `390-equipment-48-24-M3-step-52.png`, `1440-equipment-24-24-M3-step-2.png`, `320-equipment-24-24-M3-step-28.png`, `1440-financing-capital-step-1.png`, `1440-financing-loan-step-1.png`, `1440-financing-settlement-step-1.png`, `1440-financing-settlement-step-2.png`, `320-financing-settlement-step-2.png`, `390-financing-settlement-step-3.png`, `320-equipment-static.png`, `1440-financing-static.png`, `390-normal-motion-equipment.png`, `390-normal-motion-financing.png`, `320-financing-capital-step-1.png`, `390-financing-loan-step-1.png`.
 
 이 최종 기록 추가는 문서만의 변경이다. 검증된 앱·본문·모델·검증기 tree의 해당 파일을 바꾸지 않는다. B/C/D를 최신 main에 통합한 합본 검증, Pages와 exact-live가 닫히기 전에는 실제 게시 완료로 표시하지 않는다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `358c59bb17f121889afe66fcf06f6bfad770b666` / tree `c2a9066158300ea67b72f85b65179f46ec0a5f43`, [run 39414373357](https://github.com/Middleages/my-books/actions/runs/39414373357)의 전체 1259 단위·build, 선택 6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **252/252 검사·229원본 PNG**, 앱 오류 0이다. 정확한 host-root favicon 404 한 건만 별도 진단으로 보존했다. artifact 12262026224 ZIP SHA256 `05df24721c8e5d79a9c9df2e7e6e8f99970c44e081c55eaee062ca9d7c3ec658` 일치. 실제 JS/CSS 전체 바이트·해시는 [합본 게시 기록](FOLLOWUP-SECOND-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 게시 원본: `1440-equipment-24-0-M1-step-2.png, 320-equipment-48-24-M3-step-52.png, 1440-financing-loan-step-1.png, 320-financing-settlement-step-3.png`. 통합 담당자가 네 원본 전체를 직접 열었다. 취득 현금 650→410의 한 번 지급과 현금 없는 M1 상각 10, 48개월 누계 216+잔존 24=취득원가 240, M1/M2 배분 0, 차입 50의 매출·이익 0, 최종 현금 225와 자산 795=부채 390+자본 405를 확인했다. 모바일 방향·라벨·인접 제어가 유지되고 이전 컨테이너 배경 충돌은 재발하지 않았다. 검토한 범위에 새 의미·잘림·겹침 차단점을 찾지 못했다. 모든 229개를 사람이 읽었거나 실기기·스크린리더·실제 금융/시스템/임상 검증을 했다는 의미는 아니다. 앞선 미게시 상태는 작성 당시 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.
