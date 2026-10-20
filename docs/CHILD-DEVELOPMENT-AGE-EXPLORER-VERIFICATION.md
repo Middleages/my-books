@@ -46,3 +46,18 @@
 artifact12263009137 ZIP SHA256 bbc6700dedcf9040cdd80dcc77510967571025de8d7b98195e5932db37e11517를 다운로드 바이트와 대조했다. 다음10개 원본을 직접 열었다:320-age-scenes-2,320-age-scenes-15,390-age-scenes-18,1440-age-scenes-36,320-pointing-request,320-pointing-share,1440-pointing-share,320-age-scenes-between-0,390-age-scenes-between-17,320-intro-age-entry. 각 카드의 구체 행동/관찰 포인트/원출처 영역, 모바일 읽기 및 제어, 요청의 보호자 방향과 관심 공유의 공통 대상 종점이 보존된다.0개월은 앞으로 참고할2개월로,17개월은 별도15/18 근거로 설명됨을 확인했다.17개월 PNG는 안내 문단 캡처이며 두 그룹의 동시 렌더는 실제 DOM 검증으로 확인했다.13개월은 전37개월 단위 범위에 들어가지만 별도 직접 PNG를 캡처하지 않았다. 원본10개 검토 범위에서 의미·넘침·잘림 차단점을 발견하지 못했다.
 
 이 절로 소개/02 우선 패치의 자체 source·실제 production 화면 게이트를 닫는다. main/Pages/실제 게시 자산·합본 회귀는 별도 담당의 순차 게이트다.08–10 연결은 이 패치에 섞지 않는다. 의학 전문가 감수·실기기·스크린리더 음성 검증은 미실행이다.
+
+## 우선 패치의 정확한 main·Pages·실제 게시 완료
+
+main `e15b7b9679348da9b68604e0f1be75a6c012e0bf`, tree `2ab3bcb5f4f6c9f4593b548ca3b2510d814eba5a`의 [run39423747683](https://github.com/Middleages/my-books/actions/runs/39423747683)이 전체1271 단위·487 modules build, 영향2종 production, Pages,2종 published의6개 job을 모두 성공했다. Pages 완료는2026-10-20T12:40:29Z다. 발달87/88검사·296/296원본PNG, 권차14/14·57/57원본PNG로 production101+published102=203검사·706원본PNG다. 생략12종을 이 실행에서 통과했다고 하지 않는다.
+
+단일 Pages build artifact12263999065 ZIP SHA256 `130feef41d5a0187bebada614b2e38417515a9760515d82ce1bffe7af968ecf3`, published 발달12264398375 ZIP SHA256 `2008989864f3da5b38f7f9dcf0727a3bc6081ac8227297c517738977095544b8`, published 권차12265152631 ZIP SHA256 `04bad1af0007f718ed7b86b60da160ea59a85de63190bf93b6085897553e831f`를 실제 다운로드 바이트와 대조했다. production 두 ZIP과 scope도 대조했고, 모든 report의 source/tree·clean·선택2종이 정확한 main과 일치한다. 단일 tar의 앱 전체 바이트는 검증된 PR80 산출물과 같고 실제 서비스 자산도 같았다.
+
+- JS `index-aAQngaOp.js`3494657bytes SHA256 `cc986894bc0dd339f69c7a74662c8b693f560a53b58f291162bee6f49831203e`.
+- CSS `index-DVJApGpr.css`412086bytes SHA256 `2bdc214b42fb3ebf8205ad5766b48ee92d65744c30f9736b1bb36e5a0159247a`.
+
+앱 page/console/resource 오류0이며 실제 발달 페이지의 알려진 `https://middleages.github.io/favicon.ico`404 한 건은 출처·페이지를 확인해 별도 보존했다. 알 수 없는 오류나 앱 경로의 실패는 제외하지 않았다.
+
+통합 담당자가 실제 게시 원본320-age-scenes-2/15,390-age-scenes-18,320-pointing-request/share,390-age-scenes-between-17,320-intro-age-entry를 직접 열어 구체 행동·관찰 포인트·책 태그/원출처 영역과 요청/관심 공유 선 종점을 읽었다.17개월 이미지는 안내 문단, 소개 이미지는 선택 제어 두 개의 범위다. 양쪽 시점 그룹의 실제 동시 렌더는 DOM 검사,13개월은 모델 단위 검사이며 별도 직접 캡처가 아니다.1440-home 전체와320-home native상단0–2000px도 직접 열어17권139장·기존 권차·육아2/3권0/2를 확인했다. 이9원본 범위에서 새 차단 회귀는 없었다. 기존320 hero 한 글자 줄바꿈은 경미한 미관 한계다.
+
+이 절로 소개·02의 우선 보강 실제 게시를 완료한다.08–10 연결 보강은 별도 후속 배치이며 앞당겨 공개하지 않았다.706원본 전수 사람 검토·실기기·스크린리더 음성·임상 감수·개인 아동의 발달 판단은 미실행이다.

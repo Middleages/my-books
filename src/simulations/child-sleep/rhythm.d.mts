@@ -1,0 +1,10 @@
+export const rhythmSource:{source:string;version:string;country:string;targetPopulation:string;checkedAt:string;limitations:string};
+export const pressureScenes:{id:string;label:string;direction:string;meaning:string}[];
+export const timeCues:{id:string;label:string;symbol:string;meaning:string}[];
+export function rhythmFrame(pressureId:string,cueId:string):{pressure:typeof pressureScenes[number];cue:typeof timeCues[number];prediction:null};
+export const durationCases:{id:string;label:string;night:number|null;nap:number|null}[];
+export function durationFrame(id:string):typeof durationCases[number]&{total:number|null;known:number;window:number};
+export const durationSource:{source:string;version:string;country:string;targetPopulation:string;checkedAt:string;limitations:string};
+export const referenceRows:{id:string;label:string;minHours:number;maxHours:number}[];
+export const referenceViews:{id:string;label:string;rowIds:string[]}[];
+export function referenceFrame(id:string):typeof referenceViews[number]&{rows:typeof referenceRows;overlap:boolean;source:typeof durationSource};

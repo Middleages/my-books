@@ -1,0 +1,77 @@
+# 확률과 금융 의사결정 D — 검증 기록
+
+2026-10-20. 07 `association-and-causes`, 08 `dependence-and-diversification`과 소개·실제 등록8장만의 후보. 09 이후는 등록하거나 링크하지 않는다.
+
+## 기준과 경계
+
+- C 최종 로컬631affd730a6dd0c9e034f6742d59fb4c372dd2a / 원격af9366499cb2d011c913e33713bc5de8da1be702 / tree556b7cef735fd0ff5ed436193295b859ed5bf685의 내용을 별도 D 작업트리에 보존했다. C 최종 검증 문서는 별도 docs-only 결과로 복사했다. A/B/C 동결 source는 수정하지 않는다.
+- D 착수09:17 및 공개 준비09:48 UTC 원격 main 조회는47c36cc06fad15d87afd040ac5c259b421714d52였다. stacked 기준에 없는 새 main 변경을 덮지 않는다. 최종 통합은 최신 main에 D 델타만 보존 적용해야 한다.
+- AGENTS·CONTENT-AUTHORING·HOME·MONEY·확률 계획과 기존 A–C 구조를 따랐다. investing/Diversification 본문·순수 모델과 insurance/Pooling 본문을 다시 읽어 네 고정 시나리오/공동 재원 설명을 복제하지 않았다.
+- main/Pages는 지정된 직렬 창만 사용하며 A→B→C→D 실제 게시 순서를 지킨다. PR source 검증은 Pages 게시가 아니다. 개인 금융자료·실제 예측·상품/보유 비중 추천은 없다.
+
+## 수학과 시각의 정본
+
+07의 가상 관측 단위는 매장·일200건이며 자동으로 독립인200일을 뜻하지 않는다. 네 칸은 비수기 사용80건×평균80, 미사용20×70, 성수기 사용20×180, 미사용80×170이다. 관측 평균100/150과 원래 계절 구성80:20/20:80을 보존한다. 공통 비수기 가중치0/25/50/75/100%를 적용한 별도 평균은180/170,155/145,130/120,105/95,80/70이다. 원래 기록은 옮기지 않으며 차이10을 인과효과로 표시하지 않는다. 빈 건수 평균은null이다. 관계도는 후보 점선과 미확인 물음표이며 causalEstimate는null이다.
+
+08은 최초1,000단위·한 기간·각각20% 확률로−20% 아니면0%라는 가정이다. 100칸은 실제100회 관측이 아니라 각각1%의 확률 단위다. 공동손실 q0/4/20%에서 각 주변 확률20%를 보존한다. 반반 기대손실40은 같고, 손실>150 확률은q다. 한쪽만 보유하면 기대40·초과확률20%가q와 무관하다. 확률 막대와 금액 막대의 축을 구별하고, 확률0인 결과도 정적 표에서 지우지 않는다.
+
+계획의 ‘현금 경계150’는 의미를 바로잡아 ‘손실 비교선150단위’로 구현했다. 평가 손실을 자동 현금 청구나 파산으로 해석하지 않으며 추가 현금을 만들지 않는다. 별도 비선형 반례는 A[-20,0,20]%,B[10,−20,10]%,각1/3이다. 선형상관0이어도 A0이면 B−20이 확정된다. 상수 변수의 상관은null이다. 세 점은 같은 두 축 범위·물리 눈금으로 표시하고 시간 경로나 연속 곡선을 꾸며 넣지 않는다.
+
+관측·표준화 평균, 확률칸·결합표·손실·기말·질량 막대·판정·정적 표는 같은 순수 모델을 읽는다. 조건 변경은 해당 비교 단계에서 정지하도록 명시하며 재생/단계/다시 보기/전체 초기화, 키보드, reduced-motion과 모든 단계 표를 제공한다. 상관·인과나 독립성을 자동 안전 점수로 바꾸지 않는다.
+
+## 직접 확인한 1차 근거
+
+확인2026-10-20. [NIST 실험/설계 §3.1.3.6](https://www.itl.nist.gov/div898/handbook/ppc/section1/ppc136.htm)에서 상관·인과·제3요인·설계를, [산점도 §1.3.3.26](https://www.itl.nist.gov/div898/handbook/eda/section3/eda33q.htm)에서 선형/비선형 구조와 제3변수 조건화를 확인했다. 원문의 광범위한 ‘causality implies association’ 문장을 무조건적인 인과추론 정리로 옮기지 않는다.
+
+[NIST Dataplot CORRELATION](https://itl.nist.gov/div898/software/dataplot/refman2/auxillar/correlat.htm)의 중심화 곱/표준편차 산식만 사용한다. p-value 검정·실제 예제 자료는 도입하지 않는다. 처음 추측한 corr.htm은 접근할 수 없었고 근거로 세지 않았다. [NIST 독립 사건 정의](https://csrc.nist.gov/glossary/term/statistically_independent_events)는 교집합=주변확률 곱의 수학적 정의만 참고하며 암호 표준의 검증을 금융에 전용하지 않는다.
+
+[SEC Investor.gov 분산 설명](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)의 보유 중복 경계만 확인했다. 자산 배분·재조정 처방·미국 상품/제도·실제 시장 통계를 가져오지 않는다. 모든 계절·공동 사건·세 점 사례와 산술은 자체 작성이며 기관의 실제 연구결과로 쓰지 않는다. 심프슨 현상의 전문 논문을 열람했다거나 경험적 효과를 검증했다고 주장하지 않는다.
+
+## 초기 로컬 실행 기록 · 후속 결과는 아래 구분
+
+- D 순수 모델 첫5/5 성공. 가중평균/빈 분모, 작은 정수 결합표 전수,9개 관계×보유비중 정본, 비선형/상수/큰 수 상관 경계 포함.
+- 실제 MDX 렌더·C 모델/등록 보존을 포함한 초기 targeted22/22 성공. 첫 TypeScript noEmit 성공. 이후 D browser 계약을 추가했으므로 이 실행을 최종 전체 결과로 대신하지 않는다.
+- 독립 Python Fraction 구현과 관측/표준화/9개 결합분포의 숫자134개를 대조해 최대 차이0을 확인했다. 같은 작성자의 다른 계산 구현이며 독립 동료 검토는 아니다.
+- 09:48 UTC 로컬 최종 `npm test` 전체1,099/1,099 성공(실패·건너뜀0), `npm run build`의 TypeScript noEmit·Vite build 성공, `node --check scripts/probability-browser-qa.cjs`와 `git diff --check` 성공. 기존 번들 크기 경고는 남아 있다.
+- 당시 정상 production browser·원본 PNG는 아직 미실행이었다. 브라우저 검사를 작성한 것과 실행 성공을 구별한다. 로컬 Chromium 환경 제한은 우회하지 않는다.
+- 당시 D 원격 source 쓰기·PR·main/Pages/live는 아직 시도하지 않았다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증이다.
+
+## 로컬 빌드 자산 정본
+
+- `index-Cl2TrOJ9.js`: 2943746 bytes, SHA256 `14202fc700ce6f7c814cff54be9b05f4c3dfa118657ad8a117e85e6e72ecfd1d`.
+- `index-oboS8N2f.css`: 361305 bytes, SHA256 `4bed89f1d7feb8dcf15f0e59e30baa923d5cc995e4f14b2fe6d07e88494f1335`.
+
+이 값은 로컬 빌드의 정본이며, 향후 실제 CI checkout/tree와 브라우저가 읽은 자산을 별도로 대조한다.
+
+## 첫 실제 PR 검사와 원본 발견 · 10:25 UTC
+
+PR61/head360313255a890ce275a75bb5174889ca87be77c0/tree730d5c1d, CI39405858949의 실제 checkout6589a78d767805ac4bedf236c6409cb3b9656979에서 전체unit1,099/build 및 선택한 확률·홈 production이 성공했다. 확률533/533·앱 오류0·179PNG이며, 보험/투자/세금/DB/Kubernetes/주거/회계7suite는 생략이지 통과가 아니다. deploy/published는 skipped다.
+
+직접 원본을 연 뒤320px 손실 정적표의 긴 결과명과 확률이 붙어 읽히는 문제를 발견했다. 해당 표만 자동 열 너비와 최소 읽기 폭을 두고, 표 영역의 가로 이동·키보드 안내를 추가했다. 실제 셀 텍스트 경계와 열의 경계, 키보드 가로 이동과 마지막 기말 열 접근을 검증기에 추가했다. 이 보강의 전체unit/build·후속CI·수정 원본 검토는 아직 완료 전이다. 위 첫 실행의 성공을 수정본의 성공으로 대신하지 않는다.
+
+## 정적표 보강 로컬 검사 · 10:35 UTC
+
+10:26 시작했던 전체 검사는 공유 빌드 순서를 지키기 위해 중단(exit130)했으며 성공으로 세지 않는다. 지정된10:32 이후 다시 실행한 전체unit1,099/1,099(실패·건너뜀0), NODE_OPTIONS=--max-old-space-size=2048의 TypeScript/Vite build, node syntax 및 diff 검사가 성공했다. 번들 경고는 남는다. 수정본의 정상 PR CI와 새 원본 검토는 아직 대기이며 첫 실행 결과로 대신하지 않는다.
+
+- `index-B2HZ6IOp.css`: 361467 bytes, SHA256 `91afa14ee2b0628b837a348dc10ad9889843c66e42b433e0a74359ed008dde81`.
+- `index-D76sIJOv.js`: 2943984 bytes, SHA256 `10f3aab90c7a4bd908703d62759a098e664bfb1832a3c18a09cc0cc5f9312050`.
+
+## 최종 보강본 정상 PR 검증 · 10:47 UTC
+
+- PR61 원격 `7dc01b77ee37aae4b4905384fd38eb9d706a3e86`, 대응 로컬 `83c07f2e75b31adec9a73cf76d61d6833cc26d63`, 동일 tree `56ee2c807c2e36e7ad8db4f3421fe16bfdd66274`다.
+- [Actions39409147669](https://github.com/Middleages/my-books/actions/runs/39409147669)의 실제 checkout `eb96f28ce37c7d6191b327b209e8711f4784bbc3`가 같은 tree이며 clean이다. 전체 단위 1,099/1,099(실패·건너뜀0), TypeScript/Vite build, 선택된 확률·홈 production 두 suite가 성공했다. 보험/투자/세금/DB/Kubernetes/주거/회계 일곱 suite는 생략이며 통과가 아니다. deploy/published는 skipped다.
+- 확률 533/533, 원본 PNG182개, page/console/resource/host 진단0이다. 홈 14/14, 원본42개, 오류0이다. 위 보강 로컬 JS/CSS의 전체 바이트/해시가 CI와 실제 production 응답에 일치했다.
+- 확률 artifact12259540225 ZIP SHA256 `c856411f2727f7e787a95928c36537ed483abf0f8c975d55ae29b5f07164813b`, 홈12258009318 `8d63497426b02475ff457f8d4ffa314ba4bdc5af37e5a0b0ad3c9a846019964b`, scope12258074315 `77c880351fddef218240df5ab688191e2041f5bf00c8e0847f747013f89510ee`를 GitHub digest와 대조했다.
+
+첫 실제 실행에서 직접 본 원본은 320 association observed/strata/standardized/causes/controls/static, 320 dependence joint4/joint0/joint20/losses/mass4/mass0/mass20/nonlinear/controls/static, 1440 dependence joint4,1440 association standardized의18장과 홈320 probability heading이다. 첫 정적표 문제는 그대로 기록한다.
+
+보강본에서 새로 직접 연 원본은 `320-dependence-static.png`, `320-dependence-static-end.png`, `390-dependence-static.png`, `390-dependence-static-end.png`, `1440-dependence-static.png`의5개다. 긴 결과명과 확률 열이 겹치지 않고, 키보드/가로 이동 안내와 오른쪽 기말800/900/900/1,000 열이 읽힌다. 좁은 화면에서 긴 표 전체를 한 화면에 축소하지 않으며 좌우로 읽는 대안이다. 이전179개 중175개는 바이트가 같아 기존 검토를 보존할 수 있지만 새로 열었다고 세지 않는다. 모든182개 또는 모든 정적 가로 위치를 사람이 확인한 것은 아니다.
+
+D source 검증·직접 원본 게이트는 완료했다. main/Pages/실제 게시와 실기기·Safari/Firefox·스크린리더 음성·학습효과는 아직 미검증이며 지정된 직렬 통합에서 C 게시 후 이어 간다. E는 별도 작업이고 이 D source에 포함하지 않았다.
+
+
+## 최신 여덟 배치 합본 production 확인 — 2026-10-20
+
+[PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **533/533 검사·182원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12261917628 ZIP SHA256 `dfb2c321032ac70922229bf76b892d5ea01daf44394e9bb9c2d20613b17ce43b` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
+
+직접 연 새 원본: `320-dependence-static.png, 390-dependence-static.png, 320-dependence-static-end.png, 390-dependence-static-end.png, 320-dependence-losses.png, 320-dependence-mass20.png, 320-association-standardized.png`. 작성자가 일곱 원본을 직접 열었다. 정적표 양 끝의 열 간격, 동일 금액/확률 축, 손실150 비교선과 현금 청구의 구별, 재가중130/120과 원래100/150 보존을 확인했다. 공동 손실·재가중 비교이지 효용 모형이 아니다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 182개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.

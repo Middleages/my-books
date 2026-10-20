@@ -5,13 +5,13 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 const read=p=>readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 const pool=read('src/components/database/ConnectionLabs.tsx'),explain=read('src/components/database/ExplainLab.tsx'),poolBody=read('src/content/database/ConnectionsAndPools.mdx'),planBody=read('src/content/database/ExplainAndDiagnosis.mdx'),qa=read('scripts/database-browser-qa.cjs');
-test('D chapters exist with stable identities, earlier C preserved, not future E/F placeholders',()=>{
+test('D chapters exist with stable identities, earlier C preserved, future F remains unregistered',()=>{
  const c=read('src/catalog.ts');
  for(const [id,number,component]of[['connections-and-pools','07','DatabaseConnections'],['explain-and-diagnosis','08','DatabaseExplain']]){
   assert(c.includes(`id: "${id}", bookId: "database", readId: "database/${id}", number: "${number}"`));assert(c.includes(`Content: ${component}`));
  }
- assert.match(c,/id: "database", categoryId: "technology", volume: 4/);assert.match(c,/소개·01–08장 공개/);
- for(const id of ['durability-and-wal','backup-and-restore','schema-migrations','database-troubleshooting'])assert(!c.includes(`id: "${id}", bookId: "database"`));
+ assert.match(c,/id: "database", categoryId: "technology", volume: 4/);assert.match(c,/소개·01–10장 공개/);
+ for(const id of ['schema-migrations','database-troubleshooting'])assert(!c.includes(`id: "${id}", bookId: "database"`));
 });
 test('D body separates lease, SQL, unknown commit, server-wide capacity and plan units',()=>{
  for(const token of ['같은 client','pool.query','획득 자체가 실패','release(true)','응답을 받지 못한','최소 권한','열린 트랜잭션','예약 진입','node-postgres'])assert(poolBody.includes(token),token);
