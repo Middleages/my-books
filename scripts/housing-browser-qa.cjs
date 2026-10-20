@@ -2,6 +2,38 @@
  * NODE_PATH=/tmp/insurance-qa/node_modules CHROME_PATH=/usr/bin/chromium node scripts/housing-browser-qa.cjs
  * LIVE_URL=https://middleages.github.io/my-books/ verifies exact published JS/CSS bytes first.
  */
+// Match only the observed host-root favicon 404. Unknown provenance remains fatal.
+// Reuse the reviewed tax-browser-diagnostics rule; never match console text alone.
+const { classifyConsoleError } = require('./tax-browser-diagnostics.cjs');
+function classifyResourceFailure(entry, base) {
+  const kind = entry.event === 'response' && entry.status === 404
+    ? classifyConsoleError({source:entry.source,message:'Failed to load resource: the server responded with a status of 404 ()'},base).kind
+    : 'application';
+  return {...entry,kind};
+}
+function installPageDiagnostics(page, results, base) {
+  const retain=(entry,list)=>{
+    results[list].push(entry);
+    if(entry.kind==='host-default-favicon-404') results.nonApplicationDiagnostics.push(entry);
+    else results.errors.push(entry);
+  };
+  page.on('pageerror',e=>results.errors.push({kind:'pageerror',message:String(e),page:page.url()}));
+  page.on('console',m=>{
+    if(m.type()!=='error') return;
+    const location=m.location();
+    retain(classifyConsoleError({source:location.url||'',lineNumber:location.lineNumber,columnNumber:location.columnNumber,message:m.text(),page:page.url()},base),'consoleDiagnostics');
+  });
+  page.on('response',r=>{
+    if(r.status()<400) return;
+    const request=r.request();
+    retain(classifyResourceFailure({event:'response',source:r.url(),status:r.status(),method:request.method(),resourceType:request.resourceType(),page:page.url()},base),'resourceDiagnostics');
+  });
+  page.on('requestfailed',request=>retain(classifyResourceFailure({event:'requestfailed',source:request.url(),failure:request.failure()?.errorText||'unknown failure',method:request.method(),resourceType:request.resourceType(),page:page.url()},base),'resourceDiagnostics'));
+}
+module.exports={classifyConsoleError,classifyResourceFailure,installPageDiagnostics};
+
+// Importing this verifier for diagnostic regression tests must not launch a browser.
+if (require.main === module) {
 const fs = require("node:fs"),
   path = require("node:path"),
   http = require("node:http"),
@@ -50,6 +82,9 @@ const results = {
   checks: [],
   screenshots: [],
   errors: [],
+  consoleDiagnostics: [],
+  resourceDiagnostics: [],
+  nonApplicationDiagnostics: [],
   visualReview:
     "Open scene PNGs separately. Automated checks do not prove readability or educational efficacy.",
 };
@@ -347,6 +382,74 @@ async function scenarios(page, id) {
     assert.match(await lab.locator('[role=status]').innerText(),/미현금화 원금/);
     assert.match(await lab.locator('summary').last().innerText(),/현금과 원금 기록/);
   }
+  if(id === 'purchase-cash') {
+    for(const timing of model.purchaseTimings) {
+      await lab.locator('select').selectOption(timing);
+      const frames=model.purchaseFrames({timing});
+      for(let i=0;i<frames.length;i++) {
+        const f=frames[i];
+        assert.equal(await lab.locator('[data-purchase-step]').getAttribute('data-purchase-step'),String(i));
+        assert.equal(await lab.locator('[data-purchase-failure]').getAttribute('data-purchase-failure'),f.failure?.kind??'none');
+        assert.equal(Number(await lab.locator('[data-book-difference]').getAttribute('data-book-difference')),f.bookDifference);
+        assert.deepEqual(await lab.locator('.housing-fill').evaluateAll(es=>es.map(e=>+e.dataset.value)),[f.cash,f.advance,f.home,f.debt]);
+        await bars(page);
+        if(i<frames.length-1) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+      }
+    }
+    await lab.getByText('시작자금·비용 바꾸기',{exact:true}).click();
+    await setRange(lab,1,2000);
+    await lab.getByRole('checkbox').uncheck();
+    await lab.getByRole('button',{name:'현금만으로 지급 가능',exact:true}).click();
+    assert.equal(await lab.locator('input[type=range]').nth(1).inputValue(),'500');
+    assert(await lab.getByRole('checkbox').isChecked());
+    for(let i=0;i<5;i++) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    assert.equal(await lab.locator('[data-purchase-failure]').getAttribute('data-purchase-failure'),'none');
+    assert.equal(await lab.locator('[data-purchase-debt]').getAttribute('data-purchase-debt'),'0');
+    assert.match(await lab.innerText(),/실제 채무가 0이라는 판정이 아닙니다/);
+    await setRange(lab,1,0);
+    await lab.getByRole('checkbox').uncheck();
+    await lab.getByRole('button',{name:'대출 실행 뒤 1원 부족',exact:true}).click();
+    assert.equal(await lab.locator('input[type=range]').nth(1).inputValue(),'500');
+    assert(await lab.getByRole('checkbox').isChecked());
+    for(let i=0;i<5;i++) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    assert.equal(await lab.locator('[data-purchase-failure]').getAttribute('data-purchase-failure'),'shortage');
+    assert.equal(await lab.locator('[data-purchase-debt]').getAttribute('data-purchase-debt'),'80000000');
+    assert.equal(await lab.locator('input[type=range]').first().inputValue(),'124999999');
+    assert.match(await lab.locator('.housing-range').first().innerText(),/124,999,999원/);
+    assert.match(await lab.locator('.housing-closing-gate').innerText(),/부족 1원/);
+    assert.match(await lab.locator('.housing-closing-gate').innerText(),/당시 확인 현금 대비 부족액 1원/);
+    assert.match(await lab.locator('.housing-closing-gate').innerText(),/144,999,999원/);
+    const f=model.purchaseFrames({startCash:124999999}).at(-1);
+    assert.deepEqual(await lab.locator('.housing-fill').evaluateAll(es=>es.map(e=>+e.dataset.value)),[f.cash,f.advance,f.home,f.debt]);
+    await bars(page);
+    const control=await lab.locator('.money-playback').boundingBox(),scene=await lab.locator('.housing-closing-gate').boundingBox();
+    assert(scene.y-(control.y+control.height)<400,'purchase controls detached from current dated cash');
+  }
+  if(id === 'mortgage-limits') {
+    const base=model.mortgageMeasures();
+    for(let i=0;i<4;i++) {
+      assert.equal(await lab.locator('[data-budget-step]').getAttribute('data-budget-step'),String(i));
+      assert.deepEqual(await lab.locator('.housing-fill').evaluateAll(es=>es.map(e=>+e.dataset.value)),[base.appraisal,base.principal,base.annualIncome,base.screenAnnual,base.takeHome,base.frames[i].out,base.frames[i].remaining]);
+      await bars(page);
+      if(i<3) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    }
+    await setRange(lab,2,5);
+    assert.equal(Number(await lab.locator('[data-contract-payment]').getAttribute('data-contract-payment')),base.payment);
+    assert.equal(Number(await lab.locator('[data-budget-remaining]').getAttribute('data-budget-remaining')),base.remaining);
+    assert.equal(Number(await lab.locator('[data-annual-ratio]').getAttribute('data-annual-ratio')),model.mortgageMeasures({stress:5}).annualRatio);
+    await setRange(lab,0,0);assert.equal(await lab.locator('[data-ltv]').getAttribute('data-ltv'),'undefined');
+    await setRange(lab,1,0);assert.equal(await lab.locator('[data-annual-ratio]').getAttribute('data-annual-ratio'),'undefined');
+    await bars(page);
+    await lab.getByRole('button',{name:'조건까지 초기화',exact:true}).click();
+    await lab.getByRole('button',{name:'생활비만 250만원',exact:true}).click();
+    for(let i=0;i<3;i++) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    const r=model.mortgageMeasures({living:2.5e6});
+    assert.equal(Number(await lab.locator('[data-budget-remaining]').getAttribute('data-budget-remaining')),r.remaining);
+    assert(r.remaining<0);assert.equal(await lab.locator('.housing-fill.negative').count(),1);
+    await bars(page);
+    const control=await lab.locator('.money-playback').boundingBox(),scene=await lab.locator('.housing-month-cash').boundingBox();
+    assert(scene.y-(control.y+control.height)<100,'monthly controls detached from cash boundary');
+  }
   await audit(page);
   return {id,verified:true};
 }
@@ -385,7 +488,7 @@ async function assets() {
       [2, 4, 6, 8, 10, 12].includes(chapters.length),
       "published chapters must be a complete batch",
     );
-    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href)};
+    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/purchase.mjs")).href)};
     if (process.env.LIVE_URL) base = process.env.LIVE_URL.replace(/\/?$/, "/");
     else {
       server = http.createServer((req, res) => {
@@ -428,11 +531,7 @@ async function assets() {
           viewport: { width, height: 1000 },
         }),
         page = await ctx.newPage();
-      page.on("pageerror", (e) => results.errors.push(String(e)));
-      page.on("console", (m) => {
-        if (m.type() === "error" && !m.text().includes("favicon"))
-          results.errors.push(m.text());
-      });
+      installPageDiagnostics(page, results, base);
       for (const id of ["", ...selected.map((c) => c.id)]) {
         const route = "housing" + (id ? "/" + id : "");
         await check(`render-${width}-${id || "intro"}`, page, async () => {
@@ -501,7 +600,7 @@ async function assets() {
         reducedMotion: "reduce",
       }),
       page = await ctx.newPage();
-    page.on("pageerror", (e) => results.errors.push(String(e)));
+    installPageDiagnostics(page, results, base);
     for (const c of selected) {
       await visit(page, "housing/" + c.id);
       await check(`reduced-motion-${c.id}`, page, async () => {
@@ -594,3 +693,5 @@ async function assets() {
       failed.length || results.errors.length || results.fatal ? 1 : 0;
   }
 })();
+
+}
