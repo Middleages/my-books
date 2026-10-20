@@ -17,7 +17,7 @@ function ReservationRecords({ frame: f }: { frame: ReservationFrameBase }) {
   const current = f.versions.filter(v => f.currentVersionIds.includes(v.id) && v.table !== 'products');
   return <div className="db-reservation-records" aria-label="현재 주문과 항목의 연결"><strong>현재 경계의 새 주문 → 항목</strong>{f.requests.map(r => {const rows = current.filter(v => 'order_id' in v.row ? v.row.order_id === r.orderId : 'request_key' in v.row && v.row.id === r.orderId); return rows.length ? <div key={r.id} className="db-request-chain" data-request={r.id}><span>{r.sessionId.replace('session:','세션 ')}<br/>{r.status === 'fulfilled' ? '요청 완료' : '처리 중'}</span>{rows.map((v,i) => <div className="db-request-chain-part" key={v.id}>{i > 0 && <span aria-hidden="true" className="db-record-arrow">→</span>}<div data-current-record={v.id} data-record-state={v.state}><strong>{rowShort(v.row)}</strong><span>{rowValue(v.row)}</span><small>{v.state === 'active' ? '미확정' : '확정'}</small></div></div>)}</div> : null;})}{!current.length && <p>현재 경계에 새 주문·항목이 없습니다.</p>}{!!f.discardedChanges.length && <p className="db-lifecycle-history">취소된 {f.discardedChanges.map(c => rowShort(c.row)).join(', ')}: 이력에만 남고 현재 경계의 객체로 그리지 않습니다.</p>}</div>;
 }
-function LastItemScene({ frame:f, mobile }: { frame:ConcurrencyFrame; mobile:boolean }) {
+export function LastItemScene({ frame:f, mobile }: { frame:ConcurrencyFrame; mobile:boolean }) {
   const w = mobile ? 280 : 720, cw = mobile ? 78 : 148, left = 12, right = w - 104, resourceX = w / 2 - 40;
   const stocks = currentStock(f), xs = stocks.map((_,i) => mobile ? 12 + i * 89 : 50 + i * 236);
   const sessions = ['A','B'], prefix = `db-last-${mobile}`;

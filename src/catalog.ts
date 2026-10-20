@@ -91,6 +91,8 @@ import HousingIntro from "./content/housing/Intro.mdx";
 import HousingRights from "./content/housing/HousingRights.mdx";
 import RentAndDeposit from "./content/housing/RentAndDeposit.mdx";
 
+import DatabaseMigrations from "./content/database/SchemaMigrations.mdx";
+import DatabaseTroubleshooting from "./content/database/DatabaseTroubleshooting.mdx";
 import InsuranceIntro from "./content/insurance/Intro.mdx";
 import ExpectedLoss from "./content/insurance/ExpectedLoss.mdx";
 import Pooling from "./content/insurance/Pooling.mdx";
@@ -252,6 +254,8 @@ export const chapters: Chapter[] = [
   { id: "explain-and-diagnosis", bookId: "database", readId: "database/explain-and-diagnosis", number: "08", title: "실행계획으로 느린 곳 찾기", heading: "예상한 행 수와 실제 행 수는 어디서 달라질까?", description: "계획의 부모·자식, 출력·반복·시간·버퍼와 앱 호출의 단위를 나눕니다.", Content: DatabaseExplain },
   { id: "durability-and-wal", bookId: "database", readId: "database/durability-and-wal", number: "09", title: "저장됐다는 말의 경계", heading: "COMMIT 뒤 데이터 페이지가 아직 안 쓰였어도 괜찮을까?", description: "휘발 영역·내구 WAL·물리 페이지와 확정 판정, 응답 수신의 경계를 구별합니다.", Content: DatabaseDurability },
   { id: "backup-and-restore", bookId: "database", readId: "database/backup-and-restore", number: "10", title: "백업 파일에서 서비스 복구까지", heading: "어디까지 되살리고 언제 다시 쓸 수 있을까?", description: "사본과 연속 WAL의 복구 범위, 데이터 검증과 RPO·RTO의 서로 다른 축을 연결합니다.", Content: DatabaseRecovery },
+  { id: "schema-migrations", bookId: "database", readId: "database/schema-migrations", number: "11", title: "구조를 바꾸며 함께 운영하기", heading: "열을 바꿨는데 옛 앱은 어디를 읽을까?", description: "현재 열·앱 참조·행 값의 공존과 검증, 중단·재실행·잠금 경계를 연결합니다.", Content: DatabaseMigrations },
+  { id: "database-troubleshooting", bookId: "database", readId: "database/database-troubleshooting", number: "12", title: "증거로 데이터 문제 좁히기", heading: "느린 요청은 어디서 무엇을 기다릴까?", description: "연결·잠금·계획·확정 결과의 관측을 구별하고 가설과 다음 확인을 연결합니다.", Content: DatabaseTroubleshooting },
   { id: "tax-events", bookId: "tax", readId: "tax/tax-events", number: "01", title: "세금은 어디서 발생할까", heading: "모든 돈의 이동이 같은 세금 대상일까?", description: "소득·소비·보유·이전과 단순 자금 이동의 과세 검토 지점을 구분합니다.", Content: TaxEvents },
   { id: "progressive-tax", bookId: "tax", readId: "tax/progressive-tax", number: "02", title: "과세표준과 세율", heading: "높은 세율이 전체 금액에 적용될까?", description: "가상 과세표준의 구간별 금액과 세액·평균세율을 연결합니다.", Content: ProgressiveTax },
   { id: "withholding", bookId: "tax", readId: "tax/withholding", number: "03", title: "소득과 원천징수", heading: "급여 총액과 실수령액은 왜 다를까?", description: "급여의 세 갈래 목적지와 세법상 총급여를 분리합니다.", Content: Withholding },
@@ -641,7 +645,7 @@ export const books: Book[] = [
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–10장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–12장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
-  { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–10장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
+  { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–12장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
   { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–12장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
   { id: "insurance", categoryId: "money", volume: 4, title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 위험의 크기부터 계약·유지·해지·청구 시차와 설명서 읽기까지 연결합니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", volume: 3, title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
