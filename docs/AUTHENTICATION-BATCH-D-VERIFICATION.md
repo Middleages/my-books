@@ -9,3 +9,5 @@
 모델6테스트가 세션 범위·재입력·역할×행동×tenant×owner 조합·unknown·오래된 claim을 확인했다. 전체 unit 및 정확한 소스의 build·production browser·직접 원본 PNG 게이트는 아직 미완료다. 영향 책01–08의1440/390/320·정적·키보드·초기화·normal/reduced motion과 book-volumes를 확인한다.
 
 공식 OIDC Session Management·RP-Initiated Logout·OWASP Authorization 자료를2026-10-20 확인했다. 특정 제품의 기본 정책이나 실제 보안 검증 결과로 합성 상태를 제시하지 않는다. main 통합·실제 Pages 게시 완료는 별도 게이트다.
+
+첫 CI39410581809 전체1091테스트/build/인증 production을 통과했다. 직접1440 세션·조직 경계,390 낡은 claim,320 세션 유지·소유 허용을 확인했다. 320 정책표의 update가 두 줄로 쪼개져 초보자가 읽기 불편하므로 열 제목을 읽기·수정·삭제로 바꾼다. 동작은 유지하되 최종 원본으로 다시 확인한다.
