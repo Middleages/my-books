@@ -1,6 +1,6 @@
 # 회계와 기업의 돈 · E 구현 및 검증
 
-기준: 2026-10-20. **09–10장의 로컬 구현·unit1006/1006·build372 검사를 마쳤으며, actual production·새 원본 직접 검토·main 통합·Pages는 아직 완료로 표시하지 않는다.** D 수정본의 전용 production251/251·새 원본18개 직접 검토 후 별도 작업 트리에서 이어 썼다. B→C→D→E stacked 순서를 보존하며 main을 직접 쓰거나 자동 병합하지 않는다.
+기준: 2026-10-20. **최종 수정본의 전체 unit1008/1008·build372, 실제 production332/332와 book-volumes, 새 원본20개 직접 검토를 통과했다.** main 통합·Pages·exact-live는 아직 대기이며 완료로 표시하지 않는다. D 수정본의 전용 production251/251·새 원본18개 직접 검토 후 이어 썼다. B→C→D→E stacked 순서를 보존하며 main을 직접 쓰거나 자동 병합하지 않는다. 아래 초기 검사 및 두 번의 발견/수정 이력은 당시 상태로 남기고, 마지막 절이 현재 전용 검증 결과다.
 
 ## 범위와 기준
 
@@ -56,7 +56,7 @@
 
 모든 회사·거래·숫자·그림·문장은 자체 가상 사례다. 실제 개인 금융 계정·기업 내부 원장·직원·인증정보·신고는 포함하지 않는다. 실제 회사 추천이나 새로운 외부 데이터 연동이 없다.
 
-## 실제 확인된 로컬 검사
+## 초기 소스의 로컬 검사 이력
 
 - 회계 unit/SSR **80/80**, 전체 `node --test --test-concurrency=4 tests/*.test.mjs` **1006/1006 통과**, 실패0. 실행 병렬도만4로 제한하고 기존 assertion을 제거하지 않았다. 기존 Vite SSR의 HMR 포트 경고는 테스트 결과와 구별한다.
 - 전체 TypeScript/Vite `npm run build` **372 modules 통과**. 처음 타입 선언의 Event/Row 교차 타입에서 확장 label을 읽지 못한 오류를 발견해 SourceEvent의 명시적 rows 타입으로 수정했다. 런타임 모델이나 assertion을 완화하지 않았고 최종 전체1006검사와 빌드를 다시 실행했다. 기존 큰 번들 경고는 남아 있다.
@@ -67,7 +67,7 @@
 
 변경14파일의 비밀 패턴 후보0, 선택적 계획 문서 diff0, 다른 책 카탈로그 행 동일과 `git diff --check`를 확인했다. 생성된 로컬 tsbuildinfo는 업로드 대상에서 제외한다.
 
-## 남은 검사
+## 초기 소스 단계의 남은 검사 이력
 
 실제 production(accounting+book-volumes), 생성된 새 PNG 직접 검토와 최신 main 합본/Pages/exact-live는 실제 결과가 나오기 전까지 대기다. 로컬 unit·SSR을 브라우저·게시 검사의 대체로 쓰지 않는다. 실기기·Safari/Firefox·음성 스크린리더·학습효과는 미실행이다. 마지막 F에서 넓은 전체 교재 회귀를 수행한다.
 
@@ -84,3 +84,38 @@
 두 번째 run39399252954도 accounting332/332·book-volumes와 전체1007/build372를 통과했다. 실제 checkout `f0b1c9d271a06eff45bac91ea2cce26a5151bdc2`, tree `037ad529a16a989cca203655e2562da98bf46afc`, tracked 변경 없음·진단0이다. artifact12254342064 SHA256 `679df9ffbb26aa43f7e08fd36a4e41e2774d4717e9b2e07f0fa82116664da743`의 새297PNG 중 회수0/400 마지막 장면을 열어 조건별 해설 수정은 확인했다.
 
 이어 전액 회수 장면에서 채권 조정의 산술−0이 화면에도 `-0`으로 남는 표현 문제를 발견했다. 0 조정을 유출처럼 읽지 않도록 다리의0 금액을 정규화하고 표시 포맷도 음의0을 보존하지 않게 했다. 비교 조건을 바꿔도 질문 제목에 정본65/−150이 고정되는 혼동도 피하도록 숫자 없는 핵심 질문으로 바꿨다. 새 unit은 모든 조건·두 출발점의0 행이 양의0인지 검사하고, 브라우저도0 행에 음수0 문자가 나타나지 않는지 확인한다. 계산 불변량과 기하 assertion은 유지했다. 이 추가 수정의 전체 로컬1008/1008·build372는 통과했으며 마지막 production·새 직접 검토는 대기다.
+
+
+## 최종 수정본 실제 production 및 직접 검토 · 2026-10-20
+
+- 실행 소스 local `89c5b11a9f8fb3f111c9c2bf1d2f69b0669341e4`, 공개 `aeea3f06b8207ab856ad36346291e86238f06c1d`, tree `b9872cd2dc15b3f8144fabdb00109d443a0c2cc7`.
+- [run39401427984](https://github.com/Middleages/my-books/actions/runs/39401427984)의 build job118556816772에서 전체 **1008/1008**, build **372 modules**를 실제 로그로 확인했다. accounting job118557033404는 **332/332**, book-volumes job118557033582도 성공했다. draft PR의 배포·published 단계는 의도적으로 실행하지 않았다.
+- 실제 브라우저 checkout `9f26c6201a682c7cef5bf1bfce4fd40fda745814`는 위와 같은 tree이며 `sourceChanges`가 비어 있다. 09:33:29.408–09:39:54.357 UTC, page/console/resource 오류0, 별도 hostDiagnostics0, PNG297개다. 모든 PNG를 직접 읽었다고 주장하지 않는다.
+- artifact12255225874, ZIP73,607,161 bytes, SHA256 `ce4304a4e846186231a943122542ea9e7d90b83c84542fadc89f80438f5a8f21`을 내려받은 원본과 대조했다. JS `index-COUFPlR9.js` 2,741,854 bytes / SHA256 `986e9dde02eecc434a281ec36b6d5247ec533631330e7ad5fa7ace3648394778`, CSS `index-BQCoi8nA.css` 338,942 bytes / SHA256 `d97fb973071e6ad13bbf1f115a3f800e4c2ce7cc5d9e94cdd3ac41716797064d`.
+
+새 최종 원본에서 아래20개 PNG를 직접 열었다. 파일 이름의 폭은 브라우저 viewport이며, 긴 모바일 캡처는 전체 배치·줄바꿈과 핵심 금액/기호를 살폈다. 자동검사의 기하·문자 대조와 별도로 수행했다.
+
+1. `1440-profit-cash-full-collection-profit-final.png`
+2. `320-profit-cash-no-collection-profit-final.png`
+3. `1440-statements-base-position.png`
+4. `1440-statements-base-income.png`
+5. `1440-statements-base-equity.png`
+6. `1440-statements-base-cash.png`
+7. `320-statements-base-position.png`
+8. `390-statements-full-collection-position.png`
+9. `320-statements-source-T12.png`
+10. `1440-statements-period-mismatch.png`
+11. `320-statements-period-mismatch.png`
+12. `1440-profit-cash-base-operating-final.png`
+13. `390-profit-cash-stock-credit-profit-final.png`
+14. `320-profit-cash-service-paid-profit-final.png`
+15. `390-profit-cash-long-life-profit-final.png`
+16. `320-profit-cash-depreciation-step.png`
+17. `1440-statements-static.png`
+18. `1440-profit-cash-static.png`
+19. `390-normal-motion-statements.png`
+20. `390-normal-motion-profit-cash.png`
+
+직접 확인 결과: 전액 회수의 채권 조정은 음수0이 아닌0, 회수0 해설은 영업−310·현금65, 전액 회수는90·465, 서비스 전액 지급은−170·205, 상각48개월은 상각5·이익70으로 현재 조건과 일치했다. 정본 영업이익 출발에는 지급이자+5를 또 더하지 않는다. 같은 시점의 자산/부채+자본 길이, 손익·자본·현금 다리의 방향과 끝점, T12 선택 강조, 기간 혼합의 합계 숨김,320px 세로 재배치·포커스·정적 목록을 읽을 수 있었다. 추가 결함은 발견하지 않았다.
+
+**현재 남은 범위:** 최신 main 합본의 실행 검증, Pages와 exact-live, 마지막 F를 포함한 넓은 전체 교재 회귀다. 전용 production 성공은 실제 공개 사이트의 최종 성공을 대신하지 않는다. 실기기·Safari/Firefox·음성 스크린리더·학습효과는 여전히 미실행이다.
