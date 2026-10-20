@@ -38,3 +38,20 @@ DB A·Kubernetes 보강/최종 진단·주거 A·세금 B 마감 후보를 보�
 E 다음 합본 source `733b517ae6c1ad55a40e281eb43954dc1029740b`의 tree `412eb486c6fdd7ac6dbf8a8f80d27a336483093a`와 같은 로컬 기준 위에 F11–12만 추가했다. 주거08·DB04·회계02의 기존 범위, 세금10의 현재 공제액 제목과 입력 인접 비교 막대, 모든 엄격 진단을 보존했다. 회계B나 다른 후속 장은 넣지 않았다. 새 로컬 전체 **1044/1044 테스트**와 TypeScript·Vite production 빌드가 통과했다. 동시 실행 수4의 로컬 명령을 사용했으며 전체 파일·단언과 CI 기본 명령은 유지했다.
 
 이 시점에 현재 main05270dda의 D 공개 게이트와 다음 E production은 진행 중이다. F의 순차 main·Pages와 마지막 넓은 브라우저 회귀는 아직 완료하지 않았다. F의 새 실제 production·직접 원본 검토를 선행 준비하더라도 E 공개 게이트와 최신 main 보존 통합을 건너뛰지 않는다.
+
+## E 의존 최종 두 장의 실제 production·직접 화면 검사
+
+PR29 head `ba890cfc63ca79810e5d09f8eadbe5aa6a6d50e9`, tree `9eb5847b7972dfec5bd638b3fcca082acae6b070`를 대상으로 [Actions run39382866647](https://github.com/Middleages/my-books/actions/runs/39382866647)의 checkout `2c6ca7eefbc918ffaa5d2bc493b3541dee1c047a`에서 실제 Chromium 검사를 실행했다. checkout tree가 같고 작업 트리가 깨끗하다. build와 선택된 tax·book-volumes job이 모두 성공했다. 선택 기록은 tax·book-volumes만 실행하고 insurance·investing·database·kubernetes·housing·accounting은 이번 실행에서 의도적으로 생략했다고 명시한다. 마지막 넓은 회귀를 수행했다는 뜻은 아니다.
+
+- tax **182/182**, 원본 PNG **138장**, 앱 오류·console 진단 모두0. 전12장의 일반/reduced-motion·모델과 기하·라벨·정지/초기화·실제 Tab 포커스·정적 표·읽음 보존 검사가 유지됐다. 권차 **14/14**, 원본 PNG39장, 오류0이다.
+- tax artifact `12245957502`, ZIP SHA-256 `913079012dde93d11c5ba31ccd6f302f7638b988405ea36f5f76e1a909f178ec`; 권차 artifact `12246346080`, ZIP `4197a9e35124f34704a1117b4aebcc65490f9eddc8a629b6ac7871d889b3c855`. 다운로드한 원본과 해시를 확인했다. 선택 artifact `12246456468`도 해시 `c44cd04ecc79a77dafb0157faaa30f5bd6de8b10666a578ee43c99d1e4abbbcc`와 일치한다.
+- 실제 제공 자산은 JS `index-D4n5xMWf.js` 2,719,860bytes, SHA-256 `0d472f92bbc043fef2f20034cb34199e9e97fc1ba1c459f6bf34d265329e23dd`; CSS `index-Bie4L1S5.css` 334,620bytes, `24fc92aa0f54d60117d2196f5a8bcf48a88b29355a5f60e4078b24c3f00a3a7c`로 두 suite 모두 원래 build와 일치했다.
+- 작성자는11·12의1440px 초기,320px 변경,390px reduced-motion 정적 대안 원본6장과1440px 홈을 직접 열었다.11의0–150 공통 눈금·0–18개월 구간·현재 관찰 표시, 환급 후 누적144→80과 현금 조정−64,12의 문장 선택과 인접 분류·해설, 사실/가정/추가확인의 구분을 확인했다. 모바일에서 수직 문서→해설 관계가 유지되고 라벨/제어 겹침이나 잘림 차단점은 없었다. 정적 표는 키보드로 접근하는 가로 스크롤 영역이며 모든 열을 한 번에 볼 수 있다는 뜻은 아니다. 홈의 세금5권·읽음12와 다른 책의 공개 분모가 맞다. 모든138PNG나 모든 표 셀을 수동으로 읽었다고 주장하지 않는다.
+
+이 기록은 E에 의존한 **게시 전 production 증거**다. D/E의 선행 공개, F 최신 main 통합·production 및 Pages·동일 게시 자산·마지막8개 suite의 넓은 production/published 회귀가 닫히기 전 전체권 게시 완료로 표시하지 않는다. 실제 Safari/Firefox·물리 기기·스크린리더 음성·사용자 학습효과 검증은 포함하지 않았다.
+
+독립 검토자도 위 실행의1440px 시간표 초기·320px 문서 변경 원본2장을 직접 열었다. Y/Y+1 경계와 환급 하락, 시작 시점의 미도착 현금, 선택 문장4와 가정 표시·원금 보장 오독 해설의 연결에 의미/가독성 차단점이 없음을 확인했다. 검토 범위는 이 두 원본으로 한정한다.
+
+## 주거 E와 합친 다음 파동 로컬 검증
+
+검증된 F 원고와 주거 E source `443ed137880fb816b93ea082e117575fa0c72a7e` 및 문서 마감본을 합쳤다. 주거 앱·모델·검증기는 해당 source와 같고, 세금12·주거10·DB4·회계2의 공개 후보 범위를 보존한다. 별도 승인된 확률8·관측5·인증6·홈서버 후보는 계획 문서만 포함하고 새 책을 카탈로그에 등록하지 않는다. 전체 **1061/1061 테스트**와 TypeScript·Vite build를 통과했다. 로컬 동시 실행 수4에서 모든 파일·단언을 유지했다. 새 합본의 실제 production과 정확한 게시 버전은 다음 별도 게이트이며 앞선 단독 F 실행과 구별한다.

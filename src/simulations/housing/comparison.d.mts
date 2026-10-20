@@ -1,0 +1,8 @@
+export type ComparisonKind='rent'|'jeonse'|'buy';
+export interface ComparisonInput {months?:number;startCash?:number;monthlyFunding?:number;annualReturn?:number;priceChange?:number;transactionCosts?:boolean;settlement?:'assumed'|'unknown';rentDeposit?:number;rent?:number;jeonseDeposit?:number;jeonseLoan?:number;buyPrice?:number;buyLoan?:number;loanRate?:number;loanMonths?:number}
+export interface ComparisonFailure {kind:'initial-shortage'|'monthly-shortage'|'settlement-shortage'|'settlement-unconfirmed';month:number;gap:number|null}
+export interface PlannedRow {month:number;out:number;principal:number;interest:number;rent:number;maintenance:number;annualCost:number;debt:number;asset:number;cumulativeExpense:number}
+export interface ComparisonFrame {step:number;month:number;phase:'entry'|'monthly'|'settlement';cash:number;asset:number;debt:number;spent:number;funding:number;returns:number;paidMonths:number;failure:ComparisonFailure|null;netWorth:number;paid:boolean;out:number}
+export interface ComparisonPath {kind:ComparisonKind;price:number;loan:number;entryFee:number;disposalFee:number;initialUse:number;planned:PlannedRow[];netSettlement:number;pvCost:number;plannedExpense:number;frames:ComparisonFrame[];beforeSettlement:{cash:number;asset:number;debt:number;spent:number};terminalCash:number|null;settled:boolean;failure:ComparisonFailure|null}
+export const comparisonDefaults:Required<ComparisonInput>;
+export function housingComparison(input?:ComparisonInput):Required<ComparisonInput>&{monthlyReturn:number;factor:number;numericalTolerance:number;paths:Record<ComparisonKind,ComparisonPath>};
