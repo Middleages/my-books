@@ -11,4 +11,12 @@
 2026-10-20 CDC 영아 보호자 안내, CDC 2개월 신호·응답 안내, AAP·ASHA 다언어 문답 원문 확인. 링크와 적용 한계는 각 장에 있다. AAP·ASHA 문답은 2025-11-20 업데이트이며 다언어 사용 자체가 장애 원인이라는 주장을 배제하는 근거로만 사용한다. 원문의 단어 수·미국 평가 서비스는 한국 기준으로 재사용하지 않는다. 임상 감수·K-DST 현행판/재사용 확인은 여전히 미완료다.
 
 ## 검증 상태
-로컬 전체 unit/build 및 정상 draft PR CI를 준비한다. A/B 회귀를 보존하며 모든 통로×반응×단계, 관심선·신호 방향, 휴식/모름 상태, 정적 정보·키보드·초기화, 5개 폭 원본 PNG를 검사한다. 실행 전에는 통과로 표시하지 않는다. 실제 게시 및 exact-live는 별도 직렬 게이트다.
+실행 전 계획: 로컬 전체 unit/build 및 정상 draft PR CI를 준비한다. A/B 회귀를 보존하며 모든 통로×반응×단계, 관심선·신호 방향, 휴식/모름 상태, 정적 정보·키보드·초기화, 5개 폭 원본 PNG를 검사한다. 실행 전에는 통과로 표시하지 않는다. 실제 게시 및 exact-live는 별도 직렬 게이트다.
+
+## 완료 결과
+- 로컬 전체 unit 1,048개 통과, production build 통과. 소스 커밋 `026ff59`, 트리 `b22c0d168d56727059e98135b89487ca19afe2b0`.
+- Draft PR #43은 B 브랜치를 기반으로 하며 원격 소스 `26f16d287dbb34c43172223075a4ed3840f68b42`의 트리가 위 로컬 트리와 같다.
+- 정상 CI https://github.com/Middleages/my-books/actions/runs/39394524551 에서 build와 영향 범위 book-volumes/child-development production 브라우저 성공. 다른 7개 suite는 영향 범위 밖으로 미실행이다. PR이므로 배포와 published 검사는 skipped이며 게시 성공으로 해석하지 않는다.
+- 브라우저 보고서: merge SHA `8b707bd8d108a81dcf8b514982bff41e5d3bdafd`, 동일 sourceTree, 77개 통과/실패 0, 241 PNG, page/console/resource 오류 0. Artifact `12251705837`.
+- 원본 PNG 직접 검토: 320 communication gesture-follow/quiet-follow, 390 gesture-redirect, 390 interaction break 0→1, 1440 engage 1, 320 unclear 2. 작은 화면에서도 제어·본문·그림이 잘리지 않으며 동일 대상/다른 대상의 점선 종점, 신호 방향, 일시정지, 모름 상태가 구별된다.
+- source/실제 화면 게이트 완료. 임상 감수와 K-DST 원문 재사용 확인, main 통합·Pages·exact-live는 별개 미완료 상태다.
