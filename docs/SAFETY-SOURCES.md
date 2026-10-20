@@ -30,3 +30,8 @@ https://www.ciss.go.kr/DATA/bbs/83/20190819012254674.pdf 는 검색 발췌를 �
 - B3 / publisher: CPSC / title: Magnets / url: https://www.cpsc.gov/Safety-Education/Safety-Education-Centers/Magnets / country: 미국 / targetAge: toddler through teen / reviewedScope: 본문 직접 열람, 자석 삼킴 의심 시 즉시 의료 도움 경계 / limitations: 미국 법규·의학적 처치 절차·사고 통계 미채택 / chapterIds: small-objects.
 - 2026-05-11 한국소비자원 삼킴 사고 주의보 https://www.kca.go.kr/home/sub.do?menukey=4006&mode=view&no=1004463127 는 게시일·첨부 존재를 직접 확인. 첨부 PDF는 시간 초과로 세부 내용 미채택. 최신 자료의 존재를 이전 자료의 현행성 검증으로 쓰지 않는다.
 - S4 NHS 낙상·문 끼임·작은 부품·자석·비닐봉투 예방 부분 재열람. 영국 치수·제품 규격·응급번호 미채택. 전문 감수 미실행.
+
+## D 배치 직접 확인 · checkedAt: 2026-10-20
+- D1 / publisher: 식품의약품안전처·대한민국 정책브리핑 / title: 여름철 의약품 안전하게 보관하려면? / url: https://www.korea.kr/news/policyNewsView.do?newsId=148890626 / country: 한국 / targetAge: 일반 가정, 어린이 접근 예방 포함 / reviewedScope: 2021-07-27 게시 원래 포장·제품별 보관 설명·어린이 손에 닿지 않는 보관 / limitations: 품목별 온도·기한·처방 제외, 최신판 주장 안 함 / chapterIds: poison-prevention.
+- D2 / publisher: 군산시 게시 / title: 화학사고 발생 시 주민행동요령, 7쪽 생활화학제품 어린이 중독사고 예방 / url: https://www.gunsan.go.kr/upload_data/board_data/BBS_0000391/159954777261506.pdf / country: 한국 / targetAge: 어린이, 0–36개월 전용 아님 / reviewedScope: 원래 용기 유지·음식용 용기 혼동 예방·잠금 보관 / limitations: 게시일 미확인, 최신판·처치 절차·대피 부분 미채택 / chapterIds: poison-prevention.
+- D3 / publisher: NHTSA / title: Car Seats and Booster Seats / url: https://www.nhtsa.gov/vehicle-safety/car-seats-and-booster-seats / country: 미국 / targetAge: 영아부터 어린이 전반 / reviewedScope: 제품·차량 설명서와 아이 조건을 함께 확인하는 원리 / limitations: 국내 규정·설치·각도·배선·연령 전환 기준 미채택, 실제 적합성 검증 안 함 / chapterIds: travel-safety.
