@@ -390,6 +390,22 @@ async function scenarios(page, id) {
     for (const k of model.investmentKinds) {
       await lab.locator("select").nth(0).selectOption(k.id);
       assert.equal(await lab.locator(".tax-tree-root").innerText(), k.label);
+      const branches = lab.locator(".tax-route-branch");
+      assert.equal(await branches.count(), model.investmentKinds.length);
+      const selected = lab.locator('.tax-route-branch[data-selected="true"]');
+      assert.equal(await selected.getAttribute("data-kind"), k.id);
+      for (const branch of model.investmentKinds) {
+        const nodes = await lab
+          .locator(`.tax-route-branch[data-kind="${branch.id}"] li strong`)
+          .allTextContents();
+        assert.deepEqual(
+          nodes,
+          model
+            .investmentRoute(branch.id)
+            .nodes.slice(0, 3)
+            .map((node) => node.detail),
+        );
+      }
     }
     await lab.locator("select").nth(1).selectOption("special");
     assert.match(await lab.innerText(), /특례계좌의 가입/);
@@ -436,6 +452,11 @@ async function scenarios(page, id) {
     await bars(page);
   }
   if (id === "deductions-credits") {
+    const prediction = lab.locator(".tax-prediction");
+    await prediction.locator('input[value="no"]').check();
+    await prediction
+      .getByRole("button", { name: "이유 확인", exact: true })
+      .click();
     for (const [base, off] of [
       [400, 50],
       [0, 150],
@@ -450,6 +471,15 @@ async function scenarios(page, id) {
       assert.deepEqual(
         values,
         model.deductionComparison(base, off).rows.map((r) => r.finalTax),
+      );
+      const rows = model.deductionComparison(base, off).rows;
+      const explanation = await prediction.locator("[role=status]").innerText();
+      assert(explanation.includes(`과세 바탕 ${base}에서 ${off}을 공제`));
+      assert(
+        explanation.includes(
+          `세금은 ${rows[0].finalTax}에서 ${rows[1].finalTax}로 ${rows[1].saving} 줄어듭니다.`,
+        ),
+        "Deduction explanation must follow current values",
       );
       await bars(page);
     }

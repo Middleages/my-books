@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { usePlayback } from "../money/shared";
-import { payroll, settlement } from "../../simulations/tax/lifeModel.mjs";
+import {
+  payroll,
+  settlement,
+  vatChain,
+  investmentKinds,
+  investmentRoute,
+} from "../../simulations/tax/lifeModel.mjs";
 import { Bar, fmt, Lab, Prediction, Range, Stage, StaticTable } from "./shared";
 export function WithholdingLab() {
   const [withheld, setWithheld] = useState(15);
@@ -155,6 +161,246 @@ export function SettlementLab() {
         title="정산 전 과정"
         headers={["단계", "가상 금액", "뜻"]}
         rows={r.frames.map((f) => [f.label, f.value!, f.detail])}
+      />
+    </Lab>
+  );
+}
+export function VatLab() {
+  const [sale, setSale] = useState(300),
+    [mode, setMode] = useState("taxable");
+  const r = vatChain({ sale, mode }),
+    p = usePlayback(2);
+  return (
+    <Lab id="vat" title="받은 세금에서 앞 단계의 세금을 잇기">
+      <p>
+        화살표는 공급 순서입니다. 각 장부의 파랑 막대는 매출세액, 금색 막대는
+        공제 매입세액입니다. 모든 막대 눈금은 0–50 단위입니다.
+      </p>
+      <figure className="tax-vat-chain">
+        {r.stages.map((s, i) => (
+          <section
+            className="tax-vat-node"
+            key={s.id}
+            data-current={i === p.step}
+          >
+            <h4>
+              {i + 1}. {s.label}
+            </h4>
+            <p>공급가액 {fmt(s.price)}</p>
+            <Bar label="매출세액" value={s.output} max={50} color="blue" />
+            <Bar label="공제 매입" value={s.credit} max={50} color="gold" />
+            <p>
+              차액 <strong>{fmt(s.remit)}</strong>
+            </p>
+            {i < 2 && (
+              <span className="tax-chain-arrow" aria-hidden="true">
+                →
+              </span>
+            )}
+          </section>
+        ))}
+        <figcaption>
+          공급 단계 간 금액은 100 → 200 → {sale}. 첫 공급자의 공제 매입세액은
+          0으로 가정합니다. 증빙·공제요건·간이과세·의제매입·가산세는
+          생략했습니다.
+        </figcaption>
+      </figure>
+      <div className="tax-controls">
+        <Range
+          label="최종 공급가액"
+          value={sale}
+          min={200}
+          max={500}
+          onChange={(n) => {
+            setSale(n);
+            p.rewind();
+          }}
+        />
+        <label>
+          마지막 단계의 가상 처리
+          <select
+            value={mode}
+            onChange={(e) => {
+              setMode(e.target.value);
+              p.rewind();
+            }}
+          >
+            <option value="taxable">과세 · 10% 가정</option>
+            <option value="zero">영세율 · 매입세액 공제 가정</option>
+            <option value="exempt">면세 · 매입세액 불공제 가정</option>
+          </select>
+        </label>
+      </div>
+      <Prediction
+        question="영세율과 면세는 매입세액 처리도 같을까요?"
+        answer={false}
+        reason="이 모형에서는 영세율은 매입세액을 공제하고 면세는 공제하지 않습니다. 현실의 의제매입 등 예외는 별도로 확인합니다."
+      />
+      {p.controls}
+      <button
+        onClick={() => {
+          setSale(300);
+          setMode("taxable");
+          p.rewind();
+        }}
+      >
+        조건까지 초기화
+      </button>
+      <Stage {...r.frames[p.step]} />
+      <p className="tax-result">
+        세 단계 납부 계산의 합 {fmt(r.totalRemit)} · 마지막 매출세액{" "}
+        {fmt(r.consumerTax)} · 마지막 단계 공제 못한 매입세액{" "}
+        {fmt(r.embeddedTax)}.{" "}
+        {mode === "exempt"
+          ? "매출세액 0이어도 앞 단계의 세금이 원가에 남습니다."
+          : "매입세액을 이어 공제하므로 같은 세금을 단계마다 더하지 않습니다."}
+      </p>
+      <StaticTable
+        title="공급 단계별 장부"
+        headers={[
+          "공급자",
+          "공급가액",
+          "매입세액",
+          "매출세액",
+          "공제 매입",
+          "차액",
+          "불공제",
+        ]}
+        rows={r.stages.map((s) => [
+          s.label,
+          s.price,
+          s.input,
+          s.output,
+          s.credit,
+          s.remit,
+          s.costTax,
+        ])}
+      />
+    </Lab>
+  );
+}
+export function InvestmentTaxLab() {
+  const [id, setId] = useState("interest"),
+    [account, setAccount] = useState("ordinary");
+  const r = investmentRoute(id, account),
+    p = usePlayback(3);
+  return (
+    <Lab
+      id="investment"
+      title="수익의 이름보다 과세 사건 찾기"
+      note="분류를 위한 가상 사례입니다. 국내외·상품·납세자·계좌 조건을 확인하지 않고 세율을 적용하지 않습니다."
+    >
+      <figure className="tax-route-tree">
+        <div className="tax-tree-root">{r.label}</div>
+        <p className="tax-route-guide">
+          네 경로를 나란히 비교하세요. ●와 파란 경계는 선택한 사건이며, 화살표는
+          원천 → 사건 → 분류를 확인하는 순서입니다.
+        </p>
+        <div className="tax-route-branches">
+          {investmentKinds.map((k) => (
+            <section
+              className="tax-route-branch"
+              key={k.id}
+              data-kind={k.id}
+              data-selected={id === k.id}
+            >
+              <h4>
+                <span aria-hidden="true">{id === k.id ? "●" : "○"}</span>{" "}
+                {k.label}
+              </h4>
+              <ol>
+                {investmentRoute(k.id, account)
+                  .nodes.slice(0, 3)
+                  .map((node, i) => (
+                    <li
+                      key={node.label}
+                      data-current={id === k.id && p.step === i}
+                      data-phase={i}
+                    >
+                      <small>{node.label}</small>
+                      <strong>{node.detail}</strong>
+                      {i < 2 && (
+                        <span className="tax-route-arrow" aria-hidden="true">
+                          ↓
+                        </span>
+                      )}
+                    </li>
+                  ))}
+              </ol>
+            </section>
+          ))}
+        </div>
+        <div className="tax-route-account" data-current={p.step === 3}>
+          <span className="tax-route-question" aria-hidden="true">
+            ?
+          </span>
+          <div>
+            <strong>{r.nodes[3].label}</strong>
+            <p>{r.nodes[3].detail}</p>
+          </div>
+        </div>
+        <figcaption>
+          각 경로 끝의 소득 분류는 검토 출발점입니다. 선택한 사건도 계좌·납세자
+          조건의 점선 경계를 통과해야 합니다. 평가 변화는 지급·실현과 구별하며,
+          줄 길이·단계 수는 세금 크기나 처리시간이 아닙니다.
+        </figcaption>
+      </figure>
+      <div className="tax-controls">
+        <label>
+          사건
+          <select
+            value={id}
+            onChange={(e) => {
+              setId(e.target.value);
+              p.rewind();
+            }}
+          >
+            {investmentKinds.map((i) => (
+              <option value={i.id} key={i.id}>
+                {i.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          계좌
+          <select
+            value={account}
+            onChange={(e) => {
+              setAccount(e.target.value);
+              p.rewind();
+            }}
+          >
+            <option value="ordinary">일반계좌</option>
+            <option value="special">특례계좌</option>
+          </select>
+        </label>
+      </div>
+      <Prediction
+        question="배당과 주식 매도차익은 항상 같은 세금 규칙일까요?"
+        answer={false}
+        reason="소득 유형과 과세 사건이 다릅니다. 상품·계좌·국내외 조건을 추가로 확인합니다."
+      />
+      {p.controls}
+      <button
+        onClick={() => {
+          setId("interest");
+          setAccount("ordinary");
+          p.rewind();
+        }}
+      >
+        조건까지 초기화
+      </button>
+      <p className="tax-result">{r.result}</p>
+      <StaticTable
+        title="수익 유형과 확인 질문"
+        headers={["유형", "사건", "분류", "추가 확인"]}
+        rows={investmentKinds.map((k) => [
+          k.label,
+          k.event,
+          k.category,
+          k.question,
+        ])}
       />
     </Lab>
   );

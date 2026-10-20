@@ -50,3 +50,42 @@ export declare function settlement(options?: {
   credit?: number;
   prepaid?: number;
 }): Settlement;
+export declare function vatChain(options?: { sale?: number; mode?: string }): {
+  sale: number;
+  mode: string;
+  rate: number;
+  stages: {
+    id: number;
+    label: string;
+    price: number;
+    input: number;
+    output: number;
+    credit: number;
+    remit: number;
+    costTax: number;
+    consumerPayment: number;
+  }[];
+  totalRemit: number;
+  consumerTax: number;
+  embeddedTax: number;
+  frames: Frame[];
+};
+export declare const investmentKinds: {
+  id: string;
+  label: string;
+  origin: string;
+  event: string;
+  category: string;
+  question: string;
+}[];
+export declare function investmentRoute(
+  id?: string,
+  account?: string,
+): (typeof investmentKinds)[number] & {
+  account: string;
+  nodes: {
+    label: string;
+    detail: string;
+  }[];
+  result: string;
+};
