@@ -13,14 +13,20 @@
 2026-10-20 CDC 관찰/선별 페이지와 연령별 자료 목록 및 AAP 교정연령 원문을 직접 열람했다. CDC 페이지는 2026-02-17 표시, AAP 교정연령은 2018-12-10 업데이트 표시를 확인했다. 출처 링크는 각 장과 `CHILD-DEVELOPMENT-SOURCES.md`에 있다. K-DST 현행판·전문·재사용 조건은 미확인이므로 문항·점수표·한국 검진 회차를 제공하지 않는다. 임상·전문가 감수 미실행.
 
 ## 실행 상태
-- `npm test`: 초기 실행 1041개 통과. 추가 카테고리 계약 테스트를 포함한 최종 재실행은 진행 중.
-- `npm run build`: 진행 중. 초기 JSX 문법 오류를 수정했으며 최종 결과를 대기한다.
-- `node --check scripts/child-development-browser-qa.cjs`, `git diff --check`: 최종 커밋 전 확인.
+- `npm test`: 추가 카테고리 계약 테스트를 포함해 1042개 통과, 실패 0.
+- `npm run build`: 통과. 초기 JSX 문법 오류를 수정했다. 기존 대형 번들 경고는 남아 있다.
+- `node --check scripts/child-development-browser-qa.cjs`, `git diff --check`: 통과.
 - 의존성 설치는 기본 npm 캐시 경로에 쓸 수 없어 실패했고, 동일 저장소의 기존 설치 의존성을 복사해 로컬 검사를 진행했다. CI는 lockfile 기반 `npm ci`로 독립 검증한다.
 - 브라우저는 기존 확인된 로컬 Chromium 소켓 제한 때문에 정상 PR CI에서 검증한다. 스크립트 작성은 실행 통과를 의미하지 않는다.
-- 새 전용 suite와 기존 8개 suite를 등록했다. 첫 카테고리 변경은 shared catalog 변화로 전체 9개 suite를 선택한다.
+- 새 전용 suite와 기존 8개 suite를 등록했다. 로컬 classifier에서 첫 카테고리 변경이 shared catalog 변화로 전체 9개 suite를 선택하는 것을 확인했다.
 - 320/390/768/900/1440 화면, 모든 합성 관찰/날짜 조합, 날짜선 비례 좌표, 키보드·정적/reduced-motion 대안, 예측·초기화, 카테고리·읽음 보존·콘솔/자산 오류를 검사하도록 준비했다.
 - 원본 PNG 직접 검토와 PR CI 결과는 아직 대기 중이다. PNG 생성만으로 시각 검토를 통과 처리하지 않는다.
 
 ## 게시 게이트
 초안 PR은 승인된 공개 교육 소스·검증 준비용이다. main 병합·Pages 배포는 아직 하지 않았으며, 기존 세금 최종 8-suite 검증 후 별도 직렬 게시 창에서만 진행한다. 게시 후 정확한 자산·실제 화면 확인 전 배포 완료로 보고하지 않는다. 후속 B는 A의 근거·시각·게시 상태와 미완료 항목을 확인하고 순차 진행한다.
+
+## PR 검증 추적
+
+Draft PR [#38](https://github.com/Middleages/my-books/pull/38), 원격 소스 `39cd34d2ef5b3bcd871bd5981dc7b1e482b63ac0`, 구현 tree `d7f23e04a4ccbfcce10c7f70b1ec651ea071cfdb`. GitHub API에서 생성한 tree가 로컬 `1799630`과 일치한다. 계획은 별도 원격 커밋 `3950b2b2c3383258a1ef77407b57d648e90dac49`로 보존했다. [CI run 39388647767](https://github.com/Middleages/my-books/actions/runs/39388647767)의 lockfile 설치·unit·build 통과를 확인했으며 9개 브라우저 suite는 진행 중이다.
+
+첫 CI의 육아 suite는 데스크톱 3개 장 렌더와 무자동재생·포커스 검사 후, select의 접근성 이름에 옵션 텍스트가 합쳐져 exact label 선택에서 중단됐다. 실제 조작 UI의 명확한 접근성 이름을 명시해 수정했다. 첫 원본 관찰 띠 PNG에서 세 시점·네 상태·선택 강조·범례의 관계를 직접 확인했다. 모바일·날짜선·전체 브라우저 통과는 아직 확정하지 않았다.
