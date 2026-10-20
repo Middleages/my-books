@@ -86,3 +86,10 @@ PR39 생성 직전 main이 `d76ed55e9969108449124a154c7c67e946068740`으로 전�
 독립 최종 교차 검토에서도 새320-d08-app-calls 원본의 JOIN3 vs 분리2+2+1=5·앱 조립3과 loops/호출 구별, 라벨·줄바꿈을 확인해 차단 문제가 없었다.
 
 **남은 범위:** C 실제 공개 다음 최신 main과 조율된 창에 D를 통합하고 exact-main production→Pages→실제 게시 자산/장 URL·대표 화면을 확인한다. D source gate를 닫았으므로 E09–10은 별도 작업 트리에서 준비할 수 있지만 D 게시 전 E를 공개하지 않는다. 실제 PostgreSQL/driver/SQL·운영 장애·물리 기기·Safari·스크린리더는 실행하지 않았다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `a2a017730aed91c416e8ba6535c62580a6646bf4` / tree `30229911e8630785ad95f98330bb545e3718c6aa`, [run39410741375](https://github.com/Middleages/my-books/actions/runs/39410741375)의 전체1225/build·선택6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **512/512·405원본PNG**, 앱 오류0이며 정확한 host-root favicon404 한 건만 별도 진단으로 보존했다. artifact12259988470 ZIP SHA256 `4f7f060f1e5e18f2ec7f7bd1b3716517285a397e2e141ab22c1c110f3f7ba04a` 일치. 실제 JS/CSS 전체 bytes·해시는 [합본 게시 기록](FOLLOWUP-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 실제 게시 원본: `320-d07-pool1-leak-final,1440-d07-pool1-leak-dispatch-0,1440-d07-binding-split-update,320-d07-binding-split-final,1440-d08-nested-loop-true-low-final,320-d08-app-calls`(각각.png). 작성자가 원본6개와 nested 상단1200px native 범위를 직접 읽었다. SQL 종료≠반환과 대기, C2 확정이 C1취소 밖인 경계, 평균1.5×loops2=누적3, DB 반환합3/5와 앱 조립3이 유지된다. 검토한 범위에 새 잘림·겹침·의미 차단점을 찾지 못했다. 모든405개를 사람이 읽었다거나 실기기·스크린리더·실제 시스템/임상 검증을 수행했다고 주장하지 않는다. 앞선 미게시 문구는 당시 소스 검증 단계의 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.

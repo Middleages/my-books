@@ -33,3 +33,10 @@ Draft [PR #41](https://github.com/Middleages/my-books/pull/41)는 검증된 A �
 관찰 장면에서 닫힌 상자·정보 없는 점선·보호자 보라색 팔이 서로 다르게 보이며 맥락 네 항목을 모바일에서는 세로로 읽는다. 손 뻗기 전후는 물체를 유지하고 손 위치가 변하며, 먼 위치에서는 간격이 남는다. 잡기와 놓기는 접촉/분리로 드러나고 방향 변화는 독립된 그림이다. 조작부는 그림 바로 앞, 결과는 바로 뒤에 놓이며 가로 잘림 없이 범례·안전 경고·출처를 읽을 수 있다. 회전 그림은 자세 지침이 아니라 명시된 개념 삽화다.
 
 B의 소스·실제 화면 게이트는 완료했다. A→B main/Pages 순차 게시와 exact-live 검증은 아직 대기이며 이 PR 실행의 deploy/published는 정상 skipped다. 임상 감수나 안전 효과에 대한 실증 검증을 소프트웨어 검사로 대신하지 않는다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `a2a017730aed91c416e8ba6535c62580a6646bf4` / tree `30229911e8630785ad95f98330bb545e3718c6aa`, [run39410741375](https://github.com/Middleages/my-books/actions/runs/39410741375)의 전체1225/build·선택6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **58/58·156원본PNG**, 앱 오류0이며 정확한 host-root favicon404 한 건만 별도 진단으로 보존했다. artifact12259383595 ZIP SHA256 `28ecc9f4bb65548e6ab9a844e78f2f63b9d56b1601ca8b8bb450e41a607646f0` 일치. 실제 JS/CSS 전체 bytes·해시는 [합본 게시 기록](FOLLOWUP-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 실제 게시 원본: `320-record-no-chance,1440-record-assisted,320-movement-grasp-near-1,1440-movement-release-near-1,320-movement-turn-near-1`(각각.png). 작성자가 원본5개를 직접 읽었다. 기회 없음과 도움받은 관찰이 분리되고 손-물체 접촉/분리·몸 방향이 그림과 라벨에 맞으며 실제 거리·능력 기준으로 제시하지 않는다. 검토한 범위에 새 잘림·겹침·의미 차단점을 찾지 못했다. 모든156개를 사람이 읽었다거나 실기기·스크린리더·실제 시스템/임상 검증을 수행했다고 주장하지 않는다. 앞선 미게시 문구는 당시 소스 검증 단계의 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.
