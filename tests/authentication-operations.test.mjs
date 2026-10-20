@@ -8,3 +8,5 @@ test('safe record has allowlisted keys only; no secret values ever generated',()
 test('all cases repeat deterministically without mutation',()=>{for(const id of Object.keys(trustCases))assert.deepEqual(trustFrame(3,id),trustFrame(3,id));for(const id of Object.keys(diagnosisCases))assert.deepEqual(authDiagnosisFrame(3,id),authDiagnosisFrame(3,id));});
 
 test('API boundary names both validation and authorization',()=>{assert.equal(authDiagnosisFrame(3).gates.find(g=>g.id==='api').label,'API 검증·인가');});
+
+test('safe reason names observation not unproven attacker or cause',()=>{assert.equal(authDiagnosisFrame(3,'csrf').log.reasonCategory,'state-mismatch');assert.equal(authDiagnosisFrame(3,'loop').log.reasonCategory,'session-missing');});
