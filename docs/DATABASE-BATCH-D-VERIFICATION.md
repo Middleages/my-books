@@ -40,3 +40,5 @@
 - `npm run build`: TypeScript와 Vite **380 modules** 성공. 기존 큰 bundle 경고는 남아 있다.
 - `git diff --check`: 통과. 실제 선택기 결과는 `book-volumes, database`; 다른6 browser suite는 의도적 미실행이지 통과가 아니다.
 - D 실제 Actions browser·직접 PNG 판독·게시 자산은 아직 미검증이다. 로컬 Chromium 제한을 우회하거나 실패를 통과로 세지 않았다.
+
+PR39 생성 직전 main이 `d76ed55e9969108449124a154c7c67e946068740`으로 전진해 최초10533fb 후보는 merge 충돌로 실제 browser를 시작하지 못했다. main을 다시 통합하고 세금01–12·주거01–10, B 실제 게시 마감·공유 문서를 보존했다. 이 통합의 전체 **1128/1128**(fail0·skip0), TypeScript/Vite **388 modules** build 및 diff check가 통과했다. DB 모델·본문·시각·검증기 bytes는 최초 D 후보와 동일하고 충돌은 최신 다른 책 카탈로그와 DB 계획 상태만 조합했다. 실제 browser는 이 새 후보에서 시작하며 이전 로컬 숫자를 새 실제 결과로 소급하지 않는다.

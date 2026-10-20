@@ -369,3 +369,145 @@ export function deductionComparison(base = 400, amountOff = 50) {
     ].map((r) => ({ ...r, saving: plain.finalTax - r.finalTax })),
   };
 }
+export function taxTimeline({
+  monthly = 8,
+  finalTax = 80,
+  settleMonth = 14,
+} = {}) {
+  amount(monthly);
+  amount(finalTax);
+  if (
+    monthly * 12 > MODEL_LIMIT ||
+    !Number.isInteger(settleMonth) ||
+    settleMonth < 13 ||
+    settleMonth > 18
+  )
+    throw new RangeError("Timeline");
+  const prepaid = monthly * 12,
+    difference = finalTax - prepaid;
+  const frames = Array.from({ length: 19 }, (_, month) => {
+    const withheld = month >= 1 && month <= 12 ? monthly : 0;
+    const adjustment = month === settleMonth ? difference : 0;
+    const cumulative =
+      Math.min(month, 12) * monthly + (month >= settleMonth ? difference : 0);
+    return {
+      month,
+      withheld,
+      adjustment,
+      cumulative,
+      label:
+        month === 0
+          ? "기준 시작"
+          : month <= 12
+            ? `Y년 ${month}월`
+            : `Y+1년 ${month - 12}월`,
+      phase:
+        month === 0
+          ? "시작"
+          : month <= 12
+            ? "소득 귀속·원천징수"
+            : month < settleMonth
+              ? "정산·자료 확인 대기"
+              : month === settleMonth
+                ? "가상 차액 납부·환급"
+                : "정산 후",
+      detail:
+        month === settleMonth
+          ? difference < 0
+            ? "음수 조정은 돈이 돌아오는 환급입니다."
+            : difference > 0
+              ? "양수 조정은 추가 납부입니다."
+              : "조정할 차액이 없습니다."
+          : "신고 또는 자료 확인만으로 현금이 이미 도착했다고 세지 않습니다.",
+    };
+  });
+  return { monthly, finalTax, prepaid, difference, settleMonth, frames };
+}
+export const taxDocuments = [
+  {
+    id: "payslip",
+    label: "가상 급여명세서",
+    context: "Y년 6월 · 국내 가상 고용주 · 단위 1",
+    rows: [
+      {
+        label: "지급총액 300",
+        kind: "fact",
+        why: "이 가상 문서에 적힌 지급액입니다. 세법상 총급여나 과세표준과 같다는 뜻은 아닙니다.",
+      },
+      {
+        label: "사회보험 25 / 원천징수 세금 15",
+        kind: "fact",
+        why: "서로 다른 공제 목적지가 적혀 있습니다.",
+      },
+      {
+        label: "매달 이 금액이 같을 것이다",
+        kind: "assumption",
+        why: "한 달의 명세서만으로 다음 달이나 연간 합계를 확정할 수 없습니다.",
+      },
+      {
+        label: "올해 최종 세금도 15일까?",
+        kind: "unknown",
+        why: "귀속기간 전체 소득·공제·결정세액이 필요합니다.",
+      },
+    ],
+  },
+  {
+    id: "settlement",
+    label: "가상 정산 결과",
+    context: "Y년 귀속 · Y+1년 정산 · 가상 단위",
+    rows: [
+      {
+        label: "결정세액 70 / 기납부세액 90",
+        kind: "fact",
+        why: "같은 귀속연도·같은 세목의 값이라는 문서 조건을 확인했습니다.",
+      },
+      {
+        label: "차감세액 −20",
+        kind: "fact",
+        why: "70−90=−20으로 환급 방향입니다. 새 소득 20이 생긴 것이 아닙니다.",
+      },
+      {
+        label: "환급은 다음 달 반드시 입금된다",
+        kind: "assumption",
+        why: "금액 계산과 실제 지급일은 다른 정보입니다.",
+      },
+      {
+        label: "실제 입금 완료 여부",
+        kind: "unknown",
+        why: "처리 상태·지급 내역 또는 통장 입금 기록을 별도로 확인해야 합니다.",
+      },
+    ],
+  },
+  {
+    id: "account",
+    label: "가상 계좌 안내",
+    context: "가상 상품 설명 · 과세연도 미기재",
+    rows: [
+      {
+        label: "조건 충족 시 혜택 제공",
+        kind: "fact",
+        why: "문서가 조건부라고 적었다는 사실만 확인됩니다. 개인의 충족 여부는 아닙니다.",
+      },
+      {
+        label: "모든 투자 이익이 세금 0이다",
+        kind: "assumption",
+        why: "상품·소득·계좌·인출 조건을 생략한 확대 해석입니다.",
+      },
+      {
+        label: "적용연도와 중도해지 조건",
+        kind: "unknown",
+        why: "법령의 시행일, 계약 조건, 변경 안내를 찾아야 합니다.",
+      },
+      {
+        label: "세금 혜택이면 원금도 보장된다",
+        kind: "assumption",
+        why: "세제 조건과 투자 손실 위험은 서로 다른 축입니다.",
+      },
+    ],
+  },
+];
+export function documentReview(id = "payslip") {
+  const item = taxDocuments.find((r) => r.id === id);
+  if (!item) throw new RangeError("Unknown document");
+  return item;
+}

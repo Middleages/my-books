@@ -2,7 +2,7 @@
 
 기준: [TAX-TEXTBOOK-PLAN.md](TAX-TEXTBOOK-PLAN.md). 이 문서는 후속 세션에 복사해 사용할 범위 지시다. 최신 main의 AGENTS.md, CONTENT-AUTHORING.md, HOME-INFORMATION-ARCHITECTURE.md, MONEY-TEXTBOOK-PLAN.md 및 관련 교재·검증 기록을 매번 읽는다. 기존 책/URL/readId/읽음 기록과 병행 변경을 보존한다. 이전 완료 주장을 가정하지 않는다.
 
-현재 진행: A 소개·01–02부터 D07–08까지 main·Pages·실제 게시 자산·직접 화면 검증을 완료했다. 최신 완료 source는05270dda이며 주거 C05–06과 회계 A소개·01–02도 함께 확인했다. E/F는 각각 다음 합본 production·직접 검토를 통과했지만 실제 게시·정확한 live 자산·마지막8개 suite의 전체권 회귀는 순서대로 남아 있다. 준비 상태를 게시 완료로 읽지 말고 배치별 기록에서 재확인한다.
+현재 진행: A 소개·01–02부터 E09–10까지 main·Pages·실제 게시 자산·직접 화면 검증을 완료했다. 최신 완료 source는05602d24이며 주거 D07–08과 DB B03–04도 함께 확인했다. F는 다음 합본 production·직접 검토를 통과했지만 실제 게시·정확한 live 자산·마지막8개 suite의 전체권 회귀는 순서대로 남아 있다. 준비 상태를 게시 완료로 읽지 말고 배치별 기록에서 재확인한다.
 
 
 ## 2026-10-20 검증 범위 조정

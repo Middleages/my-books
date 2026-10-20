@@ -151,3 +151,37 @@ export declare function deductionComparison(
     saving: number;
   })[];
 };
+export interface TaxTimeFrame {
+  month: number;
+  withheld: number;
+  adjustment: number;
+  cumulative: number;
+  label: string;
+  phase: string;
+  detail: string;
+}
+export declare function taxTimeline(options?: {
+  monthly?: number;
+  finalTax?: number;
+  settleMonth?: number;
+}): {
+  monthly: number;
+  finalTax: number;
+  prepaid: number;
+  difference: number;
+  settleMonth: number;
+  frames: TaxTimeFrame[];
+};
+export declare const taxDocuments: {
+  id: string;
+  label: string;
+  context: string;
+  rows: {
+    label: string;
+    kind: string;
+    why: string;
+  }[];
+}[];
+export declare function documentReview(
+  id?: string,
+): (typeof taxDocuments)[number];
