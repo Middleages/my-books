@@ -20,10 +20,11 @@ export function revenueFrames({mode='credit'}={}){
  add(mode==='advance'?'이미 받은 대금 · 추가 기록 없음':late?'M2 · 기존 외상대금400 회수':'M1 · 기존 외상대금160 회수',mode==='advance'?'현금은 인도 전에 이미 받았습니다. 매출은 인도 때 한 번만 기록합니다.':late?'현금400이 늘고 매출채권400이 없어집니다. M2의 이 발췌 매출·이익은0이며 M1에 기록한 매출400을 다시 세지 않습니다.':'현금160이 늘고 매출채권은400에서240으로 줄어듭니다. 회수 시 새 매출과 새 이익은0입니다.',late?35:15,late?'M2':'M1',mode==='advance'?null:{id:late?'R-collect-M2':'T07',period:late?'M2':'M1',day:late?5:15,label:`기존 외상대금${amount} 회수`,cashFlow:'operating',rows:[d('cash',amount),c('receivable',amount)]});
  return frames;
 }
+// This selected expense excerpt contains cash outflows only, so the cash drop is its total payment.
 export function expenseFrames({payment=40}={}){
  if(![0,40,60].includes(payment))throw new RangeError('서비스 지급 금액을 확인하세요.');
  let state=prefix(3);const baseline=snapshot(state),frames=[];
- const add=(title,detail,period,event=null,monthsUsed=0)=>{if(event)state=post(state,event);frames.push(frame(state,baseline,{index:frames.length,title,detail,period,event,monthsUsed,payment,prepaidSegments:[1,2,3].map(month=>({month,amount:20,recognized:state.appliedIds.includes('T04'),used:month<=monthsUsed})),serviceReceived:snapshot(state).balances.serviceExpense,servicePaid:payment&&(state.appliedIds.includes('T10'))?payment:0}));};
+ const add=(title,detail,period,event=null,monthsUsed=0)=>{if(event)state=post(state,event);frames.push(frame(state,baseline,{index:frames.length,title,detail,period,event,monthsUsed,payment,paymentTotal:baseline.balances.cash-snapshot(state).balances.cash,prepaidSegments:[1,2,3].map(month=>({month,amount:20,recognized:state.appliedIds.includes('T04'),used:month<=monthsUsed})),serviceReceived:snapshot(state).balances.serviceExpense,servicePaid:payment&&(state.appliedIds.includes('T10'))?payment:0}));};
  add('T01–T03 뒤 · 비용 발췌 시작','현금410·설비240에서 시작합니다. 아래에서는 T04·T09–T11과 선급 서비스의 다음 달 사용만 골라 기록합니다. 판매·재고·감가상각 등은 제외한 발췌이지 M1 전체 결산이 아닙니다.','M1');
  add('T04 · 서비스 세 달치60 선지급','M1–M3에 균등하게 제공받을 권리60입니다. 지금 현금60을 냈지만 아직 사용 전이므로 이 시점의 비용은0입니다.','M1',companyEvents()[3]);
  add('T09 · 별도 당기 서비스60 제공받음','판매·관리에 쓰인 별도 서비스를 전부 제공받았습니다. 아직 돈을 안 냈어도 비용60과 지급할 의무60을 기록합니다.','M1',companyEvents()[8]);
