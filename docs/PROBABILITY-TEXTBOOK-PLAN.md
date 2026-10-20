@@ -1,13 +1,13 @@
 # 확률과 금융 의사결정 — 돈·경제 시리즈 8권 제작 계획
 
 작성·자료 확인: **2026-10-20 UTC/KST**. 기준: `origin/main` **7a935e1114a4260181891664fff4a453508784fc**.
-상태: **추가 구현·공개 요청에 따라 A 소개·01–02의 본문·모델·UI·단독 production·직접 화면 검토를 완료했다. 최신 합본의 main·Pages·실제 게시 게이트는 대기 중이며 [A 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에서 증거와 미검증을 구분한다.**
+최초 계획 당시 상태: **계획만 작성. 본문·모델·UI·카탈로그·표지·읽음 분모·배포는 변경하지 않았다. 공개 PR/main 반영은 별도 승인 전 진행하지 않는다.**
 
-상위 [시리즈 계획](MONEY-TEXTBOOK-PLAN.md)의 8권 질문을 구체화한다. [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [변경 범위별 브라우저 검증](BROWSER-VERIFICATION-SCOPE.md)을 따른다. [독립 A–F 실행 프롬프트](PROBABILITY-SESSION-PROMPTS.md)는 후속 집필용이며 이 문서 자체가 새 작업의 승인이나 완료 기록은 아니다. 착수 때 최신 main·병행 작업·실제 공개 상태를 다시 확인한다. 기준 SHA를 영구 기준으로 고정하지 않는다.
+상위 [시리즈 계획](MONEY-TEXTBOOK-PLAN.md)의 8권 질문을 구체화한다. [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [변경 범위별 브라우저 검증](BROWSER-VERIFICATION-SCOPE.md)을 따른다. [독립 A–F 실행 프롬프트](PROBABILITY-SESSION-PROMPTS.md)는 후속 집필용이며 지금의 구현 승인이나 완료 기록이 아니다. 착수 때 최신 main·병행 작업·실제 공개 상태를 다시 확인한다. 기준 SHA를 영구 기준으로 고정하지 않는다.
 
 ## 현재 구현 기록 — 2026-10-20
 
-후속 승인에 따라 A 소개·01–02는 PR36의 전체 unit1,049·build·9개 browser suite와 원본 화면 검토를 완료했다. 최신 main 통합/게시 여부는 [A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에 따로 남긴다. B03–04는 별도 PR44의 production·원본 직접 검토를 마쳤고 최신 합본을 준비 중이며 등록 분모는4다. A의 실제 게시 완료 뒤에만 B를 게시한다. 아래12장 계획은 완성 범위가 아니고, [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)이 실제 실행·미실행·게시 상태를 구분한다. C–F의 본문·모델은 아직 등록하지 않았다.
+후속 승인에 따라 A 소개·01–02는 PR36의 전체 unit1,049·build·9개 browser suite와 원본 화면 검토를 완료했다. 최신 main 통합/게시 여부는 [A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에 따로 남긴다. B 03–04는 PR44의 full unit 1,081·build·선택된 4개 production suite와 원본 화면 검토를 마쳤다. C 05–06은 PR52에서 검증하는 별도 후보이며 실제 등록 분모는 6이다. 아래 12장 계획은 완성 범위가 아니고, [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)과 [C 검증 기록](PROBABILITY-BATCH-C-VERIFICATION.md)이 source 검증과 실제 main/Pages 게시를 구분한다. D–F의 본문·모델은 이 후보에 등록하지 않았다.
 
 ## 1. 목적: 좋아 보이는 숫자를 어디까지 믿어도 될까?
 
@@ -318,3 +318,8 @@
 ### 후속 승인·착수 기록 · 2026-10-20
 
 계획 문서 공개 반영과 구현 시작 요청을 확인했다. 최초 계획/검산의 기준 SHA와 미실행 기록은 당시 상태로 보존한다. 공개 문서 준비 시 최신 main `05270dda25437a4529186ee0f3036948c352b7fb`로 통합하여 세금·주거·회계의 병행 변경을 보존했다. 후속 구현은 A부터 순차 진행하고 실제 결과는 배치 검증 기록에 남긴다. 원격 계획 PR, 본문 구현, main 통합, 게시 확인을 각각 구분하며 통합/배포는 직렬 공개 창에서만 진행한다.
+
+
+### C 구현 구체화 · 2026-10-20
+
+05–06 후보를 별도 작업트리에서 만들며 소개·등록6장과 맞춘다. 05의 반복200개 평균은 모바일에서 겹치는 점 대신 같은2만원 구간·고정0–200개 세로축의 막대로 표시하고, 모든 평균과 구간을 정적 표로 보존한다. 가구값/표본평균의 단위는 모두만원이지만 세는 대상은 구별한다. 비복원 단순무작위 이론값과 고정 의사난수 관측 퍼짐을 동일하게 맞추지 않는다. 06 요약 평균5와 참평균0·σ20 생성 기록은 분리한다. 고정200개 반복의 포함률은 강제로90/95%로 만들지 않는다. NIST 공식 구현에서 Box–Muller 변환을 확인했지만1958 원 논문 전문은 미열람 상태다. [C 검증 기록](PROBABILITY-BATCH-C-VERIFICATION.md)이 실제 실행·검토·공개 상태의 기준이다.

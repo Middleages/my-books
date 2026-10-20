@@ -1,6 +1,6 @@
 # 집과 주거의 경제 · 전체 편집·모델·시각 점검
 
-작성일: 2026-10-20 UTC. 범위는 돈·경제 6권 소개·01–12다. **전체 원고·모델 구현 및 F 최종 production·직접 시각 검토를 마쳤다. 최신 main 통합·폭넓은 브라우저 회귀·F 실제 게시 게이트는 남아 있다.** 아래 원고 점검은 저자 검토이며, 별도 검토자의 범위와 실제 실행은 구별한다.
+작성일: 2026-10-20 UTC. 범위는 돈·경제 6권 소개·01–12다. **소개·01–12 구현과 순차 공개, main47/Pages·실제 게시, 고정8×2 전체권 회귀 및 직접 원본 검토를 완료했다.** 아래 원고 점검은 저자 검토이며, 별도 검토자의 범위와 실제 실행은 구별한다.
 
 ## 책 전체에서 유지한 질문
 
@@ -67,3 +67,34 @@ bookId `housing`, money 분야6권, 소개 URL과01–12의 고유 chapterId/rea
 최종 F source0d4d564의 [production 실행](https://github.com/Middleages/my-books/actions/runs/39389899369)은 주거189/189·모든 진단0·고유 원본248개다. 전체955테스트/build와 작성자의 원본 직접 검토를 마쳤다. 별도 시각 교차검토는 이사·자료의 명시 구간 및 최종850/320 충격 장면이며 모든 원본 또는 전체12장 독립 시각 검토가 아니다. 정확 SHA·자산·원본과 각 검토 범위는 [F 기록](HOUSING-BATCH-F-VERIFICATION.md)을 따른다.
 
 E까지는 main d76ed55e의 실제 공개 검사160/160·정확 자산 및 대표09/10 원본을 확인했다. F는 아직 공개하지 않았으며 최신 main 통합 뒤 합본 production·폭넓은 브라우저 회귀·Pages·실제 자산 대조가 남아 있다. 완료한 실행만 후속 기록에 추가한다. 실제 기기·Safari/Firefox·스크린리더 음성·사용자 학습효과는 검사하지 않았으며, Chromium 자동 검사나 작성자 원고 검토로 대신하지 않는다.
+
+
+## 고정 main 전체권 최종 회귀 완료 · 2026-10-20
+
+[읽기 전용 최종 실행39399756955](https://github.com/Middleages/my-books/actions/runs/39399756955)은 09:42:41 UTC에 build와 production/published 각8suite, 총17job 모두 성공했다. 실제 앱 checkout은 main `47c36cc06fad15d87afd040ac5c259b421714d52`, tree `09766eee17e80d322b382d544b99085f7450916a`로 고정했다. 별도 verify 브랜치의 workflow commit `75020ab7704026b62897060a227f5fce1f91299b`만 사용하고 main workflow·배포 권한·앱 소스를 바꾸지 않았다. 이 검사는 재배포가 아니다. 앞선 main1134/1134 단위·393 modules build/Pages 성공과 함께 판정한다.
+
+단일 build 산출물을 모든16job이 공유하고 각 job 전후 source/tree·clean·main 고정 여부를 확인했다. 전체 JS/CSS bytes를 같은 build와 대조했고 published에서는 실제 Pages 응답 bytes도 일치했다. JS `index-DsaNx52x.js` SHA-256 `42e3024c3a64992ebbd360cb3c32b72e80b7d72570ee3bf0103d1e26517bb163`, CSS `index-f58pl4aP.css` `be5043e056f9ded15ecad6ab7db8aeb0a2e1319bcfad3526864c88669613af78`다. 최종 별도 API 재확인도 main47을 유지했다.
+
+총 **2589개 검사·4430개 고유 원본 PNG(각 job 내부 고유 수의 합)**를 생성했다.16개 ZIP의 GitHub SHA-256 digest와 내부 source/lease/결과를 모두 대조했다. 생략 suite는 없다. 모든 앱 오류·미확인 console/resource 오류는0이다. tax·database·kubernetes·housing·accounting의 published에는 알려진 호스트 루트 favicon404가 각각1건 별도 진단으로 남는다. 이를 전체 콘솔 메시지0으로 바꾸어 쓰지 않는다.
+
+| suite | production / published 검사 | 원본 PNG(각 실행) | published artifact | published ZIP SHA-256 |
+| --- | --- | --- | --- | --- |
+| insurance | 138 / 138 | 603 | 12255956123 | `e1fd9e68837e35a9fff7bdf78d3e6bebad60b1f2824378845d112726ec99b5f0` |
+| investing | 160 / 161 | 680 | 12253903968 | `49652acb47f84d1d806cf85e773ca1e901966a1145b0f4b745f07f766390a048` |
+| tax | 182 / 182 | 138 | 12255121852 | `057c6121ce24864d07b1d099e7939d40bd14b388fe479417cf1253271c4c0e1c` |
+| book-volumes | 14 / 14 | 39 | 12254022727 | `36be94a1615600dc67bcdb17428f90829475c93f550f59d02c7484e2e4f536d1` |
+| database | 415 / 416 | 259 | 12253429219 | `8a25dfdf5ce42b7c12667902b398bdda87463dba1e837cd8d2642b598d39b2d5` |
+| kubernetes | 94 / 94 | 146 | 12254801860 | `99f16bf814de4db4356514aea5f554bc6364c3419314e769694359ae54fc0eca` |
+| housing | 189 / 189 | 248 | 12253544090 | `232f9a8e2095ee7a600dab354e89a120fbb5fac774d7e9e917ac2951c0915e62` |
+| accounting | 101 / 102 | 102 | 12253578506 | `cc884aabdba7fe60f9989186b31b7479ba814fac8efef3ad8b6e9daffcf8cc55` |
+
+이번 final published의 주거 원본13장면(소개와01–12)을 직접 열었다. 전체 원본은1440 소개·1440 임차/매수 부족·850 월 충격이며, 나머지 긴 원본은 원래 해상도의 상단0–1900px,05는 추가1700–3400px를 읽었다. 범위는 다음과 같다.
+
+- `1440-intro-initial`, `320-housing-rights-changed`, `1440-rent-and-deposit-changed`: 당사자·현금·권리·부채, 모바일 방향, 반환 원금과 반복 월세/가상 전환비율의 구별.
+- `320-rental-contract-changed`, `1440-deposit-risk-changed`: 문서/재확인 경계와 법적 판정 미실행, 순차 배분·남은 청구·보증 경로와 실제 입금 구별.
+- `320-purchase-cash-changed`, `1440-mortgage-limits-changed`: 가격의 세 부분·별도 비용, 정확1원 부족과 받은 대출채무 유지, 담보/연간 심사/월 생활의 다른 분모.
+- `320-mortgage-paths-initial`, `1440-running-costs-changed`:13개월 경계의 원금/이자와 동일 축,12개월 저축120만원·수선지급0·6개월 부족 이력 유지.
+- `1440-rent-or-buy-shortage`, `320-market-mix-changed`:39개월 마지막 반영·40개월 부족으로 정산 미완료, 거래 구성 평균과 자체 고정구성110의 다른 의미.
+- `850-housing-shocks-initial`, `320-reading-housing-buy-revealed`:14개월 동결·현금 공통 눈금과 별도 지급 눈금·폭 보존,2억원의 계약금/중도금/잔금과 예정대출8000만원≠실제 입금.
+
+위 실제 원본 범위에서 새 잘림·겹침·모바일 방향 모순·그림/값/해설 불일치의 차단점은 없었다. 검토용 crop은 원본 PNG 수에 포함하지 않는다.248개 주거 원본 전부, 정적 표의 모든 가로 열이나 crop 아래 본문까지 사람이 읽었다는 뜻은 아니다. 앞선 A–F 원본·독립 모델/의미·공식출처 검토를 보존한다. 소개·12장 순차 구현과 main/Pages/실제 게시·전체권 넓은 회귀를 완료했다. 실기기·Safari/Firefox·스크린리더 음성·임상/금융/법률 감수·학습효과 및 실제 거래/계약 실행은 미검증이다.
