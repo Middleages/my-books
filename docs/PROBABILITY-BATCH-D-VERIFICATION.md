@@ -55,3 +55,16 @@ PR61/head360313255a890ce275a75bb5174889ca87be77c0/tree730d5c1d, CI39405858949의
 
 - `index-B2HZ6IOp.css`: 361467 bytes, SHA256 `91afa14ee2b0628b837a348dc10ad9889843c66e42b433e0a74359ed008dde81`.
 - `index-D76sIJOv.js`: 2943984 bytes, SHA256 `10f3aab90c7a4bd908703d62759a098e664bfb1832a3c18a09cc0cc5f9312050`.
+
+## 최종 보강본 정상 PR 검증 · 10:47 UTC
+
+- PR61 원격 `7dc01b77ee37aae4b4905384fd38eb9d706a3e86`, 대응 로컬 `83c07f2e75b31adec9a73cf76d61d6833cc26d63`, 동일 tree `56ee2c807c2e36e7ad8db4f3421fe16bfdd66274`다.
+- [Actions39409147669](https://github.com/Middleages/my-books/actions/runs/39409147669)의 실제 checkout `eb96f28ce37c7d6191b327b209e8711f4784bbc3`가 같은 tree이며 clean이다. 전체 단위 1,099/1,099(실패·건너뜀0), TypeScript/Vite build, 선택된 확률·홈 production 두 suite가 성공했다. 보험/투자/세금/DB/Kubernetes/주거/회계 일곱 suite는 생략이며 통과가 아니다. deploy/published는 skipped다.
+- 확률 533/533, 원본 PNG182개, page/console/resource/host 진단0이다. 홈 14/14, 원본42개, 오류0이다. 위 보강 로컬 JS/CSS의 전체 바이트/해시가 CI와 실제 production 응답에 일치했다.
+- 확률 artifact12259540225 ZIP SHA256 `c856411f2727f7e787a95928c36537ed483abf0f8c975d55ae29b5f07164813b`, 홈12258009318 `8d63497426b02475ff457f8d4ffa314ba4bdc5af37e5a0b0ad3c9a846019964b`, scope12258074315 `77c880351fddef218240df5ab688191e2041f5bf00c8e0847f747013f89510ee`를 GitHub digest와 대조했다.
+
+첫 실제 실행에서 직접 본 원본은 320 association observed/strata/standardized/causes/controls/static, 320 dependence joint4/joint0/joint20/losses/mass4/mass0/mass20/nonlinear/controls/static, 1440 dependence joint4,1440 association standardized의18장과 홈320 probability heading이다. 첫 정적표 문제는 그대로 기록한다.
+
+보강본에서 새로 직접 연 원본은 `320-dependence-static.png`, `320-dependence-static-end.png`, `390-dependence-static.png`, `390-dependence-static-end.png`, `1440-dependence-static.png`의5개다. 긴 결과명과 확률 열이 겹치지 않고, 키보드/가로 이동 안내와 오른쪽 기말800/900/900/1,000 열이 읽힌다. 좁은 화면에서 긴 표 전체를 한 화면에 축소하지 않으며 좌우로 읽는 대안이다. 이전179개 중175개는 바이트가 같아 기존 검토를 보존할 수 있지만 새로 열었다고 세지 않는다. 모든182개 또는 모든 정적 가로 위치를 사람이 확인한 것은 아니다.
+
+D source 검증·직접 원본 게이트는 완료했다. main/Pages/실제 게시와 실기기·Safari/Firefox·스크린리더 음성·학습효과는 아직 미검증이며 지정된 직렬 통합에서 C 게시 후 이어 간다. E는 별도 작업이고 이 D source에 포함하지 않았다.
