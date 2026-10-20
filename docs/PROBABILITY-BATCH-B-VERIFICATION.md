@@ -46,3 +46,15 @@
 - production/published browser·원본 PNG: 아직 B를 실행/검토하지 않았다. verifier에 A의 기존 assertion을 유지하고 B의 전체 조건·실제 도형폭/높이·분모/건수·모바일·키보드·재생/정지/reset/unmount·정적1,001행·정밀도·새로고침을 추가했다. 코드에 검사를 적은 것은 통과가 아니다.
 - 첫 로컬 Chromium 환경 제한은 그대로 존중하며 다른 실행 경로로 재시도하지 않는다. 승인된 정상 PR CI에서 실제 브라우저 결과를 얻는다. A 실제 게시 전에도 별도 draft PR의 production 검증은 진행할 수 있다. B main/Pages 통합은 A 게시 이후의 직렬 창만 사용한다.
 - 원격 B PR/main/Pages는 아직 시도하지 않았다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과·독립 동료 리뷰는 미검증이다.
+
+
+## 정확한 PR 소스의 실제 production 검증 완료
+
+2026-10-20 08:47 UTC 확인. Draft [PR44](https://github.com/Middleages/my-books/pull/44)는 A PR36의 고정 브랜치를 base로 한다. 원격 head `58842af5e97c257b3e201b14efe5eb4de69c3b74`, 로컬 head `17508bf18457e25286a16c34bcbbe02614345467`, 동일 tree `067d1472e07dc7e5bffcab485d315da7aba10aa2`. [CI39394565669](https://github.com/Middleages/my-books/actions/runs/39394565669)의 가상 병합 source `03235c29f19eb835f4b32fcd706c9a0a14248e8f`도 같은 tree다.
+
+- 전체 unit1,081/1,081·실패0 및 production build 성공. 위의 최종 로컬 JS/CSS 전체 바이트와 SHA256이 확률·홈 report 모두와 일치한다.
+- 실제 affected 선택은 tax·book-volumes·housing·probability 4개이며 모두 성공. A base 이후 이미 게시된 main을 보존한 병합 때문에 세금·주거도 선택됐다. insurance·investing·database·kubernetes·accounting 5개는 의도적 생략이며 이번 B 실행에서 통과했다고 세지 않는다. 로컬 B-only 선택2개와 구별한다.
+- 확률268/268, page/console/resource 오류0, 원본PNG73개 생성. 홈14/14·오류0. 범위 선택도 같은 source/tree를 기록한다.
+- 작성자가 원본20개를 직접 열었다. 320px 이론·관측0건·자연빈도 나무·알림 비례막대/빈 조건·인접 제어·정적 표,390px 두 전체 장·일반움직임 결과·홈,1440px 이론/나무, A의320px 분포/납기 회귀를 포함한다. 조건부 분모와 색 외 표식, 미관측/0 구별, 읽음0/4, 기존 책을 확인했다. 일부320px 기록의 ‘건’ 단위는 두 줄이지만 잘림은 없었다. 독립 동료·실제기기·스크린리더 음성 검증으로 부르지 않는다.
+- 확률 artifact12250759322 ZIP SHA256 `0ea7dcee6a7856dbc4779190828323a828002784277fd062187c52ea75579d75`; 홈 artifact12251316668 `6eb437c85ab30a4976cf0679056b73524828dcfeb8c61770fd428a820242104f`; 선택 artifact12250808373 `17087b343fa15453b50a4314dc86a9512963b98333df1d010d4e04991b46bf8d`.
+- PR의 deploy/published jobs는 skipped다. main/Pages/실제 게시 성공이 아니다. A의 실제 게시 게이트 뒤 최신 main을 보존해 B를 직렬 통합하고 해당 새 소스의 검증과 실제 게시 확인을 해야 한다. 이 완료 기록은 검증된 B tree를 동결한 채 문서 전용 handoff로 준비했다.

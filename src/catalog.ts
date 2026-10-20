@@ -1,3 +1,5 @@
+import SamplesVariation from "./content/probability/SamplesVariation.mdx";
+import IntervalsPrediction from "./content/probability/IntervalsPrediction.mdx";
 import FrequencyProbability from "./content/probability/FrequencyProbability.mdx";
 import ConditionalEvidence from "./content/probability/ConditionalEvidence.mdx";
 import ProbabilityIntro from "./content/probability/Intro.mdx";
@@ -130,6 +132,8 @@ export const chapters: Chapter[] = [
   { id: "losses-and-liquidity", bookId: "probability", readId: "probability/losses-and-liquidity", number: "02", title: "평균 손실과 버틸 돈", heading: "평균적으로 적게 잃으면 감당할 수 있을까?", description: "손실의 꼬리와 현금의 납기를 나누어 같은 기대손실 뒤의 부족액을 비교합니다.", Content: LossesLiquidity },
   { id: "frequency-and-probability", bookId: "probability", readId: "probability/frequency-and-probability", number: "03", title: "한 번도 없었던 일의 확률", heading: "0건을 보았으면 확률도 0일까?", description: "고정 기록의 관측 횟수와 가정한 이론 확률, 상대·절대 변화를 나누어 읽습니다.", Content: FrequencyProbability },
   { id: "conditional-evidence", bookId: "probability", readId: "probability/conditional-evidence", number: "04", title: "알림이 왔을 때 다시 세기", heading: "알림의 90%는 누구를 분모로 셌을까?", description: "같은 청구서의 네 칸을 보존하며 오류 중 알림과 알림 중 오류의 분모를 비교합니다.", Content: ConditionalEvidence },
+  { id: "samples-and-variation", bookId: "probability", readId: "probability/samples-and-variation", number: "05", title: "일부를 보고 전체 말하기", heading: "많이 모으면 언제나 더 정확할까?", description: "같은 명부에서 뽑은 평균들의 퍼짐과 편의 선택·복사 기록의 차이를 비교합니다.", Content: SamplesVariation },
+  { id: "intervals-and-prediction", bookId: "probability", readId: "probability/intervals-and-prediction", number: "06", title: "평균의 범위와 다음 한 번", heading: "평균을 정확히 알면 다음 결과도 정확해질까?", description: "같은 금액축에서 평균의 신뢰구간·새 결과의 예측구간과0건 뒤의 불확실성을 구별합니다.", Content: IntervalsPrediction },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
   { id: "double-entry", bookId: "accounting", readId: "accounting/double-entry", number: "02", title: "한 거래의 두 기록", heading: "왜 한쪽만 적으면 돈의 설명이 빠질까?", description: "차변·대변과 자산 등식을 통해 한 거래의 양쪽을 관찰합니다.", Content: DoubleEntry },
   { id: "housing-rights", bookId: "housing", readId: "housing/housing-rights", number: "01", title: "집에 사는 것과 집을 소유하는 것", heading: "같은 집에 살아도 가진 권리는 같을까?", description: "거주·소유·반환청구권·채무와 현금의 이동을 구분합니다.", Content: HousingRights },
@@ -526,7 +530,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "probability", categoryId: "money", volume: 8, title: "확률과 금융 의사결정", category: "돈·경제 · 숫자의 근거와 불확실성", cover: "PROBABILITY & FINANCIAL DECISIONS", description: "좋아 보이는 숫자를 어디까지 믿어도 될까? 분모·분포·빠진 자료와 감당할 손실을 읽습니다.", overview: "요약에서 조건부 확률·추정·공동 위험·선택의 착시와 경로까지, 가상 사례로 판단의 질문을 익힙니다.", future: "소개·01–04장 공개 · 가상 자료의 원리를 다루며 실제 수익률·개인 안전성·상품 선택을 예측하거나 추천하지 않습니다.", Intro: ProbabilityIntro },
+  { id: "probability", categoryId: "money", volume: 8, title: "확률과 금융 의사결정", category: "돈·경제 · 숫자의 근거와 불확실성", cover: "PROBABILITY & FINANCIAL DECISIONS", description: "좋아 보이는 숫자를 어디까지 믿어도 될까? 분모·분포·빠진 자료와 감당할 손실을 읽습니다.", overview: "요약에서 조건부 확률·추정·공동 위험·선택의 착시와 경로까지, 가상 사례로 판단의 질문을 익힙니다.", future: "소개·01–06장 공개 · 가상 자료의 원리를 다루며 실제 수익률·개인 안전성·상품 선택을 예측하거나 추천하지 않습니다.", Intro: ProbabilityIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
