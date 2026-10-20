@@ -289,6 +289,16 @@ aside nav a small {
   font-size: 14px;
   margin-bottom: 20px;
 }
+.book-heading-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+.book-volume {
+  color: #244bc0;
+  font-weight: 700;
+  white-space: nowrap;
+}
 .chapter h1 {
   font-size: clamp(28px, 3.4vw, 44px);
 }

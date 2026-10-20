@@ -1,6 +1,6 @@
 import { useEffect, useState, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { books, chapters, chapterHref } from "./catalog";
+import { books, chapters, chapterHref, bookVolumeLabel } from "./catalog";
 import { parseRead, storageKey } from "./reading.mjs";
 import "./style.css";
 import { kubernetesAppendices } from "./kubernetesAppendices";
@@ -140,7 +140,10 @@ function App() {
               </>
             ) : (
               <>
-                <p className="breadcrumb">{book.category}</p>
+                <p className="breadcrumb book-heading-meta">
+                  <span className="book-volume">{bookVolumeLabel(book)}</span>
+                  <span>{book.category}</span>
+                </p>
                 <h1>{book.title}</h1>
                 <p className="lead">{book.overview}</p>
                 {book.future && (

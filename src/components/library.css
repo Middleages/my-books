@@ -35,7 +35,12 @@
 .home-result {
   color: #526078;
   font-size: 13px;
-  margin: 16px 0 20px;
+  margin: 16px 0 4px;
+}
+.home-order-note {
+  color: #526078;
+  font-size: 13px;
+  margin: 0 0 20px;
 }
 .home-books {
   display: grid;
@@ -113,9 +118,11 @@
   align-items: center;
   min-height: 24px;
 }
-.home-book-meta small {
-  color: #526078;
-  font-size: 11px;
+.home-book-meta .home-book-volume {
+  color: #244bc0;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 .home-badge {
   color: #244bc0;
