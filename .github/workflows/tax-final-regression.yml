@@ -1,0 +1,145 @@
+name: Tax final book read-only regression
+on:
+  push:
+    branches: [verify/tax-final-regression-20261020]
+permissions:
+  contents: read
+concurrency:
+  group: tax-final-read-only-regression
+  cancel-in-progress: false
+env:
+  FINAL_SOURCE_SHA: d76ed55e9969108449124a154c7c67e946068740
+  FINAL_SOURCE_TREE: 2d361e04d653c1c541fe2e345aa0973baaf271c3
+  LIVE_BASE: https://middleages.github.io/my-books/
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.FINAL_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Confirm pinned source and stable published main
+        run: |
+          test "$(git rev-parse HEAD)" = "$FINAL_SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$FINAL_SOURCE_TREE"
+          test -z "$(git status --porcelain)"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$FINAL_SOURCE_SHA"
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Record one exact build and complete intended scope
+        run: |
+          mkdir -p artifacts/final-source
+          node <<'NODE'
+          const fs = require('node:fs'), crypto = require('node:crypto');
+          const assets = fs.readdirSync('dist/assets').filter(n => /\.(js|css)$/.test(n)).sort().map(name => {
+            const bytes = fs.readFileSync('dist/assets/' + name);
+            return { name, bytes: bytes.length, sha256: crypto.createHash('sha256').update(bytes).digest('hex') };
+          });
+          if (!assets.some(a => a.name.endsWith('.js')) || !assets.some(a => a.name.endsWith('.css'))) throw Error('Missing build assets');
+          fs.writeFileSync('artifacts/final-source/build.json', JSON.stringify({
+            sourceSha: process.env.FINAL_SOURCE_SHA, sourceTree: process.env.FINAL_SOURCE_TREE,
+            workflowSha: process.env.GITHUB_SHA, assets,
+            suites: ['insurance', 'investing', 'tax', 'book-volumes', 'database', 'kubernetes', 'housing', 'accounting'],
+            modes: ['production', 'published'], omitted: [], deployment: false
+          }, null, 2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tax-final-built-dist
+          path: dist/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tax-final-source
+          path: artifacts/final-source/
+          if-no-files-found: error
+  verify:
+    name: Final ${{ matrix.mode }} (${{ matrix.suite }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [insurance, investing, tax, book-volumes, database, kubernetes, housing, accounting]
+        mode: [production, published]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.FINAL_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: tax-final-built-dist
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: tax-final-source
+          path: artifacts/final-source
+      - name: Check source, artifact and live-main lease before each complete suite
+        env:
+          MODE: ${{ matrix.mode }}
+          SUITE: ${{ matrix.suite }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$FINAL_SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$FINAL_SOURCE_TREE"
+          test -z "$(git status --porcelain)"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$FINAL_SOURCE_SHA"
+          mkdir -p artifacts/final-proof
+          node <<'NODE'
+          const fs = require('node:fs'), assert = require('node:assert/strict'), crypto = require('node:crypto');
+          const build = JSON.parse(fs.readFileSync('artifacts/final-source/build.json'));
+          assert.equal(build.sourceSha, process.env.FINAL_SOURCE_SHA);
+          assert.equal(build.sourceTree, process.env.FINAL_SOURCE_TREE);
+          (async () => {
+            for (const a of build.assets) {
+              const bytes = fs.readFileSync('dist/assets/' + a.name);
+              assert.equal(bytes.length, a.bytes);
+              assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), a.sha256);
+              if (process.env.MODE === 'published') {
+                const response = await fetch(process.env.LIVE_BASE + 'assets/' + a.name, { cache: 'no-store' });
+                assert.equal(response.status, 200, a.name);
+                const served = Buffer.from(await response.arrayBuffer());
+                assert.deepEqual(served, bytes, 'Published asset differs: ' + a.name);
+              }
+            }
+            fs.writeFileSync('artifacts/final-proof/before.json', JSON.stringify({ ...build,
+              suite: process.env.SUITE, mode: process.env.MODE, sourceChanges: '', mainLease: process.env.FINAL_SOURCE_SHA,
+              exactBuildAssets: true, exactPublishedAssets: process.env.MODE === 'published', checked: new Date().toISOString()
+            }, null, 2));
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+      - name: Install unchanged isolated browser verifier dependencies
+        run: |
+          npm install --prefix "$RUNNER_TEMP/investing-qa" --no-save --ignore-scripts playwright@1.56.1
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Run every assertion of the existing suite
+        env:
+          NODE_PATH: ${{ runner.temp }}/investing-qa/node_modules
+          CHROME_PATH: /usr/bin/google-chrome
+          LIVE_URL: ${{ matrix.mode == 'published' && 'https://middleages.github.io/my-books/' || '' }}
+        run: node scripts/${{ matrix.suite }}-browser-qa.cjs
+      - name: Confirm source and main remained stable through the suite
+        if: always()
+        run: |
+          test "$(git rev-parse HEAD)" = "$FINAL_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$FINAL_SOURCE_SHA"
+          mkdir -p artifacts/final-proof
+          node -e 'require("node:fs").writeFileSync("artifacts/final-proof/after.json", JSON.stringify({ sourceSha: process.env.FINAL_SOURCE_SHA, sourceChanges: "", mainLease: process.env.FINAL_SOURCE_SHA, checked: new Date().toISOString() }, null, 2))'
+      - name: Save actual reports, original screenshots and exact-source proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tax-final-${{ matrix.mode }}-${{ matrix.suite }}
+          path: |
+            artifacts/${{ matrix.suite }}-browser/
+            artifacts/final-proof/
+          if-no-files-found: error
