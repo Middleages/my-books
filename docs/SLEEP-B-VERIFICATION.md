@@ -12,3 +12,11 @@
 - 전용 브라우저 검사는 네 폭 320/390/850/1440, 두 과정의 모든 조합, 같은 총량·미확인, 다섯 연령 경계, 그림의 고정 눈금, 초기화·키보드·원본 PNG를 추가했다. 아직 실행하지 않았고 PNG 직접 검토도 미실행이다.
 - 로컬 Chromium 차단은 재시도하지 않으며 정상 PR CI로 검증한다.
 - 원격 PR 미생성. main/Pages 미게시. 소스/실제 화면/게시 게이트를 혼동하지 않는다.
+
+## B 최초 게이트와 안전 문장 전파 후 재검증 마감
+
+최초 B source626d003e/treecd0724ce의 CI39409504965는 build+선택2 suite(child-sleep,book-volumes) 성공,46검사105PNG오류0이었다. 네 폭 원본8개를 직접 확인한 뒤, 독립 검토에 따라 A02의 보호자 취침 전 별도 표면 복귀/소파·안락의자 동반 수면 회피 두 문장을 별도 보강했다.
+
+B 보강 소스는 로컬 ad26d34ceef57e63b8856faa3068799e9fa4cd4d, 원격 f96671bd1acf56de30e818cea256dc38b7bac27f, 동일 tree7c9a5c3883c12c3f78b634ce5e6bf66bba9ad7b8이다. PR65 CI39411650452의 build+선택2 production suite가 모두 성공했다. 전용50검사109PNG, page/console/resource 오류0. 실제 checkout7ec8b541e7eb83e70f1c6bd9cd84db26a5f6e6ba/동일tree/clean을 확인했다. 전체10 suite 검증으로 과장하지 않는다.
+
+Artifact12259237971 ZIP SHA2566d805ecf8a9b12bc29b76c69f13e70d95d967103e74ce68873229234cf7ab894. 보강 후 원본320-caregiver-boundary.png,390-caregiver-boundary.png,1440-caregiver-boundary.png,390-reference-twelve.png를 직접 열어 새2문장의 줄바꿈·가독성과 기존 참고 띠 보존을 확인했다. A 합본의 정확한 렌더는 합본 원본에서 별도로 확인한다. main/Pages는 아직 직렬 게시 게이트이며 완료로 표시하지 않는다.
