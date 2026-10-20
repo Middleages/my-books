@@ -12,3 +12,5 @@ test('accounting operations controls have unique explicit accessible names',()=>
  assert.equal((source.match(/<select /g)??[]).length,6);
 });
 test('accounting capital controls use explicit unique accessible names',()=>{const s=readFileSync(new URL('../src/components/accounting/CapitalLabs.tsx',import.meta.url),'utf8');for(const label of ['추정 사용기간','잔존가치 가정','사용 가능한 월초','상각만 달라지면 현금은','관찰 시점','자금 사건 묶음','현금 지급은 모두 비용일까'])assert(s.includes(`${label}<select aria-label="${label}"`));assert.equal((s.match(/<select /g)??[]).length,7);});
+
+test('accounting D lab containers cannot reuse a balance-segment color class',()=>{const ui=readFileSync(new URL('../src/components/accounting/CapitalLabs.tsx',import.meta.url),'utf8'),css=readFileSync(new URL('../src/components/accounting/capital.css',import.meta.url),'utf8');assert.equal((ui.match(/className="ac-lab ac-capital-lab"/g)??[]).length,2);assert(!ui.includes('className="ac-lab ac-capital"'));assert(!/\.ac-capital(?=[{ :])/.test(css));assert(css.includes('.ac-month-cell{font-size:.875rem}'));});

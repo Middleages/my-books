@@ -1,6 +1,6 @@
 # 회계와 기업의 돈 · D 구현 및 검증
 
-기준: 2026-10-20. **07–08장 로컬 구현·단위·빌드 검사까지 완료한 후보이며, 실제 production·PNG 직접 검토·main·Pages는 대기 중이다.** C의 전용 production200/200과 원본16개 직접 검토를 마친 뒤 별도 작업 트리에서 이어 썼다. C 브랜치 기반 draft PR에서 검사하며 B→C→D의 실제 게시 순서를 지킨다. 자동 병합하거나 main을 직접 변경하지 않는다.
+기준: 2026-10-20. **07–08장 로컬 구현·단위·빌드 검사까지 완료한 후보이며, 수정본의 실제 production·PNG 직접 검토·main·Pages는 대기 중이다.** C의 전용 production200/200과 원본16개 직접 검토를 마친 뒤 별도 작업 트리에서 이어 썼다. C 브랜치 기반 draft PR에서 검사하며 B→C→D의 실제 게시 순서를 지킨다. 자동 병합하거나 main을 직접 변경하지 않는다.
 
 ## 범위와 보존
 
@@ -67,3 +67,13 @@ IFRS18은2027-01-01 이후 시작 연차기간부터 적용, 조기 적용 가�
 ## 아직 남은 게이트
 
 D actual production·accounting+book-volumes·원본 PNG 직접 검토는 아직 대기 상태다. 통과한 로컬 계산/SSR을 그 대체로 쓰지 않는다. B/C 선행 게시 후 최신 main 통합·Pages·exact-live도 별도다. 실기기·Safari/Firefox·음성 스크린리더·학습효과 검사는 미실행이다. 다른 모든 책의 상세 브라우저를 이 D 배치에서 검사했다고 주장하지 않는다. 마지막 F에서 넓은 전체 교재 회귀를 수행한다.
+
+
+## 첫 production과 직접 검토에서 발견한 수정 사항
+
+- [run39390967096](https://github.com/Middleages/my-books/actions/runs/39390967096)은 head `89084a524fb6db91d01c6d83c5cdd11d8b41603e`, 실제 checkout `6305d82db77c38f3529bca46a65fbe61c4111562`, tree `ecea1710f89d8005fdffdffcabbf7cff27288480`·clean에서 실행했다. CI unit993·build367·book-volumes 성공, 회계 기능 **251/251**·앱/콘솔/리소스 오류0이었다.
+- artifact `12249906717`, SHA-256 `14521537ecddf587bdbe23d5469d36b7b7e3ad1b5e49ee911839f75484becefa`의 원본229 PNG를 보존했다. 대표8개를 직접 열어 설비·자금 경로를 보다가 실험 전체 배경이 기존 납입자본 색으로 덮여 대조가 낮아지는 문제를 발견했다. 따라서 **이 실행은 기능 성공이지 최종 시각 게이트 통과가 아니다.**
+- 원인은 새 랩 컨테이너가 기존 장부 색상 클래스 `.ac-capital`을 재사용한 것이었다. 기존 장부 색은 건드리지 않고 새 컨테이너만 `.ac-capital-lab`으로 분리했다. 좁은 월별 칸의 월/금액 글자도14px로 보강했다.
+- 재발 방지 unit 및 실제 computed background·heading contrast·월/금액 최소 글자 크기 검사를 추가했다. 기존 기능·금액/방향 assertion은 유지한다. 수정본의 전체 unit/build·실제 production·새 원본 직접 검토가 끝나기 전에는 D를 준비 완료로 표시하지 않는다.
+
+- 위 시각 수정본의 전체 unit **994/994 통과**, TypeScript/Vite **367 modules 통과**를 실제로 다시 확인했다. 수정은 D 컨테이너·월 칸 글자·검증기·회귀 검사·이 기록의5파일뿐이다. 새 production 및 새 원본 검토는 아직 대기 중이다.
