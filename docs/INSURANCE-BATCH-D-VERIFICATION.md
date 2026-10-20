@@ -42,3 +42,25 @@ main `83de852e45bed0c2dc6404984e34e34cc6df569e` / tree `d17383abb1731615f9404c0c
 수정 전 production의 독립 검토자는13개 PNG를 직접 열어1440/390/320/850·정적표·reduced-motion에서 추가 차단 결함이 없음을 확인했다. 환급금의0/14/20/28만원과 별도 만기0원, 첫 보험료와 종료 경계,5년 납입완료와 보장 유지의 관계를 모델과 대조했다. 최종 승인은 수정된 축 라벨의 새 실제 캡처를 확인한 뒤 내린다.
 
 수정판 게시 전 전체688/688테스트·TypeScript/Vite288modules·diff·QA구문검사 통과. 독립 검토자도60개 관련테스트·전체688개·963모델검사·빌드를 별도로 통과했다. 새1개는 숫자 라벨의 고유너비/줄바꿈 금지/양끝 안쪽 정렬을 보존하는 회귀다. 기존 browser110개 안에 실제 라벨 높이/줄높이·축 안쪽 경계 검사를 강화했으며 검사 수를 줄이지 않았다. 소스 승인과 실제 화면 복구 승인은 구분한다.
+
+## 첫 게시 버전의 자동 검사와 수정판 후속 실행
+
+첫 D [run39348103042](https://github.com/Middleages/my-books/actions/runs/39348103042)는2026-10-20T01:01:46Z에6개 job 모두 success로 종료했다. 게시 보험 artifact12232872268의 실제 Chromium155.0.8059.39 검사는110/110,503PNG 생성, 콘솔·페이지·리소스 오류0, source/workflow SHA83de852와 깨끗한 tree가 일치했다. 아래 게시 asset은 production dist와 바이트와 SHA-256이 같았다. 이는 배포 일치 증거이며 이미 발견한 숫자 줄바꿈을 시각 합격으로 바꾸지 않는다.
+
+- CSS `index-BsZ55u6t.css`:246758bytes, SHA-256 `f354d58a1ef9f353875f75066b138fd098bf40486c3f994921f9d3c78a8b9fe5`.
+- JS `index-ZfJiRvSM.js`:2104934bytes, SHA-256 `b8081008087814527977592f182d1fc952dab03200c686331ede2f8b72baed4a`.
+
+수정판 main은 `609e6f2cef1c449ee8760f92c98b01ace238d5e1` / tree `b80b134e09347f75a770e9987b24af3d0d24abad`이다. [run39351304469](https://github.com/Middleages/my-books/actions/runs/39351304469)가2026-10-20T01:03:46Z에 시작했다. 이 문단 작성 시점에는 실행 중이며 수정된 실제production/게시 캡처와 최종 성공을 아직 확인하지 않았다. E는 별도 로컬 작성만 진행하고 수정판 D 게이트 후에 게시한다.
+
+수정판 production 보험 artifact12233811922를 직접 읽었다. source/workflow SHA609e6f2, treeb80b134e, sourceChanges 빈 값, Chromium155.0.8059.39,110/110 통과와503PNG 생성, 콘솔·페이지·리소스 오류0을 확인했다(완료2026-10-20T01:19:42.656Z). 조정자는1440/390/320의 `--insurance-timelines-initial-scene-1.png`와 `850-timelines-year-5-payment-ended-coverage-continues.png`를 원본 크기로 직접 열었다. 모든 대상 폭에서 끝값12가 한 줄이고 축 안쪽에 있으며,5년 관찰에서 A 납입0·누적50만원·보장유지와 B 연납17만원·누적86만원의 관계가 맞았다. 이 시점에 Pages deploy는 성공했지만 게시 재검사는 아직 실행 중이다.
+
+수정판의 독립 화면 검토도 통과했다. 직접 본5개는 `1440--insurance-timelines-1-year-5-payment-ended-coverage-continues.png`, `390--insurance-timelines-1-stop-2-boundary-scene.png`, `320--insurance-timelines-1-stop-8-boundary-scene.png`, `850-timelines-year-5-payment-ended-coverage-continues.png`, `390-timelines-reduced-motion-static.png`이다.320px와 reduced-motion 원본 해상도 부분도 대조했다. 끝값12의 한 줄·축 안쪽 위치·캡션 비겹침, 기존 납입/보장/갱신 도형의 의미를 확인했고 새 결함은 발견하지 않았다. 원본503개 모두를 사람이 직접 검토한 것은 아니다.
+
+## 수정판 최종 게시 게이트 · 완료
+
+[run39351304469](https://github.com/Middleages/my-books/actions/runs/39351304469)는2026-10-20T01:36:28Z에6개 job 모두 성공으로 끝났다. 게시 artifact12233689251은110/110검사·503PNG·오류0이며 source/workflow SHA609e6f2와 깨끗한 treeb80b134e가 일치했다. 게시JS/CSS와 production dist의 바이트·SHA-256이 정확히 같았다.
+
+- CSS `index-Cyq6pxbw.css`:246834bytes, SHA-256 `bd1c5faa8df48504f8c5f52729fb566910523d13098988911667ac36ea18b2fe`.
+- JS `index-DM12vt9N.js`:2104934bytes, SHA-256 `b8081008087814527977592f182d1fc952dab03200c686331ede2f8b72baed4a`.
+
+조정자는 게시 원본 `1440--insurance-timelines-1-year-5-payment-ended-coverage-continues.png`와 `390--insurance-timelines-1-stop-2-boundary-scene.png`를 직접 열어 한 줄 끝값12와 보장/갱신 경계를 다시 확인했다. 앞서 직접 본 production의1440/390/320 초기 장면과850년5 장면은 해당 게시PNG와 파일 바이트도 동일했다. D의 알려진 시각 결함은 해소됐으며 이 게이트를 닫은 뒤 E를 main에 통합한다.

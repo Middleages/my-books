@@ -718,6 +718,249 @@ async function surrenderVerifier(page, lab) {
   return { projectSurrender, inspect, cells, outcome: model => model.frames.at(-1).comparison };
 }
 
+// E reuses the same source frames for cash, receipt, historical shortfall and
+// the mobile alternative. Reading a declared width alone cannot certify paint.
+async function claimsVerifier(page, lab) {
+  const { projectClaims, claimsDefaults, claimsScenarios } = await import('../src/simulations/insurance/claims.mjs');
+  const won = value => `${(value / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}만원`;
+  const cells = model => [
+    ...model.frames.map(row => [`${row.day}일${row.dueToday ? ' · 납기' : ''}`, won(row.receipt), won(row.paidToday), won(row.availableCash), won(row.unfunded), row.shortfallAtDue === null ? '납기 전' : won(row.shortfallAtDue)]),
+    ...model.final.process.map(row => [row.label, row.day === null ? '없음' : `${row.day}일`, row.detail]),
+    ...model.final.branch.map(row => [row.label, row.enabled ? `${row.day}일` : '이 사례는 생략', '필요한 경우만 거치는 분기']),
+  ];
+  const inspect = async (frame, model) => {
+    assert.equal(await lab.getAttribute('data-claims-day'), String(frame.day));
+    assert.equal(await lab.getAttribute('data-claims-scenario'), model.params.scenario);
+    assert.equal(await lab.getByRole('slider', { name: '관찰할 날짜', exact: true }).inputValue(), String(frame.day));
+    for (const [key, value, label] of [
+      ['cash', frame.availableCash, won(frame.availableCash)], ['unfunded', frame.unfunded, `미충당 ${won(frame.unfunded)}`],
+      ['history', frame.shortfallAtDue, frame.shortfallAtDue === null ? '아직 납기 전' : won(frame.shortfallAtDue)],
+      ['received', frame.receivedToDate, won(frame.receivedToDate)], ['paid', frame.paidToDate, won(frame.paidToDate)],
+      ['confirmed', frame.confirmedAmount, frame.confirmedAmount === null ? '아직 결정 전' : won(frame.confirmedAmount)],
+    ]) {
+      const node = lab.locator(`[data-claims-value="${key}"]`);
+      assert.equal(await node.getAttribute('data-value'), value === null ? 'pending' : String(value), `${key}: model value changed`);
+      assert.equal(await node.innerText(), label, `${key}: visible value differs from the current day`);
+    }
+    const painted = await lab.evaluate(element => {
+      const rect = node => node.getBoundingClientRect().toJSON();
+      const style = node => { const s = getComputedStyle(node); return { background: s.backgroundColor, image: s.backgroundImage, border: s.borderTopStyle, outline: s.outlineStyle, fill: s.fill, stroke: s.stroke, dash: s.strokeDasharray, strokeWidth: parseFloat(s.strokeWidth) }; };
+      const svg = element.querySelector('.claims-chart-svg'), svgVisible = svg.getClientRects().length > 0;
+      return {
+        tracks: [...element.querySelectorAll('.claims-money-track')].map(track => ({ box: rect(track), parts: [...track.children].map(node => ({ id: node.dataset.claimsBar, fraction: +node.dataset.fraction, start: +(node.dataset.startFraction || 0), amount: node.hasAttribute('data-value') ? +node.dataset.value : null, box: rect(node), style: style(node) })) })),
+        axes: [...element.querySelectorAll('.claims-money-axis span')].map(node => node.textContent),
+        process: [...element.querySelectorAll('[data-claims-process]')].map(node => ({ id: node.dataset.claimsProcess, status: node.dataset.status, label: node.querySelector('strong').textContent, box: rect(node), border: getComputedStyle(node.querySelector('.claims-process-node')).borderTopStyle, arrow: getComputedStyle(node, '::after').content })),
+        branch: { enabled: element.querySelector('[data-claims-branch]').dataset.enabled, rows: [...element.querySelectorAll('[data-claims-branch-stage]')].map(node => ({ id: node.dataset.claimsBranchStage, status: node.dataset.status, text: node.textContent })) },
+        timeline: [...element.querySelectorAll('.claims-time-track')].map(track => ({ box: rect(track), cursor: rect(track.querySelector('.claims-now')), events: [...track.querySelectorAll('[data-claims-event]')].map(node => ({ id: node.dataset.claimsEvent, day: +node.dataset.day, fraction: +node.dataset.fraction, box: rect(node), reached: node.classList.contains('reached'), label: node.querySelector('b').textContent })) })),
+        timeLabels: [...element.querySelectorAll('.claims-time-axis span')].map(node => ({ label: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize), lineHeight: parseFloat(getComputedStyle(node).lineHeight) })),
+        mobileEvents: { visible: element.querySelector('.claims-mobile-events').getClientRects().length > 0, rows: [...element.querySelectorAll('.claims-mobile-events li')].map(node => ({ id: node.className, day: node.querySelector('strong').textContent, label: node.querySelector('span').textContent, status: node.querySelector('small').textContent, box: rect(node) })) },
+        mobileCheckpoints: { visible: element.querySelector('.claims-mobile-checkpoints').getClientRects().length > 0, rows: [...element.querySelectorAll('.claims-mobile-checkpoints>div')].map(node => ({ cells: [...node.children].map(cell => cell.textContent), box: rect(node) })) },
+        svg: { visible: svgVisible, viewBox: svg.getAttribute('viewBox'), box: rect(svg), paths: [...svg.querySelectorAll('[data-claims-path]')].map(node => ({ id: node.dataset.claimsPath, d: node.getAttribute('d'), style: style(node), bounds: svgVisible ? (() => { const b = node.getBBox(); return { x: b.x, y: b.y, width: b.width, height: b.height }; })() : null })),
+          matrix: svgVisible ? (() => { const m = svg.getScreenCTM(); return { a: m.a, b: m.b, c: m.c, d: m.d, e: m.e, f: m.f }; })() : null,
+          dots: svgVisible ? [...svg.querySelectorAll('circle')].map(node => ({ id: node.getAttribute('class'), x: +node.getAttribute('cx'), y: +node.getAttribute('cy'), box: rect(node) })) : [],
+          labels: [...svg.querySelectorAll('text')].map(node => ({ text: node.textContent, font: parseFloat(getComputedStyle(node).fontSize) })),
+          cursor: { x1: +svg.querySelector('.cursor').getAttribute('x1'), x2: +svg.querySelector('.cursor').getAttribute('x2') } },
+      };
+    });
+    assert.deepEqual(painted.axes, ['0원', won(model.moneyScale / 2), won(model.moneyScale)]);
+    assert.equal(painted.tracks.length, 3);
+    const expectedTracks = [[{ id: 'cash', fraction: frame.cashFraction, startFraction: 0 }], frame.dueSegments, [{ id: 'history', fraction: frame.historyFraction, startFraction: 0 }]];
+    painted.tracks.forEach((track, index) => {
+      assert(track.box.width > 0 && track.box.height >= 30, 'Cash comparison became unreadable');
+      assert(Math.abs(track.box.width - painted.tracks[0].box.width) <= 1, 'Cash, expense and historical shortfall need the same painted scale');
+      assert.equal(track.parts.length, expectedTracks[index].length);
+      track.parts.forEach((part, partIndex) => {
+        const expected = expectedTracks[index][partIndex];
+        assert.deepEqual([part.id, part.fraction, part.start], [expected.id, expected.fraction, expected.startFraction]);
+        if (index === 1) assert.equal(part.amount, expected.amount);
+        assert(Math.abs(part.box.width - expected.fraction * track.box.width) <= 1, `Cash ${part.id} painted width differs from the model, including zero`);
+        assert(Math.abs(part.box.left - track.box.left - expected.startFraction * track.box.width) <= 1, `Cash ${part.id} moved away from the model offset`);
+      });
+    });
+    assert.notEqual(painted.tracks[1].parts[1].style.image, 'none', 'Unfunded expense must retain its patterned distinction');
+    assert.notEqual(painted.tracks[1].parts[2].style.image, 'none', 'Not-yet-due expense must not look paid');
+    const historyStyle = painted.tracks[2].parts[0].style;
+    if (frame.historyFraction > 0) assert(historyStyle.border === 'dashed' || historyStyle.outline === 'dashed', 'Historical shortfall requires a non-color boundary');
+    assert.deepEqual(painted.process.map(row => [row.id, row.status, row.label]), frame.process.map(row => [row.id, row.status, row.label]));
+    for (const row of painted.process.filter(row => ['future', 'unavailable'].includes(row.status))) assert.equal(row.border, 'dashed', 'Pending/unavailable process stages lost their distinct boundary');
+    assert.equal(painted.branch.enabled, String(model.scenario.branch));
+    assert.deepEqual(painted.branch.rows.map(row => [row.id, row.status, row.text]), frame.branch.map(row => [row.id, row.status, `${row.label}${row.enabled ? ` · ${row.day}일` : ' · 이 사례는 생략'}`]));
+    if (page.viewportSize().width <= 650) {
+      assert(!painted.svg.visible && painted.mobileEvents.visible && painted.mobileCheckpoints.visible, 'Mobile must reflow the timeline rather than shrink SVG labels');
+      painted.process.slice(1).forEach((row, index) => assert(row.box.top >= painted.process[index].box.bottom, 'Mobile claims process must read down the page'));
+      for (const row of painted.process.slice(0, -1)) assert(row.arrow.includes('↓'), 'Mobile process arrow still points sideways');
+    } else {
+      assert(painted.svg.visible && !painted.mobileEvents.visible && !painted.mobileCheckpoints.visible);
+      const events = painted.timeline.flatMap(track => track.events);
+      assert.deepEqual(events.map(event => [event.id, event.day, event.fraction, event.reached, event.label]), [...model.events].sort((a, b) => ['event', 'process', 'expense', 'cash'].indexOf(a.lane) - ['event', 'process', 'expense', 'cash'].indexOf(b.lane)).map(event => [event.id, event.day, event.fraction, event.day <= frame.day, event.label]));
+      for (const track of painted.timeline) {
+        assert(Math.abs(track.cursor.left - track.box.left - frame.timeFraction * track.box.width) <= 1, 'Date cursor differs from the current model day');
+        for (const event of track.events) {
+          const anchor = event.id === 'incident' ? event.box.left : event.box.left + event.box.width / 2;
+          assert(Math.abs(anchor - track.box.left - event.fraction * track.box.width) <= 1, 'Timeline event moved away from its actual date');
+        }
+      }
+      assert.deepEqual(painted.timeLabels.map(label => label.label), model.chart.xTicks.map(tick => `${tick.day}일`));
+      for (const label of painted.timeLabels) assert(label.font >= 11 && Number.isFinite(label.lineHeight) && label.box.height <= label.lineHeight + 1, 'Numeric day ticks must remain readable and on one line');
+    }
+    const eventRank = id => id === 'receipt' ? 0 : id === 'due' ? 1 : 0;
+    const sortedEvents = [...model.events].sort((a, b) => a.day - b.day || eventRank(a.id) - eventRank(b.id));
+    assert.deepEqual(painted.mobileEvents.rows.map(row => [row.id, row.day, row.label, row.status]), sortedEvents.map(event => [event.id, `${event.day}일`, event.label, event.day <= frame.day ? '도달' : '예정']), 'Mobile dates must preserve receipt-before-due on the same day');
+    const checkpoints = model.checkpoints.filter(row => row.dueToday || row.receipt > 0 || row.day === model.observationEnd);
+    assert.deepEqual(painted.mobileCheckpoints.rows.map(row => row.cells), checkpoints.map(row => [`${row.day}일${row.dueToday ? ' · 납기' : row.receipt > 0 ? ' · 입금' : ' · 관찰 끝'}`, `현금 ${won(row.availableCash)}`, `미충당 ${won(row.unfunded)}`, `납기 부족 기록 ${row.shortfallAtDue === null ? '납기 전' : won(row.shortfallAtDue)}`]));
+    assert.equal(painted.svg.viewBox, model.chart.viewBox);
+    assert.deepEqual(painted.svg.paths.map(row => [row.id, row.d]), [['unfunded', model.chart.unfundedPath], ['cash', model.chart.cashPath], ['history', model.chart.historyPath]]);
+    for (const path of painted.svg.paths) assert.equal(path.style.fill, 'none', 'A step line accidentally acquired a filled closed area');
+    assert.equal(painted.svg.paths[0].style.dash, 'none');
+    assert.notEqual(painted.svg.paths[2].style.dash, 'none');
+    assert(painted.svg.paths[2].style.strokeWidth < painted.svg.paths[0].style.strokeWidth, 'Overlapping history/current lines must both remain visible');
+    assert.equal(new Set(painted.svg.paths.map(row => row.style.stroke)).size, 3);
+    assert.deepEqual([painted.svg.cursor.x1, painted.svg.cursor.x2], [frame.cashPoint.x, frame.cashPoint.x]);
+    if (painted.svg.visible) {
+      const matrix = painted.svg.matrix;
+      assert(matrix.a > 0 && matrix.d > 0 && matrix.b === 0 && matrix.c === 0, 'Chart uses an unexplained skew or reflection');
+      for (const label of painted.svg.labels) assert(label.font * matrix.a >= 11, `Chart label ${label.text} is shrunk below11px`);
+      for (const path of painted.svg.paths) {
+        const key = path.id === 'history' ? 'historyPoint' : `${path.id}Point`, points = model.frames.map(row => row[key]).filter(Boolean);
+        const xs = points.map(point => point.x), ys = points.map(point => point.y);
+        for (const [key, value] of Object.entries({ x: Math.min(...xs), y: Math.min(...ys), width: Math.max(...xs) - Math.min(...xs), height: Math.max(...ys) - Math.min(...ys) })) assert(Math.abs(path.bounds[key] - value) <= .02, 'SVG path bounds differ from the model step geometry');
+      }
+      for (const dot of painted.svg.dots) {
+        const expected = dot.id === 'cash' ? frame.cashPoint : frame.unfundedPoint;
+        assert.deepEqual([dot.x, dot.y], [expected.x, expected.y]);
+        assert(Math.abs(dot.box.left + dot.box.width / 2 - (matrix.a * expected.x + matrix.e)) <= 1 && Math.abs(dot.box.top + dot.box.height / 2 - (matrix.d * expected.y + matrix.f)) <= 1, 'Painted current-day dot differs from the model coordinates');
+      }
+    }
+    assert.equal(frame.availableCash + frame.paidToDate, model.params.startingCash + frame.receivedToDate, 'Receipt or cash settlement was double-counted');
+    assert.equal(frame.paidToDate + frame.unfunded + frame.notYetDue, model.assumptions.expense);
+    if (frame.day < model.scenario.decisionDay) assert.equal(frame.confirmedAmount, null);
+    if (model.scenario.arrivalDay === null || frame.day < model.scenario.arrivalDay) assert.equal(frame.receivedToDate, 0, 'Entitlement/decision was treated as arrived cash');
+    if (frame.day >= model.assumptions.dueDay) assert.equal(frame.shortfallAtDue, model.due.shortfallAtDue, 'Later receipt erased the historical due-day shortfall');
+    assert.equal(await lab.locator('[data-static-claims][data-selected="true"]').count(), 1);
+  };
+  return { projectClaims, claimsDefaults, claimsScenarios, inspect, cells, outcome: model => model.prediction };
+}
+
+async function readingInsuranceVerifier(page, lab) {
+  const { projectReading, readingDefaults, readingBoundaryCases, readingStatements, readingClassifications } = await import('../src/simulations/insurance/reading.mjs');
+  const won = value => `${(value / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}만원`;
+  const amount = value => value === null ? '미정' : won(value);
+  const cells = model => [
+    ...model.contracts.map(contract => [contract.name, model.params.eventDay === null ? '미확인' : `${model.params.eventDay}일`, contract.statusLabel, amount(contract.conditionalAmount), '미정', '미정']),
+    ...model.assessments.map(row => [String(row.number), row.text, row.classificationLabel, row.clauseIds.join(' · '), row.why]),
+    ...readingBoundaryCases().map(row => [`${row.params.eventDay}일`, ...row.contracts.map(contract => amount(contract.conditionalAmount)), '미정']),
+    ...model.frames.map(row => [row.label, row.detail]),
+  ];
+  const inspect = async (frame, model) => {
+    await assertFrameSelection(lab, frame);
+    assert.equal(await lab.locator('[data-reading-event-day]').innerText(), model.params.eventDay === null ? '미확인 · 표식 없음' : `${model.params.eventDay}일`);
+    const painted = await lab.evaluate(element => {
+      const rect = node => node.getBoundingClientRect().toJSON();
+      const paint = node => { const style = getComputedStyle(node); return { color: style.backgroundColor, image: style.backgroundImage, size: style.backgroundSize, left: style.borderLeftStyle, top: style.borderTopStyle, rightWidth: parseFloat(style.borderRightWidth) }; };
+      return {
+        branches: [...element.querySelectorAll('[data-reading-contract]')].map(branch => {
+          const track = branch.querySelector('[data-reading-loss-track]'), fixed = branch.querySelector('[data-reading-fixed]'), unknown = branch.querySelector('[data-reading-unknown]');
+          return { id: branch.dataset.readingContract, status: branch.dataset.readingStatus, box: rect(branch),
+            amount: { value: branch.querySelector('[data-reading-conditional]').dataset.value, text: branch.querySelector('[data-reading-conditional]').textContent },
+            track: track ? { box: rect(track), loss: +track.dataset.loss, label: track.getAttribute('aria-label'), question: track.querySelector('.reading-track-question')?.textContent || null,
+              segments: [...track.querySelectorAll('[data-reading-segment]')].map(node => ({ id: node.dataset.readingSegment, value: +node.dataset.value, fraction: +node.dataset.fraction, left: +node.dataset.leftFraction, box: rect(node), paint: paint(node), legend: paint(branch.querySelector(`.reading-segment-key .reading-segment-${node.dataset.readingSegment}`)) })) } : null,
+            fixed: fixed ? { box: rect(fixed), value: fixed.dataset.value, status: fixed.dataset.state, text: fixed.querySelector('strong').textContent, paint: paint(fixed), insideLoss: !!fixed.closest('[data-reading-loss-track]'), symbol: fixed.querySelector('.reading-fixed-symbol').textContent } : null,
+            links: [...branch.querySelectorAll('.reading-relation')].map(node => ({ kind: node.dataset.readingLink, text: node.querySelector('span').textContent, paint: paint(node.querySelector('i')), box: rect(node.querySelector('i')) })),
+            unknown: { state: unknown.dataset.state, paint: paint(unknown), symbol: unknown.querySelector('.reading-open-symbol').textContent, facts: [...unknown.querySelectorAll('b')].map(node => node.textContent) },
+            questions: [...branch.querySelectorAll('.reading-questions li')].map(node => node.textContent),
+          };
+        }),
+        timeline: [...element.querySelectorAll('[data-reading-time-track]')].map(track => {
+          const window = track.querySelector('[data-reading-window]'), after = track.querySelector('[data-reading-renewal-unknown]'), marker = track.querySelector('[data-reading-event-marker]');
+          return { id: track.dataset.readingTimeTrack, box: rect(track), window: { fraction: +window.dataset.fraction, left: +window.dataset.leftFraction, box: rect(window) },
+            after: after ? { fraction: +after.dataset.fraction, box: rect(after), paint: paint(after), symbol: after.textContent } : null,
+            marker: marker ? { day: +marker.dataset.day, fraction: +marker.dataset.fraction, box: rect(marker), symbol: marker.textContent } : null };
+        }),
+        statements: [...element.querySelectorAll('[data-reading-statement]')].map(node => { const evidence = node.querySelector('[data-reading-evidence]'); return { id: node.dataset.readingStatement, revealed: node.dataset.revealed, classification: node.dataset.classification, choice: node.querySelector('select').value,
+          evidence: evidence ? { label: evidence.querySelector('strong').textContent, feedback: evidence.querySelector('p').textContent, clauses: [...evidence.querySelectorAll('li')].map(row => row.textContent), paint: paint(evidence) } : null }; }),
+        caption: element.querySelector('.reading-map figcaption').textContent,
+      };
+    });
+    assert.equal(painted.branches.length, 3);
+    const lossTracks = painted.branches.filter(branch => branch.track).map(branch => branch.track);
+    assert.equal(lossTracks.length, 2, 'Fixed benefit must not become a third loss partition');
+    assert(Math.abs(lossTracks[0].box.width - lossTracks[1].box.width) <= 1, 'A/C standalone calculations must use the same painted loss scale');
+    for (const [index, branch] of painted.branches.entries()) {
+      const contract = model.contracts[index];
+      assert.deepEqual([branch.id, branch.status, branch.amount.value, branch.amount.text], [contract.id, contract.status, contract.conditionalAmount === null ? 'unresolved' : String(contract.conditionalAmount), amount(contract.conditionalAmount)]);
+      assert.deepEqual([branch.unknown.state, branch.unknown.symbol, branch.unknown.facts], ['unknown', '?', ['미정', '미정']], 'Missing clauses must not silently become actual approval, receipt or denial0');
+      assert.equal(branch.unknown.paint.top, 'dashed'); assert.equal(branch.unknown.paint.rightWidth, 0, 'Unknown conditions must retain an open boundary');
+      assert.deepEqual(branch.questions, contract.questions);
+      assert.deepEqual(branch.links.map(link => [link.kind, link.text]), contract.links.filter(link => link.kind !== 'unresolved').map(link => [link.kind, link.label]));
+      assert.deepEqual(branch.links.map(link => link.paint.left), ['solid', 'dashed'], 'Documented promises and assumed conditions became visually identical');
+      for (const link of branch.links) assert(link.box.height >= 15, 'A relationship lost its visible connector');
+      if (contract.structure === 'indemnity') {
+        assert(branch.track && !branch.fixed);
+        assert.equal(branch.track.loss, model.params.loss);
+        assert(branch.track.box.width > 0 && branch.track.box.height >= 30);
+        assert.equal(branch.track.segments.length, contract.segments.length);
+        let sum = 0;
+        branch.track.segments.forEach((part, partIndex) => {
+          const expected = contract.segments[partIndex];
+          assert.deepEqual([part.id, part.value, part.fraction, part.left], [expected.id, expected.amount, expected.fraction, expected.leftFraction]);
+          assert(Math.abs(part.box.width - part.fraction * branch.track.box.width) <= 1, 'Reading coverage paint does not match the modeled loss fraction');
+          assert(Math.abs(part.box.left - branch.track.box.left - part.left * branch.track.box.width) <= 1, 'Reading loss segments overlap or use an invented offset');
+          for (const key of ['color', 'image', 'size']) assert.equal(part.paint[key], part.legend[key], `Reading ${part.id} paint differs from its key`);
+          if (['deductible', 'limit', 'outside'].includes(part.id)) assert.notEqual(part.paint.image, 'none', 'A non-color loss distinction was removed');
+          if (part.id === 'unknown') { assert.equal(part.paint.top, 'dashed'); assert.equal(part.paint.rightWidth, 0); }
+          sum += part.value;
+        });
+        assert.equal(sum, model.params.loss, 'Each standalone row must preserve the whole loss once');
+        assert.equal(branch.track.question, contract.conditionalAmount === null ? '?' : null);
+        if (contract.conditionalAmount === null) assert.equal(branch.track.segments.filter(part => part.id === 'conditional').length, 0, 'Unknown condition acquired a paid area');
+        assert.match(branch.track.label, /실제 지급대상액은 미정/);
+      } else {
+        assert(branch.fixed && !branch.track && !branch.fixed.insideLoss);
+        assert.deepEqual([branch.fixed.value, branch.fixed.status, branch.fixed.text, branch.fixed.symbol], [contract.conditionalAmount === null ? 'unresolved' : String(contract.conditionalAmount), contract.status, amount(contract.conditionalAmount), '◇']);
+        assert(branch.fixed.box.width >= 70 && branch.fixed.box.height >= 70, 'The separate fixed promise is unreadable');
+        assert.equal(branch.fixed.paint.top, contract.conditionalAmount === null ? 'dashed' : 'solid');
+      }
+    }
+    if (page.viewportSize().width <= 850) {
+      painted.branches.slice(1).forEach((branch, index) => assert(branch.box.top >= painted.branches[index].box.bottom, 'Narrow reading map must reflow its three contracts instead of shrinking their labels'));
+    } else painted.branches.slice(1).forEach((branch, index) => assert(Math.abs(branch.box.top - painted.branches[0].box.top) <= 1 && branch.box.left >= painted.branches[index].box.right, 'Desktop contract branches overlap'));
+    assert.equal(painted.timeline.length, 3);
+    for (const [index, track] of painted.timeline.entries()) {
+      const expected = model.timeline.windows[index];
+      assert.deepEqual([track.id, track.window.fraction, track.window.left], [expected.id, expected.fraction, expected.leftFraction]);
+      assert(Math.abs(track.box.width - painted.timeline[0].box.width) <= 1, 'Three date windows lost their shared scale');
+      assert(Math.abs(track.window.box.width - expected.fraction * track.box.width) <= 1 && Math.abs(track.window.box.left - track.box.left - expected.leftFraction * track.box.width) <= 1, 'Known date window paint differs from its model');
+      assert.equal(!!track.after, !!expected.unknownAfter);
+      if (expected.unknownAfter) {
+        assert.equal(track.after.fraction, expected.unknownAfter.fraction);
+        assert(Math.abs(track.after.box.width - expected.unknownAfter.fraction * track.box.width) <= 1 && Math.abs(track.after.box.left - track.box.left - expected.unknownAfter.leftFraction * track.box.width) <= 1, 'Unknown renewal region moved away from the180-day boundary');
+        assert.equal(track.after.paint.top, 'dashed'); assert.equal(track.after.symbol, '?');
+      }
+      assert.equal(!!track.marker, model.timeline.eventFraction !== null, 'Unknown date must not invent a position');
+      if (track.marker) {
+        assert.deepEqual([track.marker.day, track.marker.fraction, track.marker.symbol], [model.params.eventDay, model.timeline.eventFraction, '◆']);
+        assert(Math.abs(track.marker.box.left - track.box.left - model.timeline.eventFraction * track.box.width) <= 1, 'Assumed event date marker differs from model');
+      }
+    }
+    assert.equal(painted.statements.length, frame.assessments.length);
+    for (const [index, statement] of painted.statements.entries()) {
+      const expected = frame.assessments[index];
+      assert.deepEqual([statement.id, statement.revealed, statement.classification, statement.choice], [expected.id, String(expected.revealed), expected.revealed ? expected.classification : 'hidden', expected.choice]);
+      assert.equal(!!statement.evidence, expected.revealed, 'Evidence was revealed at the wrong observation step');
+      if (expected.revealed) {
+        assert.equal(statement.evidence.label, expected.classificationLabel);
+        assert.equal(statement.evidence.feedback, `${expected.feedback} ${expected.why}`);
+        assert.deepEqual(statement.evidence.clauses, expected.evidence.map(row => `${row.clauseId} ${row.text}`));
+        assert.equal(statement.evidence.paint.left, expected.classification === 'documented' ? 'solid' : 'dashed');
+      }
+    }
+    assert.match(painted.caption, /동시 지급액도 계산하지 않습니다/);
+    assert.match(painted.caption, /금액에 비례한 도형이 아니며/);
+    assert.equal(model.scenario.actualPayable, null); assert.equal(model.scenario.received, null); assert.equal(model.scenario.combinedIndemnity, null);
+  };
+  return { projectReading, readingDefaults, readingStatements, readingClassifications, inspect, cells, outcome: model => model.predictionAnswer };
+}
+
 async function conditionChecks(page, lab, name) {
   const { projectExpectedLoss, expectedLossDefaults } = await import('../src/simulations/insurance/probability.mjs');
   const { projectPooling, poolingDefaults } = await import('../src/simulations/insurance/pooling.mjs');
@@ -751,7 +994,7 @@ async function conditionChecks(page, lab, name) {
     await delay(1850);
     assert.equal(await controls.locator('span').innerText(), initial, 'A stale timer advanced after the model input changed');
   };
-  const verify = async (scenario, model, outcome, inspectFrame, tableRows, frameIndices = model.frames.map((_, index) => index)) => {
+  const verify = async (scenario, model, outcome, inspectFrame, tableRows, frameIndices = model.frames.map((_, index) => index), captureScene = true) => {
     await prediction.selectOption(outcome);
     await controls.getByRole('button', { name: '처음부터', exact: true }).click();
     assert.equal(frameIndices[0], 0, 'Scenario must inspect its initial state');
@@ -781,7 +1024,7 @@ async function conditionChecks(page, lab, name) {
     const actualRows = await lab.locator('.insurance-static table tbody tr').evaluateAll(rows => rows.map(row => [...row.querySelectorAll('th,td')].map(cell => cell.textContent.trim())));
     assert.deepEqual(actualRows, tableRows(model), `${scenario}: static table differs from complete model frames`);
     await domAudit(page);
-    await capture(page, `${name}-${scenario}-scene`, lab);
+    if (captureScene) await capture(page, `${name}-${scenario}-scene`, lab);
     observed.push({ scenario, frames: model.frames.length, inspectedFrames: frameIndices, rows: actualRows.length, lastRow: actualRows.at(-1) });
   };
   if (kind === 'expected-loss') {
@@ -1427,6 +1670,163 @@ async function conditionChecks(page, lab, name) {
     await prediction.selectOption('less');
     await verify('repeat-all-exits-no-accumulated-double-payments', model, outcome(model), inspect, cells);
     assert.equal(await lab.locator('[data-static-surrender][data-selected="true"]').count(), 1, 'Exactly one independent exit case must be highlighted');
+  } else if (kind === 'claims') {
+    const { projectClaims, claimsDefaults, claimsScenarios, inspect, cells, outcome } = await claimsVerifier(page, lab);
+    const scenario = lab.getByRole('combobox', { name: '청구 결과 사례', exact: true });
+    const cash = lab.getByRole('slider', { name: '출발현금', exact: true });
+    const day = lab.getByRole('slider', { name: '관찰할 날짜', exact: true });
+    const run = async (label, options = {}, captureDays = []) => {
+      const model = projectClaims(options);
+      for (const summary of await lab.locator('.insurance-static[open] > summary').all()) await summary.click();
+      await verify(label, model, outcome(model), async (frame, current) => {
+        await inspect(frame, current);
+        if (captureDays.includes(frame.day)) await capture(page, `${name}-${label}-day-${frame.day}`, lab);
+      }, cells, undefined, false);
+      return model;
+    };
+    const frozen = projectClaims();
+    const overview = page.locator('.claims-overview');
+    assert.equal(await overview.count(), 1, 'The fixed due/arrival comparison is missing');
+    // Zero-width not-due segments deliberately remain anchored at0; compare only
+    // the paid/unfunded partition here, with all three inspected in the live scene.
+    await assertBars(overview.locator('.claims-overview-track'), [[1 / 3, 2 / 3], [1, 0]], 'Overview keeps due-day shortage after receipt', '.paid,.unfunded');
+    assert.deepEqual(await overview.locator('.claims-history-stamp').allTextContents(), ['5일 부족 기록 200만원', '5일 부족 기록 200만원']);
+    const overviewBoxes = await overview.locator('.claims-overview-pair>section').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().toJSON()));
+    if (page.viewportSize().width <= 650) assert(overviewBoxes[1].top >= overviewBoxes[0].bottom, 'Mobile due/arrival comparison must stack');
+    await reset();
+    await run('standard-receipt-does-not-erase-due-shortfall', {}, [5, 10]);
+    assert.deepEqual([frozen.frames[8].confirmedAmount, frozen.frames[8].receivedToDate, frozen.frames[10].unfunded, frozen.frames[10].shortfallAtDue], [2000000, 0, 0, 2000000]);
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await prediction.selectOption('shortfall');
+    await controls.getByRole('button', { name: '재생', exact: true }).click();
+    await setExactRange(page, day, 8);
+    assert.equal(await controls.getByRole('button', { name: '정지', exact: true }).count(), 0, 'Seeking a date must stop playback');
+    assert.equal(await prediction.inputValue(), 'shortfall', 'Observing another day must not change the cash-condition prediction');
+    const focus = await day.evaluate(element => { const s = getComputedStyle(element); return { visible: element.matches(':focus-visible'), outline: s.outlineStyle, width: parseFloat(s.outlineWidth) }; });
+    assert(focus.visible && focus.outline !== 'none' && focus.width > 0, 'The canonical day slider needs visible keyboard focus');
+    await inspect(frozen.frames[8], frozen);
+    await delay(1850); await inspect(frozen.frames[8], frozen);
+    if ([1440, 320].includes(page.viewportSize().width)) await capture(page, `${name}-decision-confirmed-but-not-received`, lab.locator('.claims-process-scene'));
+    for (const [label, selectedDay] of [['5일 납기 보기', 5], ['10일 입금 보기', 10], ['전체 결과 보기', 20]]) {
+      const shortcut = lab.getByRole('button', { name: label, exact: true });
+      await shortcut.focus(); await page.keyboard.press('Enter'); await inspect(frozen.frames[selectedDay], frozen);
+    }
+    const expected = { 'same-day': [0, 2000000, 0], delayed: [2000000, 2000000, 0], denied: [2000000, 0, 2000000], partial: [2000000, 1000000, 1000000] };
+    const captures = { 'same-day': [5], delayed: [9, 18], denied: [8], partial: [10] };
+    for (const item of claimsScenarios.filter(item => item.id !== 'standard')) {
+      await changingStopsPlayback(() => selectWithKeyboard(page, scenario, item.id));
+      const model = await run(`${item.id}-separate-outcome`, { scenario: item.id }, captures[item.id]);
+      assert.deepEqual([model.final.shortfallAtDue, model.final.receivedToDate, model.final.unfunded], expected[item.id]);
+      if (item.id === 'same-day') assert.deepEqual([model.due.receipt, model.due.cashBeforePayment, model.due.paidToday], [2000000, 3000000, 3000000], 'Same-day receipt must precede the due payment');
+      if (item.id === 'denied') {
+        await lab.getByRole('button', { name: '거절 결정 보기', exact: true }).focus(); await page.keyboard.press('Enter');
+        await inspect(model.frames[item.decisionDay], model);
+        assert.equal(await lab.locator('[data-claims-event="receipt"]').count(), 0, 'Denied scenario invented an arrival event');
+      }
+    }
+    await reset();
+    await changingStopsPlayback(() => setExactRange(page, cash, 0));
+    const noCash = await run('zero-starting-cash-leaves-one-million-unfunded', { startingCash: 0 });
+    assert.deepEqual([noCash.final.shortfallAtDue, noCash.final.unfunded], [3000000, 1000000]);
+    await changingStopsPlayback(() => setExactRange(page, cash, 3000000));
+    const enough = await run('cash-covers-due-history-stays-exactly-zero', { startingCash: 3000000 });
+    assert.deepEqual([enough.final.shortfallAtDue, enough.final.availableCash, enough.final.unfunded], [0, 2000000, 0]);
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await controls.getByRole('button', { name: '재생', exact: true }).click();
+    await reset(); await delay(1850);
+    await inspect(frozen.frames[0], frozen);
+    assert.equal(await scenario.inputValue(), claimsDefaults.scenario);
+    assert.equal(await cash.inputValue(), String(claimsDefaults.startingCash));
+    assert.equal(await day.inputValue(), '0');
+    await run('repeat-default-receipt-never-double-counted');
+  } else if (kind === 'reading-insurance') {
+    const { projectReading, readingDefaults, readingStatements, inspect, cells, outcome } = await readingInsuranceVerifier(page, lab);
+    const date = lab.getByRole('slider', { name: /^가상 사건일/ });
+    const event = lab.getByRole('combobox', { name: '보장 사건이라는 가정', exact: true });
+    const chooseDay = async selected => {
+      const button = lab.getByRole('button', { name: selected === null ? '사건일 미확인' : `${selected}일`, exact: true });
+      await button.focus(); await page.keyboard.press('Enter');
+      assert.equal(await button.getAttribute('aria-pressed'), 'true');
+      assert.equal(await lab.locator('.reading-boundary-buttons button[aria-pressed="true"]').count(), 1);
+    };
+    const run = async (label, options = {}, captureResult = false, captureFrames = []) => {
+      const model = projectReading(options);
+      for (const summary of await lab.locator('.insurance-static[open] > summary').all()) await summary.click();
+      await verify(label, model, outcome(model), async (frame, current) => {
+        await inspect(frame, current);
+        if (captureFrames.includes(frame.index)) await capture(page, `${name}-${label}-${frame.phase}`, lab);
+      }, cells, undefined, captureResult);
+      return model;
+    };
+    const overview = page.locator('.reading-overview');
+    assert.equal(await overview.count(), 1, 'The authored three-contract reading overview is missing');
+    const frozen = projectReading();
+    for (const contract of frozen.contracts) {
+      assert.equal(await overview.locator(`[data-reading-conditional="${contract.id}"]`).getAttribute('data-value'), String(contract.conditionalAmount));
+      if (contract.structure === 'indemnity') await assertBars(overview.locator(`[data-reading-loss-track="${contract.id}"]`), [contract.segments.map(segment => segment.fraction)], 'Authored overview uses the same full standalone loss', '[data-reading-segment]');
+    }
+    await reset();
+    const initial = await run('promises-assumptions-and-open-questions', {}, false, [1440, 320].includes(page.viewportSize().width) ? [1, 3] : []);
+    await keyboardFrameSelection(page, lab, initial, inspect);
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await lab.getByRole('button', { name: '전체 근거와 결과 보기', exact: true }).focus(); await page.keyboard.press('Enter');
+    await inspect(initial.frames.at(-1), initial);
+    const boundaries = [[29, [0, 0, 1000000]], [30, [2000000, 0, 1000000]], [89, [2000000, 0, 1000000]], [90, [2000000, 1000000, 1000000]], [179, [2000000, 1000000, 1000000]], [180, [2000000, 1000000, null]], [364, [2000000, 1000000, null]], [365, [0, 0, null]]];
+    for (const [selected, amounts] of boundaries) {
+      await changingStopsPlayback(() => chooseDay(selected));
+      const model = await run(`exact-event-day-${selected}`, { eventDay: selected }, [29, 30, 180, 365].includes(selected));
+      assert.deepEqual(model.contracts.map(contract => contract.conditionalAmount), amounts, 'Known date boundaries and unknown renewal must remain distinct');
+    }
+    await changingStopsPlayback(() => setExactRange(page, date, -1));
+    const beforeStart = await run('before-all-initial-periods', { eventDay: -1 });
+    assert.deepEqual(beforeStart.contracts.map(contract => contract.conditionalAmount), [0, 0, 0]);
+    await setExactRange(page, date, 0);
+    const dayZero = await run('day-zero-c-only-first-period', { eventDay: 0 });
+    assert.deepEqual(dayZero.contracts.map(contract => contract.conditionalAmount), [0, 0, 1000000]);
+    await chooseDay(90);
+    await changingStopsPlayback(() => selectWithKeyboard(page, event, 'no'));
+    const outside = await run('event-assumed-outside-clears-conditional-paint', { coveredEvent: false }, true);
+    assert.deepEqual(outside.contracts.map(contract => contract.conditionalAmount), [0, 0, 0]);
+    await changingStopsPlayback(() => selectWithKeyboard(page, event, 'unknown'));
+    const unresolved = await run('unknown-event-is-not-denial-zero', { coveredEvent: null }, true);
+    assert.deepEqual(unresolved.contracts.map(contract => contract.conditionalAmount), [null, null, null]);
+    await selectWithKeyboard(page, event, 'no');
+    await changingStopsPlayback(() => chooseDay(null));
+    const unknownDate = await run('unknown-date-preserved-even-with-outside-assumption', { eventDay: null, coveredEvent: false }, true);
+    assert.deepEqual(unknownDate.contracts.map(contract => contract.conditionalAmount), [null, null, null]);
+    assert.equal(await lab.locator('[data-reading-event-marker]').count(), 0, 'Unknown date must remove every invented date marker');
+    const hiddenDate = lab.locator('input[type="range"]');
+    assert.equal(await hiddenDate.count(), 1);
+    assert(await hiddenDate.isDisabled() && !(await hiddenDate.isVisible()), 'Unknown date must not display an enabled numeric slider value');
+    await chooseDay(90); await selectWithKeyboard(page, event, 'yes');
+    await run('known-assumptions-restored-without-resolving-missing-clauses');
+    await reset();
+    await prediction.selectOption('unresolved');
+    await controls.getByRole('button', { name: '재생', exact: true }).click();
+    const wrongChoice = 'assumption', first = readingStatements[0];
+    await selectWithKeyboard(page, lab.getByRole('combobox', { name: `문장 ${first.number} 분류`, exact: true }), wrongChoice);
+    assert.equal(await controls.getByRole('button', { name: '정지', exact: true }).count(), 0, 'Classifying evidence must pause the observation');
+    assert.equal(await prediction.inputValue(), 'unresolved', 'Classifying a statement must not silently rewrite the overall prediction');
+    const wrongModel = projectReading({ selections: { [first.id]: wrongChoice } });
+    await inspect(wrongModel.frames[0], wrongModel);
+    await delay(1850); await inspect(wrongModel.frames[0], wrongModel);
+    await lab.getByRole('button', { name: wrongModel.frames[1].label, exact: true }).focus(); await page.keyboard.press('Enter');
+    await inspect(wrongModel.frames[1], wrongModel);
+    assert.match(await lab.locator(`[data-reading-evidence="${first.id}"]`).innerText(), /분류가 다릅니다/);
+    if ([1440, 320].includes(page.viewportSize().width)) await capture(page, `${name}-classification-choice-before-correction`, lab.locator(`[data-reading-statement="${first.id}"]`));
+    const selections = {};
+    for (const statement of readingStatements) {
+      await selectWithKeyboard(page, lab.getByRole('combobox', { name: `문장 ${statement.number} 분류`, exact: true }), statement.classification);
+      selections[statement.id] = statement.classification;
+    }
+    await run('all-classifications-correct-still-no-actual-payment', { selections });
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await controls.getByRole('button', { name: '재생', exact: true }).click();
+    await reset(); await delay(1850);
+    await inspect(frozen.frames[0], frozen);
+    assert.equal(await date.inputValue(), String(readingDefaults.eventDay));
+    assert.equal(await event.inputValue(), 'yes');
+    assert.deepEqual(await lab.locator('.reading-statement select').evaluateAll(elements => elements.map(element => element.value)), readingStatements.map(() => ''), 'Full reset must clear every classification');
   } else assert.fail(`No model-specific verifier exists for published lab ${JSON.stringify(kind)}`);
   await reset();
   assert.match(await controls.locator('span').innerText(), /^0 \/ /);
@@ -1503,7 +1903,7 @@ async function verifyAssets() {
         const labs = page.locator('.insurance-lab');
         for (let i = 0; i < await labs.count(); i++) {
           const name = `${width}-${safe(route)}-${i + 1}`;
-          if (['coverage-conditions', 'overlap', 'timelines', 'surrender'].includes(await labs.nth(i).getAttribute('data-insurance-lab'))) {
+          if (['coverage-conditions', 'overlap', 'timelines', 'surrender', 'claims', 'reading-insurance'].includes(await labs.nth(i).getAttribute('data-insurance-lab'))) {
             await check(`static-disclosure-geometry-${name}`, page, () => tableDisclosureGeometryChecks(page, labs.nth(i), name));
           }
           await check(`playback-${name}`, page, () => playbackChecks(page, labs.nth(i), name));
@@ -1553,7 +1953,7 @@ async function verifyAssets() {
       await capture(intermediatePage, '850-pooling-common-final-scene', lab);
       return { disclosures, audit: await verifyStack() };
     });
-    for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout', 'coverage-conditions', 'overlap', 'timelines', 'surrender'].includes(chapter.id))) {
+    for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout', 'coverage-conditions', 'overlap', 'timelines', 'surrender', 'claims', 'reading-insurance'].includes(chapter.id))) {
       await check(`intermediate-850-${chapter.id}-layout-and-model`, intermediatePage, async () => {
         await visit(intermediatePage, chapter.route);
         await domAudit(intermediatePage);
@@ -1611,8 +2011,8 @@ async function verifyAssets() {
       for (const lab of await page.locator('.insurance-lab').all()) {
         await openTables(page, lab);
         const kind = await lab.getAttribute('data-insurance-lab');
-        const verifier = kind === 'coverage-conditions' ? await coverageConditionsVerifier(page, lab) : kind === 'overlap' ? await overlapVerifier(page, lab) : kind === 'timelines' ? await timelinesVerifier(page, lab) : kind === 'surrender' ? await surrenderVerifier(page, lab) : null;
-        const model = verifier ? (kind === 'coverage-conditions' ? verifier.projectConditions() : kind === 'overlap' ? verifier.projectOverlap() : kind === 'timelines' ? verifier.projectTimelines() : verifier.projectSurrender()) : null;
+        const verifier = kind === 'coverage-conditions' ? await coverageConditionsVerifier(page, lab) : kind === 'overlap' ? await overlapVerifier(page, lab) : kind === 'timelines' ? await timelinesVerifier(page, lab) : kind === 'surrender' ? await surrenderVerifier(page, lab) : kind === 'claims' ? await claimsVerifier(page, lab) : kind === 'reading-insurance' ? await readingInsuranceVerifier(page, lab) : null;
+        const model = verifier ? (kind === 'coverage-conditions' ? verifier.projectConditions() : kind === 'overlap' ? verifier.projectOverlap() : kind === 'timelines' ? verifier.projectTimelines() : kind === 'surrender' ? verifier.projectSurrender() : kind === 'claims' ? verifier.projectClaims() : verifier.projectReading()) : null;
         if (verifier) await verifier.inspect(model.frames[0], model);
         const controls = lab.locator('.money-playback');
         const step = controls.getByRole('button', { name: '한 단계 진행', exact: true });

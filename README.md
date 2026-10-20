@@ -167,7 +167,7 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 
 ## 보험과 위험 대비 · 4권
 
-[제작 계획](docs/INSURANCE-TEXTBOOK-PLAN.md)과 [배치별 실행 프롬프트](docs/INSURANCE-SESSION-PROMPTS.md)를 따른다. 소개·01–06를 `insurance`에 구현한다. 기대손실과 한 번의 충격, 공동 재원, 계약의 역할, 지급 조건과 중복 보장의 관계를 자체 가상 사례로 설명한다. 실제 보험료·개인 적정 보장액·상품 추천·건강정보 입력을 제공하지 않는다. A 소개·01–02는 검증·게시 완료했으며 [A 기록](docs/INSURANCE-BATCH-A-VERIFICATION.md)을 따른다. B03–04도 검증·게시 완료했으며 [B 기록](docs/INSURANCE-BATCH-B-VERIFICATION.md)을 따른다. C05–06의 구현과 실제 게시 상태는 [C 기록](docs/INSURANCE-BATCH-C-VERIFICATION.md)에서 구분한다.
+[제작 계획](docs/INSURANCE-TEXTBOOK-PLAN.md)과 [배치별 실행 프롬프트](docs/INSURANCE-SESSION-PROMPTS.md)를 따라 소개·01–10을 `insurance`에 구현했다. 기대손실·공동 재원·계약 역할·지급 조건·중복 보장·납입과 보장·해약환급·청구 시차·설명서 읽기를 자체 가상 사례로 연결한다. 실제 보험료·개인 적정 보장액·상품 추천·건강정보 입력을 제공하지 않는다. A–C의 검증·게시 증거는 [A](docs/INSURANCE-BATCH-A-VERIFICATION.md)·[B](docs/INSURANCE-BATCH-B-VERIFICATION.md)·[C](docs/INSURANCE-BATCH-C-VERIFICATION.md), D의 첫 화면 결함과 수정 재검증은 [D 기록](docs/INSURANCE-BATCH-D-VERIFICATION.md), E 구현·전체 점검과 실제 게시 상태는 [E 기록](docs/INSURANCE-BATCH-E-VERIFICATION.md)과 [전체 점검](docs/INSURANCE-BOOK-REVIEW.md)에서 구분한다.
 
 ## 세금의 구조와 생활 · 5권
 
