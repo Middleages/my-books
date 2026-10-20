@@ -12,3 +12,6 @@
 - child-development 보고서 merge SHA `d9c13ed6b100d3a2fbe5938279aa5f726581cfa9`, 동일 tree. A–D 포함117개 검사 통과/실패0, PNG451개, page/console/resource 오류0. Artifact `12251987246`.
 - 원본 직접 검토: 320 second-year12 all/24 movement, 390 second-year18 all/third-year24 all, 320 third-year30 all, 1440 third-year36 all, 기존320 first-year6 social. 경계 원문·발췌, 비균등 간격·선택점, 빈 영역 안내와 모바일 줄바꿈에 이상 없음.
 - source/실제 화면 게이트 완료. main/Pages/exact-live와 임상 감수·K-DST 재사용 확인은 별개 미완료다.
+
+## 후속 수정 및 재검증 (2026-10-20)
+F 전체 회귀에서 광역 문자열 치환 문제를 발견해 E도 재검토했다. E의 주거 공개 장수 문구가 원기준08에서10으로 바뀌었으나 주거 본문은 추가되지 않았다. 첫 CI에서 housing suite가 선택된 이유도 이 무관한 변경이다. 원기준 주거 문구를 복구하고 모든 책의 명시적 공개 장수와 실제 구현 장수를 대조하는 공통 회귀를 추가했다. 기존 PNG 결과는 육아 화면 증거로 보존하지만 E 최종 인계는 수정된 소스의 전체 unit/build·정상 CI 결과가 나올 때까지 보류한다.
