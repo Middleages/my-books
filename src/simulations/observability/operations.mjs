@@ -1,0 +1,16 @@
+const clamp=(n,max)=>Math.max(0,Math.min(max,Math.trunc(Number(n)||0)));
+export function deploymentFrame(step=0,{environment='compose',mode='collector'}={}){
+ const s=clamp(step,3),changed=s>=1,kind=environment==='kubernetes'?'Pod':'container',replaced=changed&&mode==='replace',collectorUp=!(changed&&mode==='collector'),trusted=!(changed&&mode==='ca'),volumePreserved=!(changed&&mode==='volume'),clockAligned=!(changed&&mode==='clock'),generated=s>=2?2:0,receivedNew=s===3&&collectorUp&&trusted?generated:0,storedOld=volumePreserved?3:0,storedTotal=storedOld+receivedNew,queriedNew=s===3?(clockAligned?receivedNew:0):null;
+ return{step:s,environment:environment==='kubernetes'?'kubernetes':'compose',mode,sourceIdentity:kind+(replaced?'-B':'-A'),serviceIdentity:'orders',discoveryName:environment==='kubernetes'?'alloy.telemetry.svc':'alloy',appResponded:s>=2?true:null,collectorUp,trusted,volumePreserved,clockAligned,generated,receivedNew:s===3?receivedNew:null,storedOld,storedTotal:s===3?storedTotal:null,queriedNew,collectorCoverage:s===3?(collectorUp&&trusted):null,reconnected:replaced&&s===3,ha:false};
+}
+const cases={a:{symptom:'응답이 느림',api:600,db:80,wait:0,received:2,stored:5,filter:'lab',queried:2},b:{symptom:'응답이 느림',api:650,db:550,wait:500,received:2,stored:5,filter:'lab',queried:2},c:{symptom:'새 기록이 안 보임',api:100,db:40,wait:0,received:0,stored:3,filter:'lab',queried:0},d:{symptom:'새 기록이 안 보임',api:100,db:40,wait:0,received:2,stored:5,filter:'staging',queried:0}};
+const pairs={cpu:'api',api:'db',db:'api',collector:'query',query:'collector'};
+export function diagnosisFrame(step=0,{scenario='a',question='cpu'}={}){
+ const s=clamp(step,3),c=Object.hasOwn(cases,scenario)?cases[scenario]:cases.a,q=Object.hasOwn(pairs,question)?question:'cpu',ids=s===0?[]:s===1?[q]:[q,pairs[q]],all={cpu:{id:'cpu',label:'호스트 CPU',value:'20% · 같은 구간의 사용률',node:'host'},api:{id:'api',label:'API 응답 경계',value:`요청 R1 전체 ${c.api}ms`,node:'api'},db:{id:'db',label:'DB 호출 경계',value:`R1 DB ${c.db}ms · 이 중 대기 ${c.wait}ms`,node:'db'},collector:{id:'collector',label:'수집기 수신·저장 경계',value:`새 사건2개 중 수신 ${c.received}개 · 총 저장 ${c.stored}개`,node:'collector'},query:{id:'query',label:'조회 조건·결과',value:`실제 환경lab · 필터 ${c.filter} · 새 기록 ${c.queried}개`,node:'query'}},evidence=ids.map(id=>all[id]),claims=[];
+ if(ids.includes('api'))claims.push(c.api>500?'R1의 API 응답이500ms보다 느린 것은 확인했습니다.':'R1 한 표본의 API 응답은100ms입니다. 전체 서비스 정상까지 증명하지는 않습니다.');
+ if(ids.includes('api')&&ids.includes('db'))claims.push(c.wait>0?'DB 대기500ms가 응답 시간의 큰 부분입니다. 대기의 원인은 아직 모릅니다.':`API 전체와 DB 호출의 차이 ${c.api-c.db}ms는 이 두 측정만으로 설명되지 않습니다.`);
+ if(ids.includes('collector'))claims.push(c.received===0?'새 사건의 수집기 수신0을 확인했습니다. 수신 앞 경계부터 더 조사해야 합니다.':'새 사건2개가 수집기에 수신되어 저장된 증거가 있습니다.');
+ if(ids.includes('query'))claims.push(c.filter!=='lab'?'실제lab과 조회staging의 필터 불일치를 확인했습니다.':'조회필터lab의 새 기록 수를 확인했습니다. 화면 숫자만으로 다른 경계의 원인은 확정하지 않습니다.');
+ if(ids.includes('cpu'))claims.push('CPU20%만으로 요청 지연이나 수집 실패의 원인을 확정할 수 없습니다.');
+ return{step:s,scenario:Object.hasOwn(cases,scenario)?scenario:'a',question:q,symptom:c.symptom,evidence,observed:ids,claims:s===3?claims:[],unknowns:['api','db','collector','query','cpu'].filter(id=>!ids.includes(id)),actionExecuted:false};
+}

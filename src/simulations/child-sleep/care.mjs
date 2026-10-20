@@ -1,0 +1,10 @@
+export const wakingScenes=[
+{id:'sound',label:'소리만 들은 합성 장면',fact:'밤에 짧은 소리를 들었습니다. 눈을 뜬 모습이나 이후 상태는 보지 못했습니다.',awake:null,afterCare:null},
+{id:'seen',label:'깬 모습을 확인한 합성 장면',fact:'눈을 뜨고 움직이는 모습을 확인했습니다. 깬 이유는 기록에 없습니다.',awake:true,afterCare:null},
+{id:'after',label:'돌봄 뒤 상태가 미확인인 장면',fact:'깬 모습을 보고 필요한 돌봄을 살폈습니다. 이후 잠들었는지는 확인되지 않았습니다.',awake:true,afterCare:null}
+];
+export const careQuestions=[{id:'feeding',label:'수유 맥락',question:'필요한 수유와 개인의 진료 안내를 확인할 정보가 있나요?'},{id:'environment',label:'환경 맥락',question:'주변 환경과 안전한 수면 공간에서 살펴볼 점이 있나요?'},{id:'discomfort',label:'불편·건강 맥락',question:'평소와 다른 모습이나 불편, 건강 우려가 있나요?'}];
+export function wakingFrame(id='sound',question='feeding'){const scene=wakingScenes.find(s=>s.id===id)||wakingScenes[0],selected=careQuestions.find(q=>q.id===question)||careQuestions[0];return {scene:{...scene},question:{...selected},questions:careQuestions.map(q=>({...q,selected:q.id===selected.id})),cause:null,feedingStop:null,sleepOnset:null};}
+export const choiceDimensions=[{id:'signal',label:'아이의 신호',question:'어떤 관찰을 바탕으로 반응하고, 모르는 점은 무엇인가요?'},{id:'response',label:'돌보는 사람의 반응',question:'아이에게 반응하면서 안전한 수면 공간으로 돌아오는 흐름은 무엇인가요?'},{id:'feasibility',label:'실행 여건',question:'지금 가능한 도움과 보호자의 휴식은 어떻게 마련할 수 있나요?'},{id:'stop',label:'멈추고 도움 요청',question:'건강 우려나 보호자 피로 때문에 계획보다 도움을 우선할 상황은 무엇인가요?'}];
+export const choiceFamilies=[{id:'single',label:'지금 한 사람이 돌보는 가상 장면',carers:[{id:'current',label:'지금 돌보는 사람'}],support:'교대가 가능하다고 가정하지 않습니다. 도움을 요청할 경로를 함께 생각합니다.'},{id:'shared',label:'교대를 논의하는 가상 장면',carers:[{id:'current',label:'지금 돌보는 사람'},{id:'next',label:'교대할 사람'}],support:'같은 안전 원칙과 필요한 돌봄 정보를 서로 전달할 질문을 남깁니다.'}];
+export function choiceFrame(familyId='single',priority='signal'){const family=choiceFamilies.find(f=>f.id===familyId)||choiceFamilies[0],first=choiceDimensions.find(d=>d.id===priority)||choiceDimensions[0];return {family:{...family,carers:family.carers.map(c=>({...c}))},priority:first.id,dimensions:choiceDimensions.map(d=>({...d,selected:d.id===first.id})),questions:[first,...choiceDimensions.filter(d=>d.id!==first.id)].map(d=>({...d})),bestMethod:null,effectiveness:null,attachmentPrediction:null,needsCare:true};}

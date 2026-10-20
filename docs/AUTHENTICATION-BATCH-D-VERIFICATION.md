@@ -19,3 +19,10 @@
 - 인증 원본 artifact `12259706662`, ZIP SHA256 `08ac728fe18d20b2cba2bf0487a4e4b7e83f7198357adf2c1a4e1cd8e178df72`. production 보고서의 진단은 0이다.
 - 2026-10-20 최종 원본 `320-rbac-own-allowed.png`, `1440-sso-logoutA.png`, `390-rbac-stale.png`, `390-tokens-expired.png`의 핵심 화면을 직접 열었다. 긴 원본은 같은 픽셀의 세로 구간으로 나눠 확인했다. 320 권한표 제목이 읽기·수정·삭제로 온전히 보이며 현재 역할/tenant/소유 검사는 claim-only 점선 반례와 분리된다. A 로컬 로그아웃은 A만 지우고 IdP/B 세션은 유지된다. 선행 토큰 만료 거절 화면의 구분도 유지된다.
 - 이는 D 후보 소스 검증이다. main 통합 회귀·실제 Pages 게시 검증은 별도이며 아직 이 기록으로 완료를 주장하지 않는다. 실제 IdP·SSO·권한 저장소 연결이나 보안 침투 테스트는 수행하지 않았다.
+
+
+## 정확한 main d6237bc 실제 게시 마감 — 2026-10-20
+
+[run39431780917](https://github.com/Middleages/my-books/actions/runs/39431780917)의 source `d6237bc2449e0c77894cdabe4f7fab75e6143468`, tree `46848403199c145abfc1d47a1370927a5cd24a1f`에서 전체1390/1390 단위·560 modules build, 선택8종 production과 Pages, 동일 build의 선택8종 published가 모두 성공했다. 이 책의 실제 게시 결과는 **36/36·186원본 PNG**, clean·앱/page/console/resource 오류0이다. 알려진 호스트 기본 `https://middleages.github.io/favicon.ico`의404 한 건은 원래 URL과 함께 별도 진단으로 보존하고 앱 오류를 제외하지 않았다. artifact12269011963 ZIP SHA256 `25a9ab02b2d25d54c4b1aa51e30255bd16beb0cdc617a140475f858abc9b23bd`를 실제 다운로드와 대조했다. 정확한 JS/CSS 전체 바이트·단일 build 증거는 [합본 기록](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)의 실제 게시 절을 따른다.
+
+직접 연 대표 3원본 범위: 320-rbac-stale,390-rbac-owner-denied의 native y1700–3700와1440-sso-logoutA 전체. 역할/조직/소유권 독립 검사, 과거 claim 반례와 현재 거절, IdP/A/B 세션별 로그아웃 경계를 확인했고 이 범위에서 새 잘림·겹침·의미 차단점을 발견하지 않았다. native crop은 별도 원본으로 더하지 않았고, 소개 탐색 이미지는 두 선택 제어만을 보여 주므로 소개 전체 검토로 확대하지 않는다. 원본 전수 사람 검토·실기기·스크린리더 음성·실제 외부 서비스/임상 감수의 증거는 아니다.

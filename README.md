@@ -184,8 +184,8 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 연결 풀의 대여·반환과 실행계획의 행·반복·시간 단위,
 내구 WAL·가시성과 복구 자료의 연속 범위·RPO/RTO를 직접 관찰합니다.
 전체 계획은 소개·12장이며 A–F로 두 장씩,
-G에서 전체 편집·선택 실습 묶음을 점검합니다. 아직 구현하지 않은 장은 공개 목차에 넣지 않습니다.
+G의 전체 편집·선택 SQL 자료는 소스 검증을 마쳤고, 최종 통합 회귀와 게시 상태는 아래 기록에서 별도로 확인합니다.
 
 브라우저 실험은 PostgreSQL 18 공식 문서를 바탕으로 한 결정적 교육 모델이며 실제 DB 실행이 아닙니다.
 실제 SQL·서버 설치·백업/복원은 미실행이고, MSSQL 차이는 해당 장에서 짧게 분리합니다.
-[계획](docs/DATABASE-TEXTBOOK-PLAN.md) · [세션 프롬프트](docs/DATABASE-SESSION-PROMPTS.md) · [배치 A 검증·게시 상태](docs/DATABASE-BATCH-A-VERIFICATION.md) · [배치 B 검증·게시 상태](docs/DATABASE-BATCH-B-VERIFICATION.md) · [배치 C 검증·게시 상태](docs/DATABASE-BATCH-C-VERIFICATION.md) · [배치 D 검증·게시 상태](docs/DATABASE-BATCH-D-VERIFICATION.md) · [배치 E 검증·게시 상태](docs/DATABASE-BATCH-E-VERIFICATION.md)
+[계획](docs/DATABASE-TEXTBOOK-PLAN.md) · [세션 프롬프트](docs/DATABASE-SESSION-PROMPTS.md) · [배치 A 검증·게시 상태](docs/DATABASE-BATCH-A-VERIFICATION.md) · [배치 B 검증·게시 상태](docs/DATABASE-BATCH-B-VERIFICATION.md) · [배치 C 검증·게시 상태](docs/DATABASE-BATCH-C-VERIFICATION.md) · [배치 D 검증·게시 상태](docs/DATABASE-BATCH-D-VERIFICATION.md) · [배치 E 검증·게시 상태](docs/DATABASE-BATCH-E-VERIFICATION.md) · [배치 F 검증·게시 상태](docs/DATABASE-BATCH-F-VERIFICATION.md) · [배치 G 검증·게시 상태](docs/DATABASE-BATCH-G-VERIFICATION.md) · [전체 편집 점검](docs/DATABASE-BOOK-REVIEW.md) · [선택 SQL 자료·미실행 경계](examples/database/README.md)

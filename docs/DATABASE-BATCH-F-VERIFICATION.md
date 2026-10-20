@@ -1,0 +1,77 @@
+# 데이터베이스 배치 F11–12 검증 기록
+
+작성일2026-10-20. 범위는11 `schema-migrations`,12 `database-troubleshooting`이다. **최종 소스의 전체 단위·빌드·실제 production browser와 직접/교차 시각 검토를 완료했다. 앞선 자동 통과 후 발견한 실행 경로 혼합, 근접 조작 및 SVG 검증기 오류는 각각 교정·재검증했다. main·Pages 공개 게이트는 아직 대기 중이다.** 실제 PostgreSQL·DDL·관측 도구·재시도는 실행하지 않았다.
+
+## 선행과 통합 범위
+
+E는 PR55 head `2adb6d71751caf3c0f89c6a16e147d81aff3ae35`, tree `82013fd09a4f03214b6e6d01551832b1a3d89053`에서 실제 unit1229/build, DB576/576·581PNG, 권차14/14·51PNG와 직접/교차 시각 검토를 완료했다. 마감 문서 `3c26844efa2089015a1f2188b530e72acb9e6e7a`에서 F 별도 작업을 시작했다. 이후 공개 main `358c59bb17f121889afe66fcf06f6bfad770b666`를 보존 통합했다. D의 maina2a0177 실제 게시 마감 문서도 보존했다. 공개는 E 실제 게시 확인 다음이며, 다른 교재의 최신 main·공통 기능·읽음 ID를 보존한다.
+
+## 구현 계약
+
+- 11: 같은 상품101–103과 현재 열 정체성을 사용한다. 즉시 rename은 값을 유지하되 옛 참조를 깨뜨리고, expand–contract는 열 추가·양열 transaction 쓰기·옛 단일 writer 제거·현재 행의 NULL-only 채우기·명시 검증·옛 참조0·제거를 분리한다. 채움100%와 현재 값 동등성, 현재 검사와 과거 검사, 중단과 no-op 재실행을 나눈다. 제거된 열은 현재 schema와 행에서 사라지며, 대기/잠금 획득만으로 아직 새 열을 표시하지 않는다. 행 version은 교육 상태 번호이지 물리 rewrite 측정이 아니다.
+- 12: 07의 pool,06의 동시 실행,08의 plan,05의 확정 주문 모델을 직접 재사용한다. 초기에는 관측하지 않은 그림을 노출하지 않고, 증거 ID·실행/요청 ID·원본 step을 함께 표시한다. R1 SQL2와 R2 대기8은 다른 요청이고, UPDATE 대기의 null과 완료0행, 추정4/관측40/COUNT 출력1, 요청 키·내용 대조를 구별한다. 복합 사례의 정상 반환 B는 별도 실행이며 A 이력이나 Q plan을 고치지 않는다.
+- 12의 전체 정적 해설은 정답을 포함하는 의도적 공개라고 표시한다. 잠금 그림은 A/B 문장 추적을 함께 제공한 합성 자료이며 A 미확정 값이 B SELECT나 pg_locks에서 나온 값이라고 하지 않는다. 추정 차이는 시간에 따른 실제 일 증가를 증명하지 않는다. 독립 읽기 전용 검토에서 지적한 세 설명 경계를 반영했다.
+- F browser 사전 코드 검토에서 상단/그림 옆 단계 조작의 증거 선택 유지 차이를 발견해, 모든 단계 이동·재생 시작·다시 보기에서 새 증거로 돌아가게 통일했다. 과거 증거를 직접 고르면 재생을 멈춘다. 요청 내용 변경은 단계·예측·재생을 초기화한다. 실제 브라우저 회귀에 두 조작부의 동등성·선택 정지·payload 초기화를 추가했고, 공존/채우기 중 세 앱 초점과 전체 gate 숫자도 대조한다. 이는 사전 발견·교정이며 실제 browser 통과 증거는 아니다.
+- 기존 PoolScene/PoolTimeline/LastItemScene/PlanScene은 export만 추가해 동일 표현을 재사용한다. 원래 A–E 모델과 시각 장면을 임의 교정하지 않는다. 앞서 알려진 구 장의 Markdown 강조 문제는 별도 G 편집 범위이며 F에서 해결했다고 주장하지 않는다.
+
+## 현재 수행한 검사와 남은 게이트
+
+- 11 순수 모델19/19와12 순수 모델8/8을 통과했다. 각 모델의 deterministic reset·immutable frame·입력 거부·실패 반례를 포함한다.
+- F focused33/33(모델27·source 계약5·실제 trusted MDX SSR1)을 통과했다. SSR은 두 본문의 strong·문단·정적 해설 렌더를 확인하며 브라우저 픽셀이나 실제 DB 증거가 아니다. 독립12 모델 검토도8/8을 확인했다.
+- 작성 중 첫 전체 검사는1261/1262였다. 최신 main 통합 때 DB 공개 범위 문구를 바꾸며 보험 문구까지 바뀐 비의도적1곳을 기존 보험 계약 검사가 잡았다. 보험은 main의 원문으로 복원했고, DB import·chapter·book record를 제외한 catalog 전체가 main과 같음을 별도로 대조했다. 기존 검사 기대값은 완화하지 않았다. 안정된 통합 소스 `b6075a94c766ee83a25d46bfd90befd858178946`에서 `node --test --test-concurrency=4 tests/*.test.mjs` 전체1324/1324가 통과했다(실패·취소·skip0). 이후12장 재고 설명의 고정 숫자를 원본 payload 값으로 읽도록 바꾸고 집중13개 검사를 다시 통과했다. 최종 고정 소스 검사는 아래에 따로 기록한다.
+- 최종 고정 소스 `855708b1bbdf3363c1e5114060dd3a39721af531`, tree `a2808c243d30e69239d0aaa7faff3653cac6d588`에서 전체1324/1324(실패·취소·skip0)와 `NODE_OPTIONS=--max-old-space-size=2048 npm run build`가 통과했다. TypeScript와 Vite487모듈을 모두 실행했다. 큰 단일 bundle 경고는 남아 있지만 build 실패는 아니다. 이 시점의 실제 production browser 결과는 아래 첫 실행 기록에 별도로 남긴다. 작성 중 시작했다 중단한 helper의 전체 검사/build와, 사전 조작 교정을 반영하려 TypeScript 중 중단한 첫 F build의 exit130은 통과로 세지 않는다.
+- 실제 browser 계약은1440/390/320의 모든5 migration 시나리오와5 진단 사례(요청 내용2갈래), 각 frame의 열·행·참조/경로 끝점·미관측 경계·같은 모델값을 대조한다. 예측·재생/정지·초기화·이전/다음·근접 조작·키보드·reduced-motion·정적 해설·route 정리와 읽음 보존을 포함한다. 아래 첫 실행은 이 계약을 통과했지만 사람이 발견한 설명 문제까지 해결한 최종 증거는 아니다.
+- 기존 E browser block은 SHA256 `a120ba2f42173398acfeef0fd819521a6bf10d868303f3525cb96136c4a5ae7b`로 고정 대조하며 앞선 A–E assertion을 제거하지 않는다. 실제 PNG를 얻은 뒤 사람의 설명력 검토를 별도로 수행한다.
+
+## 후속과 한계
+
+전체 번호 장은12장으로 등록하지만 로컬/PR에서 구현한 범위와 실제 게시 범위를 구분한다. G는 전체 편집·알려진 강조 표시 수정·선택 SQL 묶음·완성 시점의 넓은 회귀를 맡는다. 실물 기기·스크린리더·PostgreSQL 설치 버전·SQL/driver·운영 migration·장애/복구·외부 결제는 미검증이다. 공식 문서 기준은 PostgreSQL18이며 문서 헤더의 새 버전 공지는 설치/실행 증거가 아니다.
+
+## 로컬 자산과 영향 범위
+
+- `index-BvpIbz6q.js`: 3572740bytes, SHA256 `44585ac051c525e6aca841d65dae95653913532fc53d056890d31545563e2504`.
+- `index-CXOsTWlq.css`: 410490bytes, SHA256 `0f4a9698cec5e86db68fe072716667810e02ff722dc72008d513e2fd4990dcbd`.
+- main358c59bb 대비39개 변경은 DB 전용 소스·검증·문서와 DB catalog/README 범위다. 다른 책의 catalog AST·공유 선언은 동일하며 D 실제 게시 마감 문서도 byte-identical로 보존했다. 영향 선택기는 `book-volumes`, `database`만 선택하고 나머지10suite를 명시적 미검사로 남긴다. 파일별 자격 증명 유사 패턴 검사의 후보 수는0이며 합성 fixture만 사용한다.
+
+## 첫 실제 production과 직접 검토에서 발견한 문제
+
+- PR78 head `c8e42c2b0d95cbfa3d1981f9513dc0f1e0b9d921`, tree `13da4f32b41585111c53b0e0b9d8ef0e5cbac839`, 실제 checkout `7c9c26f1f43baa42bf07e9b91d96a2fa6f0a8335`의 [run39417074031](https://github.com/Middleages/my-books/actions/runs/39417074031)은 전체1324/1324·TypeScript/Vite487모듈, DB641/641·720원본PNG, 권차14/14·51원본PNG를 통과했다. 두 브라우저 보고서는 clean checkout이며 DB의 page/console/resource 오류와 별도 진단 배열도 모두 비었다. PR이므로 deploy/published는 의도된 skip이다.
+- DB artifact12262961921 ZIP SHA256 `b7853ca6d15f0a3f968d9f61b647f4347464a86a499491a583c740c2ee25cf5a`, 권차12261594012 ZIP SHA256 `9dbfb7d9c51167d587c62c9f83a012b8712a2cb02116b8748254c1c8c4229a6e`를 다운로드해 대조했다. 영향 선택은 book-volumes/database만이며 다른10종은 미검사이지 통과가 아니다.
+- 직접 연 `1440-f12-compound-same-controlled-rerun.png`에서 정상 반환 B 경로와 별도 Q plan 경로가 한 요청의 연속 경로처럼 읽힐 수 있음을 발견했다. 당시 모델의 실행 ID가 정확하고 자동 검사가 통과한 사실로 설명력 문제를 덮지 않는다. 따라서 첫 실행은 최종 시각 통과 또는 게시 증거가 아니다.
+- 최소 교정은 누적 관측 상자와 선택 실행의 경로를 분리하는 것이다. A/Q/B의 확인 경로 이력은 모두 보존하되 지도는 선택 증거의 실행에 해당하는 선만 그리고, 지도 제목과 각 선에 실행·요청 ID를 표시한다. 과거 A 증거를 고르면 A 경로로 돌아가며 B 정상 반환이 A나 Q를 고쳤다고 보이지 않는다. Pool 원본 그림의 설명도 현재 남은 요청 대여와 반환 후 남을 수 있는 idle session 연결을 구별하도록 고쳤다.
+- 새 순수 모델 검사는 실행별 이력 보존과 서로 다른 요청의 연결 금지를 대조한다. 실제 browser 계약은 모든 증거 선택에서 표시 경로 집합·visible ID·기하학적 양끝·다른 경계 비관통을 검사하고, 복합 사례의 과거 A/Q/B 선택 원본도 추가 캡처한다. 기존 A–E 검사는 제거하지 않았다.
+- 이 교정 후 focused14/14와 `node --test --test-concurrency=4 tests/*.test.mjs` 전체1325/1325(실패·취소·skip0)가 통과했다. 새 TypeScript/build와 실제 production·직접 교정 PNG는 다음 Actions에서 확인한다. 이전 build/PNG를 새 앱의 통과 증거로 재사용하지 않는다.
+
+- 첫 원본 `320-f11-ddl-wait-ddl-waiting.png`의 native crop을 추가로 보니 행 위 조작부와 더 아래 잠금 그림의 거리가 길었다. 잠금 그림 바로 위에 동일 player의 이전/다음 버튼을 추가했다. 실제 계약은 DDL 대기→획득을 키보드로 넘기며 frame·포커스·controls–그림 거리·화면 경계·다시 보기까지 대조하고 그 근접 장면을 별도 캡처한다. 초기 frame에는 아직 잠금 관측이 없어 해당 패널도 없으며 첫 관측은 기존 상단 버튼으로 시작한다.
+- 잠금 근접 조작을 포함한 최종 로컬 소스도 전체1325/1325(실패·취소·skip0)를 통과했다. 앞서 경로 교정만 올린 PR 중간 실행과 구별하며, 이 최종 delta의 TypeScript/build·실제 PNG는 새 실행을 기다린다.
+
+
+## 교정 후보의 실제 검사에서 확인한 SVG 검증기 오류
+
+- 최종 앱 교정 head `4aa747992b436ae2d451a0c4e74574cae2618fd6`의 [run39421875072](https://github.com/Middleages/my-books/actions/runs/39421875072)는 최신 main `2c2b11d3ba9af855dd4724e91051ea775d94051b`를 합친 실제 checkout `f9bb875563d6751efd7a0d5ce0f82fe9c30f1e8e`, tree `626e997a7463b5b87b9c0f6c5587c15d1fc160cf`에서 실행됐다. 동일 tree의 로컬 merge는 `866304932a3f8b7818e2bce5e0eafd32274009b8`이다. 전체1334/1334와 TypeScript/Vite499모듈은 통과했다.
+- 실제 DB는613/644·655원본PNG였다.31실패의 첫 오류와 반복 원인은 새 SVG text 제목에 HTML 전용 `locator.innerText()`를 사용한 검증기 API 오류다. 페이지·console·resource·별도 진단은 모두 비어 있다. 이 결과를 앱 전체 통과로 세지 않는다. SVG용 `textContent()`와 명시적 가시성 검사로 바꾸고, HTML 전용 접근의 재발을 막는 source 회귀를 추가했다. 원래 제목 기대값·경로 집합·ID·기하학·시나리오는 그대로다.
+- DB ZIP artifact12264193464 SHA256 `d061524600d5e4e121c8247d3a5eda158bb6e74f92bee5cc78d0c0d85b404a9d`를 대조했다. 직접 본 `320-f11-ddl-lock-near-ddl-waiting.png`, `390-f11-ddl-lock-near-ddl-granted.png`에서는 조작·현재 단계·잠금 방향이 같은 작은 장면에 모였고, 종료한 SELECT와 획득했지만 적용 전인 DDL이 명확하다. 이 두 장의 교정은 확인했지만12의 새 지도 전수 계약/픽셀은 helper 수정 후 다시 확인한다.
+- 권차는14/14·57원본PNG·errors0이며 exact served JS/CSS와 dist가 같다. artifact12265110347 ZIP SHA256 `fde15b2fa93ccc6bda5e11b1b36e5bfdc95d168ab885b81d7f8f3c50161643a6`를 대조하고1440-home·320-home·320-database-heading 및320홈의 DB 카드 native crop을 직접 보았다. 표지·IT4권·0/12와 이웃 책을 보존한다.
+- 이 run의 영향 선택은 PR event base358c59bb와 최신 merge checkout 차이 때문에 새 수면/먹기 공유 변경도 포함해14종 전체가 선택됐다. 이전2종 선택 결과를 이 run에 복사하지 않는다. 모든 suite의 terminal 결과는 별도 확인하며 아직 미완료를 통과로 쓰지 않는다. 앞선 경로 교정만의 중간 run39421224449 DB는 새 push로 취소됐고 최종 증거가 아니다.
+- 이 시점의 앱 자산: JS `index-DVNV5nHp.js` 3613620bytes SHA256 `7e3f7d18a0d070d79650bc26ca9dfa39bdfead8fa4167736db9ddb76bb5da002`, CSS `index-CVtc5NXW.css` 416248bytes SHA256 `3b10b64d0b152061bc46cde9201a95803d2b3bec0fa361484b11ee0fd91481d3`. SVG 접근 교정은 harness/test/docs만 바꾸며 앱 소스를 변경하지 않는다.
+- SVG helper만 교정한 로컬 전체 검사는1335/1335(실패·취소·skip0)였다. 원본 앱 소스는 직전 실제 검사와 동일하다. DDL 근접 원본2장은 독립 교차 검토도 통과했으나 그 범위를 전체 실패 run의 통과로 확대하지 않는다.
+
+
+## 최종 교정 소스의 실제 production·직접 시각 마감
+
+- [PR78](https://github.com/Middleages/my-books/pull/78) head `5f856be2157e7f1f1a9254cf3150c89d7bdf6582`, 동일 로컬 `01df544777f179a93b57186190f54e9faf9de400`, tree `2530063cef380279ed41575b4dff49773c6d4c2c`를 기준으로 한다. 최신 공개 main `e15b7b9679348da9b68604e0f1be75a6c012e0bf`의 다른 책 변경을 보존했다. [run39425306762](https://github.com/Middleages/my-books/actions/runs/39425306762)의 실제 checkout은 `e504137e0b30c60f827709863519071af3680b64`, 같은 tree이다. 전체1338/1338(실패·취소·skip0), TypeScript/Vite502모듈을 통과했다.
+- 실제 Chromium155.0.8059.84의 production DB644/644·738원본PNG와 권차14/14·57원본PNG가 통과했다. 두 sourceChanges는 빈 값이고 DB page/console/resource/별도 진단과 권차 errors는 모두 빈 배열이다. DB 실행 시각은2026-10-20T12:50:45.050Z–13:06:13.258Z이다. PR의 deploy/published skip은 게시 완료가 아니다.
+- 영향 선택은 book-volumes/database이다. 보험·투자·세금·쿠버네티스·주거·회계·확률·관측·아이발달·인증·수면·먹기의12suite는 이번 run에서 의도적 미검사이며 통과로 세지 않는다. 앞선 취소/실패 run을 전체 회귀 완료로 합산하지 않는다.
+- DB ZIP12266512847 SHA256 `9e5c10cc1663bc5782776de9bd05a8f42c1c8b0f5420d7e39cf6fab9e6fa0edc`, 권차 ZIP12266385367 SHA256 `89bf6eace496130aefeeef3745184486df6604e742b0ea98dd06a834a11a0386`, 선택 기록 ZIP12264799162 SHA256 `50d1c9cb43a8dba069b35dffea0816a26e8bdecc506b203b96e29208b6dc5776`를 실제 파일과 대조했다.
+- exact local/served 자산은 JS `index-Dyoprpew.js`3638789bytes/SHA256 `1cbec1d558c8aa6aacf3b33e31eec6e4c57f308adcde7c7b6663d807da733072`, CSS `index-C3gJ9W9E.css`418554bytes/SHA256 `c3080d1b0f997bee2ba1881fc452ba2661a3047ec8e4aaf296e7b57c4e49569a`이다. 이전 run과 DB 앱은 그대로지만 보존한 최신 main의 앱 bundle 변경까지 같다고 주장하지 않는다.
+
+### 실제 픽셀 검토 범위
+
+다음 DB12개 원본을 직접 열었다. 긴 모바일 원본은 전체 구조를 확인한 뒤 필요한 잠금·계획·재시도 세부를 native-resolution crop으로 다시 읽었다. 추가5개는 아래 명시한 crop 범위만 확인했다. 자동 생성한738개를 사람이 전부 읽었다고 하지 않는다.
+
+- 11 원본7개: `320-f11-immediate-rename-final.png`, `1440-f11-safe-expand-contract-bridge-update.png`, `320-f11-safe-expand-contract-final.png`, `390-f11-old-writer-remains-old-only-update.png`, `390-f11-interrupted-backfill-resume.png`, `320-f11-ddl-lock-near-ddl-waiting.png`, `390-f11-ddl-lock-near-ddl-granted.png`. 옛 열의 현재 경계 제거/밖에서 끊긴 참조, 한 transaction 양열 쓰기, 채움3/3과 동등성2/3의 차이, 재실행 시 이미 채운 행 보존, DDL 대기와 획득·적용 전을 구별한다. 조작·단계·잠금 그림이 한 근접 장면에 있다.
+- 12 원본5개: `1440-f12-compound-same-controlled-rerun.png`, `320-f12-row-lock-same-lock-observed.png`, `320-f12-plan-estimate-same-actual.png`, `320-f12-commit-unknown-different-retry-decision.png`, `1440-f12-commit-unknown-same-retry-decision.png`. 별도 B 실행과 남은 Q 증거, 잠금 소유/대기와 미확정 영향 행, scan40/COUNT 결과1, 동일 내용의 기존 결과 재사용과 다른 내용 거절을 확인했다.
+- crop 한정5개: `320-f12-compound-selected-pool-final.png`, `320-f12-compound-selected-compound-plan.png`, `390-f12-compound-selected-pool-rerun.png`의 상단/지도와 선택한 원본 풀·plan, `320-f-migrations-reduce-static-open.png`와 `320-f-diagnosis-reduce-static-open.png`의 열린 정적 해설 부분이다. 선택 A에서는 A·R1 요청→대여→세션만, Q에서는 Q·Q1 세션→계획 우회선만, B에서는 B·R2 경로만 나타나며 서로 연결하지 않는다. 누적 관측 상자와 선택 실행 선의 범례 및 미관측≠0를 보존한다.
+- 독립 교차 검토는 최종320px A/Q 지도2crop에 한정해 통과했다. 이전 run에서 독립 확인한 DDL 근접2장도 최종 원본에서 작성자가 다시 확인했지만 그 검토 범위를 전체738장으로 확대하지 않는다. 권차는 최종 `1440-home.png`, `320-database-heading.png`를 직접 열어 IT4권·DB12장과 이웃 책을 확인했다.
+
+관찰한 범위에서 차단할 잘림·경로 혼합·단위/생명주기 오해를 추가 발견하지 않았다. 실제 PostgreSQL, 실물 모바일, 스크린리더 및 main/Pages 게시 증거는 아니다. G의 알려진 기존7개 강조 표시와 선택 SQL 정적 묶음·전체 편집 및 넓은 회귀는 다음 별도 범위로 남긴다.

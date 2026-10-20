@@ -64,3 +64,10 @@
 - 확률 원본19개(320폭17개,1440 금액 명부1개,390 잠금 장면1개)와 홈320 권차 heading1개를 직접 열었다. 미상 회수액/전체 성과가0으로 바뀌지 않으며 보류값도 공개 전 가림이다. 민감도 범위/CI 경계, 최초10/존속8의 분모, 독립/복제 분포, 보류 재사용, 정보 공개 시점, 인접 제어와 정적 표의 끝 열을 확인했다. 확인 범위에서 차단할 겹침을 찾지 않았다. 모든259개를 직접 봤다는 뜻은 아니다.
 - artifact `12260210460` ZIP SHA256 `e3dad5c1922c3ca63e9b13f49ccaa04ff4ec881d0ffc1b529a222a57f9444fc3`; 홈 `12259386673` SHA256 `3b3d5bdad089ff4dcd2d26f36399f223b680fd9939ead7efc60d715b4b9ff8e3`; scope `12258853714` SHA256 `cae268686d296bf4f4d291447d8203c4ffaecb8c6f5a1490c3cf549276236448`. 다운로드 후 해시 대조·ZIP 추출을 완료했다.
 - 최종 문서 보강은 검증된 실행 소스를 바꾸지 않는 별도 패치다. D 실제 게시 뒤 직렬 통합·Pages·실제 게시의 정확한 버전/자산/화면 게이트가 남아 있다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과·전문 감수는 여전히 미검증이다.
+
+
+## 정확한 main d6237bc 실제 게시 마감 — 2026-10-20
+
+[run39431780917](https://github.com/Middleages/my-books/actions/runs/39431780917)의 source `d6237bc2449e0c77894cdabe4f7fab75e6143468`, tree `46848403199c145abfc1d47a1370927a5cd24a1f`에서 전체1390/1390 단위·560 modules build, 선택8종 production과 Pages, 동일 build의 선택8종 published가 모두 성공했다. 이 책의 실제 게시 결과는 **596/596·259원본 PNG**, clean·앱/page/console/resource 오류0이다. 알려진 호스트 기본 `https://middleages.github.io/favicon.ico`의404 한 건은 원래 URL과 함께 별도 진단으로 보존하고 앱 오류를 제외하지 않았다. artifact12269202592 ZIP SHA256 `d3940dd97d4bb3ae43d8ad7905d0b6f779f12ee748a539c1c65a7c03b09822ef`를 실제 다운로드와 대조했다. 정확한 JS/CSS 전체 바이트·단일 build 증거는 [합본 기록](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)의 실제 게시 절을 따른다.
+
+직접 연 대표 6원본 범위: 320-selection-comparison-unknown,320-selection-flow,320-selection-controls,390-validation-locked,320-validation-reused,320-validation-static-end. 전체10개 미상≠0와 존속8개3.75%,10=8+2, 보류값 잠금과 재사용≠새 독립 검증, 모바일 제어 및 정적표 보류12 열를 확인했고 이 범위에서 새 잘림·겹침·의미 차단점을 발견하지 않았다. native crop은 별도 원본으로 더하지 않았고, 소개 탐색 이미지는 두 선택 제어만을 보여 주므로 소개 전체 검토로 확대하지 않는다. 원본 전수 사람 검토·실기기·스크린리더 음성·실제 외부 서비스/임상 감수의 증거는 아니다.

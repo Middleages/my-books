@@ -18,3 +18,10 @@ F 전체 회귀에서 광역 문자열 치환 문제를 발견해 E도 재검토
 
 ## 수정 소스 최종 게이트 완료
 수정 로컬ec4e0de / 원격7ffc4220c1eed7e8ecbb32cd71b6e8976dc2d530 / tree0939036534c37efa35952757d326527d8f39d349를 검증했다. 로컬unit1,052개/실패0 및 build 성공. 정상CI39398342024의 build+전체9production suite 모두 성공했다. PR deploy/published는 skipped다. 수정 전용 보고서는mergea96476c3e03310998a090c5be0ddfb2a3ef81813/동일tree,117검사·451PNG·오류0이며 artifact12253790978이다. 수정 원본320 second-year12 all/390 third-year24 all을 다시 직접 열어 경계 자료·배치 보존을 확인했다. 기존 육아 그림·본문 변경 없이 주거 문구를 복구했으며 공통 장수 회귀가 통과했다. E source/실제 화면·넓은 회귀 인계 보류를 해제하되 main/Pages는 별도 미게시다.
+
+
+## 정확한 main d6237bc 실제 게시 마감 — 2026-10-20
+
+[run39431780917](https://github.com/Middleages/my-books/actions/runs/39431780917)의 source `d6237bc2449e0c77894cdabe4f7fab75e6143468`, tree `46848403199c145abfc1d47a1370927a5cd24a1f`에서 전체1390/1390 단위·560 modules build, 선택8종 production과 Pages, 동일 build의 선택8종 published가 모두 성공했다. 이 책의 실제 게시 결과는 **128/128·486원본 PNG**, clean·앱/page/console/resource 오류0이다. 알려진 호스트 기본 `https://middleages.github.io/favicon.ico`의404 한 건은 원래 URL과 함께 별도 진단으로 보존하고 앱 오류를 제외하지 않았다. artifact12269950134 ZIP SHA256 `97773cfee2dd3ad875ccfa92b06b5c8774be956cf8270cde4ee3f20e800e4e96`를 실제 다운로드와 대조했다. 정확한 JS/CSS 전체 바이트·단일 build 증거는 [합본 기록](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)의 실제 게시 절을 따른다.
+
+직접 연 대표 9원본 범위: 320-first-year-card-6-body/hands,320-second-year-card-15-language/18-social,320-third-year-card-36-body/hands,320-intro-age-entry,1440-first-year-2-all,1440-third-year-30-all. 책 태그와 CDC 원출처 분류의 차이,15개월 요청/18개월 관심 공유, 깨어서 지켜보는 바닥 놀이≠수면 자세 변경, 포크 경험≠섭취량, 실제 근거 시점/비보간·비채점 경계를 확인했고 이 범위에서 새 잘림·겹침·의미 차단점을 발견하지 않았다. native crop은 별도 원본으로 더하지 않았고, 소개 탐색 이미지는 두 선택 제어만을 보여 주므로 소개 전체 검토로 확대하지 않는다. 원본 전수 사람 검토·실기기·스크린리더 음성·실제 외부 서비스/임상 감수의 증거는 아니다.

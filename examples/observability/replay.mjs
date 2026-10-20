@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {deploymentFrame,diagnosisFrame} from '../../src/simulations/observability/operations.mjs';
+import {dashboardFrame} from '../../src/simulations/observability/response.mjs';
+const stopped=deploymentFrame(3,{mode:'collector'}),replaced=deploymentFrame(3,{mode:'replace',environment:'kubernetes'}),lost=deploymentFrame(3,{mode:'volume'});
+assert.equal(stopped.appResponded,true);assert.equal(stopped.receivedNew,0);assert.equal(stopped.storedTotal,3);
+assert.equal(replaced.sourceIdentity,'Pod-B');assert.equal(replaced.storedTotal,5);assert.equal(replaced.ha,false);
+assert.equal(lost.storedOld,0);assert.equal(lost.storedTotal,2);
+const missing=dashboardFrame(3,{source:'missing'}),empty=dashboardFrame(3,{route:'absent'});
+assert.equal(missing.denominator,null);assert.equal(empty.denominator,0);assert.equal(empty.errorRate,null);
+const diagnosis=diagnosisFrame(3,{scenario:'d',question:'query'});assert.deepEqual(diagnosis.observed,['query','collector']);assert(diagnosis.unknowns.includes('api'));assert.equal(diagnosis.actionExecuted,false);
+console.log(JSON.stringify({model:'synthetic-only',stopped:{appResponded:stopped.appResponded,receivedNew:stopped.receivedNew,storedTotal:stopped.storedTotal},replaced:{source:replaced.sourceIdentity,total:replaced.storedTotal},lost:{old:lost.storedOld,total:lost.storedTotal},noData:missing.denominator,emptyDenominator:empty.denominator,observed:diagnosis.observed,unknown:diagnosis.unknowns},null,2));
+console.log('synthetic checks passed');

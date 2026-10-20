@@ -25,3 +25,10 @@ PR71/run39414110777의 build와 선택2 production(수면·권차)이 성공했�
 새 원본320-naps-estimates,390-naps-static,1440-naps-estimates,850-routine-reordered,320-routine-relay를 직접 열어 보완한 공통 축 정렬과14px 라벨, 추정/미확인 구분, 카드 순서/화살표, 모바일 버튼 및 고정 돌봄 경계를 확인했다. 해당 범위에서 가독성·잘림·관계 오류는 발견하지 않았다. 이전 원본의 상태 검토와 새 원본 검토를 구분했다.
 
 배치 C의 자체 소스·화면 게이트는 닫았다. 실제 main 통합과 배포는 선행 B 뒤 직렬 게시 담당이 최신 다른 책을 보존해 별도로 진행한다. 개인 영양/의료 처방·실제 아이 자료·의학 전문가 감수는 포함하지 않는다.
+
+
+## 정확한 main d6237bc 실제 게시 마감 — 2026-10-20
+
+[run39431780917](https://github.com/Middleages/my-books/actions/runs/39431780917)의 source `d6237bc2449e0c77894cdabe4f7fab75e6143468`, tree `46848403199c145abfc1d47a1370927a5cd24a1f`에서 전체1390/1390 단위·560 modules build, 선택8종 production과 Pages, 동일 build의 선택8종 published가 모두 성공했다. 이 책의 실제 게시 결과는 **67/67·137원본 PNG**, clean·앱/page/console/resource 오류0이다. 알려진 호스트 기본 `https://middleages.github.io/favicon.ico`의404 한 건은 원래 URL과 함께 별도 진단으로 보존하고 앱 오류를 제외하지 않았다. artifact12268991953 ZIP SHA256 `3bbd06d223a1abe18a705cacc2141f635ca3b3cb41f291354f4cda140cdcb687`를 실제 다운로드와 대조했다. 정확한 JS/CSS 전체 바이트·단일 build 증거는 [합본 기록](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)의 실제 게시 절을 따른다.
+
+직접 연 대표 4원본 범위: 320-naps-estimates,320-naps-static,390-routine-relay,1440-routine-reordered. 확인70/50분과 추정 빗금·기록없음≠0, 동일 시간축·정적 표, 안전공간/수유/불편돌봄 고정 경계와 인접 조작를 확인했고 이 범위에서 새 잘림·겹침·의미 차단점을 발견하지 않았다. native crop은 별도 원본으로 더하지 않았고, 소개 탐색 이미지는 두 선택 제어만을 보여 주므로 소개 전체 검토로 확대하지 않는다. 원본 전수 사람 검토·실기기·스크린리더 음성·실제 외부 서비스/임상 감수의 증거는 아니다.

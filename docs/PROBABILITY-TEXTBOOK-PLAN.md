@@ -7,7 +7,7 @@
 
 ## 현재 구현 기록 — 2026-10-20
 
-후속 승인에 따라 A 소개·01–02는 PR36의 전체 unit1,049·build·9개 browser suite와 원본 화면 검토를 완료했다. 최신 main 통합/게시 여부는 [A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에 따로 남긴다. B 03–04는 PR44의 full unit 1,081·build·선택된 4개 production suite와 원본 화면 검토를 마쳤다. C 05–06은 PR52에서 검증하는 별도 후보이며 실제 등록 분모는 6이다. 아래 12장 계획은 완성 범위가 아니고, [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)과 [C 검증 기록](PROBABILITY-BATCH-C-VERIFICATION.md)이 source 검증과 실제 main/Pages 게시를 구분한다. D는07–08을 추가하는 별도 후보로 진행하며 등록 분모는8이다. [D 검증 기록](PROBABILITY-BATCH-D-VERIFICATION.md)에서 실제 실행·게시를 구분한다. E는 09–10을 추가하는 별도 후보이며 소개·실제 등록 분모를 10으로 맞췄다. [E 검증 기록](PROBABILITY-BATCH-E-VERIFICATION.md)에 실행과 게시를 따로 기록한다. F는 이 후보에 등록하지 않았다.
+후속 승인에 따라 A 소개·01–02는 PR36의 전체 unit1,049·build·9개 browser suite와 원본 화면 검토를 완료했다. 최신 main 통합/게시 여부는 [A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에 따로 남긴다. B 03–04는 PR44의 full unit 1,081·build·선택된 4개 production suite와 원본 화면 검토를 마쳤다. C 05–06은 PR52에서 검증하는 별도 후보이며 실제 등록 분모는 6이다. 아래 12장 계획은 완성 범위가 아니고, [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)과 [C 검증 기록](PROBABILITY-BATCH-C-VERIFICATION.md)이 source 검증과 실제 main/Pages 게시를 구분한다. D는07–08을 추가하는 별도 후보로 진행하며 등록 분모는8이다. [D 검증 기록](PROBABILITY-BATCH-D-VERIFICATION.md)에서 실제 실행·게시를 구분한다. E는 09–10을 추가하는 별도 후보이며 소개·실제 등록 분모를 10으로 맞췄다. [E 검증 기록](PROBABILITY-BATCH-E-VERIFICATION.md)에 실행과 게시를 따로 기록한다. F는 11–12를 추가하는 별도 최종 후보이며 소개·실제 등록 분모를12로 맞췄다. [F 검증 기록](PROBABILITY-BATCH-F-VERIFICATION.md)과 [전체권 점검](PROBABILITY-BOOK-REVIEW.md)은 구현·실행·최종 넓은 회귀·실제 게시를 구별한다. 이 문서의12장 등록을 main 배포 완료로 읽지 않는다.
 
 ## 1. 목적: 좋아 보이는 숫자를 어디까지 믿어도 될까?
 

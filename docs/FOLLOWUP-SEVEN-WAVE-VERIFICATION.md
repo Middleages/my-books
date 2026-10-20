@@ -52,3 +52,25 @@
 총42개 고유 원본의 위 범위를 직접 확인해 새 의미·잘림·겹침 차단점을 발견하지 않았다.1866개 원본 전수 사람 검토·모든 표행 확인·실기기·스크린리더 음성·실제 DB/SSO·임상 감수라는 뜻은 아니다. native crop은 원본 수에 더하지 않았다. 검증 뒤 추가된 직전 main5b 게시 마감과 이 결과 기록은 문서 전용이며 검증 앱/모델/전용 검증기/테스트/workflow/package 바이트는 그대로다.
 
 선행 main5b의 여덟 배치는 실제 게시/직접 검토를 완료했다. 이 후보는 이제 exact-main 영향8종 production→Pages→동일 산출물8종 published로 이어간다. 회계F는 그 게이트 후에도 **게시 확인 완료·전체권 마감 회귀 대기**로 구분한다. 이어지는 준비된 기존 교재 후속 파동까지 순차 게시한 뒤, 새 책 등록 전 안정된 동일 main의 최신14종 전체 production/published를 한 번 묶어 회계와 함께 최종권 마감을 검증한다. 최종 넓은 회귀를 삭제한 것이 아니며 미실행 상태를 성공으로 기록하지 않는다.
+
+
+## Exact-main·Pages·published 최종 결과 — 2026-10-20
+
+main `d6237bc2449e0c77894cdabe4f7fab75e6143468`, tree `46848403199c145abfc1d47a1370927a5cd24a1f`의 [run39431780917](https://github.com/Middleages/my-books/actions/runs/39431780917)에서 전체1390/1390 단위·560 modules build와 선택8종 production **1446검사·1866원본 PNG**, Pages 배포(13:45:28 UTC), 선택8종 published **1453검사·1866원본 PNG**가 모두 성공했다. 총18개 job이 성공이며 양환경 합계2899검사·3732원본이다. 보험·투자·세금·DB·K8s·주거6종은 이번 영향 실행에서 생략했으며 통과로 세지 않는다. 공개 범위는17권169장으로 이전 장수/권차/readId를 보존한다.
+
+GitHub ZIP SHA256, scope의 정확한 source/tree·선택/생략 집합, source clean, 단일 Pages build artifact12267733700를 대조했다. 모든 앱/page/console/resource 오류는0이며 published7책의 호스트 기본 favicon404 각1건만 원래 URL과 함께 별도로 보존했다(홈0). `index-BKIwsubM.js`3964984bytes·SHA256 `252a31cf4e602b6dc059c91d68dc095495d55acef130d9f2b72134ad8a0d2a22`, `index-uje8qbF8.css`454418bytes·SHA256 `7f6273588e2633cde871a18cdf2cada473b516bba25e07f2a489c391a5d8e210` 전체 바이트가 main build/PR84 검증/실제 게시에서 일치한다. 게시 확인 전후 실제 main이 이 SHA로 고정됐음을 다시 읽었다.
+
+| suite | production / published 검사 | 각 원본 PNG | published artifact | ZIP SHA256 |
+| --- | --- | --- | --- | --- |
+| book-volumes | 14 / 14 | 57 | 12269331529 | `1947bf5adb3c36461d2ab20cda7ba5bd6076586d126a58cf2fcccdc31554e5bc` |
+| accounting | 509 / 510 | 413 | 12269182600 | `f3d859046409eb087e23502deb2c53cdf9ee0b8b995a8c83f6c018513f11eeb0` |
+| probability | 595 / 596 | 259 | 12269202592 | `d3940dd97d4bb3ae43d8ad7905d0b6f779f12ee748a539c1c65a7c03b09822ef` |
+| observability | 42 / 43 | 195 | 12269006959 | `3cd71dc822975e6cefd2bf1a8220139d9bcabdd127535eb704b7d746b19466e2` |
+| child-development | 127 / 128 | 486 | 12269950134 | `97773cfee2dd3ad875ccfa92b06b5c8774be956cf8270cde4ee3f20e800e4e96` |
+| authentication | 35 / 36 | 186 | 12269011963 | `25a9ab02b2d25d54c4b1aa51e30255bd16beb0cdc617a140475f858abc9b23bd` |
+| child-sleep | 66 / 67 | 137 | 12268991953 | `3bbd06d223a1abe18a705cacc2141f635ca3b3cb41f291354f4cda140cdcb687` |
+| child-feeding | 58 / 59 | 133 | 12269416063 | `432ebc4aed5b6951aeca6889b7d03a660f62bb66d9388cc9b2bc208704a7a7d7` |
+
+새 실제 게시 PNG에서도 앞 절과 같은 대표42개 범위를 직접 다시 열었다. 통합 담당자는 발달9·관측4·인증3·홈3 및 먹기5, 회계 작성자는8, 확률 작성자는6, 수면 후속 담당자는4개를 확인했다. 모바일은 명시한 native 범위만, 소개 탐색은 두 선택 제어만, 홈1440은 전체/320·390은 상단0–2000px 범위다. 책 태그/원출처 영역과 구체 행동 예시, 관측 누락/평가, 인가/세션 경계, 회계/확률 계산·판단, 수면 고정 돌봄과 먹기119 우선/진단 불가가 보존됐고 새 차단점을 발견하지 않았다.320px 홈 hero 및 일부 먹기 단어의 기존 줄바꿈은 읽을 수 있는 경미한 편집 한계이며 내용 잘림은 아니다.3732원본 전수 사람 검토나 임상/외부 서비스 운영 검증으로 확대하지 않는다.
+
+이 일곱 배치의 실제 공개 게이트는 완료했다. 회계는 **소개+12장 게시 확인 완료·전체권 마감 회귀 대기**로 구분한다. 다음 준비된 기존 교재7배치와 검증 완료된 DB G를 포함하는 안정된 최종 합본에서 실제 등록14종 production+published가 모두 실행되고 동일 source·단일 build·전후 main 고정·직접 원본 조건을 충족하면 그 실행으로 여러 완결권의 넓은 회귀를 함께 마감한다. 그 전까지 새 육아4–6 등록을 섞지 않으며, 아직 실행하지 않은 최종 결과를 완료로 쓰지 않는다. 실제 DB/SSO/관측 제품 스택·임상 감수·실기기·스크린리더 음성은 미실행이다.
