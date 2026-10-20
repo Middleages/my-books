@@ -7,3 +7,11 @@
 ## 실행 범위와 수정
 원계획 F는11–12장, G는최종전체검토다. 실제 소스/화면 검증을 F-1(11장)과 F-2(12장)로 나누며 G 최종전체검토를 별도로 유지한다. 기존 이 문서의 F는F-1을 뜻한다.
 첫 전체 테스트는1,053개 중1,051통과·2실패였다. 광역 문구 치환으로 세금·보험 공개 장수가 변경된 것을 테스트가 검출했다. 주거도 E에서 잘못 변경된 사실을 발견하여 세 책 모두 작업 시작 기준의 문구를 복구했다. 최신 main 통합에서는 해당 최신 책 정보를 보존한다. 이 실패를 통과로 기록하지 않고 수정 후 재실행한다.
+
+## 수정 후 완료 결과
+- 수정 소스 `ece3facd27d396da2c28495cd2b6e63beb1ec351`, tree `7896455c1564b660abfab2bf067c7af280c98fd5`. 원격 `a0bc3c23a8601121153dad569212cdb4e7f418ed` 동일 tree. E 수정 이력을 병합해 보존했다.
+- 로컬 전체 unit1,054개/실패0 및 production build 통과. 시작 기준05602d24 대비 기존 책 category 행의 변경0, 육아 새 행만 추가됨을 대조했다. 공통 공개 장수 보존 검사를 포함한다.
+- Draft PR50 정상 CI https://github.com/Middleages/my-books/actions/runs/39398449404 build 및 영향2suite(book-volumes/child-development) 성공. 다른7개 미실행, deploy/published skipped. E 수정 PR의 별도 넓은9suite 회귀는 진행 중이며 이 성공으로 대체하지 않는다.
+- 전용 보고서 merge SHA `fd26a759edf163b89b27d8580950ddf1e4005f73`, 동일 tree. A–E 포함127검사 통과/실패0, PNG501개, page/console/resource 오류0. Artifact `12252179761`.
+- 원본320 concern0→1/change2, 390 screening2, 1440 concern2 직접 검토: 종이 위치·화살표 전달, 우려 공유/다음 계획, 선별과 진단 경계가 명확하며 본문·제어가 좁은 폭에서 재배치된다.
+- F-1 source/실제 화면 게이트 완료. F-2(12장)와 G 전체 마감, main/Pages/exact-live는 남아 있다.

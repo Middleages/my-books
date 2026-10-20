@@ -1,3 +1,4 @@
+import ObservationPlan from "./content/child-development/ObservationPlan.mdx";
 import SeekSupport from "./content/child-development/SeekSupport.mdx";
 import SecondYear from "./content/child-development/SecondYear.mdx";
 import ThirdYear from "./content/child-development/ThirdYear.mdx";
@@ -140,6 +141,7 @@ export const chapters: Chapter[] = [
   { id: "second-year", bookId: "child-development", readId: "child-development/second-year", number: "09", title: "두 번째 해의 관찰 지도", heading: "12~24개월 자료와 일상을 어떻게 연결할까?", description: "물건의 용도·공유하는 관심과 원출처의 경계를 읽습니다.", Content: SecondYear },
   { id: "third-year", bookId: "child-development", readId: "child-development/third-year", number: "10", title: "세 번째 해의 관찰 지도", heading: "24~36개월 놀이와 대화에서 무엇을 볼까?", description: "상징놀이·상대와의 관계를 점수 없이 살펴봅니다.", Content: ThirdYear },
   { id: "seek-support", bookId: "child-development", readId: "child-development/seek-support", number: "11", title: "걱정을 상담으로 연결하기", heading: "무엇을 준비하고 누구에게 물을까?", description: "관찰·선별·진단의 경계와 공식 검진 안내를 구분합니다.", Content: SeekSupport },
+  { id: "observation-plan", bookId: "child-development", readId: "child-development/observation-plan", number: "12", title: "우리 집 관찰과 놀이 계획", heading: "비교와 채점 없이 다음 일주일을 어떻게 보낼까?", description: "작은 기회·합성 기록·상담 질문을 점수 없이 연결합니다.", Content: ObservationPlan },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
   { id: "double-entry", bookId: "accounting", readId: "accounting/double-entry", number: "02", title: "한 거래의 두 기록", heading: "왜 한쪽만 적으면 돈의 설명이 빠질까?", description: "차변·대변과 자산 등식을 통해 한 거래의 양쪽을 관찰합니다.", Content: DoubleEntry },
   { id: "housing-rights", bookId: "housing", readId: "housing/housing-rights", number: "01", title: "집에 사는 것과 집을 소유하는 것", heading: "같은 집에 살아도 가진 권리는 같을까?", description: "거주·소유·반환청구권·채무와 현금의 이동을 구분합니다.", Content: HousingRights },
@@ -533,7 +535,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–11장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
+  { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–12장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–08장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
