@@ -4,7 +4,7 @@ const definitions={base:['정본 · 회수160',{}], 'no-collection':['회수0 ·
 export const reportScenarios=Object.freeze(Object.keys(definitions));
 export const reportLabels=Object.freeze(Object.fromEntries(Object.entries(definitions).map(([k,v])=>[k,v[0]])));
 const sum=rows=>rows.reduce((a,r)=>a+r.amount,0);
-function bridge(items){let running=0;return items.map(item=>{const before=running;running+=item.amount;return{...item,before,after:running};});}
+function bridge(items){let running=0;return items.map(item=>{const before=running,amount=item.amount===0?0:item.amount;running+=amount;return{...item,amount,before,after:running};});}
 export function bridgeGeometry(row,min=-500,max=500){if(!Number.isFinite(min)||!Number.isFinite(max)||min>=max||![row.before,row.after,row.amount].every(Number.isFinite)||Math.abs(row.after-row.before-row.amount)>1e-9||Math.min(row.before,row.after)<min||Math.max(row.before,row.after)>max)throw new RangeError('다리의 값과 고정 눈금을 확인하세요.');const x=n=>(n-min)/(max-min);return{left:x(Math.min(row.before,row.after)),width:Math.abs(row.amount)/(max-min),start:x(row.before),end:x(row.after),zero:min<=0&&max>=0?x(0):null,direction:row.amount>0?'right':row.amount<0?'left':'none'};}
 function parts(s){const b=s.balances;return{assets:[['cash','현금',b.cash],['receivable','매출채권',b.receivable],['inventory','재고',b.inventory],['prepaid','선급 서비스',b.prepaid],['netEquipment','순설비',s.netEquipment]],claims:[['loan','차입금',b.loan],['payable','매입채무',b.payable],['accrued','미지급비용',b.accrued],['contractLiability','선입금 의무',b.contractLiability],['capital','납입자본',b.capital],['retained','이익잉여금',s.retainedEarnings]]};}
 export function reportModel(scenario='base'){
