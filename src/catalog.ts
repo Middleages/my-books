@@ -1,3 +1,5 @@
+import MortgagePaths from "./content/housing/MortgagePaths.mdx";
+import RunningCosts from "./content/housing/RunningCosts.mdx";
 import PurchaseCash from "./content/housing/PurchaseCash.mdx";
 import MortgageLimits from "./content/housing/MortgageLimits.mdx";
 import RentalContract from "./content/housing/RentalContract.mdx";
@@ -108,6 +110,8 @@ export const chapters: Chapter[] = [
   { id: "deposit-risk", bookId: "housing", readId: "housing/deposit-risk", number: "04", title: "보증금을 돌려받는 조건", heading: "받을 권리와 제때 돌려받는 돈은 같을까?", description: "회수 재원·배분·보증의 대상·실제 도착과 남은 채무를 구별합니다.", Content: DepositRisk },
   { id: "purchase-cash", bookId: "housing", readId: "housing/purchase-cash", number: "05", title: "집을 사는 날 필요한 돈", heading: "총액이 맞아도 잔금을 못 낼 수 있을까?", description: "가격의 분할·별도비용·대출 실행과 첫 납기의 현금을 연결합니다.", Content: PurchaseCash },
   { id: "mortgage-limits", bookId: "housing", readId: "housing/mortgage-limits", number: "06", title: "빌릴 수 있는 돈과 감당할 돈", heading: "담보와 심사 비율이 생활 여유까지 말해 줄까?", description: "한 시점의 담보·연간 심사 가정·월 생활 현금을 서로 다른 경계로 읽습니다.", Content: MortgageLimits },
+  { id: "mortgage-paths", bookId: "housing", readId: "housing/mortgage-paths", number: "07", title: "금리와 상환의 시간표", heading: "작은 월 납입 뒤에 무엇이 남아 있을까?", description: "금리 재산정·추가상환·수수료와 남은 원금의 시간 경계를 연결합니다.", Content: MortgagePaths },
+  { id: "running-costs", bookId: "housing", readId: "housing/running-costs", number: "08", title: "살면서 계속 드는 비용", heading: "낸 돈·부담할 돈·내 통장에 옮긴 돈은 같을까?", description: "외부 납부·대납 청구·실제 입금과 내부 적립·수선 지급을 구별합니다.", Content: RunningCosts },
 
   { id: "files-and-database", bookId: "database", readId: "database/files-and-database", number: "01", title: "파일 다음에 데이터베이스", heading: "파일도 저장하는데 DB는 무엇을 더 맡을까?", description: "같은 값을 읽은 두 사본과 공유 저장소의 변경, 데이터 관리 책임을 구분합니다.", Content: FilesAndDatabase },
   { id: "tables-and-constraints", bookId: "database", readId: "database/tables-and-constraints", number: "02", title: "표 사이의 약속", heading: "같은 이름이 아니라 어떤 값으로 관계를 지킬까?", description: "실제 행의 키 연결과 저장 경계에서 PK·FK·필수 값·범위 규칙을 살펴봅니다.", Content: TablesAndConstraints },
@@ -480,7 +484,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–06장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
+  { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–08장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
   { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–02장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
   { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–02장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },

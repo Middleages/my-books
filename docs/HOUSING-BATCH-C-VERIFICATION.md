@@ -40,3 +40,13 @@
 PR21 `dfd6043`, run39371988388의 실제 Chromium에서 06의 괄호로 끝나는 강조3곳이 원시 별표로 남았다. 콘솔/자원 오류는0이고 05의 네 폭 시나리오는 통과했지만 06 render/table/scenario/reduced의13검사는 실패했다. 실제 실패 PNG와 320px 05 변경 장면을 직접 열어 확인했다. 해당3곳을 명시적 strong으로 고쳤고, MDX 컴파일 결과에 원시 별표가 남지 않는 housing 전 장 회귀를 추가했다. 또한1원 부족 프리셋의 시작현금 range 값/라벨을 정확한 원 단위로 바꿔12500만원 반올림을 없애고 브라우저 입력값·라벨을 검증한다. 앞선 실패를 최종 통과로 대체해 기록하지 않는다.
 
 렌더 수정 뒤 housing22/22, 전체913/913, TypeScript·Vite build와 diff-check를 다시 통과했다. 실제 재검증은 다음 후보의 별도 기록으로 남긴다.
+
+## 수정 후보 실제 production·직접 시각 게이트
+
+PR21 head `11d12fdb8a3246e861479aeae38bd32f92c47bc0`, run39372613041의 merge checkout `0dcbf2687d9d6dee1f9ccc4c55b6a5c478c84df4`에서 Chromium155.0.8059.39 housing102/102, errors·consoleDiagnostics·resourceDiagnostics0, 77PNG를 확인했다(2026-10-20T05:03:28.805Z~05:05:53.139Z). Artifact12242282844 ZIP SHA-256 `9da8604a7e209a536b42ac8e63a147860ed305b872302fb012c17f7777b76948`를 내려받은 바이트와 대조했다.
+
+- JS `index-BO9jCYMI.js`, 2,432,797bytes, SHA-256 `cfeb8638ea174e1547bae90d671f3fb9da6f3e03afbfa65e1db533ad3f1042b4`.
+- CSS `index-CI_YVdyB.css`, 317,718bytes, SHA-256 `40de8eec1b94780745f7d17710dc099ffdaba71af23751485ab7d71d67b45be5`.
+- 최종320의05프리셋과06음수예산, 390전체본문·reduced/static, 1440의06초기 장면을 실제로 열었다. 원시 별표가 사라지고 입력값124,999,999원이 보존되며, 세 단위·월부족·제어 근접·정적 표가 읽힌다. 첫 후보의05 1440/320·06 390/320도 독립 검토하여 알려진 두 수정 외 차단 문제는 없었다. 320의 달력10개월 라벨 줄바꿈은 비차단 가독성 관찰이며 정보 누락은 없었다.
+
+이 기록은 C의 production housing·직접 시각 게이트다. A→B→C의 최신 main 통합·Pages·게시 자산 확인을 대신하지 않으며 공개 완료를 뜻하지 않는다. 검증된 C 위에서 D를 별도 준비할 수 있다.
