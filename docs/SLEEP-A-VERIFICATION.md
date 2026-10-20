@@ -20,3 +20,11 @@
 
 ## 초기 CI 확인 및 검증기 수정
 run39403186794의 수면 suite는22통과/4실패였다. 네 폭에서 공간 버튼을 마우스 모드의 programmatic focus로 이동한 직후 `:focus-visible`을 요구한 검증기 조건이 원인이었다. 실제 키보드 Tab 입력으로 키보드 모드에 들어간 뒤 포커스 윤곽과 Enter 조작을 검사하도록 수정한다. 실패를 통과로 보고하지 않는다. 초기 원본320 전체02·390 빈기록·1440 부분기록에서 방 경계/별도 표면과 시간층·미확인 보존을 직접 확인했다. 수정본의 모든 공간 상태와 최종 회귀는 아직 대기다. 공통 공개범위 회귀는 최고 장수뿐 아니라 중간 장 누락도 검증하도록 강화했다.
+
+## 수정본 전용 소스·실제 화면 게이트 — 2026-10-20 09:56 UTC
+
+원격 source842dcd2d17650569de8506e7e42718bcbe1c4ab9 / treeb8d9c32693829a0e5f003a0b4f2bf0842d25bd6a. 실제 CI checkoutba9e81655bae59f7687b5a646193b17c70023bca의 tree가 같다. run39403796489 build와 child-sleep 전용26검사 통과,49PNG, page/console/resource 오류0. artifact12255688508 ZIP SHA256 fb92dcc4ecd50ce7ccbd5b0cc070968dd86bde55c7d6f7ce8d9eca1007bb0d77.
+
+직접 연 원본:320-space-room,390-space-position,850-space-surface,1440-space-clear,320-record-conflict,390-record-overlap,850-record-empty,1440-home-parenting. 모바일의 세로 배치가 같은 방 경계를 유지하고, 선택별 실제 강조 경계와 키보드 윤곽이 보인다. 두 시간 층은 같은 눈금이며 상충·미확인 패턴을 보존하고 빈 관찰을 수면0으로 단정하지 않는다. 1·2권 표지/읽음 기록의 분리도 확인했다. 초기 실패와 달리 키보드 모드를 실제 입력한 후 포커스 검사가 통과했다.
+
+전체10-suite 첫 등록 회귀는 아직 진행 중이다. 완료된 전용 소스/화면 게이트와 미완료 전체 회귀·main 게시·exact-live 게이트를 구분한다. 수정 후 로컬 전체1,047 unit도 다시 성공했다. 수정 후 TypeScript/Vite production build도 성공했다.

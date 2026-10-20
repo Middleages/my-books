@@ -6,13 +6,13 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import scope from '../scripts/browser-verification-scope.cjs';
 
-const all = ['insurance', 'investing', 'tax', 'book-volumes', 'database', 'kubernetes', 'housing', 'accounting', 'child-development', 'child-sleep'];
+const all = ['insurance', 'investing', 'tax', 'book-volumes', 'database', 'kubernetes', 'housing', 'accounting', 'child-development', 'child-sleep', 'child-feeding'];
 const classify = (files, extra = {}) => scope.classify({ files, available: all, ...extra });
 const catalog = readFileSync(new URL('../src/catalog.ts', import.meta.url), 'utf8');
 const selected = (...books) => all.filter(suite => ['book-volumes', ...books].includes(suite));
 
 test('book-local source, scenarios, verifier and unit tests select complete affected suites plus mandatory smoke', () => {
-  for (const book of ['insurance', 'investing', 'tax', 'database', 'kubernetes', 'housing', 'accounting', 'child-development', 'child-sleep']) {
+  for (const book of ['insurance', 'investing', 'tax', 'database', 'kubernetes', 'housing', 'accounting', 'child-development', 'child-sleep', 'child-feeding']) {
     for (const file of [
       `src/content/${book}/NewChapter.mdx`, `src/components/${book}/Lab.tsx`,
       `src/components/${book}/lab.css`, `src/simulations/${book}/model.mjs`,
