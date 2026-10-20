@@ -1,5 +1,5 @@
 import ClosedNetwork from "./content/observability/ClosedNetwork.mdx";
-import Diagnosis from "./content/observability/Diagnosis.mdx";
+import ObservabilityDiagnosis from "./content/observability/Diagnosis.mdx";
 import Dashboards from "./content/observability/Dashboards.mdx";
 import Alerts from "./content/observability/Alerts.mdx";
 import Instrumentation from "./content/observability/Instrumentation.mdx";
@@ -151,7 +151,7 @@ export const chapters: Chapter[] = [
   { id: "dashboards", bookId: "observability", readId: "observability/dashboards", number: "09", title: "질문이 있는 화면 만들기", heading: "네 숫자가 같은 요청을 보고 있을까요?", description: "공통 기간·분모와 실제 상관 ID, 0·누락·조회 오류를 나눕니다.", Content: Dashboards },
   { id: "alerts", bookId: "observability", readId: "observability/alerts", number: "10", title: "알림에서 대응까지", heading: "오류가 났는데 왜 알림은 아직 없을까요?", description: "관측 창·평가 간격·유지시간을 나누고 대응 책임을 연결합니다.", Content: Alerts },
   { id: "closed-network", bookId: "observability", readId: "observability/closed-network", number: "11", title: "폐쇄망과 배치의 운영 책임", heading: "Pod를 바꾸면 이전 로그도 사라질까요?", description: "발견·수집·신뢰·volume·시각 의존성을 분리합니다.", Content: ClosedNetwork },
-  { id: "diagnosis", bookId: "observability", readId: "observability/diagnosis", number: "12", title: "증거로 좁혀 가는 장애 진단", heading: "CPU 한 장으로 원인을 확정할 수 있을까요?", description: "요청 경로와 관측 경로에서 확인한 증거만 결론에 씁니다.", Content: Diagnosis },
+  { id: "diagnosis", bookId: "observability", readId: "observability/diagnosis", number: "12", title: "증거로 좁혀 가는 장애 진단", heading: "CPU 한 장으로 원인을 확정할 수 있을까요?", description: "요청 경로와 관측 경로에서 확인한 증거만 결론에 씁니다.", Content: ObservabilityDiagnosis },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
   { id: "double-entry", bookId: "accounting", readId: "accounting/double-entry", number: "02", title: "한 거래의 두 기록", heading: "왜 한쪽만 적으면 돈의 설명이 빠질까?", description: "차변·대변과 자산 등식을 통해 한 거래의 양쪽을 관찰합니다.", Content: DoubleEntry },
   { id: "revenue-and-cash", bookId: "accounting", readId: "accounting/revenue-and-cash", number: "03", title: "팔았을 때와 받았을 때", heading: "주문·인도·입금 중 언제 매출일까?", description: "상품 통제 이전과 선입금·외상 회수의 서로 다른 시점을 관찰합니다.", Content: RevenueAndCash },
