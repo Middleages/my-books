@@ -7,17 +7,18 @@ function PaymentStrip({title,row}:{title:string;row:MortgagePathRow}) {
 }
 export function MortgagePathsLab() {
   const [months,setMonths]=useState(240),[resetRate,setResetRate]=useState(7),[prepayment,setPrepayment]=useState(0),[full,setFull]=useState(false);
-  const last=full?months:Math.min(24,months),p=usePlayback(last),r=mortgagePaths({months,resetRate,prepayment});
+  const last=full?months:Math.min(24,months),p=usePlayback(last,13),r=mortgagePaths({months,resetRate,prepayment});
   const fixed=r.paths.fixed.rows[p.step],changed=r.paths.reset.rows[p.step];
   const points=(rows:MortgagePathRow[])=>rows.slice(0,last+1).map(v=>`${v.month/last*600},${180-v.closing/100e6*180}`).join(' ');
-  const reset=()=>{setMonths(240);setResetRate(7);setPrepayment(0);setFull(false);p.rewind()};
+  const reset=()=>{setMonths(240);setResetRate(7);setPrepayment(0);setFull(false);p.seek(13)};
   return <Lab id="mortgage-paths" title="같은 원금, 다른 달의 납입과 남은 빚" note="8,000만원·금리·12/13개월 경계·수수료는 자체 계약 가정입니다. 모든 예정금을 낸 경로를 그리며 실제 납부·연체·대환·승인을 판정하지 않습니다.">
     <figure className="housing-mortgage-paths" data-path-month={p.step}>
       <p>두 경로는 명목연율4%로 출발합니다. 가상 재산정 경로만13개월에 {resetRate}%로 바꾸고, 그때 남은 원금을 남은 기간으로 다시 나눕니다.</p>
-      <div className="housing-controls"><label>가정 만기<select value={months} onChange={e=>{setMonths(+e.target.value);p.rewind()}}>{[120,240,360].map(n=><option key={n} value={n}>{n}개월</option>)}</select></label><label><input type="checkbox" checked={full} onChange={e=>{setFull(e.target.checked);p.rewind()}}/> 전체 만기까지 보기</label></div>
-      <Range label="13개월부터 가상 명목연율" value={resetRate} max={10} step={.5} unit="%" onChange={v=>{setResetRate(v);p.rewind()}}/>
-      <label>12개월 정규 납입 뒤 추가 원금<select value={prepayment} onChange={e=>{setPrepayment(+e.target.value);p.rewind()}}><option value={0}>없음</option><option value={10e6}>1,000만원 요청</option><option value={100e6}>1억원 요청 · 잔액까지만</option></select></label>
-      <p>추가상환 수수료는 <strong>모형에 반영한 추가 원금의 1%</strong>라는 가정이며 따로 냅니다. 실제 상품 요율이 아닙니다. 수수료는 빚을 줄이지 않습니다. 추가상환 뒤에는 두 경로 모두 만기를 유지하고 다음 달부터 정규 납입액을 다시 계산합니다.</p>
+      <p>첫 화면은 금리 경계 직후인 13개월입니다. 아래 원금·이자 띠에서 무엇이 늘었는지 먼저 비교하세요. ‘처음부터’는 0개월로 돌아갑니다.</p>
+      <details className="housing-path-settings"><summary>만기·금리·추가상환 조건 바꾸기</summary><div className="housing-controls"><label>가정 만기<select value={months} onChange={e=>{setMonths(+e.target.value);p.seek(13)}}>{[120,240,360].map(n=><option key={n} value={n}>{n}개월</option>)}</select></label><label><input type="checkbox" checked={full} onChange={e=>{setFull(e.target.checked);p.seek(13)}}/> 전체 만기까지 보기</label></div>
+      <Range label="13개월부터 가상 명목연율" value={resetRate} max={10} step={.5} unit="%" onChange={v=>{setResetRate(v);p.seek(13)}}/>
+      <label>12개월 정규 납입 뒤 추가 원금<select value={prepayment} onChange={e=>{setPrepayment(+e.target.value);p.seek(13)}}><option value={0}>없음</option><option value={10e6}>1,000만원 요청</option><option value={100e6}>1억원 요청 · 잔액까지만</option></select></label>
+      <p>추가상환 수수료는 <strong>모형에 반영한 추가 원금의 1%</strong>라는 가정이며 따로 냅니다. 실제 상품 요율이 아닙니다. 수수료는 빚을 줄이지 않습니다. 추가상환 뒤에는 두 경로 모두 만기를 유지하고 다음 달부터 정규 납입액을 다시 계산합니다.</p></details>
       <div className="housing-presets"><button onClick={()=>p.seek(12)}>12개월 경계</button><button onClick={()=>p.seek(13)}>13개월 경계</button><button onClick={()=>p.seek(last)}>관찰 끝</button></div>
       <Range label="관찰할 월말" value={p.step} max={last} unit="개월" onChange={p.seek}/>{p.controls}<button onClick={reset}>조건까지 초기화</button>
       <p className="housing-chart-axes">가로0–{last}개월 · 세로 월말 원금0–1억원. <span className="fixed-key">파랑 실선: 고정</span> · <span className="reset-key">보라 점선: 가상 재산정</span></p>

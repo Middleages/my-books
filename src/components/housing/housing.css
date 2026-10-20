@@ -20,3 +20,5 @@
 .housing-running-current{border-left:4px solid #20796c;background:#edf5f0;padding:12px;margin:8px 0 20px}
 
 .housing-own-funding{display:flex;flex-direction:column;align-items:flex-start;gap:6px;border-left:3px solid #20796c;padding:12px;margin:12px 0;background:#f0f7f3}.housing-own-funding b{font-size:1.6rem}
+
+.housing-path-settings{margin:14px 0;padding:10px 0;border-top:1px solid #bfcec5;border-bottom:1px solid #bfcec5}.housing-path-settings summary{cursor:pointer;font-weight:600}.housing-path-settings>label{display:block;margin:12px 0}.housing-path-settings>label select{display:block;margin-top:8px}

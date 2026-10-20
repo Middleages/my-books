@@ -273,8 +273,9 @@ async function playback(page) {
   if (await reset.count()) await reset.click();
   else await lab.getByRole("button", { name: "처음부터", exact: true }).click();
   await delay(1800);
-  assert.match(await lab.locator(".money-playback").innerText(), /0\s*\//);
-  return { pauseReset: true };
+  const initial = await lab.getAttribute("data-housing-lab") === "mortgage-paths" ? 13 : 0;
+  assert.match(await lab.locator(".money-playback").innerText(), new RegExp(`\\b${initial}\\s*\\/`));
+  return { pauseReset: true, initial };
 }
 async function scenarios(page, id) {
   const lab = page.locator('.housing-lab').first();
@@ -451,6 +452,10 @@ async function scenarios(page, id) {
     assert(scene.y-(control.y+control.height)<100,'monthly controls detached from cash boundary');
   }
   if(id === 'mortgage-paths') {
+    assert.equal(await lab.locator('[data-path-month]').getAttribute('data-path-month'),'13','first scene shows the rate boundary');
+    assert.deepEqual(await lab.locator('[data-part-value]').evaluateAll(es=>es.map(e=>+e.dataset.partValue)),(()=>{const r=model.mortgagePaths();const a=r.paths.fixed.rows[13],b=r.paths.reset.rows[13];return [a.regularPrincipal,a.interest,b.regularPrincipal,b.interest]})());
+    assert.equal(await lab.locator('.housing-path-settings').evaluate(e=>e.open),false,'detailed inputs do not precede the explanation');
+    await lab.locator('.housing-path-settings summary').click();
     const near=await lab.locator('.money-playback').boundingBox(),chart=await lab.locator('.housing-debt-chart').boundingBox();
     assert(chart.y-(near.y+near.height)<250,'mortgage playback detached from changing time plot');
     assert.equal(await lab.locator('.money-playback').count(),1);
