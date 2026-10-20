@@ -21,3 +21,10 @@ Grafana Loki cardinality, OpenTelemetry traces/context propagation을2026-10-20 
 새 원본1440-traces-parallel,320-traces-missing,390-traces-propagation,1440-labels-request,1440-signals-initial,1440-signals-complete를 직접 열어 핵심 영역을 확인했다. trace 축과 모든 track의 시작·폭이 일치하고 병렬 시작30ms와 부모200ms를 같은 축으로 읽을 수 있다. 모바일 미관측은 길이0으로 표시하지 않고, 별도trace는 색과T-B 라벨로 구별된다. 같은12사건의6→12구획 분할이 유지된다. A signals의100/900ms 막대도 기존 배치로 유지되어 C CSS 영향이 제거됐다. 첫 실패 캡처는 최종 통과 증거로 사용하지 않았다.
 
 이 마감은 B 의존 소스의 production 게이트이며 최신 main 통합 및 실제 Pages 게시 검증과는 별개다. 실제 수집 스택 실습은 미실행이다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `358c59bb17f121889afe66fcf06f6bfad770b666` / tree `c2a9066158300ea67b72f85b65179f46ec0a5f43`, [run 39414373357](https://github.com/Middleages/my-books/actions/runs/39414373357)의 전체 1259 단위·build, 선택 6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **27/27 검사·102원본 PNG**, 앱 오류 0이다. 정확한 host-root favicon 404 한 건만 별도 진단으로 보존했다. artifact 12261081827 ZIP SHA256 `5b021233b93d3d37ec27d78b7d139f8cb9691f25e73f8af55ede83fca4de9183` 일치. 실제 JS/CSS 전체 바이트·해시는 [합본 게시 기록](FOLLOWUP-SECOND-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 게시 원본: `1440-traces-parallel.png, 320-traces-missing.png, 390-traces-propagation.png`. 작성자가 세 원본의 핵심 도식을 직접 열었고 모바일은 원본 픽셀 y1800–3600 구간도 분할 확인했다. 공통 0–300ms 축, 병렬 200≠250, 미관측≠0과 별도 T-B 루트가 명확하며 선택 범위에서 잘림·겹침·색 의미 회귀가 없다. 검토한 범위에 새 의미·잘림·겹침 차단점을 찾지 못했다. 모든 102개를 사람이 읽었거나 실기기·스크린리더·실제 금융/시스템/임상 검증을 했다는 의미는 아니다. 앞선 미게시 상태는 작성 당시 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.

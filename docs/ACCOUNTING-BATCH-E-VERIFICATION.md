@@ -119,3 +119,10 @@
 직접 확인 결과: 전액 회수의 채권 조정은 음수0이 아닌0, 회수0 해설은 영업−310·현금65, 전액 회수는90·465, 서비스 전액 지급은−170·205, 상각48개월은 상각5·이익70으로 현재 조건과 일치했다. 정본 영업이익 출발에는 지급이자+5를 또 더하지 않는다. 같은 시점의 자산/부채+자본 길이, 손익·자본·현금 다리의 방향과 끝점, T12 선택 강조, 기간 혼합의 합계 숨김,320px 세로 재배치·포커스·정적 목록을 읽을 수 있었다. 추가 결함은 발견하지 않았다.
 
 **현재 남은 범위:** 최신 main 합본의 실행 검증, Pages와 exact-live, 마지막 F를 포함한 넓은 전체 교재 회귀다. 전용 production 성공은 실제 공개 사이트의 최종 성공을 대신하지 않는다. 실기기·Safari/Firefox·음성 스크린리더·학습효과는 여전히 미실행이다.
+
+
+## 최신 여덟 배치 합본 production 확인 — 2026-10-20
+
+[PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **332/332 검사·297원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12261467604 ZIP SHA256 `be04c1d23bfb74272a9d9a2137c7ccc6b9ae640ce304152df1b4eedfa7d2bc0c` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
+
+직접 연 새 원본: `320-profit-cash-no-collection-profit-final.png, 1440-profit-cash-full-collection-profit-final.png, 320-statements-base-position.png, 1440-statements-period-mismatch.png`. 통합 담당자가 네 원본 전체를 직접 열었다. 회수0의 영업−310/기말65, 회수400의 영업90/기말465, 0 조정의 0 길이, 1200 공통 눈금의 기초500/기말795 및795=390+405, M1과 일부 M2를 합산하지 않는 기간 경계를 확인했다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 297개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.

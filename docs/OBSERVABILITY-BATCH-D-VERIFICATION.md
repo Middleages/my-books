@@ -19,3 +19,10 @@
 최종 원본1440-instrumentation-manual,320-instrumentation-propagation,1440-delivery-ack-pending,320-delivery-ack-retry,390-sampling-tail-complete,1440-traces-parallel을 직접 열어 핵심 영역을 확인했다. 업무1회와 기록2/3개, 브라우저·서버 경계, 저장됨/ACK 유실 동시 상태, 고유3·복사본6·시도6, 전체20%/표본66.7%가 구별된다. 모바일 제어가 표본 및 전달 실험 가까이에 있고 화살표 방향·현재 전송 상태가 일치한다. 기존 C 공통 시간축도 유지됐다.
 
 이 마감은 C 선행 소스의 production 게이트다. 최신 main 통합·실제 Pages 게이트는 별도이며, 실제 스택 계측·장애 실습은 미실행이다.
+
+
+## 최신 여덟 배치 합본 production 확인 — 2026-10-20
+
+[PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **34/34 검사·144원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12260763269 ZIP SHA256 `5c9a2e057b31a5483b1e79ed1782fd24fbce68de513ecfa4e623933dfd9cb248` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
+
+직접 연 새 원본: `1440-delivery-ack-pending.png, 320-delivery-ack-retry.png, 390-instrumentation-duplicate.png`. 작성자가 세 원본의 핵심 영역을 직접 열었다. 저장3과pending3 동시 존재, 재전송6기록≠3고유사건, 실제요청1≠span3 및 모바일 ACK 역방향을 확인했다. 모바일은 원본 y1800–3600 범위도 분할해 읽었다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 144개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.

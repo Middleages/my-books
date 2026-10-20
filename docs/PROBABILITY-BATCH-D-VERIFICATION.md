@@ -68,3 +68,10 @@ PR61/head360313255a890ce275a75bb5174889ca87be77c0/tree730d5c1d, CI39405858949의
 보강본에서 새로 직접 연 원본은 `320-dependence-static.png`, `320-dependence-static-end.png`, `390-dependence-static.png`, `390-dependence-static-end.png`, `1440-dependence-static.png`의5개다. 긴 결과명과 확률 열이 겹치지 않고, 키보드/가로 이동 안내와 오른쪽 기말800/900/900/1,000 열이 읽힌다. 좁은 화면에서 긴 표 전체를 한 화면에 축소하지 않으며 좌우로 읽는 대안이다. 이전179개 중175개는 바이트가 같아 기존 검토를 보존할 수 있지만 새로 열었다고 세지 않는다. 모든182개 또는 모든 정적 가로 위치를 사람이 확인한 것은 아니다.
 
 D source 검증·직접 원본 게이트는 완료했다. main/Pages/실제 게시와 실기기·Safari/Firefox·스크린리더 음성·학습효과는 아직 미검증이며 지정된 직렬 통합에서 C 게시 후 이어 간다. E는 별도 작업이고 이 D source에 포함하지 않았다.
+
+
+## 최신 여덟 배치 합본 production 확인 — 2026-10-20
+
+[PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **533/533 검사·182원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12261917628 ZIP SHA256 `dfb2c321032ac70922229bf76b892d5ea01daf44394e9bb9c2d20613b17ce43b` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
+
+직접 연 새 원본: `320-dependence-static.png, 390-dependence-static.png, 320-dependence-static-end.png, 390-dependence-static-end.png, 320-dependence-losses.png, 320-dependence-mass20.png, 320-association-standardized.png`. 작성자가 일곱 원본을 직접 열었다. 정적표 양 끝의 열 간격, 동일 금액/확률 축, 손실150 비교선과 현금 청구의 구별, 재가중130/120과 원래100/150 보존을 확인했다. 공동 손실·재가중 비교이지 효용 모형이 아니다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 182개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.
