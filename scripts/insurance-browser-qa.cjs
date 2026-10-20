@@ -117,6 +117,17 @@ function sourceAudit() {
   });
   return { chapters: insuranceChapters, checked };
 }
+async function closeTables(lab) {
+  // Keep the locator membership stable while clicks change the open attribute.
+  // A locator filtered by [open] would reindex later nth() matches after a click.
+  const summaries = lab.locator('.insurance-static > summary');
+  for (let i = 0; i < await summaries.count(); i++) {
+    const summary = summaries.nth(i);
+    if (await summary.evaluate(element => element.parentElement.open)) await summary.click();
+  }
+  assert.equal(await lab.locator('.insurance-static[open]').count(), 0, 'Scenario setup must close every static table');
+}
+
 async function openTables(page, lab) {
   const summaries = lab.locator('details > summary');
   assert(await summaries.count() > 0, 'Static alternative is missing');
@@ -1677,7 +1688,7 @@ async function conditionChecks(page, lab, name) {
     const day = lab.getByRole('slider', { name: '관찰할 날짜', exact: true });
     const run = async (label, options = {}, captureDays = []) => {
       const model = projectClaims(options);
-      for (const summary of await lab.locator('.insurance-static[open] > summary').all()) await summary.click();
+      await closeTables(lab);
       await verify(label, model, outcome(model), async (frame, current) => {
         await inspect(frame, current);
         if (captureDays.includes(frame.day)) await capture(page, `${name}-${label}-day-${frame.day}`, lab);
@@ -1751,7 +1762,7 @@ async function conditionChecks(page, lab, name) {
     };
     const run = async (label, options = {}, captureResult = false, captureFrames = []) => {
       const model = projectReading(options);
-      for (const summary of await lab.locator('.insurance-static[open] > summary').all()) await summary.click();
+      await closeTables(lab);
       await verify(label, model, outcome(model), async (frame, current) => {
         await inspect(frame, current);
         if (captureFrames.includes(frame.index)) await capture(page, `${name}-${label}-${frame.phase}`, lab);

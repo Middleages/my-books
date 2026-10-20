@@ -1,6 +1,6 @@
 # 데이터베이스 배치 A — 구현·검증 기록
 
-기록일: 2026-10-20 (KST). **소개·01–02 구현. 단위 테스트·빌드 통과. 실제 브라우저 검증·PNG 직접 검토·main 반영·Pages 게시 대기.** 이 상태를 완료·배포 성공으로 읽지 않는다.
+기록일: 2026-10-20 (KST). **소개·01–02 구현. 단위 테스트·빌드, DB production browser 124개, 실제 PNG 직접·교차 검토 통과. 기존 교재 verifier 보정의 통합·matrix 최종 결과·main 반영·Pages 게시 대기.** 이 상태를 완료·배포 성공으로 읽지 않는다.
 
 ## 범위와 기준
 
@@ -36,9 +36,9 @@
 - `node --check scripts/database-browser-qa.cjs`, `git diff --check`: 통과.
 - 공식 문서 재확인: PostgreSQL 18 Architectural Fundamentals, Transactions/Transaction Isolation, Constraints. 본문에 정확한 링크와 2026-10-20 확인일을 표시했다. 이는 실제 서버 버전 관측이 아니다.
 
-## 실제 브라우저 검증의 현재 상태
+## 로컬 브라우저 실행의 최초 차단 기록
 
-클라우드 작업 환경의 로컬 Chromium은 프로세스 socket 권한 때문에 시작에 실패했다. 승인 실행도 환경 시작 오류로 실행되지 않았다. **성공한 브라우저 검사 0개·캡처 0개인 실패를 통과로 세지 않는다.** 해당 실패 결과는 작업 산출물의 실패 보고서로만 남기고 저장소에는 올리지 않는다.
+클라우드 작업 환경의 로컬 Chromium은 프로세스 socket 권한 때문에 시작에 실패했다. 승인 실행도 환경 시작 오류로 실행되지 않았다. **이 로컬 시도는 성공한 브라우저 검사 0개·캡처 0개이며 실패를 통과로 세지 않는다.** 해당 실패 결과는 작업 산출물의 실패 보고서로만 남기고 저장소에는 올리지 않는다.
 
 대체 경로는 GitHub Actions의 동일 production artifact를 사용하는 기존 검증 행렬이다. `database-browser-qa.cjs`는 1440/390/320px, 모든 파일 모드/선행 앱의 모든 프레임, 관계 변경, 모든 제약 시나리오/NOT NULL 조합, 정지·다시 보기·설정 변경·장 이동, 키보드, 읽음 기록·알 수 없는 ID, 가로 넘침·MDX·실행 오류, 실제 게시 자산 SHA256 대조를 검증하도록 작성했다. **스크립트가 존재하는 것만으로 실행 결과를 주장하지 않는다.** 생성된 실제 PNG를 열어 의미·선 끝점·라벨·조작부와 변화의 근접성도 별도로 검토한다.
 
@@ -47,13 +47,13 @@
 ## 미실행·다음 게이트
 
 - 실제 PostgreSQL 설치·연결·SQL·두 세션·백업/복원: 미실행. 브라우저 모델과 혼동하지 않는다.
-- production browser 결과, PNG 직접 검토, 실제 Pages 게시: 대기.
+- DB production browser와 PNG 직접·교차 검토: 아래 보강판 증거에서 완료. 기존 교재 matrix 최종 결과·최신 main 통합·실제 Pages 게시: 대기.
 - 실제 터치 기기·Safari·스크린리더: 미검증.
 - A 게이트가 열린 상태에서는 B의 본문·카탈로그 등록을 시작하지 않는다. 이후 03 조회와 JOIN, 04 인덱스와 비용을 계획에 맞춰 진행한다.
 
 ## 후속 실행 증거
 
-정확한 branch commit·Actions run·검사 결과·artifact·직접 본 PNG와 수정 사항은 결과가 확인된 뒤 이 절에 추가한다. 이 문서가 담길 미래 commit을 미리 만들어 적지 않는다.
+아래는 실제 확인한 branch commit·Actions run·검사 결과·artifact·직접 본 PNG와 수정 사항이다. 이 문서가 담길 미래 commit을 미리 만들어 적지 않는다.
 
 
 ### 첫 production 실행과 직접 화면 검토
@@ -65,3 +65,19 @@
 파일의 사본/공유 값/확정 주문과 NULL 후보의 저장 경계 이동은 분명했다. 그러나 **모바일 관계도의 FK 레일이 한쪽에서 겹쳐 항목→주문의 소속을 찾기 어려웠다.** 모델에 모든 FK가 있고 기능 검사에 통과해도 설명력 게이트를 닫지 않았다. 외래키 종류를 선택해 한 관계씩 펼치고, 좁은 화면의 고객·주문 FK는 왼쪽, 상품 FK는 오른쪽으로 분리한다. 주문 FK는 점선·별도 색과 범례를 함께 사용하며 항목 헤더에 주문과 상품 FK를 모두 표기한다. 두 이름 실험의 조건도 동시에 모순된 표시가 되지 않게 하나씩 선택한다.
 
 보강한 QA는 고객 1/2/3 × FK 세 종류/전체를 모든 폭에서 순회하며 실제 선의 id·양 끝 row key·열 이름을 fixture와 대조한다. SVG 선 시작/끝의 실제 좌표가 해당 행 경계·수직 중앙에 붙는지도 측정한다. 이 보강판의 새 PNG를 보기 전까지 시각 합격은 대기다.
+
+
+### 보강판 DB browser와 시각 게이트
+
+[run39356353679](https://github.com/Middleages/my-books/actions/runs/39356353679), head `b77eddf6da4ca9bdf9f0a2224204efb0c36b4961` / PR merge `43e1118c22205c16beeb5dd8d53b529a2a54701d`의 DB production job은 **124/124 통과**, page/console/resource 오류 0, PNG 42개였다. 새 FK 종류별 36검사를 포함한다. [artifact12235097162](https://github.com/Middleages/my-books/actions/runs/39356353679/artifacts/12235097162) ZIP SHA256 `b8ed16f24a57f8226ee1c637eaac441ba7b450dc16a59a1dd765dd4a9ca16ddf`를 내려받은 파일과 대조했다.
+
+보강판에서 직접 본 파일은 `320-key-order.png`, `390-key-all.png`, `1440-key-order.png`, `320-key-product.png`, `1440--database.png`, `390--database-files-and-database.png`, `320--database-tables-and-constraints.png`, `320-constraints-empty-order-true.png`다. 긴 전체 페이지는 내용 배치 확인에, 실험별 캡처는 라벨·행·선·후보의 경계 확인에 사용했다. 320px 주문 FK와 390px 전체 FK는 별도 교차 검토에서도 **출발/도착의 소속이 보이고 선 종류가 분리되며 잘림이 없음**을 확인해 해당 모바일 수정 게이트를 통과했다. 파일 경쟁과 NULL 후보 이동의 앞선 승인도 유지한다.
+
+이 결과는 PR production 증거다. 보험·투자 suite의 최종 결과, 세금/권차 등 최신 main과의 통합, 공개 Pages 자산 일치·실제 장 URL 검증은 아직 별도 게이트다. 미검증 브라우저나 실제 DB 실행까지 확대해 해석하지 않는다.
+
+
+### 기존 보험 검증기 보정의 보존 통합
+
+보강판 PR run의 build·DB·투자 job은 성공했다. 다만 그 snapshot의 보험 검증기는 기존 main `246167308c050d797d00501fb057e2ea61de51b4`에서 이어받은 구판이었다. 보험 E 검증 중 발견된 `[open]` 조건 locator의 클릭 뒤 인덱스 변동 문제는 main `a514d0cb749d766ce19f414f92dedd90fd02bd82`에서 고쳤다. 해당 commit의 검증 스크립트·회귀 테스트·보험 E 기록만 보존 통합했다. 이는 DB 화면의 실패나 DB 모델 수정이 아니며, 보험 검사 범위를 줄이지 않는다. 새 PR snapshot의 전체 matrix 결과는 실행 후 따로 기록한다.
+
+통합 후 전체 `npm test`는 813/813, TypeScript/Vite build는 304 modules로 통과했다. 보정 전후 `dist/assets/index-C01XwLQm.css`와 `index-OpnEYXtt.js`의 SHA256을 대조해 모두 동일함을 확인했다. 앱 자산은 바뀌지 않았으므로 앞서 직접 검토한 DB 그림의 증거는 유지하며, 새 전체 matrix 실행을 대신하지는 않는다.
