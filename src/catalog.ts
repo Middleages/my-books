@@ -1,3 +1,5 @@
+import OAuthDelegation from "./content/authentication/OAuthDelegation.mdx";
+import OidcCodeFlow from "./content/authentication/OidcCodeFlow.mdx";
 import BrowserBoundaries from "./content/authentication/BrowserBoundaries.mdx";
 import TokensAndJwt from "./content/authentication/TokensAndJwt.mdx";
 import AuthenticationIntro from "./content/authentication/Intro.mdx";
@@ -133,6 +135,8 @@ export const chapters: Chapter[] = [
   { id: "cookies-and-sessions", bookId: "authentication", readId: "authentication/cookies-and-sessions", number: "02", title: "브라우저와 서버가 기억하는 것", heading: "새 요청에서도 서버는 나를 어떻게 알아볼까요?", description: "쿠키 전송과 서버 세션 기록·수명을 따로 관찰합니다.", Content: CookiesAndSessions },
   { id: "browser-boundaries", bookId: "authentication", readId: "authentication/browser-boundaries", number: "03", title: "브라우저의 경계 읽기", heading: "보냈는데 응답을 못 읽을 수 있을까요?", description: "origin·site·쿠키 범위와 세 결과를 분리합니다.", Content: BrowserBoundaries },
   { id: "tokens-and-jwt", bookId: "authentication", readId: "authentication/tokens-and-jwt", number: "04", title: "토큰의 내용과 신뢰", heading: "JWT 내용을 읽으면 믿어도 될까요?", description: "읽기와 서명·대상·시간·용도 검증을 구별합니다.", Content: TokensAndJwt },
+  { id: "oauth-delegation", bookId: "authentication", readId: "authentication/oauth-delegation", number: "05", title: "앱에 권한 맡기기", heading: "OAuth 토큰이 있으면 로그인도 끝일까요?", description: "소유자·클라이언트·발급 서버·자원 서버와 위임 범위를 나눕니다.", Content: OAuthDelegation },
+  { id: "oidc-code-flow", bookId: "authentication", readId: "authentication/oidc-code-flow", number: "06", title: "로그인 왕복 따라가기", heading: "code가 돌아오면 바로 믿어도 될까요?", description: "브라우저 경로·서버 교환·ID Token 검증·앱 세션을 연결합니다.", Content: OidcCodeFlow },
   { id: "signals", bookId: "observability", readId: "observability/signals", number: "01", title: "서비스에 무슨 일이 일어났을까?", heading: "세 신호는 무엇을 다르게 남길까?", description: "사건·집계·요청별 시간을 같은 원본에서 비교합니다.", Content: Signals },
   { id: "pipeline", bookId: "observability", readId: "observability/pipeline", number: "02", title: "수집·저장·조회는 다른 일", heading: "받았는데 왜 화면에 안 보일까?", description: "Alloy와 신호별 저장소·Grafana의 경계를 연결합니다.", Content: Pipeline },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
