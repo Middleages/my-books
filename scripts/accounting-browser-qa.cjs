@@ -10,9 +10,10 @@ const catalog=fs.readFileSync(path.join(root,'src/catalog.ts'),'utf8');
 const chapters=[...catalog.matchAll(/id:\s*"([^"]+)"\s*,\s*bookId:\s*"accounting"\s*,\s*readId:\s*"([^"]+)"\s*,\s*number:\s*"([^"]+)"[^}]*?heading:\s*"([^"]+)"/g)].map(m=>({id:m[1],readId:m[2],number:m[3],heading:m[4]}));
 const routes=['/accounting',...chapters.map(c=>`/accounting/${c.id}`)];
 let browser,server,base;
+function checkpoint(){fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({...report,passed:report.checks.filter(c=>c.status==='passed').length,failed:report.checks.filter(c=>c.status==='failed').length},null,2));}
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-async function check(name,fn){try{const details=await fn();report.checks.push({name,status:'passed',details});console.log('PASS',name);}catch(error){report.checks.push({name,status:'failed',error:String(error.stack||error)});console.error('FAIL',name,error.message);}}
-async function snap(page,name,locator){await page.evaluate(()=>document.fonts.ready);const file=name+'.png';if(locator)await locator.screenshot({path:path.join(out,file),animations:'disabled'});else await page.screenshot({path:path.join(out,file),fullPage:true,animations:'disabled'});report.screenshots.push(file);}
+async function check(name,fn){try{const details=await fn();report.checks.push({name,status:'passed',details});console.log('PASS',name);}catch(error){report.checks.push({name,status:'failed',error:String(error.stack||error)});console.error('FAIL',name,error.message);if(error.name==='TimeoutError'){report.stoppedAfterTimeout=name;report.unexecutedChecks='Remaining checks were not run; this attempt is incomplete and failed.';throw error;}}finally{checkpoint();}}
+async function snap(page,name,locator){await page.evaluate(()=>document.fonts.ready);const file=name+'.png';if(locator)await locator.screenshot({path:path.join(out,file),animations:'disabled'});else await page.screenshot({path:path.join(out,file),fullPage:true,animations:'disabled'});report.screenshots.push(file);checkpoint();}
 async function visit(page,route){await page.goto(base+'#'+route,{waitUntil:'networkidle'});if(route==='/')await page.locator('#home-books').waitFor();else await page.getByRole('heading',{level:1,name:chapters.find(c=>route===`/accounting/${c.id}`)?.heading||'회계와 기업의 돈',exact:true}).waitFor();}
 function observe(page,width){
  page.on('pageerror',error=>report.pageErrors.push({width,page:page.url(),error:String(error),stack:error.stack}));
@@ -57,7 +58,7 @@ async function assertDouble(lab,f,model){
  report.base=base;
  browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
  for(const width of [1440,390,320]){
-  const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'}),page=await context.newPage();observe(page,width);
+  const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'}),page=await context.newPage();page.setDefaultTimeout(8000);page.setDefaultNavigationTimeout(30000);observe(page,width);
   for(const route of routes)await check(`${width} render ${route}`,async()=>{await visit(page,route);const result=await audit(page);await snap(page,`${width}-${route.replaceAll('/','-')}`);return result;});
   await visit(page,'/accounting/company-boundary');const boundary=page.locator('[data-ac-lab=boundary]');
   await check(`${width} no autoplay and one responsive scene`,async()=>{assert.equal(await boundary.locator('svg:visible').count(),1);const initial=await boundary.locator('.ac-step').innerText();await page.waitForTimeout(1750);assert.equal(await boundary.locator('.ac-step').innerText(),initial);assert.equal(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),true);});
@@ -85,8 +86,8 @@ async function assertDouble(lab,f,model){
   });
   await context.close();
  }
- for(const width of [768,900]){const context=await browser.newContext({viewport:{width,height:900}}),page=await context.newPage();observe(page,width);for(const route of routes)await check(`${width} intermediate width ${route}`,async()=>{await visit(page,route);return audit(page);});await context.close();}
- const motionContext=await browser.newContext({viewport:{width:390,height:900},reducedMotion:'no-preference'}),motionPage=await motionContext.newPage();observe(motionPage,'390-normal-motion');
+ for(const width of [768,900]){const context=await browser.newContext({viewport:{width,height:900}}),page=await context.newPage();page.setDefaultTimeout(8000);page.setDefaultNavigationTimeout(30000);observe(page,width);for(const route of routes)await check(`${width} intermediate width ${route}`,async()=>{await visit(page,route);return audit(page);});await context.close();}
+ const motionContext=await browser.newContext({viewport:{width:390,height:900},reducedMotion:'no-preference'}),motionPage=await motionContext.newPage();motionPage.setDefaultTimeout(8000);motionPage.setDefaultNavigationTimeout(30000);observe(motionPage,'390-normal-motion');
  await check('normal-motion explicit playback, stop and deterministic replay',async()=>{
   await visit(motionPage,'/accounting/double-entry');const lab=motionPage.locator('[data-ac-lab=double-entry]');assert.equal(await motionPage.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),false);
   await motionPage.waitForTimeout(1750);await assertDouble(lab,model.doubleEntryFrames()[0],model);await lab.getByRole('button',{name:'재생',exact:true}).click();await motionPage.waitForFunction(()=>document.querySelector('[data-ac-lab=double-entry] .ac-step').textContent==='2 / 4단계');await lab.getByRole('button',{name:'정지',exact:true}).click();await motionPage.waitForTimeout(1750);await assertDouble(lab,model.doubleEntryFrames()[1],model);await lab.getByRole('button',{name:'다시 보기',exact:true}).click();await assertDouble(lab,model.doubleEntryFrames()[0],model);await snap(motionPage,'390-normal-motion-double-entry',lab);await audit(motionPage);
