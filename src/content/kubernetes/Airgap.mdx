@@ -99,6 +99,8 @@ DNS는 호스트와 Pod 안 양쪽에서 확인합니다. 시간은 NTP/내부 �
 
 확인일 **2026-10-18**. [K3s 폐쇄망 설치](https://docs.k3s.io/installation/airgap), [registry mirror·CA·fallback](https://docs.k3s.io/installation/private-registry), [프록시·NO_PROXY](https://docs.k3s.io/advanced#configuring-an-http-proxy), [DNS·시간·호스트 요구사항](https://docs.k3s.io/installation/requirements), [ServiceLB·Traefik](https://docs.k3s.io/networking/networking-services). 실제 사내망·registry·프록시·인증서·운영 서버는 변경하거나 연결하지 않았습니다.
 
+2026-10-20 시각 관계 재확인: [NGINX의 upstream TLS 검증](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/). 외부 TLS 종료와 NGINX가 만드는 내부 연결의 검증 주체를 지도에서 분리했습니다.
+
 [환경과 첫 배포](#/kubernetes/lab-first-deployment) · [운영과 복구](#/kubernetes/lab-recovery)
 
 </section>

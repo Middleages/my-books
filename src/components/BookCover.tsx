@@ -12,7 +12,22 @@ export function BookCover({ bookId }: { bookId: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {bookId === "tax" ? (
+      {bookId === "housing" ? (
+        <>
+          <path d="M22 57 74 19l52 38M34 48v58h80V48M64 106V77h21v29M45 59h13v13H45zM91 59h13v13H91z" fill="currentColor" fillOpacity=".06" />
+          <path d="M160 20h70l17 18v65h-87ZM230 20v18h17M174 51h55M174 66h40M174 81h26" />
+          <circle cx="136" cy="90" r="11" /><path d="M131 90h10M136 85v10" />
+          <path className="home-art-signal" d="M120 46h30m-5-5 5 5-5 5M150 65h-30m5-5-5 5 5 5" />
+        </>
+      ) : bookId === "database" ? (
+        <>
+          <ellipse cx="177" cy="32" rx="55" ry="16" fill="currentColor" fillOpacity=".14" />
+          <path d="M122 32v58c0 22 110 22 110 0V32M122 60c0 22 110 22 110 0" />
+          <path d="M30 26h56v66H30zM30 43h56M47 26v66M30 60h56M30 77h56" fill="currentColor" fillOpacity=".05" />
+          <path className="home-art-signal" d="M86 52h26m-7-6 7 6-7 6M232 72h22v23h-12" />
+          <circle cx="242" cy="95" r="5" fill="currentColor" fillOpacity=".2" />
+        </>
+      ) : bookId === "tax" ? (
         <>
           <path d="M91 15h88l20 20v72H91Z" fill="currentColor" fillOpacity=".06" />
           <path d="M179 15v20h20M107 46h54M107 61h34M107 76h54M107 91h22" />

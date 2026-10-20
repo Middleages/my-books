@@ -17,10 +17,12 @@ fs.mkdirSync(out, { recursive: true });
 const source = fs.readFileSync(path.join(root, 'src/catalog.ts'), 'utf8');
 const books = [...source.split('export const books:')[1].matchAll(/\bid:\s*"([^"]+)"\s*,\s*categoryId:\s*"([^"]+)"\s*,\s*volume:\s*(\d+)/g)]
   .map(match => ({ id: match[1], category: match[2], volume: Number(match[3]) }));
+const chapters = [...source.matchAll(/\bid:\s*"([^"]+)"\s*,\s*bookId:\s*"([^"]+)"\s*,\s*readId:\s*"([^"]+)"/g)]
+  .map(match => ({ id: match[1], book: match[2], readId: match[3], href: `#/${match[2]}/${match[1]}` }));
 const categories = Object.fromEntries([...source.split('export const bookCategories =')[1].split('] as const')[0].matchAll(/id:\s*"([^"]+)", label:\s*"([^"]+)"/g)].map(match => [match[1], match[2]]));
 const label = book => `${categories[book.category]} ${book.volume}권`;
 const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
-const results = { started: new Date().toISOString(), sourceSha: git('rev-parse', 'HEAD'), sourceChanges: git('status', '--porcelain'), mode: process.env.LIVE_URL ? 'published' : 'local-dist', checks: [], screenshots: [], errors: [] };
+const results = { started: new Date().toISOString(), sourceSha: git('rev-parse', 'HEAD'), sourceTree: git('rev-parse', 'HEAD^{tree}'), workflowSha: process.env.GITHUB_SHA || null, sourceChanges: git('status', '--porcelain'), mode: process.env.LIVE_URL ? 'published' : 'local-dist', checks: [], screenshots: [], errors: [] };
 let browser, server, base;
 async function check(name, run) {
   const details = await run();
@@ -28,7 +30,7 @@ async function check(name, run) {
   console.log(`PASSED ${name}`);
 }
 async function visit(page, route = '/') {
-  await page.goto(`${base}#${route}`, { waitUntil: 'networkidle' });
+  await page.goto(`${base}${process.env.LIVE_URL ? `?qa=${Date.now()}` : ''}#${route}`, { waitUntil: 'networkidle' });
   await page.locator('main h1').waitFor();
 }
 async function screenshot(page, name, locator) {
@@ -49,7 +51,7 @@ async function tabTo(page, locator) {
 }
 async function geometry(page) {
   const value = await page.evaluate(() => {
-    const nodes = [...document.querySelectorAll('.home-book-volume,.home-badge,.book-volume,.book-heading-meta')];
+    const nodes = [...document.querySelectorAll('.home-book,.home-cover,.home-book-volume,.home-badge,.book-volume,.book-heading-meta,.chapter-list > a')];
     return { width: innerWidth, scrollWidth: document.documentElement.scrollWidth, labels: nodes.map(element => {
       const rect = element.getBoundingClientRect(), style = getComputedStyle(element);
       return { text: element.textContent, x: rect.x, right: rect.right, width: rect.width, height: rect.height, font: style.fontSize, display: style.display, visibility: style.visibility, clipped: element.scrollWidth > element.clientWidth + 1 && style.overflow !== 'visible' };
@@ -82,19 +84,29 @@ async function geometry(page) {
     results.browser = browser.version();
     await check('served-production-assets-match-dist', async () => {
       const context = await browser.newContext();
-      const html = await context.request.get(base);
-      assert(html.ok());
-      const served = await html.text();
       const local = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
       const names = text => [...text.matchAll(/(?:src|href)="[^"\n]*assets\/([^"\n]+)"/g)].map(match => match[1]).sort();
-      assert.deepEqual(names(served), names(local));
+      const expected = names(local);
+      assert(expected.some(name => name.endsWith('.js')) && expected.some(name => name.endsWith('.css')), 'Exact build must contain JS and CSS');
+      let html, actual;
+      const deadline = Date.now() + (process.env.LIVE_URL ? 180000 : 0);
+      do {
+        html = await context.request.get(`${base}?qa=${Date.now()}`);
+        actual = names(await html.text());
+        if (html.ok() && JSON.stringify(actual) === JSON.stringify(expected)) break;
+        if (Date.now() >= deadline) break;
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      } while (Date.now() < deadline);
+      assert(html.ok());
+      assert.deepEqual(actual, expected);
       const assets = [];
-      for (const name of names(local)) {
-        const response = await context.request.get(`${base}assets/${name}`);
+      for (const name of fs.readdirSync(path.join(dist, 'assets')).filter(name => /\.(js|css)$/.test(name)).sort()) {
+        const response = await context.request.get(`${base}assets/${name}?qa=${Date.now()}`);
         assert(response.ok());
         const data = await response.body();
-        assert.deepEqual(data, fs.readFileSync(path.join(dist, 'assets', name)));
-        assets.push({ name, sha256: createHash('sha256').update(data).digest('hex') });
+        const built = fs.readFileSync(path.join(dist, 'assets', name));
+        assert.deepEqual(data, built);
+        assets.push({ name, bytes: data.length, sha256: createHash('sha256').update(data).digest('hex'), localSha256: createHash('sha256').update(built).digest('hex') });
       }
       await context.close(); return assets;
     });
@@ -103,15 +115,20 @@ async function geometry(page) {
       const page = await context.newPage();
       page.on('pageerror', error => results.errors.push(String(error)));
       page.on('console', message => { if (message.type() === 'error' && !message.location().url.endsWith('/favicon.ico')) results.errors.push(message.text()); });
+      page.on('requestfailed', request => { if (!/\/favicon\.ico(?:\?|$)/.test(request.url())) results.errors.push(`${request.url()}: ${request.failure()?.errorText}`); });
       await check(`${width}-home-labels-and-unchanged-catalog-order`, async () => {
         await visit(page);
         assert.deepEqual(await page.locator('.home-book').evaluateAll(cards => cards.map(card => card.getAttribute('href').slice(2))), books.map(book => book.id));
         assert.deepEqual(await page.locator('.home-book-volume').allTextContents(), books.map(label));
         assert.equal(await page.locator('.home-cover .home-book-volume').count(), 0);
+        assert.equal(await page.locator('main h1').count(), 1);
+        assert.equal(await page.locator('.home-cover svg').count(), books.length, 'Every published book needs a cover');
         assert.equal(await page.locator('.home-order-note').innerText(), '권차는 분야별 권장 학습 순서예요.');
         for (const book of books) {
           const card = page.locator(`.home-book[href="#/${book.id}"]`);
           assert((await card.ariaSnapshot()).includes(label(book)), 'Volume must be in the accessible link name');
+          const progress = await card.locator('progress').evaluate(element => ({ max: element.max, value: element.value }));
+          assert.deepEqual(progress, { max: chapters.filter(chapter => chapter.book === book.id).length, value: 0 }, 'Home progress must count the exact published chapters');
         }
         await screenshot(page, `${width}-home`);
         return geometry(page);
@@ -132,6 +149,12 @@ async function geometry(page) {
           await visit(page, `/${book.id}`);
           assert.equal(await page.locator('.book-volume').innerText(), label(book));
           assert((await page.locator('main').ariaSnapshot()).includes(label(book)));
+          assert.equal(await page.locator('main h1').count(), 1);
+          const links = chapters.filter(chapter => chapter.book === book.id).map(chapter => chapter.href);
+          assert.deepEqual(await page.locator('.chapter-list > a').evaluateAll(elements => elements.map(element => element.getAttribute('href'))), links, 'Overview links must preserve the exact published catalog order');
+          const sidebar = await page.locator('nav[aria-label="챕터 목차"] > a').evaluateAll(elements => elements.map(element => element.getAttribute('href')));
+          assert.deepEqual(sidebar.slice(0, links.length + 1), [`#/${book.id}`, ...links], 'Sidebar must expose the same chapter links');
+          assert.equal(await page.getByRole('button', { name: '읽음으로 표시', exact: true }).count(), 0, 'Book overview must not add a reading ID');
           await geometry(page);
           await screenshot(page, `${width}-${book.id}-heading`, page.locator('.book-heading-meta'));
         }
