@@ -52,3 +52,9 @@ PR21 head `11d12fdb8a3246e861479aeae38bd32f92c47bc0`, run39372613041의 merge ch
 이 기록은 C의 production housing·직접 시각 게이트다. A→B→C의 최신 main 통합·Pages·게시 자산 확인을 대신하지 않으며 공개 완료를 뜻하지 않는다. 검증된 C 위에서 D를 별도 준비할 수 있다.
 
 같은 run39372613041의 최종 상태에서 build와 선택된 production browser7개 suite 전체가 성공한 것도 확인했다. 일부 suite 대기 중의 housing 결과와 전체 workflow 완료를 구별한다. 이 변경은 최종 증거만 덧붙인 문서 변경이며 C 앱·검증기 바이트는 그대로다.
+
+## 새 순차 합본 PR25의 별도 실행
+
+세금D·주거C·회계A 합본 source `05270dda25437a4529186ee0f3036948c352b7fb`/tree `12efd3b6a97b31c3d7dea9370da719a2682fc93f`, 실제 checkout `3633adfc4502c362cbf2f61b03fab4d3a2545313`의 run39378989127에서 전체951단위 테스트·build와 선택된8개 production suite가 성공했다. 주거는102/102, 고유PNG76(캡처 호출77), 앱 진단0이다. artifact12244203022 ZIP SHA-256 `ca713ef469d19b21324ebd22de069a17e18617902724a03cd9e317b46970937f`를 확인했다.
+
+담당자가 이 새 캡처의320 취득 현금 변경 원본/실패 crop,1440 대출한도 변경,390 reduced-static 상단 crop을 직접 열어 최초1원 부족의 실패 보존, 이미 실행한 대출, 세로 화살표·역할, 담보/연간 심사/월 생활의 다른 경계와 인접 제어를 확인했다. 모든 표 행을 직접 보았다는 주장은 아니다. 자산 해시와 전체 합본 한계는 [세금D 기록](TAX-BATCH-D-VERIFICATION.md)에 함께 남겼다. main05270dda에 반영됐지만 exact-main/Pages/live 게이트는 이 절 작성 시 진행 중이다.

@@ -11,6 +11,9 @@ import {
   housingRoute,
   transferBase,
   deductionComparison,
+  taxTimeline,
+  taxDocuments,
+  documentReview,
 } from "../../simulations/tax/lifeModel.mjs";
 import { Bar, fmt, Lab, Prediction, Range, Stage, StaticTable } from "./shared";
 export function WithholdingLab() {
@@ -724,6 +727,232 @@ export function DeductionsLab() {
           x.finalTax,
           x.saving,
         ])}
+      />
+    </Lab>
+  );
+}
+export function TaxTimelineLab() {
+  const [monthly, setMonthly] = useState(8),
+    [month, setMonth] = useState(14);
+  const r = taxTimeline({ monthly, settleMonth: month }),
+    p = usePlayback(18),
+    f = r.frames[p.step];
+  return (
+    <Lab id="timeline" title="귀속기간과 실제 현금의 시계">
+      <figure className="tax-timeline-scene">
+        <div className="tax-time-chart">
+          <div className="tax-time-axis" aria-hidden="true">
+            <span>150</span>
+            <span>75</span>
+            <span>0</span>
+          </div>
+          <div className="tax-time-columns">
+            {r.frames.map((t) => (
+              <button
+                key={t.month}
+                data-current={t.month === p.step}
+                data-adjustment={
+                  t.adjustment < 0
+                    ? "refund"
+                    : t.adjustment > 0
+                      ? "pay"
+                      : "none"
+                }
+                onClick={() => p.seek(t.month)}
+                aria-label={`${t.label}: 원천징수 ${t.withheld}, 정산 조정 ${t.adjustment}, 누적 세금 현금유출 ${t.cumulative}`}
+                aria-pressed={t.month === p.step}
+              >
+                <i
+                  style={{
+                    height: `${(t.cumulative / 150) * 100}%`,
+                    borderTopWidth: t.cumulative === 0 ? 0 : 2,
+                  }}
+                />
+                <span data-major={t.month % 3 === 0}>{t.month}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="tax-year-bands">
+          <span>0: 시작 / 1–12: Y년 귀속</span>
+          <span>13–18: Y+1년</span>
+        </div>
+        <figcaption>
+          가로: 경과월 0–18. 세로: 누적 순세금 현금유출 0–150 단위. 누적 막대가
+          낮아지는 달은 환급입니다. 파랑은 일반 달, 청록은 환급 달입니다. 주황
+          ▼는 관찰 중인 달을 가리키며 금액이 아닙니다. 막대 폭은 금액과
+          무관합니다.
+        </figcaption>
+      </figure>
+      <div className="tax-controls">
+        <Range
+          label="매달 원천징수"
+          value={monthly}
+          max={12}
+          step={1}
+          onChange={(n) => {
+            setMonthly(n);
+            p.rewind();
+          }}
+        />
+        <label>
+          가상 정산 현금 시점
+          <select
+            value={month}
+            onChange={(e) => {
+              setMonth(Number(e.target.value));
+              p.rewind();
+            }}
+          >
+            <option value={14}>Y+1년 2월</option>
+            <option value={16}>Y+1년 4월</option>
+            <option value={18}>Y+1년 6월</option>
+          </select>
+        </label>
+      </div>
+      {p.controls}
+      <button
+        onClick={() => {
+          setMonthly(8);
+          setMonth(14);
+          p.rewind();
+        }}
+      >
+        조건까지 초기화
+      </button>
+      <Stage label={`${f.label} · ${f.phase}`} detail={f.detail} />
+      <label>
+        관찰 시점
+        <select value={p.step} onChange={(e) => p.seek(Number(e.target.value))}>
+          {r.frames.map((t) => (
+            <option key={t.month} value={t.month}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p className="tax-result">
+        현재 누적 순유출 {fmt(f.cumulative)} · 선택한 달의 원천징수{" "}
+        {fmt(f.withheld)} · 정산 조정 {fmt(f.adjustment)}. 결정세액은 80으로
+        고정, 최종 누적도 80입니다.
+      </p>
+      <Prediction
+        question="환급 계산이 끝났으면 돈도 이미 들어왔을까요?"
+        answer={false}
+        reason="산출·신고·처리·지급은 다른 사건입니다. 현금 시점을 뒤로 옮겨 대기 중 잔액을 비교하세요."
+      />
+      <StaticTable
+        title="귀속과 현금 전체 시간표"
+        headers={["시점", "상태", "원천징수", "정산 조정", "누적 순유출"]}
+        rows={r.frames.map((t) => [
+          t.label,
+          t.phase,
+          t.withheld,
+          t.adjustment,
+          t.cumulative,
+        ])}
+      />
+    </Lab>
+  );
+}
+export function TaxDocumentsLab() {
+  const [id, setId] = useState("payslip"),
+    [index, setIndex] = useState(0),
+    [answer, setAnswer] = useState("");
+  const r = documentReview(id),
+    row = r.rows[index];
+  const labels: Record<string, string> = {
+    fact: "● 문서의 사실",
+    assumption: "△ 해석·가정",
+    unknown: "? 추가 확인",
+  };
+  return (
+    <Lab
+      id="documents"
+      title="문장마다 근거의 꼬리표 붙이기"
+      note="직접 만든 가상 문서입니다. 실제 세금 서식의 복제나 신고 도구가 아니며 개인정보를 입력하지 않습니다."
+    >
+      <label>
+        연습 자료
+        <select
+          value={id}
+          onChange={(e) => {
+            setId(e.target.value);
+            setIndex(0);
+            setAnswer("");
+          }}
+        >
+          {taxDocuments.map((d) => (
+            <option value={d.id} key={d.id}>
+              {d.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <figure className="tax-document-scene">
+        <div className="tax-paper">
+          <h4>{r.label}</h4>
+          <p>{r.context}</p>
+          {r.rows.map((v, i) => (
+            <button
+              key={v.label}
+              onClick={() => {
+                setIndex(i);
+                setAnswer("");
+              }}
+              aria-pressed={index === i}
+              data-current={index === i}
+            >
+              <span>{i + 1}</span>
+              {v.label}
+            </button>
+          ))}
+        </div>
+        <div className="tax-annotation">
+          <h4>선택한 문장 {index + 1}</h4>
+          <p>{row.label}</p>
+          <fieldset>
+            <legend>어느 범주인가요?</legend>
+            {Object.entries(labels).map(([key, label]) => (
+              <label key={key}>
+                <input
+                  type="radio"
+                  name="tax-evidence"
+                  checked={answer === key}
+                  onChange={() => setAnswer(key)}
+                />
+                {label}
+              </label>
+            ))}
+          </fieldset>
+          {answer && (
+            <p role="status">
+              <strong>
+                {answer === row.kind ? "맞습니다." : "범위를 다시 보세요."}{" "}
+                {labels[row.kind]}
+              </strong>{" "}
+              {row.why}
+            </p>
+          )}
+        </div>
+        <figcaption>
+          선택한 줄과 해설이 연결됩니다. ‘문서의 사실’은 실제 납부·입금 완료까지
+          보증한다는 뜻이 아닙니다.
+        </figcaption>
+      </figure>
+      <button
+        onClick={() => {
+          setId("payslip");
+          setIndex(0);
+          setAnswer("");
+        }}
+      >
+        조건까지 초기화
+      </button>
+      <StaticTable
+        title="문장별 근거와 확인 질문"
+        headers={["문장", "분류", "이유"]}
+        rows={r.rows.map((v) => [v.label, labels[v.kind], v.why])}
       />
     </Lab>
   );

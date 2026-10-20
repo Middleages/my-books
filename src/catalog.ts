@@ -1,3 +1,5 @@
+import RentOrBuy from "./content/housing/RentOrBuy.mdx";
+import PlaceAndMarket from "./content/housing/PlaceAndMarket.mdx";
 import MortgagePaths from "./content/housing/MortgagePaths.mdx";
 import RunningCosts from "./content/housing/RunningCosts.mdx";
 import AccountingIntro from "./content/accounting/Intro.mdx";
@@ -15,6 +17,8 @@ import TaxAccounts from "./content/tax/TaxAccounts.mdx";
 import HousingTaxes from "./content/tax/HousingTaxes.mdx";
 import GiftsInheritance from "./content/tax/GiftsInheritance.mdx";
 import DeductionsCredits from "./content/tax/DeductionsCredits.mdx";
+import TaxTimeline from "./content/tax/TaxTimeline.mdx";
+import ReadingTaxDocuments from "./content/tax/ReadingTaxDocuments.mdx";
 import TaxIntro from "./content/tax/Intro.mdx";
 import TaxEvents from "./content/tax/TaxEvents.mdx";
 import ProgressiveTax from "./content/tax/ProgressiveTax.mdx";
@@ -127,6 +131,8 @@ export const chapters: Chapter[] = [
   { id: "mortgage-limits", bookId: "housing", readId: "housing/mortgage-limits", number: "06", title: "빌릴 수 있는 돈과 감당할 돈", heading: "담보와 심사 비율이 생활 여유까지 말해 줄까?", description: "한 시점의 담보·연간 심사 가정·월 생활 현금을 서로 다른 경계로 읽습니다.", Content: MortgageLimits },
   { id: "mortgage-paths", bookId: "housing", readId: "housing/mortgage-paths", number: "07", title: "금리와 상환의 시간표", heading: "작은 월 납입 뒤에 무엇이 남아 있을까?", description: "금리 재산정·추가상환·수수료와 남은 원금의 시간 경계를 연결합니다.", Content: MortgagePaths },
   { id: "running-costs", bookId: "housing", readId: "housing/running-costs", number: "08", title: "살면서 계속 드는 비용", heading: "낸 돈·부담할 돈·내 통장에 옮긴 돈은 같을까?", description: "외부 납부·대납 청구·실제 입금과 내부 적립·수선 지급을 구별합니다.", Content: RunningCosts },
+  { id: "rent-or-buy", bookId: "housing", readId: "housing/rent-or-buy", number: "09", title: "같은 조건에서 빌리기와 사기", heading: "같은 기간을 살고 나면 무엇이 남을까?", description: "공통 자금·기간·종점 정산으로 현금과 비용을 비교하고 중간 부족을 구별합니다.", Content: RentOrBuy },
+  { id: "place-and-market", bookId: "housing", readId: "housing/place-and-market", number: "10", title: "위치·생활과 시장의 숫자", heading: "싼 집과 내 생활에 맞는 집은 같을까?", description: "돈·시간·필수조건과 거래 구성·가격지수·공급 시점의 다른 단위를 읽습니다.", Content: PlaceAndMarket },
 
   { id: "files-and-database", bookId: "database", readId: "database/files-and-database", number: "01", title: "파일 다음에 데이터베이스", heading: "파일도 저장하는데 DB는 무엇을 더 맡을까?", description: "같은 값을 읽은 두 사본과 공유 저장소의 변경, 데이터 관리 책임을 구분합니다.", Content: FilesAndDatabase },
   { id: "tables-and-constraints", bookId: "database", readId: "database/tables-and-constraints", number: "02", title: "표 사이의 약속", heading: "같은 이름이 아니라 어떤 값으로 관계를 지킬까?", description: "실제 행의 키 연결과 저장 경계에서 PK·FK·필수 값·범위 규칙을 살펴봅니다.", Content: TablesAndConstraints },
@@ -142,6 +148,8 @@ export const chapters: Chapter[] = [
   { id: "housing-taxes", bookId: "tax", readId: "tax/housing-taxes", number: "08", title: "주택과 부동산 세금", heading: "집을 살 때·가질 때·팔 때는 무엇이 다를까?", description: "취득·보유·양도 사건과 세목·시점을 잇습니다.", Content: HousingTaxes },
   { id: "gifts-inheritance", bookId: "tax", readId: "tax/gifts-inheritance", number: "09", title: "증여와 상속", heading: "옮긴 재산 전부가 과세표준일까?", description: "이전 재산의 범위·평가·합산·공제의 경계를 봅니다.", Content: GiftsInheritance },
   { id: "deductions-credits", bookId: "tax", readId: "tax/deductions-credits", number: "10", title: "공제·감면·세액공제", heading: "같은 공제금액이 같은 세금 감소일까?", description: "과세표준을 줄이는 공제와 세액을 줄이는 공제를 비교합니다.", Content: DeductionsCredits },
+  { id: "tax-timeline", bookId: "tax", readId: "tax/tax-timeline", number: "11", title: "세금의 시간표", heading: "세금의 발생과 납부는 같은 날일까?", description: "귀속기간·정산·실제 현금의 시차를 같은 시간축에서 봅니다.", Content: TaxTimeline },
+  { id: "reading-tax-documents", bookId: "tax", readId: "tax/reading-tax-documents", number: "12", title: "세금 자료 함께 읽기", heading: "안내문에서 무엇을 더 확인해야 할까?", description: "가상 문서의 사실·가정·미확인 문장을 구분합니다.", Content: ReadingTaxDocuments },
   { id: "expected-loss", bookId: "insurance", readId: "insurance/expected-loss", number: "01", title: "같은 평균, 다른 충격", heading: "같은 기대손실이면 감당할 위험도 같을까?", description: "사건 확률과 손실 크기, 같은 평균 뒤에 남는 현금 부족을 비교합니다.", Content: ExpectedLoss },
   { id: "pooling", bookId: "insurance", readId: "insurance/pooling", number: "02", title: "보험은 위험을 어떻게 나눌까", heading: "여럿이 모이면 손실이 사라질까?", description: "공동 재원의 이동과 개별·공통 충격에서 지급 여력이 달라지는 이유를 봅니다.", Content: Pooling },
   { id: "contract-map", bookId: "insurance", readId: "insurance/contract-map", number: "03", title: "보험 계약의 지도", heading: "내 계약에서 누가 내고 누가 보장받을까?", description: "계약의 역할과 돈의 방향, 기본계약·특약의 경계를 연결합니다.", Content: ContractMap },
@@ -510,10 +518,10 @@ type Book = {
 };
 export const books: Book[] = [
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
-  { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–08장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
+  { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
   { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–04장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
-  { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–10장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
+  { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–12장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
   { id: "insurance", categoryId: "money", volume: 4, title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 위험의 크기부터 계약·유지·해지·청구 시차와 설명서 읽기까지 연결합니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", volume: 3, title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
   { id: "economics", categoryId: "money", volume: 2, title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–12장 공개 · 가상 실험으로 경제 뉴스의 원리와 해석 조건을 익힙니다.", Intro: EconomicsIntro },

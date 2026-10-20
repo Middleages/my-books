@@ -126,3 +126,9 @@ SQL 줄바꿈 수정 head `f3412fd8092b7bbf06aeb346e5fe733c8035ea3f`, tree `fad1
 새 원본에서 직접 확인한 DB 장면은 `320-b03-fork-count3`, `320-b03-left-null-sum-null`, `320-b03-where-final`, `320-b-queries-reduce-static-open`, `390-b-queries-no-preference-static-open`, `390-b-queries-normal-paused`, `320-b04-wide-third-leaf-boundary33-not-fetched`, `320-b04-all-scattered-final`, `320-b04-write-indexed-key-update-new-L3-final`, `320-files-race-final`의 PNG10개다. 권차의 `1440-home`, `320-database-heading`도 직접 확인했다. COUNT 세 식은 진행 설명·정적 대안 모두 경계 안에서 읽힌다. 2주문→3행, NULL과0, WHERE 제외 경계, 경계 키33의 미접근, 8과13의 다른 길이, 같은 행의 L0→L3 이동과01장의 경쟁 반례가 유지된다. 조작은 각 핵심 장면 위에 있고 정상 motion 정지·움직임 감소·펼친 단계도 판독할 수 있다. 독립 검토도 같은 잘림 해소를 확인했다. PNG135개 전부를 사람이 검토했다고 주장하지 않는다.
 
 이로써 B의 모델/소스/production·직접 시각 게이트를 닫는다. **B의 실제 공개 main·Pages 게이트는 아직 남아 있다.** 다음 C는 별도 작업 트리에서 로컬로 준비할 수 있으나 공개 순서는 A→B→C를 유지한다. 최종 통합 담당은 최신 main의 병행 교재를 보존하고 정확한 통합 source의 영향 검사·배포·게시 자산을 다시 확인한다. 앞선 실패 run과338개 통과 뒤 발견한 시각 결함은 이 기록에 그대로 남기며 성공으로 소급하지 않는다. 실제 DB·SQL·서버·두 세션·백업/복원·실제 기기·스크린리더는 여전히 미검증이다.
+
+## 세금 E·주거 D와의 새 합본 검증
+
+PR28 source `733b517ae6c1ad55a40e281eb43954dc1029740b`/tree `412eb486c6fdd7ac6dbf8a8f80d27a336483093a`, run39381621193의 실제 checkout `d6b9acaf17979891e1c566eec8f9c43c395871e5`에서 DB339/339·PNG135·page/console/resource 오류0을 확인했다. DB 본문·모델·컴포넌트·검증기는 검증 source `bae858c`와 차이가 없다. 전체1037단위 테스트·build와 선택한4suite가 성공했고 나머지는 의도적으로 생략했다.
+
+담당자는 이번 합본의320-b03-fork-count3,320-b03-left-null-sum-null,320-b04-wide-third-leaf-boundary33-not-fetched,320-b04-all-scattered-final,390-b-queries-no-preference-static-open,1440-b04-write-indexed-key-update-new-L3-final 원본6장을 직접 열었다. COUNT 세 기준의 현재/정적 설명이 경계 안에서 줄바꿈되고 JOIN 분기·NULL 자리·미반환33 경계·8vs13 공통눈금·이전키 제거/새L3 연결이 유지됨을 확인했다. 새 합본 시각 회귀는 발견하지 않았으며 모든 PNG의 직접 검토라는 뜻은 아니다. artifact ZIP·공통 빌드 자산 해시·범위는 [세금E 합본 기록](TAX-BATCH-E-VERIFICATION.md)을 따른다. B 실제 main·Pages·live 완료와는 아직 별도다.
