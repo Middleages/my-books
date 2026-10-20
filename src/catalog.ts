@@ -1,3 +1,5 @@
+import Instrumentation from "./content/observability/Instrumentation.mdx";
+import SamplingAndDelivery from "./content/observability/SamplingAndDelivery.mdx";
 import Labels from "./content/observability/Labels.mdx";
 import Traces from "./content/observability/Traces.mdx";
 import Logs from "./content/observability/Logs.mdx";
@@ -140,6 +142,8 @@ export const chapters: Chapter[] = [
   { id: "metrics", bookId: "observability", readId: "observability/metrics", number: "04", title: "숫자로 상태의 변화를 읽기", heading: "누적·순간·분포는 어떻게 다를까요?", description: "재시작·누락·느린 꼬리를 같은 눈금으로 읽습니다.", Content: Metrics },
   { id: "labels", bookId: "observability", readId: "observability/labels", number: "05", title: "이름표가 너무 많아질 때", heading: "사건은 같은데 구획은 왜 늘어날까요?", description: "실제 라벨 조합과 가능한 곱, 원본 URL·고유 ID의 차이를 봅니다.", Content: Labels },
   { id: "traces", bookId: "observability", readId: "observability/traces", number: "06", title: "한 요청의 여행을 따라가기", heading: "자식 시간을 더하면 부모 시간이 될까요?", description: "병렬 시간과 전파·수집 누락을 같은 축에서 구별합니다.", Content: Traces },
+  { id: "instrumentation", bookId: "observability", readId: "observability/instrumentation", number: "07", title: "앱에 관측 지점을 심기", heading: "자동 계측은 업무 의미도 모두 알까요?", description: "업무 경로와 SDK 기록·전송 경로를 분리합니다.", Content: Instrumentation },
+  { id: "sampling-and-delivery", bookId: "observability", readId: "observability/sampling-and-delivery", number: "08", title: "놓친 신호와 늦게 온 신호", heading: "저장됐지만 큐에도 남을 수 있을까요?", description: "표본 선택·큐 초과·ACK 유실·재시도 복사본을 구별합니다.", Content: SamplingAndDelivery },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
   { id: "double-entry", bookId: "accounting", readId: "accounting/double-entry", number: "02", title: "한 거래의 두 기록", heading: "왜 한쪽만 적으면 돈의 설명이 빠질까?", description: "차변·대변과 자산 등식을 통해 한 거래의 양쪽을 관찰합니다.", Content: DoubleEntry },
   { id: "revenue-and-cash", bookId: "accounting", readId: "accounting/revenue-and-cash", number: "03", title: "팔았을 때와 받았을 때", heading: "주문·인도·입금 중 언제 매출일까?", description: "상품 통제 이전과 선입금·외상 회수의 서로 다른 시점을 관찰합니다.", Content: RevenueAndCash },
