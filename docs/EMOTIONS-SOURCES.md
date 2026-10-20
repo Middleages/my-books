@@ -12,10 +12,10 @@
   미국, 영유아 분리와 수면에 관한 보호자 안내. 일관된 안심·예측 가능한 인계 설명을 확인했다. 종료 월령이나 적응 일수의 보장으로 옮기지 않는다. 08장만 일반 참고하며 수면 계획은 2권과 중복 구현하지 않는다.
 
 ## 구현 전 추가 확인
-07 기질·환경 적합성, 09 구체적 전환 방법, 10 또래 놀이 기대는 별도의 영아/유아 공식 자료를 확인해야 한다. 위 큰 틀을 세부 임상 근거로 확대하지 않는다. 한국 보호자 상담·지원 경로와 개인의 우려를 다룰 경계 문구는 현행 국내 자료 확인 후 붙인다. 상담 연락처·진단 기준·표준검사 점수는 현재 제공하지 않는다.
+07·09·10의 추가 공식 자료는 아래 E5·E7·E8에서 확인했다. 위 큰 틀을 세부 임상 근거로 확대하지 않는다. 한국 보호자 상담·지원 경로와 개인의 우려를 다룰 경계 문구는 현행 국내 자료 확인 후 붙인다. 상담 연락처·진단 기준·표준검사 점수는 현재 제공하지 않는다.
 
 ## 제외·미실행
-아이 진단·기질/애착 점수, 치료 효과 예측, 폭력 정당화, 영아에게 유아 규칙 적용, 실제 아이 기록 수집은 제외. 본문·앱·사용성 평가·의학 및 아동발달 전문가 감수는 미실행.
+아이 진단·기질/애착 점수, 치료 효과 예측, 폭력 정당화, 영아에게 유아 규칙 적용, 실제 아이 기록 수집은 제외. 본문·앱은 소스로 구현했으며 실행 게이트는 배치별 기록을 따른다. 사용자 학습 효과·실제 기기·의학 및 아동발달 전문가 감수는 미실행.
 
 ## D 추가 근거 (2026-10-20 실제 열람)
 - E5 미국 Office of Head Start, Introduction to Temperament: https://headstart.gov/mental-health/article/introduction-temperament . 기질과 보호자 기대/돌봄의 맞춤 개념만 참고, 유형·검사·점수 생성 제외. 대상 범위는 https://headstart.gov/mental-health/article/infant-toddler-temperament-tool-it3-supporting-goodness-fit 의 출생–3세 개요를 별도로 확인. 07장 근거이며 개인 반응 예측·효과를 뒷받침하지 않는다.
@@ -24,3 +24,6 @@
 ## E 추가 근거 (2026-10-20 실제 열람)
 - E7 미국 Head Start, Supporting Transitions Both Big and Small: https://headstart.gov/publication/supporting-transitions-both-big-small . 영아·유아 돌봄의 일과/유연함/예고 원칙만 채택. 고정 시간표·성공률·수면 물건·차량 물건 권고로 확대하지 않음.09장 자체 다리 그림은 효과 모델이 아니다.
 - E8 미국 CDC, Milestones by 30 Months: https://www.cdc.gov/act-early/milestones/30-months.html . 2026-05 표시. 또래 옆/함께 놀이와 도움, 표준 선별검사 대체 금지 및 우려 상담만 참고.10장은30개월 합성 장면이며 다른 연령의 합격선·양보 마감·진단검사를 구현하지 않는다.
+
+## 최종 근거 범위 관리
+기계적으로 점검 가능한 출처 메타데이터는 EMOTIONS-SOURCE-REGISTER.md에 publisher/title/url/checkedAt/country/targetAge/reviewedScope/limitations/chapterIds를 분리했다. E4는 초기계획 참고이며 최종08장은 E6을 사용한다. 국내 지원 자격·연락처·제도, 임상 응급 분류는 확인되지 않아 제공하지 않는다. 원문 사진·영상·문항·도표를 복제하지 않았다.
