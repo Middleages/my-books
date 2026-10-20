@@ -98,10 +98,10 @@ export function QueryFlowLab() {
     <p className="db-eyebrow">03 · 같은 원본, 다른 결과행의 단위</p><h2>주문 하나에서 두 항목 행으로 갈라집니다</h2>
     <p>고객 1의 주문 1001에서 나가는 선을 따라가세요. 원본 주문을 두 개 저장한 것이 아니라 항목마다 다른 짝을 읽습니다.</p>
     <div className="db-controls">
-      <label>조회할 고객<select value={customerId} onChange={e => { changed(); setCustomerId(Number(e.target.value)); }}><option value="1">1 가람 · 확정 주문 둘</option><option value="2">2 누리 · 취소 주문만</option><option value="3">3 다온 · 주문 없음</option></select></label>
-      <label>짝이 없는 행<select value={join} onChange={e => { changed(); setJoin(e.target.value as QueryJoin); }}><option value="inner">INNER · 짝이 있어야 남김</option><option value="left">LEFT · 고객을 남김</option></select></label>
-      <label>주문을 연결할 조건<select value={status} onChange={e => { changed(); setStatus(e.target.value as QueryStatus); }}><option value="confirmed">ON에서 확정 주문만</option><option value="all">상태와 무관하게 모두</option></select></label>
-      <label>강조할 세기 기준<select value={metric} onChange={e => { changed(); setMetric(e.target.value as QueryMetric); }}>{Object.entries(metricLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+      <label>조회할 고객<select aria-label="조회할 고객" value={customerId} onChange={e => { changed(); setCustomerId(Number(e.target.value)); }}><option value="1">1 가람 · 확정 주문 둘</option><option value="2">2 누리 · 취소 주문만</option><option value="3">3 다온 · 주문 없음</option></select></label>
+      <label>짝이 없는 행<select aria-label="짝이 없는 행" value={join} onChange={e => { changed(); setJoin(e.target.value as QueryJoin); }}><option value="inner">INNER · 짝이 있어야 남김</option><option value="left">LEFT · 고객을 남김</option></select></label>
+      <label>주문을 연결할 조건<select aria-label="주문을 연결할 조건" value={status} onChange={e => { changed(); setStatus(e.target.value as QueryStatus); }}><option value="confirmed">ON에서 확정 주문만</option><option value="all">상태와 무관하게 모두</option></select></label>
+      <label>강조할 세기 기준<select aria-label="강조할 세기 기준" value={metric} onChange={e => { changed(); setMetric(e.target.value as QueryMetric); }}>{Object.entries(metricLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
     </div>
     <DbPrediction value={prediction} setValue={setPrediction}><option value="same">결과행 수와 주문 수가 같다</option><option value="different">결과행 수와 주문 수가 다를 수 있다</option></DbPrediction>
     <DbPlayback player={player} count={frames.length} reset={reset} /><DbCurrent frame={f} />
@@ -148,7 +148,7 @@ export function JoinFilterLab() {
   const reset = () => { player.reset(); setPlacement("on"); setPrediction(""); };
   return <section className="db-lab" data-db-lab="join-filter" aria-label="LEFT JOIN ON과 WHERE 비교">
     <p className="db-eyebrow">03 · 고객과 주문 두 표만 비교</p><h2>확정 조건을 옮기면 누가 사라질까요?</h2>
-    <div className="db-controls"><label>확정 조건의 위치<select value={placement} onChange={e => { player.reset(); setPrediction(""); setPlacement(e.target.value as typeof placement); }}><option value="on">ON · 확정 주문과 짝 찾기</option><option value="where">WHERE · 결과에서 확정만 남기기</option></select></label></div>
+    <div className="db-controls"><label>확정 조건의 위치<select aria-label="확정 조건의 위치" value={placement} onChange={e => { player.reset(); setPrediction(""); setPlacement(e.target.value as typeof placement); }}><option value="on">ON · 확정 주문과 짝 찾기</option><option value="where">WHERE · 결과에서 확정만 남기기</option></select></label></div>
     <DbPrediction value={prediction} setValue={setPrediction}><option value="all">항상 모든 고객이 남는다</option><option value="position">조건 위치에 따라 고객이 사라진다</option></DbPrediction>
     <DbPlayback player={player} count={frames.length} reset={reset} /><DbCurrent frame={f} />
     <figure className="db-figure"><div className="db-desktop"><FilterScene frame={f} mobile={false} /></div><div className="db-mobile"><FilterScene frame={f} mobile /></div><figcaption>같은 고객에서 나온 결과행으로 선을 잇습니다. 점선은 실제 주문을 찾은 것이 아닌 NULL 확장 자리입니다. 최종 결과 경계 안에는 남은 행만 있습니다.</figcaption></figure>

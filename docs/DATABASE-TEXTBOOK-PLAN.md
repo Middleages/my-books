@@ -169,8 +169,8 @@ A에서 실제 구현한 소개·01–02만 카탈로그와 자체 SVG 장식 �
 - **학습 목표:** DB 트랜잭션의 경계와 COMMIT/ROLLBACK을 읽고 원자성을 올바른 업무 로직과 구별한다.
 - **눈으로 발견할 관계:** 재고5에서 2개 주문할 때 재고 변경·주문·항목은 함께 확정되어야 한다. 각 문장 autocommit은 중간 실패를 되돌리지 못하고 하나의 transaction은 미확정 변경을 취소할 수 있다.
 - **장면·기하:** 세 변경을 하나의 점선 transaction 경계로 감싸고 작성 세션의 보기와 다른 세션의 보기를 나란히 둔다. 확정 경계를 넘기 전후에 보이는 행과 재고가 함께 변한다. '미확정 영역'은 논리적 보기이며 DB가 물리적으로 별도 임시 DB를 만든다는 뜻이 아니다.
-- **전환·조작:** 단일 transaction/문장별 autocommit, 재고 차감 직후·항목 작성 중 실패·성공을 고른다. BEGIN→조건 확인/갱신→주문/항목→COMMIT 또는 ROLLBACK을 관찰한다. 오류 후 transaction이 실패 상태에 남는 장면도 포함한다.
-- **모델·불변식:** `transactionFrames`의 transaction status, session-visible rows, committed rows, affectedRows를 공유한다. 성공은 가용3·주문1건 추가, rollback은 가용5·추가0이다. autocommit 반례는 재고만3이다. ID sequence의 사용값은 rollback해도 되돌아간다고 그리지 않는다.
+- **전환·조작:** 단일 transaction/문장별 autocommit, 차감 뒤 주문 헤더 INSERT의 제약 오류·항목 INSERT의 제약 오류·성공을 고른다. 단순 앱 중단과 SQL 오류를 섞지 않는다. BEGIN→조건 확인/갱신→주문/항목→COMMIT 또는 ROLLBACK을 관찰한다. 오류 후 transaction이 실패 상태에 남는 장면도 포함한다.
+- **모델·불변식:** `transactionFrames`는 최신 확정 fixture, 유효한 미확정 변경, 세션별 과거 조회 결과, 문장 결과, transaction/block 상태를 분리한다. 오류 뒤 SELECT를 성공한 현재 보기처럼 그리지 않는다. 성공은 가용3·주문 헤더1·항목수량2 추가, rollback은 가용5·추가0이다. autocommit의 헤더 오류는 재고3·헤더0·항목0, 항목 오류는 재고3·헤더1·항목0이다. orders.status의 confirmed는 COMMIT 여부가 아니며, 빈 헤더의 스키마 유효성과 업무 완료를 구별한다. 기존 fixture에는 sequence 기본값이 없으므로 별도 이름 있는 교육용 sequence와 성공한 nextval 사건을 명시한다. 실제 할당한 값만 소비하며 rollback으로 되돌리지 않는다.
 - **실제 적용·경계:** SQL이 0행을 갱신한 것은 항상 오류가 아니므로 앱이 affectedRows를 검사해야 한다. 이메일·HTTP 결제·외부 파일은 DB rollback에 포함되지 않는다. COMMIT 응답을 못 받은 경우를 '무조건 rollback됨'으로 단정하지 않고 12장에 연결한다.
 - **근거:** S07. 격리 수준 상세와 디스크 복구는 06·09로 남긴다.
 
@@ -179,8 +179,8 @@ A에서 실제 구현한 소개·01–02만 카탈로그와 자체 SVG 장식 �
 - **학습 목표:** 읽은 값과 현재 값, 잠금 대기와 실패, 원자성과 격리성을 구분하고 안전한 재시도 단위를 설명한다.
 - **눈으로 발견할 관계:** 재고1을 A/B가 모두 읽은 뒤 각자 0을 쓰면 두 주문이 확정될 수 있다. CHECK(재고>=0)와 BEGIN만으로 이 업무 규칙은 충분하지 않다.
 - **장면·기하:** A·B 두 세션 lane에 read/write/commit 사건을 같은 교육 단계 축으로 배치하고, row version·읽기 시점·잠금 소유자·대기 화살표를 연결한다. 서로 다른 버전을 보는 이유를 숫자 카드가 아니라 선택된 버전과 snapshot 경계로 표시한다.
-- **전환·조작:** 고정된 교차 실행표에서 A/B 다음 동작을 진행한다. 기본 비교는 낡은 절대값 저장 vs 조건부 원자 갱신이다. 후자는 `available_qty >= 요청량` 조건을 포함한 감소와 affectedRows=1 확인 뒤 주문을 쓴다. 두 번째 요청의 대기→선행 commit→조건 재평가→0행을 분명히 보여준다. SELECT FOR UPDATE 방식은 같은 transaction 안에서 잠금을 얻은 뒤 반환된 현재 재고를 확인하고 주문·차감을 처리하는 대안으로 비교한다. 잠금만 얻으면 업무 검사가 필요 없다는 뜻이 아니다.
-- **모델·불변식:** `concurrencyFrames`는 미리 정의된 유효 schedule·row versions·lockOwner·blockedOn·commitStatus를 제공한다. 시작1의 안전한 결과는 확정수량1/남은0이며 음수 검사만 통과한 초과판매는 실패다. rollback으로 풀린 잠금, 서로 반대 순서 두 상품을 잠가 생긴 wait-cycle, 취소/전체 transaction 재시도도 반례로 테스트한다.
+- **전환·조작:** 고정된 교차 실행표에서 A/B 다음 동작을 진행한다. 기본 비교는 낡은 절대값 저장 vs 조건부 원자 갱신이다. 후자는 `available_qty >= 요청량` 조건을 포함한 감소와 affectedRows=1 확인 뒤 주문을 쓴다. 두 번째 요청의 대기→선행 commit→조건 재평가→0행을 분명히 보여준다. 대기 중에는 완료된 행 수가 없으며, 재개된 UPDATE는 같은 문장으로서 대상의 새 버전을 재확인한 것이지 전체 snapshot이 새로워진 것이 아니다. SELECT FOR UPDATE 방식은 같은 transaction 안에서 잠금을 얻은 뒤 반환된 현재 재고를 확인하고 주문·차감을 처리하는 대안으로 비교한다. 잠금만 얻으면 업무 검사가 필요 없다는 뜻이 아니다.
+- **모델·불변식:** `concurrencyFrames`는 미리 정의된 유효 schedule·row versions·lockOwner·blockedOn·commitStatus를 제공한다. 시작1의 안전한 결과는 확정수량1/남은0이며 음수 검사만 통과한 초과판매는 실패다. rollback으로 풀린 잠금, 서로 반대 순서 두 상품을 잠가 생긴 wait-cycle, 취소/전체 transaction 재시도도 반례로 테스트한다. 교착 상태의 교육용 희생 transaction 선택은 서버 예측이 아니며, abort의 잠금 해제와 이후 ROLLBACK의 실패 block 정리를 구별한다. 같은 숫자0의 A/B 행 버전도 별도 정체성을 유지하고 재시도는 새 transaction id와 새 읽기로 시작한다.
 - **격리 보조 장면:** 같은 SELECT 두 번 사이 B가 commit했을 때 PostgreSQL Read Committed와 Repeatable Read의 snapshot 범위를 비교한다. Repeatable Read를 모든 업무 직렬성의 보장으로, Serializable을 '무조건 기다린 뒤 성공'으로 그리지 않는다. 충돌 시 실패와 전체 transaction 재시도가 가능하다. 순서를 정한 교육 schedule은 실제 병렬 스케줄러 예측이 아니다.
 - **근거·MSSQL 경계:** S08. MSSQL READ COMMITTED는 RCSI 설정에 따라 읽기 방식이 다르고 SQL Server/Azure SQL의 기본값도 구분한다(S16). PostgreSQL 스냅샷 그림을 모든 제품의 내부 구현으로 일반화하지 않는다.
 
@@ -330,7 +330,7 @@ A에서 정한 환경 기록을 사용하고, G에서 제공할 경우 `examples
 | S04 | [Table Expressions](https://www.postgresql.org/docs/18/queries-table-expressions.html) | JOIN·LEFT JOIN·조건/집계 결과 의미 |
 | S05 | [Aggregate Functions](https://www.postgresql.org/docs/18/functions-aggregate.html), [LIMIT and OFFSET](https://www.postgresql.org/docs/18/queries-limit.html) | COUNT·SUM/빈 결과와 명시적 순서 |
 | S06 | [Indexes Introduction](https://www.postgresql.org/docs/18/indexes-intro.html), [Multicolumn Indexes](https://www.postgresql.org/docs/18/indexes-multicolumn.html) | 조회/유지 비용, 복합 키와18 skip scan의 예외 |
-| S07 | [Transactions](https://www.postgresql.org/docs/18/tutorial-transactions.html), [Transaction Isolation](https://www.postgresql.org/docs/18/transaction-iso.html) | transaction 경계·autocommit·sequence/rollback·가시성 |
+| S07 | [Transactions](https://www.postgresql.org/docs/18/tutorial-transactions.html), [Transaction Isolation](https://www.postgresql.org/docs/18/transaction-iso.html), [Sequence functions](https://www.postgresql.org/docs/18/functions-sequence.html), [UPDATE](https://www.postgresql.org/docs/18/sql-update.html) | transaction 경계·autocommit·명시적 sequence 할당/rollback·가시성·갱신 행 수 |
 | S08 | [MVCC Introduction](https://www.postgresql.org/docs/18/mvcc-intro.html), [Isolation](https://www.postgresql.org/docs/18/transaction-iso.html), [Explicit Locking](https://www.postgresql.org/docs/18/explicit-locking.html) | snapshot·갱신 조건 재평가·잠금/교착·재시도 |
 | S09 | [Connections and Authentication](https://www.postgresql.org/docs/18/runtime-config-connection.html) | 연결 상한·예약 슬롯·설정의 범위 |
 | S10 | [node-postgres Pooling](https://node-postgres.com/features/pooling), [Transactions](https://node-postgres.com/features/transactions), [Queries](https://node-postgres.com/features/queries) | 반환·동일 client transaction·값 매개변수화 |

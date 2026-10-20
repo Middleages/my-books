@@ -84,14 +84,14 @@ export function IndexReadLab() {
   return <section className="db-lab" data-db-lab="index-read" aria-label="인덱스와 데이터 페이지 접근 비교">
     <p className="db-eyebrow">04 · 같은 64행, 다른 찾는 길</p><h2>반환 행까지 실제 위치를 따라갑니다</h2>
     <div className="db-controls">
-      <label>찾을 날짜 범위<select value={query} onChange={e => { changed(); setQuery(e.target.value as IndexQuery); }}>{Object.entries(queryLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-      <label>같은 행의 배치<select value={layout} onChange={e => { changed(); setLayout(e.target.value as IndexLayout); }}><option value="ordered">날짜순으로 모인 배치</option><option value="scattered">페이지 사이에 흩어진 배치</option></select></label>
-      <label>조회 경로<select value={path} onChange={e => { changed(); setPath(e.target.value as IndexPath); }}><option value="index">인덱스로 찾아가기</option><option value="scan">인덱스 없이 전체 읽기</option></select></label>
+      <label>찾을 날짜 범위<select aria-label="찾을 날짜 범위" value={query} onChange={e => { changed(); setQuery(e.target.value as IndexQuery); }}>{Object.entries(queryLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+      <label>같은 행의 배치<select aria-label="같은 행의 배치" value={layout} onChange={e => { changed(); setLayout(e.target.value as IndexLayout); }}><option value="ordered">날짜순으로 모인 배치</option><option value="scattered">페이지 사이에 흩어진 배치</option></select></label>
+      <label>조회 경로<select aria-label="조회 경로" value={path} onChange={e => { changed(); setPath(e.target.value as IndexPath); }}><option value="index">인덱스로 찾아가기</option><option value="scan">인덱스 없이 전체 읽기</option></select></label>
     </div>
     <DbPrediction value={prediction} setValue={setPrediction}><option value="always">인덱스가 항상 적은 페이지에 접근</option><option value="depends">조건과 배치에 따라 달라짐</option></DbPrediction>
     <DbPlayback player={player} count={frames.length} reset={reset} /><DbCurrent frame={f} />
     <div className="db-index-current" aria-label="현재 단계까지의 고유 접근 개수"><span>인덱스 <b data-read-count="indexPages">{f.measurements.indexPages.value}</b>개</span><span>데이터 <b data-read-count="heapPages">{f.measurements.heapPages.value}</b>개</span><span>반환 <b data-read-count="returnedRows">{f.measurements.returnedRows.value}</b>행</span></div>
-    {f.finished && f.path === "index" && f.returnedRowIds.length > 0 && <label className="db-index-focus">완료 후 포인터만 따라갈 주문<select value={String(finishedFocusId)} onChange={e => setFocusId(e.target.value)}>{f.returnedRowIds.map(id => <option key={id} value={id}>주문 {id}</option>)}</select><small>위치는 선택한 반환 행을 따릅니다. 경계 키를 검사한 근거와 구별하며 조회 조건·접근 개수는 바꾸지 않습니다.</small></label>}
+    {f.finished && f.path === "index" && f.returnedRowIds.length > 0 && <label className="db-index-focus">완료 후 포인터만 따라갈 주문<select aria-label="완료 후 포인터만 따라갈 주문" value={String(finishedFocusId)} onChange={e => setFocusId(e.target.value)}>{f.returnedRowIds.map(id => <option key={id} value={id}>주문 {id}</option>)}</select><small>위치는 선택한 반환 행을 따릅니다. 경계 키를 검사한 근거와 구별하며 조회 조건·접근 개수는 바꾸지 않습니다.</small></label>}
     <figure className="db-figure db-index-figure"><div className="db-desktop"><ReadScene frame={f} mobile={false} focus={focus} /></div><div className="db-mobile"><ReadScene frame={f} mobile focus={focus} /></div><figcaption>보라: 들른 인덱스 페이지. 파랑: 들른 데이터 페이지. 진한 초록 행: 현재까지 반환한 주문 id. 주황선: 관찰하는 한 항목의 정확한 행 위치. 옅은 페이지는 아직 들르지 않은 곳입니다.</figcaption></figure>
     {f.stopProof && <p className="db-index-stop" data-stop-kind={f.stopProof.kind}>멈춘 근거: {f.stopProof.detail}</p>}
     {f.finished && <PageComparison scan={indexFrames({ layout, query, path: "scan" }).at(-1)!} indexed={indexFrames({ layout, query, path: "index" }).at(-1)!} />}
@@ -144,7 +144,7 @@ export function IndexWriteLab() {
   const reset = () => { player.reset(); setOperation("indexed-key-update"); setIndexed(true); };
   return <section className="db-lab" data-db-lab="index-write" aria-label="인덱스의 논리적 쓰기 부담">
     <p className="db-eyebrow">04 · 읽는 길도 함께 유지하기</p><h2>날짜가 바뀌면 키가 놓일 자리도 바뀝니다</h2>
-    <div className="db-controls"><label>논리적 변경<select value={operation} onChange={e => { player.reset(); setOperation(e.target.value as IndexWriteOperation); }}><option value="indexed-key-update">주문 2001 날짜 변경</option><option value="insert">주문 2065 새로 추가</option></select></label><label>별도 날짜 인덱스<select value={String(indexed)} onChange={e => { player.reset(); setIndexed(e.target.value === "true"); }}><option value="true">있음</option><option value="false">없음</option></select></label></div>
+    <div className="db-controls"><label>논리적 변경<select aria-label="논리적 변경" value={operation} onChange={e => { player.reset(); setOperation(e.target.value as IndexWriteOperation); }}><option value="indexed-key-update">주문 2001 날짜 변경</option><option value="insert">주문 2065 새로 추가</option></select></label><label>별도 날짜 인덱스<select aria-label="별도 날짜 인덱스" value={String(indexed)} onChange={e => { player.reset(); setIndexed(e.target.value === "true"); }}><option value="true">있음</option><option value="false">없음</option></select></label></div>
     <DbPlayback player={player} count={frames.length} reset={reset} /><DbCurrent frame={f} />
     <figure className="db-figure"><div className="db-desktop"><WriteScene frame={f} mobile={false} /></div><div className="db-mobile"><WriteScene frame={f} mobile /></div><figcaption>바꾸는 키 항목만 표시하고 다른 항목은 생략했습니다. 논리적 변경의 전후 관계이며 실제 DB의 중간 공개 상태나 물리적 쓰기 순서가 아닙니다. 마지막 인덱스 페이지에 여유가 있다고 가정하며 읽기 실험의 64행 배치는 바꾸지 않습니다.</figcaption></figure>
     <div className="db-index-current"><span>논리 레코드 변경 <b data-write-count="logicalRecordChanges">{f.measurements.logicalRecordChanges.value}</b></span><span>키 추가 <b data-write-count="indexEntryAdditions">{f.measurements.indexEntryAdditions.value}</b></span><span>이전 키 제거 <b data-write-count="indexEntryRemovals">{f.measurements.indexEntryRemovals.value}</b></span></div>
@@ -159,7 +159,7 @@ export function CompositeIndexStrip() {
   return <section className="db-lab" data-db-lab="composite-index" aria-label="고객과 날짜 복합 키의 정렬 구간">
     <p className="db-eyebrow">04 · 작은 정렬 띠</p><h2>먼저 고객끼리, 그 안에서 날짜순</h2>
     <p>64개 합성 주문 중 첫 16행(2001–2016)만 뽑았습니다. 고정 날짜 조건은 1월 9일 이상, 17일 미만입니다.</p>
-    <div className="db-controls"><label>앞쪽 고객 키 조건<select value={customerId} onChange={e => setCustomerId(e.target.value)}><option value="all">없음 · 날짜만</option><option value="1">고객 1 + 날짜</option><option value="2">고객 2 + 날짜</option><option value="3">고객 3 + 날짜</option></select></label></div>
+    <div className="db-controls"><label>앞쪽 고객 키 조건<select aria-label="앞쪽 고객 키 조건" value={customerId} onChange={e => setCustomerId(e.target.value)}><option value="all">없음 · 날짜만</option><option value="1">고객 1 + 날짜</option><option value="2">고객 2 + 날짜</option><option value="3">고객 3 + 날짜</option></select></label></div>
     <figure className="db-composite-strip"><div className="db-composite-groups">{f.customerGroups.map(group => {
       const span = f.spans.find(part => part.customerId === group.customerId);
       return <section key={group.customerId} data-composite-customer={group.customerId}><h3>고객 {group.customerId}</h3><div>

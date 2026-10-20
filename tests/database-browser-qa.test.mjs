@@ -13,8 +13,8 @@ import { createFixture } from '../src/simulations/database/fixture.mjs';
 const source = readFileSync(new URL('../scripts/database-browser-qa.cjs', import.meta.url), 'utf8');
 const pure = source.match(/\/\/ BEGIN B-QA CONTRACT HELPERS([\s\S]*?)\/\/ END B-QA CONTRACT HELPERS/)?.[1];
 assert(pure, 'Keep pure verifier contracts separate from the browser runner');
-const { expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic } =
-  runInNewContext(`${pure}\n({ expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic })`, { assert });
+const { expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic, isBlockingBrowserError } =
+  runInNewContext(`${pure}\n({ expectedReadFocus, pointerIsReached, assertEndpoint, assertNoObstacleCrossing, assertUnitGeometry, classifyDbDiagnostic, isBlockingBrowserError })`, { assert });
 const plain = value => JSON.parse(JSON.stringify(value));
 
 test('database verifier preserves every preexisting A scenario and assertion byte-for-byte', () => {
@@ -219,4 +219,29 @@ test('new animated labs cover keyboard, pause, no-autoplay, settings, reset, sta
   assert.match(source, /snapNearEffect\(page, `\$\{width\}-b03-controls-and-fork`/);
   assert.match(source, /snapNearEffect\(page, `\$\{width\}-b04-controls-and-pointer`/);
   assert.match(source, /await lab\.locator\('\.db-controls'\)\.scrollIntoViewIfNeeded\(\)/);
+});
+
+test('B selects expose the visible control label without concatenating option text', () => {
+  let total = 0;
+  for (const file of ['QueryLabs.tsx', 'IndexLabs.tsx']) {
+    const ui = readFileSync(new URL(`../src/components/database/${file}`, import.meta.url), 'utf8');
+    const controls = [...ui.matchAll(/<label[^>]*>([^<]+)<select\s+aria-label="([^"]+)"/g)];
+    assert.equal(controls.length, [...ui.matchAll(/<select\s/g)].length);
+    for (const [, visible, name] of controls) assert.equal(name, visible.trim());
+    total += controls.length;
+  }
+  assert.equal(total, 12);
+  assert(source.includes("getByLabel(label, { exact: true })"), 'Do not weaken exact-name browser checks');
+});
+
+
+test('a blocking browser timeout preserves a partial failure instead of repeating missing selectors', () => {
+  assert.equal(isBlockingBrowserError({ name: 'TimeoutError' }), true);
+  assert.equal(isBlockingBrowserError({ name: 'AssertionError' }), false);
+  assert.equal(isBlockingBrowserError(null), false);
+  assert.match(source, /if\(isBlockingBrowserError\(error\)\)/);
+  assert(source.includes("await snap(page,'blocking-failure')"));
+  assert(source.includes('throw error;'));
+  assert(source.includes("report.fatal=String(error.stack||error);process.exitCode=1"));
+  assert(source.includes("if(report.failed||report.fatal)process.exitCode=1"));
 });

@@ -72,3 +72,11 @@
 favicon 예외도 검증기 안에서 좁혔다. 정확한 공개 base·호스트 루트 favicon URL·실제404 조건만 별도 진단으로 남긴다. 앱 경로/다른 origin·상태/출처 불명 오류와 모든 requestfailed는 실패로 유지한다. 정상 앱 오류를 숨기는 일반적인 favicon 문자열 필터는 사용하지 않는다.
 
 최종 변경 파일과 main 카탈로그 전후를 범위 분류기에 전달한 결과는 `affected`, 선택 `book-volumes, database`, 의도적 미실행 `insurance, investing, tax, kubernetes`였다. 이후 실제 Actions의 selection artifact로 다시 대조한다. 생략한 네 suite를 이 B 실행에서 통과했다고 기록하지 않으며 전체 unit/build는 그대로 유지했다.
+
+## 첫 실제 브라우저 실행에서 발견한 차단과 수정
+
+첫 PR19 head `ca79dce0ff3609a830837cb2f7dc6f458ecfc346`의 [run39370221400](https://github.com/Middleages/my-books/actions/runs/39370221400)은 build·권차14/14를 통과했으나 DB 검사는 새 조작부를 찾는 timeout을 반복했다. 같은 앱 바이트에 첫 실패 즉시 중단·부분 report/PNG 보존만 추가한 [진단 run39372204923](https://github.com/Middleages/my-books/actions/runs/39372204923), source `a6385cd7e6a3ee9a6f1ad853c7d5eb528965dd9b`는 **43통과·1실패·이후 미실행**으로 원인을 좁혔다. 최초 B 시나리오의 `조회할 고객` exact accessible-name select 조작부 탐색이30초 timeout이었다. 생성된 페이지 PNG에서 본문과 실험은 렌더됐지만 이름 기반 조작은 실패했다. 이 부분 실행을 B 통과나 전체 시각 검토로 부르지 않는다.
+
+[진단 artifact12241258742](https://github.com/Middleages/my-books/actions/runs/39372204923/artifacts/12241258742)의 ZIP SHA256 `13272ee3def38a19e01ac9881e1c0cf8f3f06587b9e36a415a13078e52ebd5d5`를 대조했다. 새 B select12개에는 눈에 보이는 label과 동일한 명시적 aria-label을 부여했다. option 문구가 포함된 label 텍스트에 exact-name 탐색을 의존하지 않는다. 소스 계약 테스트는12개 이름의 일치와 기존 exact-name 검사 유지를 확인한다. 실제 수정 UI는 새 Actions에서 다시 검증한다.
+
+검증기 또한 차단성 Playwright TimeoutError가 발생하면 실패를 기록하고 현재 화면을 저장한 뒤 비정상 종료해 같은 없는 조작을 수십 번 기다리지 않도록 바꿨다. 일반 assertion 실패와 구별하고 부분 report의 failed/fatal을 유지한다. 실행하지 않은 나머지를 통과로 세지 않으며 건강한 실행은 기존 전체 assertion을 그대로 수행한다. 임시 진단 workflow는 정상 출판 후보에 포함하지 않는다.
