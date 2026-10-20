@@ -1,0 +1,2 @@
+export function placeFrame(stage?:string,changed?:boolean):{scenarioId:string;ageBand:string;sourceIds:string[];observedFacts:string[];hypotheses:string[];unknowns:string[];step:number;selectedOption:string;stage:string;changed:boolean;nodes:{id:string;label:string;state:string}[];explanation:string};
+export function careFrame(sorted?:boolean):{scenarioId:string;ageBand:string;sourceIds:string[];observedFacts:string[];hypotheses:string[];unknowns:string[];step:number;selectedOption:string;sorted:boolean;questions:string[];explanation:string};
