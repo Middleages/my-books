@@ -331,6 +331,11 @@ async function scenarios(page, id) {
     }
     await setRange(lab,0,0);
     assert.equal(await lab.locator('[data-allocated]').getAttribute('data-allocated'),'0');
+    await page.waitForFunction(()=>[...document.querySelectorAll('[data-allocation]')].every(e=>e.getBoundingClientRect().width===0),undefined,{timeout:3000});
+    assert.deepEqual(await lab.locator('[data-allocation]').evaluateAll(es=>es.map(e=>({value:+e.dataset.allocation,width:e.getBoundingClientRect().width}))),[{value:0,width:0},{value:0,width:0},{value:0,width:0}]);
+    assert.match(await lab.locator('.housing-payment-tracks').innerText(),/배분액 없음/);
+    await bars(page);
+    await capture(page,`${page.viewportSize().width}-deposit-risk-zero`,'.housing-recovery-scene');
     await setRange(lab,0,16000);
     await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
     await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
@@ -339,6 +344,8 @@ async function scenarios(page, id) {
     const control=await lab.locator('.money-playback').boundingBox(), scene=await lab.locator('.housing-payment-tracks').boundingBox();
     assert(scene.y-(control.y+control.height)<240,'recovery controls detached from changing cash scene');
     assert.match(await lab.innerText(),/양도와 현금 입금은 별개/);
+    assert.match(await lab.locator('[role=status]').innerText(),/미현금화 원금/);
+    assert.match(await lab.locator('summary').last().innerText(),/현금과 원금 기록/);
   }
   await audit(page);
   return {id,verified:true};

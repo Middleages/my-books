@@ -8,7 +8,7 @@ test('evidence visibility is not legal eligibility or a safety score', () => {
     assert.equal(frames[0].addressMatch, null);
     assert.equal(frames[0].authorityShown, null);
     assert.equal(frames[1].newEntry, null);
-    assert.equal(frames[3].legalDecision, null);
+    assert(frames.every(f=>f.legalDecision===null));
     assert.deepEqual(frames[3].events.map(e=>e.day),[0,0,30,31]);
     assert(frames[3].events.every(e=>e.visible));
     assert.equal(frames[3].addressMatch,id!=='address');
@@ -49,4 +49,27 @@ test('unrecovered is not automatically permanent loss and invalid inputs fail', 
   for(const bad of [-1,NaN,Infinity,1e11]) for(const key of ['proceeds','prior','claim','debt']) assert.throws(()=>recoveryFrames({[key]:bad}));
   assert.throws(()=>recoveryFrames({guarantee:'approved'}));
   assert.throws(()=>recoveryFrames({arrivalDay:61}));
+});
+
+test('every recovery stage preserves principal across boundary allocations and guarantee states', () => {
+  let scenarios=0;
+  for(const proceeds of [0,1,50e6,160e6,1e10]) for(const prior of [0,1,50e6,1e10]) for(const claim of [0,1,140e6,1e10])
+  for(const guarantee of ['none','unknown','assumed']) for(const arrivalDay of [60,120]) {
+    const fs=recoveryFrames({proceeds,prior,claim,guarantee,arrivalDay}); scenarios++;
+    for(let i=0;i<fs.length;i++) {
+      const f=fs[i];
+      assert.equal(f.first+f.tenant+f.unused,proceeds);
+      assert.equal(f.totalCash+f.remainingClaim,claim);
+      assert.equal(f.landlordCash+f.institutionClaim+f.remainingClaim,claim);
+      assert.equal(f.institutionClaim,f.guaranteeCash);
+      assert(f.totalCash>=0&&f.totalCash<=claim&&f.remainingClaim>=0);
+      assert.equal(f.debt,20e6);
+      if(guarantee!=='assumed') {assert.equal(f.guaranteeCash,0);assert.equal(f.institutionClaim,0);}
+      if(f.day<10) assert.equal(f.landlordCash,0);
+      if(f.day<arrivalDay) assert.equal(f.guaranteeCash,0);
+      if(i) {assert(f.totalCash>=fs[i-1].totalCash);assert(f.remainingClaim<=fs[i-1].remainingClaim);}
+    }
+    assert.deepEqual(fs,recoveryFrames({proceeds,prior,claim,guarantee,arrivalDay}));
+  }
+  assert.equal(scenarios,480);
 });

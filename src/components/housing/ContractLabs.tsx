@@ -59,7 +59,7 @@ export function DepositRiskLab() {
 
       <div className="housing-time-stops housing-five-stops">{frames.map(v=><span key={v.day} aria-current={v.step===p.step?'step':undefined}>{v.day}일</span>)}</div>
       <div className="housing-payment-tracks">
-        <div><strong>임대인 측 배분 재원</strong><div className={`housing-payment-line ${f.landlordCash?'arrived':''}`}><span>{f.landlordCash?'도착':'아직 지급 전'}</span><b aria-hidden="true">↓</b></div><span>민지 {amount(f.landlordCash)}</span></div>
+        <div><strong>임대인 측 배분 재원</strong><div className={`housing-payment-line ${f.landlordCash?'arrived':''}`}><span>{f.tenant===0?'배분액 없음':f.landlordCash?'도착':'아직 지급 전'}</span><b aria-hidden="true">↓</b></div><span>민지 {amount(f.landlordCash)}</span></div>
         <div><strong>가상 반환보증 기관</strong><div className={`housing-payment-line ${f.guaranteeCash?'arrived':''}`}><span>{f.guaranteeStatus}</span><b aria-hidden="true">↓</b></div><span>민지 {amount(f.guaranteeCash)}</span></div>
       </div>
       <Bar label="민지의 실제 회수 현금" value={f.totalCash} max={140e6}/><Bar label="아직 현금화되지 않은 원금" value={f.remainingClaim} max={140e6} color="claim"/>
@@ -67,8 +67,8 @@ export function DepositRiskLab() {
       <p className="housing-stage">민지의 대출 원금은 {amount(f.debt)} 그대로입니다. 반환금 수령만으로 대출 상환까지 실행한 것은 아닙니다. 실제 상품은 채권양도·질권·상환 정산 등에 따라 지급 경로가 다를 수 있습니다.</p>
       </div><figcaption>배분 띠는 순서를 미리 정한 돈 나누기, 아래 경로는 시간에 따른 실제 도착액입니다. 점선은 미도착, 실선은 도착입니다. 10일 배분 입금·30일 가상 심사 결정·60/120일 가상 지급은 법정 기한이나 기관 처리기간이 아닙니다. 적격 가정은 부족분 전액 보장·별도 공제 없음까지 주어진 교육 조건입니다.</figcaption>
     </figure>
-    <div className="housing-stage" role="status"><strong>{f.day}일 · {f.guaranteeStatus}</strong><p>실제 도착 {amount(f.totalCash)} / 남은 청구 {amount(f.remainingClaim)}. {guarantee==='unknown'?'조건을 모르므로 지급액·지급일을 확정하지 않습니다.':guarantee==='assumed'?'가정한 지급일 전에는 심사 결정이 있어도 현금으로 더하지 않습니다.':'보증 경로에서는 돈이 들어오지 않습니다.'}</p></div>
+    <div className="housing-stage" role="status"><strong>{f.day}일 · {f.guaranteeStatus}</strong><p>실제 도착 {amount(f.totalCash)} / 미현금화 원금 {amount(f.remainingClaim)}. {guarantee==='unknown'?'조건을 모르므로 지급액·지급일을 확정하지 않습니다.':guarantee==='assumed'?'가정한 지급일 전에는 심사 결정이 있어도 현금으로 더하지 않습니다.':'보증 경로에서는 돈이 들어오지 않습니다.'}</p></div>
     <Prediction question="반환보증이 있으니 지금 이사 자금도 도착했다고 계산해도 될까요?" answer={false} reason="가입·이행 요건·청구·심사·실제 지급은 서로 다릅니다. 돈이 필요한 날짜에 사용할 수 있는지는 실제 입금과 별도로 확인합니다."/>
-    <StaticTable title="회수 단계별 현금과 남은 권리" headers={['경과일','임대인 측 도착','기관 도착','미현금화 원금','지급분 대응 회수권 기록','미상환 대출']} rows={frames.map(v=>[`${v.day}일`,amount(v.landlordCash),amount(v.guaranteeCash),amount(v.remainingClaim),amount(v.institutionClaim),amount(v.debt)])}/>
+    <StaticTable title="회수 단계별 현금과 원금 기록" headers={['경과일','임대인 측 도착','기관 도착','미현금화 원금','지급분 대응 회수권 기록','미상환 대출']} rows={frames.map(v=>[`${v.day}일`,amount(v.landlordCash),amount(v.guaranteeCash),amount(v.remainingClaim),amount(v.institutionClaim),amount(v.debt)])}/>
   </Lab>;
 }
