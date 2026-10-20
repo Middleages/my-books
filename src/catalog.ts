@@ -1,6 +1,8 @@
 import AccountingIntro from "./content/accounting/Intro.mdx";
 import CompanyBoundary from "./content/accounting/CompanyBoundary.mdx";
 import DoubleEntry from "./content/accounting/DoubleEntry.mdx";
+import RevenueAndCash from "./content/accounting/RevenueAndCash.mdx";
+import ExpensesAndTiming from "./content/accounting/ExpensesAndTiming.mdx";
 import PurchaseCash from "./content/housing/PurchaseCash.mdx";
 import MortgageLimits from "./content/housing/MortgageLimits.mdx";
 import RentalContract from "./content/housing/RentalContract.mdx";
@@ -113,6 +115,8 @@ export type Chapter = {
 export const chapters: Chapter[] = [
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
   { id: "double-entry", bookId: "accounting", readId: "accounting/double-entry", number: "02", title: "한 거래의 두 기록", heading: "왜 한쪽만 적으면 돈의 설명이 빠질까?", description: "차변·대변과 자산 등식을 통해 한 거래의 양쪽을 관찰합니다.", Content: DoubleEntry },
+  { id: "revenue-and-cash", bookId: "accounting", readId: "accounting/revenue-and-cash", number: "03", title: "팔았을 때와 받았을 때", heading: "주문·인도·입금 중 언제 매출일까?", description: "상품 통제 이전과 선입금·외상 회수의 서로 다른 시점을 관찰합니다.", Content: RevenueAndCash },
+  { id: "expenses-and-timing", bookId: "accounting", readId: "accounting/expenses-and-timing", number: "04", title: "쓴 때와 낸 때", heading: "이번 달에 낸 돈이 모두 이번 달 비용일까?", description: "선급 권리·사용 비용·미지급 의무와 현금 지급을 같은 기록으로 나눕니다.", Content: ExpensesAndTiming },
   { id: "housing-rights", bookId: "housing", readId: "housing/housing-rights", number: "01", title: "집에 사는 것과 집을 소유하는 것", heading: "같은 집에 살아도 가진 권리는 같을까?", description: "거주·소유·반환청구권·채무와 현금의 이동을 구분합니다.", Content: HousingRights },
   { id: "rent-and-deposit", bookId: "housing", readId: "housing/rent-and-deposit", number: "02", title: "월세와 보증금의 두 가격", heading: "월세가 작으면 더 싼 계약일까?", description: "보증금 차이와 월세 감소, 자금 출처·기회비용·초기 부족을 나눕니다.", Content: RentAndDeposit },
   { id: "rental-contract", bookId: "housing", readId: "housing/rental-contract", number: "03", title: "계약부터 입주까지의 권리 지도", heading: "계약서를 썼다는 사실만으로 무엇이 보호될까?", description: "계약의 문장을 자료·권한·서로 다른 날짜의 사실에 연결합니다.", Content: RentalContract },
@@ -497,7 +501,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
+  { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–04장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–06장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
   { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–02장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
