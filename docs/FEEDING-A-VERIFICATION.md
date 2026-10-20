@@ -21,3 +21,13 @@
 
 ## 최초 CI와 원본 검토에서 찾은 보강
 run39405804034의 전용26검사/53PNG/앱오류0은 통과했다. 그러나 원본850-experience-mouth에서 긴 ‘섭취로 확인한 양’ 라벨이 두 줄이 되어 같은 행의 막대 바닥이 조금 달라짐을 직접 발견했다. 자동검사 통과를 시각 완료로 쓰지 않고 라벨 행 높이를 고정하고 같은 행 막대 기준선 일치 검사를 추가한다.320-meal-unknown,390-meal-empty,1440-meal-known,320-readiness-preterm,390-readiness-posture,1440-readiness-observed,390-home-parenting도 직접 열어 미확인/상담 경계와 권차 보존을 확인했다. 수정본의 최종 소스·화면·전체 회귀는 대기다.
+
+## 수정본 전용 소스·화면 게이트 — 2026-10-20 10:21 UTC
+
+source10bfd420b689d403357e32623e145ce1c975ad04/tree43cfb07440271a470d2a169ff60809344e02b1d3, 실제 checkoutcd478c23e9d25702329304c114c4a461bc43ded7의 tree 일치. run39406529341 build 및 child-feeding26검사·53PNG·page/console/resource 오류0. artifact12257037603 ZIP SHA256 ec8cc80ccf78a6da5366e8a8f6da098f82f2bfa06cd76597a4309b09650378f6.
+
+수정본 원본850-experience-mouth,320-meal-unknown,1440-meal-known,390-readiness-posture를 직접 열어 라벨 줄바꿈 뒤 막대 기준선 정렬·미확인 보존·상담 경계를 재확인했다. 초기8개 원본과 함께 A 전용 소스·실제 화면 게이트를 닫는다. 수정 후 local 전체1,051 unit/build도 성공했다. 전체11-suite 회귀는 현재 진행 중이며 main/Pages/실제 게시와 전문가 감수는 아직 별도 미완료다.
+
+## 최종 전체 회귀 마감 · 2026-10-20 10:40 UTC
+
+CI 39406529341의 build와 production 11 suite(tax, investing, accounting, database, housing, insurance, kubernetes, child-development, child-sleep, book-volumes, child-feeding)가 모두 success로 끝났다. deploy/published는 PR 실행에서 skipped이므로 main/Pages 완료를 뜻하지 않는다. 수정 소스 10bfd420b689d403357e32623e145ce1c975ad04, tree 43cfb07440271a470d2a169ff60809344e02b1d3, 실제 merge checkout cd478c23e9d25702329304c114c4a461bc43ded7을 보존한다. 전용 26검사·53PNG와 앞서 기록한 수정 원본 4개의 직접 검토가 완료됐다. 이로써 A 자체 소스·실제 화면·전체 회귀를 닫고 직렬 게시 창에 인계한다. 의학 전문가 감수는 미실행이다.
