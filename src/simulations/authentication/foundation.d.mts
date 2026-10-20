@@ -1,0 +1,3 @@
+export const subjects:Readonly<Record<string,{id:string;name:string;role:string}>>;
+export function identityFrame(step?:number,person?:string,action?:string,owner?:string):{step:number;person:string;action:string;owner:string;subject:{id:string;name:string;role:string}|null;identityStatus:string;rolePermission:boolean|null;objectPermission:boolean|null;decision:string;reason:string};
+export function sessionFrame(step?:number,options?:{cookie?:boolean;scope?:string;time?:number;node?:string;shared?:boolean}):{step:number;cookiePresent:boolean;scope:string;time:number;node:string;shared:boolean;expiresAt:number;eligible:boolean;sent:boolean;recordExists:boolean;matchingSession:boolean;subject:string|null;lookup:string;decision:string;label:string};

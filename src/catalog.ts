@@ -1,3 +1,15 @@
+import AuthenticationIntro from "./content/authentication/Intro.mdx";
+import IdentityAndPermission from "./content/authentication/IdentityAndPermission.mdx";
+import CookiesAndSessions from "./content/authentication/CookiesAndSessions.mdx";
+import ObservabilityIntro from "./content/observability/Intro.mdx";
+import Signals from "./content/observability/Signals.mdx";
+import Pipeline from "./content/observability/Pipeline.mdx";
+import ChildDevelopmentIntro from "./content/child-development/Intro.mdx";
+import DevelopmentMap from "./content/child-development/DevelopmentMap.mdx";
+import AgeAndEvidence from "./content/child-development/AgeAndEvidence.mdx";
+import ProbabilityIntro from "./content/probability/Intro.mdx";
+import AveragesDistributions from "./content/probability/AveragesDistributions.mdx";
+import LossesLiquidity from "./content/probability/LossesLiquidity.mdx";
 import MovingAndShocks from "./content/housing/MovingAndShocks.mdx";
 import ReadingHousing from "./content/housing/ReadingHousing.mdx";
 import RentOrBuy from "./content/housing/RentOrBuy.mdx";
@@ -131,6 +143,14 @@ export type Chapter = {
   Content: ComponentType;
 };
 export const chapters: Chapter[] = [
+  { id: "identity-and-permission", bookId: "authentication", readId: "authentication/identity-and-permission", number: "01", title: "누구인가와 무엇을 할 수 있는가", heading: "로그인 성공은 모든 문서의 열쇠일까요?", description: "주체 확인과 자원·행동 정책의 두 문을 구별합니다.", Content: IdentityAndPermission },
+  { id: "cookies-and-sessions", bookId: "authentication", readId: "authentication/cookies-and-sessions", number: "02", title: "브라우저와 서버가 기억하는 것", heading: "새 요청에서도 서버는 나를 어떻게 알아볼까요?", description: "쿠키 전송과 서버 세션 기록·수명을 따로 관찰합니다.", Content: CookiesAndSessions },
+  { id: "development-map", bookId: "child-development", readId: "child-development/development-map", number: "01", title: "발달은 한 줄의 순위가 아니다", heading: "몸·말·놀이·관계가 같은 속도로 발달할까?", description: "한 아이의 여러 영역과 관찰 상태를 점수 없이 읽습니다.", Content: DevelopmentMap },
+  { id: "age-and-evidence", bookId: "child-development", readId: "child-development/age-and-evidence", number: "02", title: "개월수와 체크리스트를 읽는 법", heading: "생활 월령과 자료의 기준 연령은 어떻게 다를까?", description: "교정연령의 시간 관계와 원출처 연령의 경계를 살펴봅니다.", Content: AgeAndEvidence },
+  { id: "signals", bookId: "observability", readId: "observability/signals", number: "01", title: "서비스에 무슨 일이 일어났을까?", heading: "세 신호는 무엇을 다르게 남길까?", description: "사건·집계·요청별 시간을 같은 원본에서 비교합니다.", Content: Signals },
+  { id: "pipeline", bookId: "observability", readId: "observability/pipeline", number: "02", title: "수집·저장·조회는 다른 일", heading: "받았는데 왜 화면에 안 보일까?", description: "Alloy와 신호별 저장소·Grafana의 경계를 연결합니다.", Content: Pipeline },
+  { id: "averages-and-distributions", bookId: "probability", readId: "probability/averages-and-distributions", number: "01", title: "평균 뒤에 있는 사람들", heading: "평균이 같으면 경험도 같을까?", description: "점과 순위를 펼쳐 평균·중앙값·분포·흩어짐의 다른 질문을 읽습니다.", Content: AveragesDistributions },
+  { id: "losses-and-liquidity", bookId: "probability", readId: "probability/losses-and-liquidity", number: "02", title: "평균 손실과 버틸 돈", heading: "평균적으로 적게 잃으면 감당할 수 있을까?", description: "손실의 꼬리와 현금의 납기를 나누어 같은 기대손실 뒤의 부족액을 비교합니다.", Content: LossesLiquidity },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
   { id: "double-entry", bookId: "accounting", readId: "accounting/double-entry", number: "02", title: "한 거래의 두 기록", heading: "왜 한쪽만 적으면 돈의 설명이 빠질까?", description: "차변·대변과 자산 등식을 통해 한 거래의 양쪽을 관찰합니다.", Content: DoubleEntry },
   { id: "revenue-and-cash", bookId: "accounting", readId: "accounting/revenue-and-cash", number: "03", title: "팔았을 때와 받았을 때", heading: "주문·인도·입금 중 언제 매출일까?", description: "상품 통제 이전과 선입금·외상 회수의 서로 다른 시점을 관찰합니다.", Content: RevenueAndCash },
@@ -518,6 +538,7 @@ export const chapters: Chapter[] = [
   { id: "troubleshooting", bookId: "kubernetes", readId: "kubernetes/troubleshooting", number: "12", title: "증거로 고치기", heading: "어디에서 멈췄는가?", description: "증거 카드와 다음 관측을 선택해 실패 구간과 가설을 좁힙니다.", Content: Troubleshooting },
 ];
 export const bookCategories = [
+  { id: "parenting", label: "육아·발달" },
   { id: "technology", label: "IT·기술" },
   { id: "money", label: "돈·경제" },
 ] as const;
@@ -537,6 +558,10 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
+  { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–02장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
+  { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
+  { id: "observability", categoryId: "technology", volume: 5, title: "눈으로 이해하는 관측·로그·모니터링", category: "IT·기술 · 신호와 증거", cover: "OBSERVABILITY", description: "느림과 실패를 어떤 증거로 설명할까요?", overview: "로그·지표·트레이스와 수집·저장·조회의 경계를 눈으로 연결합니다.", future: "소개·01–02장 공개 · 합성 교육 모델이며 실제 관측 스택은 미실행입니다.", Intro: ObservabilityIntro },
+  { id: "probability", categoryId: "money", volume: 8, title: "확률과 금융 의사결정", category: "돈·경제 · 숫자의 근거와 불확실성", cover: "PROBABILITY & FINANCIAL DECISIONS", description: "좋아 보이는 숫자를 어디까지 믿어도 될까? 분모·분포·빠진 자료와 감당할 손실을 읽습니다.", overview: "요약에서 조건부 확률·추정·공동 위험·선택의 착시와 경로까지, 가상 사례로 판단의 질문을 익힙니다.", future: "소개·01–02장 공개 · 가상 자료의 원리를 다루며 실제 수익률·개인 안전성·상품 선택을 예측하거나 추천하지 않습니다.", Intro: ProbabilityIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–04장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–12장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
