@@ -46,6 +46,7 @@ async function audit(page){
    await lab.getByRole('button',{name:'기록 초기화',exact:true}).focus();await page.keyboard.press('Enter');assert.equal(await lab.locator('select').inputValue(),'partial');await lab.locator('summary').click();assert((await lab.locator('details').innerText()).includes('다음날'));await audit(page);
   });
   await visit(page,'/child-sleep/safe-sleep-space');const space=page.locator('[data-sl-lab=space]');
+  await check(`${width} caregiver sleep boundary is rendered within infant chapter`,async()=>{const note=page.locator('[data-sleep-caregiver-boundary]');assert((await note.innerText()).includes('보호자가 잠들기 전에'));assert((await note.innerText()).includes('소파나 푹신한 안락의자'));await note.scrollIntoViewIfNeeded();await audit(page);await snap(page,`${width}-caregiver-boundary`,note);});
   await check(`${width} distinct room boundaries, all concept controls, keyboard focus and reset`,async()=>{
    assert.equal(await space.locator('.sl-room .sl-parent').count(),1);assert.equal(await space.locator('.sl-room .sl-infant').count(),1);
    await page.keyboard.press('Tab'); // Enter keyboard modality before inspecting :focus-visible.
