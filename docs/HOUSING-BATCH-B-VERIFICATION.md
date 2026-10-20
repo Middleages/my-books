@@ -37,4 +37,10 @@
 
 ## 남은 게이트
 
-후속 문구 보정의 정확한 production 결과와 실제 모바일 PNG 확인. 이후 A 공개를 확인하고 최신 main 통합, 변경 영향 검사, Pages 성공과 게시 JS/CSS 바이트·대표 화면 대조. Safari/Firefox·실기기 터치·스크린리더 음성·학습 효과 측정은 별도 미검증이다.
+후속 보정 production·실제 모바일 PNG까지 확인했다. 이제 A 공개를 확인하고 최신 main 통합, 변경 영향 검사, Pages 성공과 게시 JS/CSS 바이트·대표 화면 대조. Safari/Firefox·실기기 터치·스크린리더 음성·학습 효과 측정은 별도 미검증이다.
+
+## 후속 보정 최종 production — 2026-10-20
+
+최종 후보 `0e5f37ef2932c874a9a3dff2bec7492149a63fd7`, PR merge checkout `d7605e787a57807e2ff56b872c1c0a786954d2af`, run `39369682423`에서 build·housing·book-volumes 모두 성공했다. housing은 Chromium155.0.8059.39, 74/74·오류0·55캡처다. artifact `12240587840` ZIP SHA-256 `ebedddc7695e53d500610d7cbc8307ceca9fe640cec68bd2793215b39a79f0dd`를 확인했다.
+
+320px 0재원의 배분3항목·현금0폭, ‘배분액 없음’, 390px ‘미현금화 원금’과 ‘현금과 원금 기록’을 담당자·독립 검토자가 각각 실제 PNG에서 확인했다. JS `index-krzT0kMD.js` 2,395,737바이트 SHA-256 `9c94c71a90273526c248a4cf64a6ef1512f15b434d63e33a355a50a548fe460e`, CSS `index-BB2fVBel.css` 312,876바이트 SHA-256 `b1fdc67a3a70f7e840f09759968be8a127ecad5b00ba81e37a81174a1e87ae2c`다. 이는 B 단독 후보 증거이며 향후 main 통합·실제 게시 증거와 구분한다.

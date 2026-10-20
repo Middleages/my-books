@@ -40,6 +40,17 @@
 
 읽는 중 상태에서는 네트워크 2권과 돈 1권이 앞에 오지만 각 권차는 그대로다. 기본 상태는 기존 카탈로그 순서를 유지한다. 책 소개의 분야·권차와 상세 주제 역시 세 너비에서 겹치지 않는다. 시각 검토 결과는 통과다.
 
-### 남은 경계
+### 당시 남은 경계
 
 이 기록 시점에는 main 통합·Pages 게이트·실제 게시 자산 검증이 미완료다. PR production 검증을 게시 성공으로 간주하지 않는다. Safari·실제 터치 기기·스크린리더 음성 출력은 별도 검증 대상이다.
+
+
+## Main과 실제 게시 완료 — 2026-10-20
+
+세금 A와 함께 main `da333eb71e2e5c5f00ba70bbddb2f36c1ce50b9f`에 통합했다. 통합본은795개 단위 테스트와 production 빌드를 통과했다. [run39363793456](https://github.com/Middleages/my-books/actions/runs/39363793456)의 build·production matrix·Pages 배포가 성공했다. 권차 suite는 정확한 main checkout에서 production14/14·게시14/14검사,각30PNG,오류0을 기록했다.
+
+- [production artifact12237539690](https://github.com/Middleages/my-books/actions/runs/39363793456/artifacts/12237539690), [게시 artifact12239535674](https://github.com/Middleages/my-books/actions/runs/39363793456/artifacts/12239535674). 두 결과의 sourceSha는 위 main이고 sourceChanges는 빈 문자열이다. 게시 모드는 `published`, Chrome155.0.8059.39다.
+- 게시 JS `index-_fa7X2o7.js` SHA-256 `c8a3b16d5761af00c7288331dd612bc151ebfc7543f879c31fc80f6278858357`, CSS `index-BtYRxD5H.css` SHA-256 `8376b31a6c55b8fe0cf257a4dd0ab6ab08b979ae859e94473100e8ef202a59d5`는 앞서30장 전체를 직접 검토한 PR 앱 바이트와도 동일하다.
+- 게시본의1440px 홈·320px 세금 헤더·390/320px 읽는 중 우선 홈을 직접 다시 열었다. 표지 밖의 분야·권차,세금5권,네트워크2권·돈1권의 읽는 중 이동 후 고정 번호,모바일 배지와 줄바꿈을 확인했다. 권차가 잘리거나 겹치지 않는다.
+
+권차의 구현·main·Pages·실제 자산·직접 시각 검토는 완료했다. 같은 run의 원래 tax 콘솔 판정은 호스트 기본 favicon404 때문에 실패했으며, 정확한 출처 진단과 앱 바이트가 같은 집중 재검증은 [세금 A 기록](TAX-BATCH-A-VERIFICATION.md)에 별도로 남겼다. 이 문서는 전체 run이 모두 성공했다고 주장하지 않는다. Safari·실기기·스크린리더 음성 출력은 여전히 미검증이다.
