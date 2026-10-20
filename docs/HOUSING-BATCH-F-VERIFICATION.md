@@ -74,3 +74,12 @@ artifact12249382597의 실제 ZIP SHA-256 `92bcf8b4d8ffb7aa7f2c5931061159f0ea56b
 최종 CSS 보정 후 전체955/955, TypeScript·Vite build, verifier 문법 및 diff 검사가 통과했다. 모델 파일은 독립576조합 재검증을 마친77aa31ca와 변경이 없다. 모델15/15 및 F SSR 포함17/17, 보존2,880프레임·충격45조건의 의미와 검사 범위를 유지한다. 이후 이 검증 결과를 쓰는 문서만 수정했으며 앱 바이트를 다시 바꾸지 않았다.
 
 **남은 공개 게이트:** 현재 main의 E까지 실제 공개한 결과와 다른 책의 최종 회귀를 보존한 뒤 F를 최신 main 후보에 통합한다. 정확한 합본 production·영향 화면 직접 확인, 전체권 마감의 폭넓은 browser 회귀, Pages 및 실제 게시 자산/대표 화면 확인을 완료해야 F 게시로 기록한다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증이다.
+
+
+## 정확한 main·Pages·실제 게시 확인 · 2026-10-20
+
+합본 main `47c36cc06fad15d87afd040ac5c259b421714d52`, tree `09766eee17e80d322b382d544b99085f7450916a`를 [Actions39397074938](https://github.com/Middleages/my-books/actions/runs/39397074938)에서 검사했다. 전체1134/1134 단위 테스트와 TypeScript/Vite393 modules build, 선택된 book-volumes·database·housing·accounting production4개, Pages 배포(09:06:30 UTC), 실제 게시4개가 모두 성공했다. 마지막 job까지09:15:45 UTC에 닫혔다. 보험·투자·세금·쿠버네티스 browser4개는 이 영향 범위 실행에서 생략됐으며 통과로 기록하지 않는다. 주거 전체권의 고정8×2 넓은 회귀는 별도 게이트다.
+
+실제 게시 JS `index-DsaNx52x.js`(2,955,457bytes) SHA-256 `42e3024c3a64992ebbd360cb3c32b72e80b7d72570ee3bf0103d1e26517bb163`, CSS `index-f58pl4aP.css`(356,058bytes) `be5043e056f9ded15ecad6ab7db8aeb0a2e1319bcfad3526864c88669613af78`가 같은 build의 전체 바이트와 일치했다. 작업 트리 변경은 없었다. 이 기록은 새로 실행한 합본의 결과이며 이전 단독 PR 기록과 구별한다.
+
+이 책의 published **189/189**, 고유 원본PNG **248**, 앱 오류0. 알려진 호스트 루트 favicon404 한 건은 별도 진단에 보존했다. artifact `12253461905`, ZIP SHA-256 `d127126a9208a369d506e0a38ad35ef335e4de1193b3f8ba2794982b49968987`를 대조했다. 실제 게시850 월충격 전체·320이사 changed·320매매 문서 추가확인 native상단을 직접 읽었다. 현금 막대폭과 별도 눈금·14월 동결,20일 부족을30일 반환으로 소급 해소하지 않는 구조,예정일 확인과 실제 입금의 구별이 유지됐다. F까지 실제 게시와 영향 범위 확인은 완료했지만 전체권 마지막8×2 넓은 회귀는 별도이며 아직 통과로 기록하지 않는다. 정확한 파일별 직접 검토 범위와 합본 표는 [통합 기록](EXISTING-BOOKS-WAVE-VERIFICATION.md)을 따른다.

@@ -21,3 +21,9 @@ technology6 authentication, 소개·identity-and-permission·cookies-and-session
 최종 후보 PR46 head `4031b79492eaa0cc66563c82f22539c4fb5798ad`, source tree `e9ce388bdf2d3ed9f8084d2c44f48bb4f56032de`, run `39395892602`. 인증 production browser는 Chromium155.0.8059.39에서11개 검사묶음·45 PNG·오류/진단0으로 통과했다. 1440/390/320px·normal/reduced motion·키보드·초기화·읽음 보존을 검사했다. artifact `12252360273` ZIP SHA256 `faa3c0c272faefd4fe0e9b4bb9ef239781668117749490ef716b4d415270430f`.
 
 최종 원본 desktop 초기/유효/거절, 모바일 만료/서버 기록 없음/다른 host와 소개를 직접 열어 왕복 방향·두 저장소·불확정 판정·모바일 재배치·라벨을 확인했다. 수정 전에는 지적한 두 문제가 있었으며 최종 캡처에서 해소됐다. 최초 등록 전체10개 browser 회귀는 아직 진행 중이므로 전체 통과 판정은 보류한다. main/Pages/live 자산 일치와 실기기 Safari·스크린리더는 미검증이다. 문서 후속 기록은 실행 중 CI를 취소하지 않도록 로컬에만 둔다.
+
+## 최종 회귀 및 신규4A 합본 표본 검토
+
+2026-10-20 09:12 UTC에 run `39395892602`의 completed/success를 확인했다. 전체 unit/build와 최초 등록의 넓은10개 browser suite가 모두 성공했다. 최종 인증 소스는 앞서 적은 `4031b794…`/tree `e9ce388b…` 그대로다.
+
+신규4A 통합 후보 PR51 head `dd1bdf10693076b4ced3b0af7e763c1386f30e97`, 실제 checkout `4c68a53cfcf7e5f8f56dba587ebf0abf56e96d1a`/tree `97d1a12844afbcddcc90c067000cb14877ee9db6`의 인증 report도11개 검사·오류0을 확인했다. 원본 `1440-session-valid.png`, `320-session-expired.png`, `390-identity-denied.png`를 직접 열어 두 저장소·요청/응답 방향·만료/인가 거절·320px 줄바꿈이 유지됨을 확인했다. 이는 표본의 통합 시각 검토이며 통합 전체12-suite와 main/Pages/live 성공을 대신하지 않는다. 실제 로그인/SSO와 실기기 접근성은 미실행이다.

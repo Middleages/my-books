@@ -22,10 +22,10 @@ test('probability MDX renders Korean emphasis without raw delimiters', async () 
   const { createElement } = await import('react');
   const { renderToStaticMarkup } = await import('react-dom/server');
   const { default: remarkGfm } = await import('remark-gfm');
-  for (const file of ['Intro', 'AveragesDistributions', 'LossesLiquidity']) {
+  for (const file of ['Intro', 'AveragesDistributions', 'LossesLiquidity', 'FrequencyProbability', 'ConditionalEvidence']) {
     const mdx = readFileSync(new URL(`../src/content/probability/${file}.mdx`, import.meta.url), 'utf8').replace(/^import .+;\n/gm, '');
     const { default: Content } = await evaluate(mdx, { ...runtime, remarkPlugins: [remarkGfm] });
-    const html = renderToStaticMarkup(createElement(Content, { components: { Check: () => null, ProbabilityPrimer: () => null, DistributionLab: () => null, LossLiquidityLab: () => null } }));
+    const html = renderToStaticMarkup(createElement(Content, { components: { Check: () => null, ProbabilityPrimer: () => null, DistributionLab: () => null, LossLiquidityLab: () => null, FrequencyLab: () => null, ConditionalLab: () => null } }));
     assert(!html.includes('**'), file);
     assert(!html.includes('<del>'), file);
     if (file === 'AveragesDistributions') assert(html.includes('<strong>사분위 범위(IQR)</strong>'));
@@ -36,3 +36,5 @@ test('all financial case selectors have stable accessible names matching their v
   const component = readFileSync(new URL('../src/components/probability/FoundationLabs.tsx', import.meta.url), 'utf8');
   for (const label of ['꼬리 집단의 큰 지출 한 건', '같은 폭의 지출 구간', '처음 준비한 현금', '지출 납기']) assert(component.includes(`<select aria-label="${label}"`), label);
 });
+
+test('B verifier retains A assertions and validates actual frequency/count geometry and zero-denominator alternatives',()=>{for(const fragment of ['assertDistribution','assertLoss','assertFrequency','assertConditional','all prefix frames','preserves cells and chosen denominator','full static n1000','B route unmount','B normal motion','recordSeen','data-selected-denominator'])assert(source.includes(fragment),fragment);const ui=readFileSync(new URL('../src/components/probability/EvidenceLabs.tsx',import.meta.url),'utf8');for(const label of ['모형의 전체 건수','모형의 1건당 지연 확률','고정 가상 기록 번호','전체 중 실제 오류','가상 알림 규칙'])assert(ui.includes('aria-label="'+label+'"'),label);assert(ui.includes('0÷0'));assert(ui.includes('0.0001% 미만 · 0 아님'));assert(!ui.includes('Math.random'));});

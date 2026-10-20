@@ -1,26 +1,43 @@
-import AuthenticationIntro from "./content/authentication/Intro.mdx";
-import IdentityAndPermission from "./content/authentication/IdentityAndPermission.mdx";
-import CookiesAndSessions from "./content/authentication/CookiesAndSessions.mdx";
-import ObservabilityIntro from "./content/observability/Intro.mdx";
-import Signals from "./content/observability/Signals.mdx";
-import Pipeline from "./content/observability/Pipeline.mdx";
+import ObserveNotLabel from "./content/child-development/ObserveNotLabel.mdx";
+import MovementAndHands from "./content/child-development/MovementAndHands.mdx";
 import ChildDevelopmentIntro from "./content/child-development/Intro.mdx";
 import DevelopmentMap from "./content/child-development/DevelopmentMap.mdx";
 import AgeAndEvidence from "./content/child-development/AgeAndEvidence.mdx";
+import Logs from "./content/observability/Logs.mdx";
+import Metrics from "./content/observability/Metrics.mdx";
+import ObservabilityIntro from "./content/observability/Intro.mdx";
+import Signals from "./content/observability/Signals.mdx";
+import Pipeline from "./content/observability/Pipeline.mdx";
+import FrequencyProbability from "./content/probability/FrequencyProbability.mdx";
+import ConditionalEvidence from "./content/probability/ConditionalEvidence.mdx";
 import ProbabilityIntro from "./content/probability/Intro.mdx";
 import AveragesDistributions from "./content/probability/AveragesDistributions.mdx";
 import LossesLiquidity from "./content/probability/LossesLiquidity.mdx";
+import AccountingIntro from "./content/accounting/Intro.mdx";
+import CompanyBoundary from "./content/accounting/CompanyBoundary.mdx";
+import DoubleEntry from "./content/accounting/DoubleEntry.mdx";
+import RevenueAndCash from "./content/accounting/RevenueAndCash.mdx";
+import ExpensesAndTiming from "./content/accounting/ExpensesAndTiming.mdx";
+import InventoryAndCost from "./content/accounting/InventoryAndCost.mdx";
+import WorkingCapital from "./content/accounting/WorkingCapital.mdx";
+import DatabaseIntro from "./content/database/Intro.mdx";
+import FilesAndDatabase from "./content/database/FilesAndDatabase.mdx";
+import TablesAndConstraints from "./content/database/TablesAndConstraints.mdx";
+import IndexesAndCosts from "./content/database/IndexesAndCosts.mdx";
+import QueriesAndJoins from "./content/database/QueriesAndJoins.mdx";
+import DatabaseTransactions from "./content/database/Transactions.mdx";
+import DatabaseConcurrency from "./content/database/Concurrency.mdx";
+import DatabaseConnections from "./content/database/ConnectionsAndPools.mdx";
+import DatabaseExplain from "./content/database/ExplainAndDiagnosis.mdx";
+import AuthenticationIntro from "./content/authentication/Intro.mdx";
+import IdentityAndPermission from "./content/authentication/IdentityAndPermission.mdx";
+import CookiesAndSessions from "./content/authentication/CookiesAndSessions.mdx";
 import MovingAndShocks from "./content/housing/MovingAndShocks.mdx";
 import ReadingHousing from "./content/housing/ReadingHousing.mdx";
 import RentOrBuy from "./content/housing/RentOrBuy.mdx";
 import PlaceAndMarket from "./content/housing/PlaceAndMarket.mdx";
 import MortgagePaths from "./content/housing/MortgagePaths.mdx";
 import RunningCosts from "./content/housing/RunningCosts.mdx";
-import AccountingIntro from "./content/accounting/Intro.mdx";
-import CompanyBoundary from "./content/accounting/CompanyBoundary.mdx";
-import DoubleEntry from "./content/accounting/DoubleEntry.mdx";
-import RevenueAndCash from "./content/accounting/RevenueAndCash.mdx";
-import ExpensesAndTiming from "./content/accounting/ExpensesAndTiming.mdx";
 import PurchaseCash from "./content/housing/PurchaseCash.mdx";
 import MortgageLimits from "./content/housing/MortgageLimits.mdx";
 import RentalContract from "./content/housing/RentalContract.mdx";
@@ -42,13 +59,6 @@ import HousingIntro from "./content/housing/Intro.mdx";
 import HousingRights from "./content/housing/HousingRights.mdx";
 import RentAndDeposit from "./content/housing/RentAndDeposit.mdx";
 
-import DatabaseIntro from "./content/database/Intro.mdx";
-import FilesAndDatabase from "./content/database/FilesAndDatabase.mdx";
-import TablesAndConstraints from "./content/database/TablesAndConstraints.mdx";
-import IndexesAndCosts from "./content/database/IndexesAndCosts.mdx";
-import QueriesAndJoins from "./content/database/QueriesAndJoins.mdx";
-import DatabaseTransactions from "./content/database/Transactions.mdx";
-import DatabaseConcurrency from "./content/database/Concurrency.mdx";
 import InsuranceIntro from "./content/insurance/Intro.mdx";
 import ExpectedLoss from "./content/insurance/ExpectedLoss.mdx";
 import Pooling from "./content/insurance/Pooling.mdx";
@@ -143,14 +153,22 @@ export const chapters: Chapter[] = [
   { id: "cookies-and-sessions", bookId: "authentication", readId: "authentication/cookies-and-sessions", number: "02", title: "브라우저와 서버가 기억하는 것", heading: "새 요청에서도 서버는 나를 어떻게 알아볼까요?", description: "쿠키 전송과 서버 세션 기록·수명을 따로 관찰합니다.", Content: CookiesAndSessions },
   { id: "development-map", bookId: "child-development", readId: "child-development/development-map", number: "01", title: "발달은 한 줄의 순위가 아니다", heading: "몸·말·놀이·관계가 같은 속도로 발달할까?", description: "한 아이의 여러 영역과 관찰 상태를 점수 없이 읽습니다.", Content: DevelopmentMap },
   { id: "age-and-evidence", bookId: "child-development", readId: "child-development/age-and-evidence", number: "02", title: "개월수와 체크리스트를 읽는 법", heading: "생활 월령과 자료의 기준 연령은 어떻게 다를까?", description: "교정연령의 시간 관계와 원출처 연령의 경계를 살펴봅니다.", Content: AgeAndEvidence },
+  { id: "observe-not-label", bookId: "child-development", readId: "child-development/observe-not-label", number: "03", title: "보이는 행동을 기록하기", heading: "잘 못해요 대신 무엇을 기록할까?", description: "상황·기회·행동·도움을 나누고 모르는 사실을 보존합니다.", Content: ObserveNotLabel },
+  { id: "movement-and-hands", bookId: "child-development", readId: "child-development/movement-and-hands", number: "04", title: "몸과 손으로 탐색하기", heading: "손과 물체의 관계에서 무엇을 볼 수 있을까?", description: "방향·손 뻗기·잡기·놓기와 놀이의 안전 조건을 구분합니다.", Content: MovementAndHands },
   { id: "signals", bookId: "observability", readId: "observability/signals", number: "01", title: "서비스에 무슨 일이 일어났을까?", heading: "세 신호는 무엇을 다르게 남길까?", description: "사건·집계·요청별 시간을 같은 원본에서 비교합니다.", Content: Signals },
   { id: "pipeline", bookId: "observability", readId: "observability/pipeline", number: "02", title: "수집·저장·조회는 다른 일", heading: "받았는데 왜 화면에 안 보일까?", description: "Alloy와 신호별 저장소·Grafana의 경계를 연결합니다.", Content: Pipeline },
+  { id: "logs", bookId: "observability", readId: "observability/logs", number: "03", title: "사건을 읽을 수 있게 남기기", heading: "로그 두 줄이면 요청도 두 번일까요?", description: "발생·관측 시각과 요청·사건 경계, 안전한 필드 처리를 비교합니다.", Content: Logs },
+  { id: "metrics", bookId: "observability", readId: "observability/metrics", number: "04", title: "숫자로 상태의 변화를 읽기", heading: "누적·순간·분포는 어떻게 다를까요?", description: "재시작·누락·느린 꼬리를 같은 눈금으로 읽습니다.", Content: Metrics },
   { id: "averages-and-distributions", bookId: "probability", readId: "probability/averages-and-distributions", number: "01", title: "평균 뒤에 있는 사람들", heading: "평균이 같으면 경험도 같을까?", description: "점과 순위를 펼쳐 평균·중앙값·분포·흩어짐의 다른 질문을 읽습니다.", Content: AveragesDistributions },
   { id: "losses-and-liquidity", bookId: "probability", readId: "probability/losses-and-liquidity", number: "02", title: "평균 손실과 버틸 돈", heading: "평균적으로 적게 잃으면 감당할 수 있을까?", description: "손실의 꼬리와 현금의 납기를 나누어 같은 기대손실 뒤의 부족액을 비교합니다.", Content: LossesLiquidity },
+  { id: "frequency-and-probability", bookId: "probability", readId: "probability/frequency-and-probability", number: "03", title: "한 번도 없었던 일의 확률", heading: "0건을 보았으면 확률도 0일까?", description: "고정 기록의 관측 횟수와 가정한 이론 확률, 상대·절대 변화를 나누어 읽습니다.", Content: FrequencyProbability },
+  { id: "conditional-evidence", bookId: "probability", readId: "probability/conditional-evidence", number: "04", title: "알림이 왔을 때 다시 세기", heading: "알림의 90%는 누구를 분모로 셌을까?", description: "같은 청구서의 네 칸을 보존하며 오류 중 알림과 알림 중 오류의 분모를 비교합니다.", Content: ConditionalEvidence },
   { id: "company-boundary", bookId: "accounting", readId: "accounting/company-boundary", number: "01", title: "회사의 돈은 누구의 돈일까", heading: "통장에 들어온 돈은 모두 매출일까?", description: "회사 경계와 출자·차입·외상 회수의 반대편 기록을 연결합니다.", Content: CompanyBoundary },
   { id: "double-entry", bookId: "accounting", readId: "accounting/double-entry", number: "02", title: "한 거래의 두 기록", heading: "왜 한쪽만 적으면 돈의 설명이 빠질까?", description: "차변·대변과 자산 등식을 통해 한 거래의 양쪽을 관찰합니다.", Content: DoubleEntry },
   { id: "revenue-and-cash", bookId: "accounting", readId: "accounting/revenue-and-cash", number: "03", title: "팔았을 때와 받았을 때", heading: "주문·인도·입금 중 언제 매출일까?", description: "상품 통제 이전과 선입금·외상 회수의 서로 다른 시점을 관찰합니다.", Content: RevenueAndCash },
   { id: "expenses-and-timing", bookId: "accounting", readId: "accounting/expenses-and-timing", number: "04", title: "쓴 때와 낸 때", heading: "이번 달에 낸 돈이 모두 이번 달 비용일까?", description: "선급 권리·사용 비용·미지급 의무와 현금 지급을 같은 기록으로 나눕니다.", Content: ExpensesAndTiming },
+  { id: "inventory-and-cost", bookId: "accounting", readId: "accounting/inventory-and-cost", number: "05", title: "창고에서 비용으로", heading: "물건을 사면 모두 비용이 될까?", description: "상품 수량과 원가의 보존, 판매와 지급, 원가 배분을 함께 관찰합니다.", Content: InventoryAndCost },
+  { id: "working-capital", bookId: "accounting", readId: "accounting/working-capital", number: "06", title: "장사가 커질 때 묶이는 돈", heading: "더 팔았는데 왜 돈이 더 필요할까?", description: "채권·재고·매입채무와 지급일의 현금 부족을 같은 장부에서 연결합니다.", Content: WorkingCapital },
   { id: "housing-rights", bookId: "housing", readId: "housing/housing-rights", number: "01", title: "집에 사는 것과 집을 소유하는 것", heading: "같은 집에 살아도 가진 권리는 같을까?", description: "거주·소유·반환청구권·채무와 현금의 이동을 구분합니다.", Content: HousingRights },
   { id: "rent-and-deposit", bookId: "housing", readId: "housing/rent-and-deposit", number: "02", title: "월세와 보증금의 두 가격", heading: "월세가 작으면 더 싼 계약일까?", description: "보증금 차이와 월세 감소, 자금 출처·기회비용·초기 부족을 나눕니다.", Content: RentAndDeposit },
   { id: "rental-contract", bookId: "housing", readId: "housing/rental-contract", number: "03", title: "계약부터 입주까지의 권리 지도", heading: "계약서를 썼다는 사실만으로 무엇이 보호될까?", description: "계약의 문장을 자료·권한·서로 다른 날짜의 사실에 연결합니다.", Content: RentalContract },
@@ -170,6 +188,8 @@ export const chapters: Chapter[] = [
   { id: "indexes-and-costs", bookId: "database", readId: "database/indexes-and-costs", number: "04", title: "빨리 찾는 길과 그 비용", heading: "인덱스가 있으면 언제나 덜 읽을까?", description: "같은 행의 페이지 위치와 인덱스 경로, 읽기·쓰기의 다른 부담을 살펴봅니다.", Content: IndexesAndCosts },
   { id: "transactions", bookId: "database", readId: "database/transactions", number: "05", title: "함께 성공하거나 함께 취소하기", heading: "재고만 줄고 주문은 없으면 어떻게 막을까?", description: "미확정 변경·확정 상태·오류 후보와 취소 범위를 구별합니다.", Content: DatabaseTransactions },
   { id: "concurrency", bookId: "database", readId: "database/concurrency", number: "06", title: "동시에 마지막 한 개를 주문하면", heading: "트랜잭션 두 개가 각각 성공해도 틀릴 수 있을까?", description: "오래된 읽기·현재 버전·잠금 대기·snapshot과 교착의 고리를 연결합니다.", Content: DatabaseConcurrency },
+  { id: "connections-and-pools", bookId: "database", readId: "database/connections-and-pools", number: "07", title: "요청과 DB 연결 사이", heading: "SQL이 끝났는데 왜 연결을 기다릴까?", description: "요청·대여·연결·세션의 수명과 같은 client의 transaction을 연결합니다.", Content: DatabaseConnections },
+  { id: "explain-and-diagnosis", bookId: "database", readId: "database/explain-and-diagnosis", number: "08", title: "실행계획으로 느린 곳 찾기", heading: "예상한 행 수와 실제 행 수는 어디서 달라질까?", description: "계획의 부모·자식, 출력·반복·시간·버퍼와 앱 호출의 단위를 나눕니다.", Content: DatabaseExplain },
   { id: "tax-events", bookId: "tax", readId: "tax/tax-events", number: "01", title: "세금은 어디서 발생할까", heading: "모든 돈의 이동이 같은 세금 대상일까?", description: "소득·소비·보유·이전과 단순 자금 이동의 과세 검토 지점을 구분합니다.", Content: TaxEvents },
   { id: "progressive-tax", bookId: "tax", readId: "tax/progressive-tax", number: "02", title: "과세표준과 세율", heading: "높은 세율이 전체 금액에 적용될까?", description: "가상 과세표준의 구간별 금액과 세액·평균세율을 연결합니다.", Content: ProgressiveTax },
   { id: "withholding", bookId: "tax", readId: "tax/withholding", number: "03", title: "소득과 원천징수", heading: "급여 총액과 실수령액은 왜 다를까?", description: "급여의 세 갈래 목적지와 세법상 총급여를 분리합니다.", Content: Withholding },
@@ -551,13 +571,13 @@ type Book = {
 };
 export const books: Book[] = [
   { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–02장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
-  { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
-  { id: "observability", categoryId: "technology", volume: 5, title: "눈으로 이해하는 관측·로그·모니터링", category: "IT·기술 · 신호와 증거", cover: "OBSERVABILITY", description: "느림과 실패를 어떤 증거로 설명할까요?", overview: "로그·지표·트레이스와 수집·저장·조회의 경계를 눈으로 연결합니다.", future: "소개·01–02장 공개 · 합성 교육 모델이며 실제 관측 스택은 미실행입니다.", Intro: ObservabilityIntro },
-  { id: "probability", categoryId: "money", volume: 8, title: "확률과 금융 의사결정", category: "돈·경제 · 숫자의 근거와 불확실성", cover: "PROBABILITY & FINANCIAL DECISIONS", description: "좋아 보이는 숫자를 어디까지 믿어도 될까? 분모·분포·빠진 자료와 감당할 손실을 읽습니다.", overview: "요약에서 조건부 확률·추정·공동 위험·선택의 착시와 경로까지, 가상 사례로 판단의 질문을 익힙니다.", future: "소개·01–02장 공개 · 가상 자료의 원리를 다루며 실제 수익률·개인 안전성·상품 선택을 예측하거나 추천하지 않습니다.", Intro: ProbabilityIntro },
-  { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–04장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
+  { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–04장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
+  { id: "observability", categoryId: "technology", volume: 5, title: "눈으로 이해하는 관측·로그·모니터링", category: "IT·기술 · 신호와 증거", cover: "OBSERVABILITY", description: "느림과 실패를 어떤 증거로 설명할까요?", overview: "로그·지표·트레이스와 수집·저장·조회의 경계를 눈으로 연결합니다.", future: "소개·01–04장 공개 · 합성 교육 모델이며 실제 관측 스택은 미실행입니다.", Intro: ObservabilityIntro },
+  { id: "probability", categoryId: "money", volume: 8, title: "확률과 금융 의사결정", category: "돈·경제 · 숫자의 근거와 불확실성", cover: "PROBABILITY & FINANCIAL DECISIONS", description: "좋아 보이는 숫자를 어디까지 믿어도 될까? 분모·분포·빠진 자료와 감당할 손실을 읽습니다.", overview: "요약에서 조건부 확률·추정·공동 위험·선택의 착시와 경로까지, 가상 사례로 판단의 질문을 익힙니다.", future: "소개·01–04장 공개 · 가상 자료의 원리를 다루며 실제 수익률·개인 안전성·상품 선택을 예측하거나 추천하지 않습니다.", Intro: ProbabilityIntro },
+  { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–06장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–12장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
-  { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–06장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
+  { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–08장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
   { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–12장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
   { id: "insurance", categoryId: "money", volume: 4, title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 위험의 크기부터 계약·유지·해지·청구 시차와 설명서 읽기까지 연결합니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", volume: 3, title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },

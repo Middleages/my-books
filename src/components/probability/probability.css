@@ -6,3 +6,42 @@
 .prob-probability-axis{display:flex;justify-content:space-between;margin-right:calc(52px + .5rem);font-size:.78rem;color:#52617b}
 
 .prob-timeline strong,.prob-cash-status{word-break:keep-all}
+/* B: conditional denominators and theoretical versus observed records. */
+.prob-frequency .prob-probability-axis{margin-right:0}
+.prob-frequency-mass{display:grid;grid-template-columns:1fr auto;gap:.25rem .5rem;padding:.45rem 0;border-bottom:1px solid #e0e6ef;font-size:.9rem}
+.prob-frequency-mass>strong{grid-column:1;min-width:0}
+.prob-frequency-mass>.prob-probability-track{grid-column:1 / -1;grid-row:2}
+.prob-frequency-mass>span{grid-column:2;grid-row:1;text-align:right;overflow-wrap:anywhere}
+.prob-frequency .prob-numbers{margin-top:1rem}
+.prob-record-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;margin:1rem 0}
+.prob-record-group{min-width:0;text-align:center;border:1px solid #a6b8d1;border-radius:.35rem;padding:.35rem .1rem;background:#f6f9ff}
+.prob-record-group>small,.prob-record-group>span{display:block;font-size:.74rem;line-height:1.5;overflow-wrap:anywhere}
+.prob-record-group[data-unseen=true]{background:#fff;border-style:dashed}
+.prob-record-meter{height:64px;margin:.3rem .2rem;border:1px solid #9faec2;position:relative;display:grid;place-items:center;background:#fff}
+.prob-record-meter>i{position:absolute;inset:auto 0 0;background:repeating-linear-gradient(135deg,#d49a4b 0 4px,#f7dfb8 4px 8px);transition:height .25s ease}
+.prob-record-meter>strong{position:relative;background:#fff;padding:0 .2rem;color:#243d60;line-height:1.5}
+.prob-denominator{border-left:4px solid #5169b0;padding:.6rem .8rem;background:#edf1ff;word-break:keep-all;overflow-wrap:anywhere}
+.prob-count-root,.prob-count-parent,.prob-count-leaf{display:flex;flex-direction:column;gap:.35rem;padding:.8rem;border:1px solid #a7b8d1;border-radius:.5rem;background:#f5f8ff;text-align:center;word-break:keep-all;overflow-wrap:anywhere}
+.prob-count-root{margin:0 auto 1.4rem;max-width:400px;position:relative;border:2px solid #536fa2}
+.prob-count-root:after{content:'';position:absolute;width:2px;height:1.4rem;background:#8498b8;top:100%;left:50%}
+.prob-truth-branches{display:grid;grid-template-columns:1fr 1fr;gap:1rem;border-top:2px solid #8498b8;padding-top:1.2rem}
+.prob-count-branch{min-width:0;position:relative}
+.prob-count-branch:before{content:'';position:absolute;height:1.2rem;width:2px;background:#8498b8;top:-1.2rem;left:50%}
+.prob-count-branch[data-truth=error] .prob-count-parent{border-left:5px solid #425b99}
+.prob-count-branch[data-truth=normal] .prob-count-parent{border-left:5px double #9b6a33}
+.prob-count-leaves{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:1rem;border-top:1px solid #9aabc3;padding-top:.8rem}
+.prob-count-leaf{padding:.6rem .3rem;background:#fff;position:relative}
+.prob-count-leaf:before{content:'';position:absolute;height:.8rem;width:1px;background:#9aabc3;top:-.8rem;left:50%}
+.prob-count-leaf>b{font-size:.85rem}.prob-count-leaf>small{font-size:.78rem;line-height:1.5}
+.prob-count-leaf[data-selected=true]{border:3px solid #425b99;background:#eaf0ff}
+.prob-count-leaf[data-outside=true]{border-style:dashed;background:#f2f3f6}
+.prob-count-leaf[data-outside=true]:after{content:'선택 밖';font-size:.75rem;color:#42506b}
+.prob-alert-selection{border:2px solid #425b99}
+.prob-alert-parts{display:flex;height:38px;border:1px solid #52617b;width:100%;overflow:hidden;background:#fff}
+.prob-alert-parts>i{height:100%;transition:width .25s ease}
+.prob-alert-parts>[data-part=tp]{background:#425b99}
+.prob-alert-parts>[data-part=fp]{background:repeating-linear-gradient(135deg,#b18546 0 5px,#f2dec0 5px 10px)}
+.prob-selected-counts{padding-left:1.25rem;font-size:.9rem;line-height:1.8}
+.prob-empty-selection{min-height:80px;display:grid;place-items:center;text-align:center;border:2px dashed #67789a;padding:1rem}
+@container (max-width:500px){.prob-truth-branches{grid-template-columns:1fr;border-top:0;border-left:2px solid #8498b8;padding:0 0 0 .75rem;gap:1.25rem}.prob-count-branch:before{top:1.5rem;left:-.75rem;width:.75rem;height:2px}.prob-count-root:after{display:block;left:-2px;top:100%;height:1rem}.prob-count-root{margin-bottom:1rem}.prob-count-leaves{gap:.4rem}.prob-count-leaf{padding:.6rem .2rem}.prob-record-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem}.prob-frequency-mass{grid-template-columns:1fr}.prob-frequency-mass>strong{grid-column:1;grid-row:1}.prob-frequency-mass>span{grid-column:1;grid-row:3}.prob-frequency-mass>.prob-probability-track{grid-row:2}.prob-selected-counts{padding-left:1rem}}
+@media(prefers-reduced-motion:reduce){.prob-record-meter>i,.prob-alert-parts>i{transition:none}}

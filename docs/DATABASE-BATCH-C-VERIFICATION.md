@@ -88,3 +88,12 @@ DB 원본22장과 권차2장을 직접 열었다. 긴 정적 대안 원본4장�
 3. RR 종료 후에도 두 과거 조회5→5는 같은 회색 snapshot 이력 경계에 있고, 현재 head 재고3과 분리된다. 독립 교차 검토자가 이 320px 원본과 교착 고리 원본을 추가 확인해 차단 결함이 없음을 확인했다.
 4. 소유·대기 방향이 네 모서리를 따라 교착 고리를 만들고, 희생B abort 후 관계선이 제거된다. ROLLBACK 후 B 경계가 사라졌다가 새 B2 경계로 등장한다. 취소된 A의 재고/주문도 현재 경계에서 제거된다.
 5. 320px controls-and-effect 원본에서 조작·현재 해설·핵심 버전/관계 변화가 같은 viewport에 들어간다. 네 새 실험의 열린 정적 단계와 normal/reduced-motion 캡처는 읽을 수 있고 포커스가 보인다. 실제 기기·스크린리더나 실제 DB 실행 증거로 확대하지 않는다.
+
+
+## 정확한 main·Pages·실제 게시 확인 · 2026-10-20
+
+합본 main `47c36cc06fad15d87afd040ac5c259b421714d52`, tree `09766eee17e80d322b382d544b99085f7450916a`를 [Actions39397074938](https://github.com/Middleages/my-books/actions/runs/39397074938)에서 검사했다. 전체1134/1134 단위 테스트와 TypeScript/Vite393 modules build, 선택된 book-volumes·database·housing·accounting production4개, Pages 배포(09:06:30 UTC), 실제 게시4개가 모두 성공했다. 마지막 job까지09:15:45 UTC에 닫혔다. 보험·투자·세금·쿠버네티스 browser4개는 이 영향 범위 실행에서 생략됐으며 통과로 기록하지 않는다. 주거 전체권의 고정8×2 넓은 회귀는 별도 게이트다.
+
+실제 게시 JS `index-DsaNx52x.js`(2,955,457bytes) SHA-256 `42e3024c3a64992ebbd360cb3c32b72e80b7d72570ee3bf0103d1e26517bb163`, CSS `index-f58pl4aP.css`(356,058bytes) `be5043e056f9ded15ecad6ab7db8aeb0a2e1319bcfad3526864c88669613af78`가 같은 build의 전체 바이트와 일치했다. 작업 트리 변경은 없었다. 이 기록은 새로 실행한 합본의 결과이며 이전 단독 PR 기록과 구별한다.
+
+이 책의 published **416/416**, 고유 원본PNG **259**, 앱 오류0. 알려진 호스트 루트 favicon404 한 건은 별도 진단에 보존했다. artifact `12254815687`, ZIP SHA-256 `06b9a9c5d102a410e7ba0ffa39dd6f4b7a1764b1c19b4aa38db740d6ca4e659a`를 대조했다. C05–06의 실제 게시 핵심6원본을 작성자가 다시 열었다. 실패 후보/취소 이력과 현재 저장, 공동 확정, UPDATE0행과 잠금조회1행, 과거5→5와 최신3, 교착의 소유/대기 방향이 보존됐다. 이 배치 공개 게이트는 완료다. 정확한 파일별 직접 검토 범위와 합본 표는 [통합 기록](EXISTING-BOOKS-WAVE-VERIFICATION.md)을 따른다.

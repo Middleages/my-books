@@ -722,10 +722,114 @@ async function runBatchC(page,width,transactionModel,concurrencyModel) {
   await check(`${width} C06 reading preserves old and unknown IDs after reload`,async()=>{await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','database/files-and-database'])));await visit(page,'/database/concurrency');await page.reload();await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).waitFor();const ids=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));for(const id of ['unknown/keep','database/files-and-database','database/concurrency'])assert(ids.includes(id));return{ids};});
 }
 
+// D: exact ownership, node units and bounded timelines. Existing A/B/C assertions remain intact.
+async function primaryDScene(lab) { const svg=lab.locator('.db-figure').first().locator('svg:visible');assert.equal(await svg.count(),1);return svg; }
+async function assertPoolFrame(lab,f,count) {
+ await assertFrameText(lab,f,count);const svg=await primaryDScene(lab);
+ assert.equal(await svg.getAttribute('data-pool-tick'),String(f.tick));
+ assert.deepEqual(await svg.locator('[data-pool-request]').evaluateAll(es=>es.map(e=>({id:e.dataset.poolRequest,status:e.dataset.requestStatus}))),f.requests.map(r=>({id:r.id,status:r.status})));
+ assert.deepEqual(await svg.locator('[data-capacity-slot]').evaluateAll(es=>es.map(e=>e.dataset.capacitySlot)),f.slots.map(s=>s.id));
+ assert.deepEqual(await svg.locator('[data-client-node]').evaluateAll(es=>es.map(e=>({id:e.dataset.clientNode,owner:e.dataset.clientOwner}))),f.clients.map(c=>({id:c.id,owner:c.ownerRequestId??'none'})));
+ assert.deepEqual(await svg.locator('[data-session-node]').evaluateAll(es=>es.map(e=>e.dataset.sessionNode)),f.clients.map(c=>c.sessionId));
+ assert.deepEqual(await svg.locator('[data-pool-edge]').evaluateAll(es=>es.map(e=>({id:e.dataset.poolEdge,kind:e.dataset.kind,from:e.dataset.from,to:e.dataset.to,lease:e.getAttribute('data-lease')}))),f.edges.map(e=>({id:e.id,kind:e.kind,from:e.from,to:e.to,lease:e.leaseId})));
+ await assertGeometry(svg,f.edges.map(e=>({path:dataSelector('pool-edge',e.id),source:`${dataSelector(e.kind==='lease'?'pool-request':'client-node',e.from)} > rect`,target:`${dataSelector(e.kind==='lease'?'client-node':'session-node',e.to)} > rect`,sourceSide:'right',targetSide:'left',avoidSelector:'[data-pool-request] > rect, [data-client-node] > rect, [data-session-node] > rect'})));
+ for(const key of ['queued','inUse','openConnections','completed'])assert.equal(await lab.locator(`[data-pool-measure="${key}"]`).innerText(),String(f.metrics[key]));
+ const segments=await lab.locator('[data-pool-timeline] [data-time-segment]').evaluateAll(es=>es.map(e=>({id:e.dataset.timeSegment,kind:e.dataset.kind,start:Number(e.dataset.start),end:Number(e.dataset.end),x:e.getBBox().x,width:e.getBBox().width})));
+ assert.deepEqual(segments.map(({id,kind,start,end})=>({id,kind,start,end})),f.segments.map(({id,kind,start,end})=>({id,kind,start,end})));
+ for(const s of segments){assert(Math.abs(s.x-(38+s.start*19))<.01);assert(Math.abs(s.width-(s.end-s.start)*19)<.01);}
+}
+async function assertBindingFrame(lab,f,count) {
+ await assertFrameText(lab,f,count);const svg=await primaryDScene(lab);
+ assert.deepEqual(await svg.locator('[data-binding-call]').evaluateAll(es=>es.map(e=>({id:e.dataset.bindingCall,client:e.dataset.boundClient}))),f.calls.map(c=>({id:c.id,client:c.clientId})));
+ assert.deepEqual(await svg.locator('[data-binding-edge]').evaluateAll(es=>es.map(e=>({id:e.dataset.bindingEdge,from:e.dataset.from,to:e.dataset.to}))),f.edges);
+ assert.equal(await svg.locator('[data-binding-tx]').count(),f.activeTransactionClientId?1:0);
+ if(f.activeTransactionClientId)assert.equal(await svg.locator('[data-binding-tx]').getAttribute('data-binding-tx'),f.activeTransactionClientId);
+ assert((await svg.textContent()).includes(`최신 확정 재고 ${f.committedStock}개`));
+ await assertGeometry(svg,f.edges.map(e=>({path:dataSelector('binding-edge',e.id),source:`${dataSelector('binding-call',e.from)} > rect`,target:dataSelector('binding-client-line',e.to),sourceSide:'right',targetSide:'left',targetCentered:false})));
+}
+async function assertBudgetFrame(lab,f) {
+ assert.equal(await lab.locator('[data-budget-role]').count(),12);
+ assert.deepEqual(await lab.locator('[data-demand-token]').evaluateAll(es=>es.map(e=>({id:e.dataset.demandToken,excess:e.dataset.excess}))),f.tokens.map(t=>({id:t.id,excess:String(t.exceedsOrdinaryBudget)})));
+ assert.equal(await lab.locator('[data-budget-excess]').getAttribute('data-budget-excess'),String(f.excess));assert.equal(await lab.locator('[data-budget-fits]').getAttribute('data-budget-fits'),String(f.fits));
+ const boxes=await lab.locator('[data-demand-token]').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return{width:r.width,height:r.height}}));if(boxes.length)for(const b of boxes){assert(Math.abs(b.width-boxes[0].width)<1);assert(b.height>20);}
+ await assertExplanationBounds(lab,'.db-current p, .db-budget-verdict, .db-model-note');
+}
+async function assertExplainFrame(lab,f,count) {
+ await assertFrameText(lab,f,count);const svg=await primaryDScene(lab);
+ assert.deepEqual(await svg.locator('[data-plan-node]').evaluateAll(es=>es.map(e=>({id:e.dataset.planNode,estimated:e.dataset.estimated,actual:e.dataset.actual,loops:e.dataset.loops}))),f.nodes.map(n=>({id:n.id,estimated:String(n.estimatedRows),actual:String(n.actualRows??'unknown'),loops:String(n.loops??'unknown')})));
+ assert.deepEqual(await svg.locator('[data-plan-edge]').evaluateAll(es=>es.map(e=>({id:e.dataset.planEdge,from:e.dataset.from,to:e.dataset.to}))),f.edges);
+ await assertGeometry(svg,f.edges.map(e=>({path:dataSelector('plan-edge',e.id),source:`${dataSelector('plan-node',e.from)} > rect`,target:`${dataSelector('plan-node',e.to)} > rect`,sourceSide:'top',targetSide:'bottom',targetCentered:false,avoidSelector:'[data-plan-node] > rect'})));
+ const units=await svg.locator('[data-row-bar]').evaluateAll(es=>es.map(e=>({kind:e.dataset.rowBar,value:Number(e.dataset.value),width:e.getBBox().width})));assert.equal(units.length,f.nodes.length+f.nodes.filter(n=>n.actualRows!==null).length);const positive=units.filter(u=>u.value>0);for(const u of positive)assert(Math.abs(u.width/u.value-positive[0].width/positive[0].value)<.03,'Plan node row bars must share an actual geometric unit');
+ const textBounds=await svg.locator('[data-plan-node]').evaluateAll(es=>es.flatMap(g=>{const b=g.querySelector('rect').getBBox();return[...g.querySelectorAll('text')].map(t=>({text:t.textContent,left:t.getBBox().x,right:t.getBBox().x+t.getBBox().width,boxLeft:b.x,boxRight:b.x+b.width}));}));for(const t of textBounds)assert(t.left>=t.boxLeft-1&&t.right<=t.boxRight+1,`Node text leaves its own box: ${JSON.stringify(t)}`);
+ const selected=await lab.locator('[data-selected-plan-node]').getAttribute('data-selected-plan-node'),n=f.nodes.find(n=>n.id===selected);assert(n);
+ for(const key of ['estimatedRows','actualRows','loops','totalEmitted'])assert.equal(await lab.locator(`[data-plan-measure="${key}"]`).innerText(),key==='estimatedRows'?`${n[key]}행`:String(n[key]??'미관측'));
+ assert.deepEqual(await lab.locator('[data-buffer-access]').evaluateAll(es=>es.map(e=>({id:e.dataset.bufferAccess,pageId:e.dataset.pageId}))),n.bufferAccesses.map(a=>({id:a.id,pageId:a.pageId})));
+ assert.equal(await lab.locator('[data-result-rows]').count(),f.result?1:0);if(f.result){assert.equal(await lab.locator('[data-result-rows]').getAttribute('data-result-rows'),String(f.result.rows));assert.equal(await lab.locator('[data-count-value]').getAttribute('data-count-value'),String(f.result.countValue??'none'));}
+ assert.deepEqual(await lab.locator('[data-plan-packet]').evaluateAll(es=>es.map(e=>e.dataset.planPacket)),f.example==='nested-loop'?f.packets.map(p=>p.id):[]);
+ if(f.example==='nested-loop')assert.deepEqual(await lab.locator('[data-packet-edge]').evaluateAll(es=>es.map(e=>({from:e.dataset.from,to:e.dataset.to}))),f.packets.flatMap(p=>p.outputIds.map(id=>({from:p.inputIds.find(id=>id.startsWith('orders:')),to:id}))));
+ assert.deepEqual(await lab.locator('[data-inclusive-interval]').evaluateAll(es=>es.map(e=>e.dataset.inclusiveInterval)),f.intervals.map(i=>i.id));
+ assert.equal(await lab.locator('[data-limit-visited]').count(),f.stopProof?1:0);if(f.stopProof)assert.equal(await lab.locator('[data-limit-visited]').getAttribute('data-limit-visited'),String(f.stopProof.visited));
+ await assertExplanationBounds(lab,'.db-plan-detail p, .db-plan-result, .db-limit-proof');
+}
+function dPlaybackSpecs(connectionModel,explainModel) {return[
+ {route:'/database/connections-and-pools',lab:'pool',assertion:assertPoolFrame,initial:connectionModel.poolFrames(),changed:connectionModel.poolFrames({scenario:'long-hold'}),setting:'연결 사용과 반환',changedValue:'long-hold',prediction:'release',defaults:[['한 앱의 풀 상한','2'],['연결 사용과 반환','normal'],['경로를 강조할 요청','R1']]},
+ {route:'/database/connections-and-pools',lab:'connection-binding',assertion:assertBindingFrame,initial:connectionModel.bindingFrames(),changed:connectionModel.bindingFrames({mode:'split'}),setting:'transaction의 연결 배정',changedValue:'split',defaults:[['transaction의 연결 배정','pinned']]},
+ {route:'/database/explain-and-diagnosis',lab:'explain',assertion:assertExplainFrame,initial:explainModel.explainFrames(),changed:explainModel.explainFrames({example:'nested-loop'}),setting:'실행계획의 고정 예',changedValue:'nested-loop',defaults:[['실행계획의 고정 예','growth-count'],['관측하는 범위','true'],['64행 예의 예상','low']]},
+];}
+async function runBatchD(page,width,connectionModel,explainModel) {
+ const specs=dPlaybackSpecs(connectionModel,explainModel);
+ await check(`${width} D explicit selector preflight`,async()=>{for(const s of specs){await visit(page,s.route);const lab=page.locator(`[data-db-lab="${s.lab}"]`);assert.equal(await lab.count(),1);for(const [label]of s.defaults)assert.equal(await lab.getByLabel(label,{exact:true}).count(),1);}});
+ await visit(page,'/database/connections-and-pools');const pool=page.locator('[data-db-lab=pool]');
+ for(const size of connectionModel.POOL_SIZES)for(const scenario of connectionModel.POOL_SCENARIOS)await check(`${width} D07 pool${size} ${scenario} all ownership and timeline frames`,async()=>{
+  await selectSettings(pool,[['한 앱의 풀 상한',size],['연결 사용과 반환',scenario]]);const frames=connectionModel.poolFrames({size,scenario});
+  await eachFrame(pool,frames,assertPoolFrame,async f=>{if(f.phase==='dispatch'||scenario==='long-hold'&&f.tick===3)await snapBState(page,`${width}-d07-pool${size}-${scenario}-${f.phase}-${f.tick}`,pool);});await audit(page);await snapBState(page,`${width}-d07-pool${size}-${scenario}-final`,pool);if(width<600&&size===2&&scenario==='normal')await snapNearEffect(page,`${width}-d07-controls-effect`,pool);return{frames:frames.length,metrics:frames.at(-1).metrics};
+ });
+ const binding=page.locator('[data-db-lab=connection-binding]');for(const mode of connectionModel.BINDING_MODES)await check(`${width} D07 binding ${mode} same-client boundaries`,async()=>{await selectSettings(binding,[['transaction의 연결 배정',mode]]);const frames=connectionModel.bindingFrames({mode});await eachFrame(binding,frames,assertBindingFrame,async f=>{if(f.phase==='update')await snapBState(page,`${width}-d07-binding-${mode}-update`,binding);});await audit(page);await snapBState(page,`${width}-d07-binding-${mode}-final`,binding);});
+ const budget=page.locator('[data-db-lab=connection-budget]');for(const instances of connectionModel.CAPACITY_INSTANCES)for(const poolMax of connectionModel.CAPACITY_MAXIMA)await check(`${width} D07 budget ${instances}x${poolMax} visible conserved overflow`,async()=>{await budget.getByLabel('앱 인스턴스 수',{exact:true}).selectOption(String(instances));await budget.getByLabel('인스턴스별 풀 최대',{exact:true}).selectOption(String(poolMax));await assertBudgetFrame(budget,connectionModel.connectionBudget({instances,poolMax}));await audit(page);await snapBState(page,`${width}-d07-budget-${instances}x${poolMax}`,budget);});
+ await check(`${width} D07 budget keyboard reset`,async()=>{await budget.getByRole('button',{name:'연결 예산 초기화',exact:true}).focus();await page.keyboard.press('Enter');await assertBudgetFrame(budget,connectionModel.connectionBudget());});
+ await visit(page,'/database/explain-and-diagnosis');const plan=page.locator('[data-db-lab=explain]');
+ for(const example of explainModel.EXPLAIN_CASES)for(const observed of [false,true])for(const estimate of example==='growth-count'?explainModel.EXPLAIN_ESTIMATES:['low'])await check(`${width} D08 ${example} ${observed} ${estimate} rows loops units and limits`,async()=>{
+  await plan.getByRole('button',{name:'전체 초기화',exact:true}).click();await selectSettings(plan,[['64행 예의 예상',estimate],['실행계획의 고정 예',example],['관측하는 범위',observed]]);const frames=explainModel.explainFrames({example,observed,estimate});
+  await eachFrame(plan,frames,assertExplainFrame,async f=>{if(['scan','inner-1','inner-2','limited-scan'].includes(f.phase))await snapBState(page,`${width}-d08-${example}-${estimate}-${f.phase}`,plan);});
+  const final=frames.at(-1);for(const n of final.nodes){await plan.getByLabel('자세히 볼 plan 노드',{exact:true}).selectOption(n.id);await assertExplainFrame(plan,final,frames.length);}
+  await audit(page);await snapBState(page,`${width}-d08-${example}-${observed}-${estimate}-final`,plan);return{frames:frames.length,result:final.result};
+ });
+ await check(`${width} D08 separate app calls and long SQL explanations`,async()=>{const calls=page.locator('[data-db-lab=app-calls]');const c=explainModel.appCallComparison();assert.deepEqual(await calls.locator('[data-app-call]').evaluateAll(es=>es.map(e=>e.dataset.appCall)),[...c.oneQuery,...c.nPlusOne].map(c=>c.id));assert.deepEqual(await calls.locator('[data-app-call-rows]').evaluateAll(es=>es.map(e=>Number(e.dataset.appCallRows))),[...c.oneQuery,...c.nPlusOne].map(c=>c.outputIds.length));assert.equal(Number(await calls.locator('[data-app-assembled-rows]').getAttribute('data-app-assembled-rows')),c.applicationRows);assert.match(await calls.innerText(),/JOIN 3행, 나눈 호출 5행/);await assertExplanationBounds(calls,'p, small');await plan.getByText('실행하지 않는 SQL 예시',{exact:true}).click();await assertExplanationBounds(plan,'.db-plan-sql code');await audit(page);await snapBState(page,`${width}-d08-explain-sql`,plan);await snap(page,`${width}-d08-app-calls`,calls);});
+ for(const spec of specs)await check(`${width} D ${spec.lab} reduced-motion keyboard pause static reset cleanup`,()=>exerciseDPlayback(page,spec,'reduce'));
+ await check(`${width} D08 reading persistence preserves known and unknown IDs`,async()=>{await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','database/concurrency'])));await visit(page,'/database/explain-and-diagnosis');await page.reload();await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).waitFor();const ids=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));for(const id of ['unknown/keep','database/concurrency','database/explain-and-diagnosis'])assert(ids.includes(id));});
+}
+
+async function exerciseDPlayback(page,spec,motion) {
+  await visit(page,spec.route);const lab=page.locator(`[data-db-lab="${spec.lab}"]`);
+  await lab.getByRole('button',{name:'전체 초기화',exact:true}).click();
+  assert.equal(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),motion==='reduce');
+  await spec.assertion(lab,spec.initial[0],spec.initial.length);await page.waitForTimeout(1750);await spec.assertion(lab,spec.initial[0],spec.initial.length);
+  const next=lab.getByRole('button',{name:'다음 단계',exact:true});await next.focus();await page.keyboard.press('Enter');
+  assert.equal(await next.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')),true);
+  const focus=await next.evaluate(e=>{const s=getComputedStyle(e);return{outline:s.outlineStyle,width:parseFloat(s.outlineWidth),shadow:s.boxShadow};});
+  assert(focus.outline!=='none'&&focus.width>0||focus.shadow!=='none');await spec.assertion(lab,spec.initial[1],spec.initial.length);
+  await lab.getByRole('button',{name:'이전',exact:true}).focus();await page.keyboard.press('Enter');await spec.assertion(lab,spec.initial[0],spec.initial.length);
+  await lab.getByRole('button',{name:'재생',exact:true}).click();await page.waitForFunction(({id})=>!document.querySelector(`[data-db-lab="${id}"] .db-step-count`).textContent.startsWith('1 /'),{id:spec.lab});
+  await lab.getByRole('button',{name:'정지',exact:true}).click();const frozen=await lab.locator('.db-step-count').innerText(),drawing=await(await primaryDScene(lab)).innerHTML();
+  await page.waitForTimeout(1750);assert.equal(await lab.locator('.db-step-count').innerText(),frozen);assert.equal(await(await primaryDScene(lab)).innerHTML(),drawing);assert.equal(await lab.evaluate(e=>e.getAnimations({subtree:true}).filter(a=>a.playState==='running').length),0);
+  if(motion==='no-preference')await snapBState(page,`${page.viewportSize().width}-d-${spec.lab}-normal-paused`,lab);
+  await lab.getByRole('button',{name:'다시 보기',exact:true}).click();
+  const summary=lab.getByText('모든 단계 · 움직임 없이 읽기',{exact:true});if(!await summary.evaluate(e=>e.parentElement.open)){await summary.focus();await page.keyboard.press('Enter');}
+  const details=summary.locator('..');assert.deepEqual(await details.locator('li strong').allTextContents(),spec.initial.map(f=>f.title));assert.deepEqual(await details.locator('li p').allTextContents(),spec.initial.map(f=>f.detail));
+  await assertExplanationBounds(lab,'.db-static li p');await snapBState(page,`${page.viewportSize().width}-d-${spec.lab}-${motion}-static-open`,lab);
+  if(spec.prediction)await lab.getByLabel('먼저 예상해 보세요',{exact:true}).selectOption(spec.prediction);
+  await lab.getByRole('button',{name:'재생',exact:true}).click();const setting=lab.getByLabel(spec.setting,{exact:true});await setting.focus();await page.keyboard.press('Home');await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
+  assert.equal(await setting.inputValue(),spec.changedValue);if(spec.prediction)assert.equal(await lab.getByLabel('먼저 예상해 보세요',{exact:true}).inputValue(),'');await page.waitForTimeout(1750);await spec.assertion(lab,spec.changed[0],spec.changed.length);assert.equal(await lab.getByRole('button',{name:'정지',exact:true}).count(),0);
+  await lab.getByRole('button',{name:'전체 초기화',exact:true}).click();for(const[label,value]of spec.defaults)assert.equal(await lab.getByLabel(label,{exact:true}).inputValue(),value);await spec.assertion(lab,spec.initial[0],spec.initial.length);
+  await lab.getByRole('button',{name:'재생',exact:true}).click();await visit(page,'/database');await page.waitForTimeout(1750);await visit(page,spec.route);await spec.assertion(page.locator(`[data-db-lab="${spec.lab}"]`),spec.initial[0],spec.initial.length);
+  return{motion,frozen,staticSteps:spec.initial.length,routeCleanup:true};
+}
+
 (async()=>{try{
   const model=await import(pathToFileURL(path.join(root,'src/simulations/database/foundation.mjs')));const fixtureModel=await import(pathToFileURL(path.join(root,'src/simulations/database/fixture.mjs')));
   const queryModel=await import(pathToFileURL(path.join(root,'src/simulations/database/queries.mjs'))),indexModel=await import(pathToFileURL(path.join(root,'src/simulations/database/indexes.mjs')));
   const transactionModel=await import(pathToFileURL(path.join(root,'src/simulations/database/transactions.mjs'))),concurrencyModel=await import(pathToFileURL(path.join(root,'src/simulations/database/concurrency.mjs')));
+  const connectionModel=await import(pathToFileURL(path.join(root,'src/simulations/database/connections.mjs'))),explainModel=await import(pathToFileURL(path.join(root,'src/simulations/database/explain.mjs')));
   if(process.env.LIVE_URL){base=process.env.LIVE_URL.endsWith('/')?process.env.LIVE_URL:process.env.LIVE_URL+'/';await check('exact published assets match this dist',async()=>{const html=await fetch(base+'?dbqa='+Date.now()).then(r=>{assert.equal(r.ok,true);return r.text();});const local=fs.readFileSync(path.join(dist,'index.html'),'utf8');const assets=[...local.matchAll(/(?:src|href)="([^"]+\/assets\/[^\"]+)"/g)].map(m=>m[1]);assert(assets.length>=2);const compared=[];for(const url of assets){assert(html.includes(url),`Live HTML missing ${url}`);const remote=Buffer.from(await fetch(new URL(url,base)).then(r=>{assert.equal(r.ok,true);return r.arrayBuffer();}));const filename=url.split('/assets/')[1];const localBytes=fs.readFileSync(path.join(dist,'assets',filename));assert.equal(hash(remote),hash(localBytes));compared.push({asset:filename,sha256:hash(remote)});}return compared;});}
   else{server=http.createServer((req,res)=>{let name=decodeURIComponent(req.url.split('?')[0]).replace(/^\/my-books\//,'/');if(req.url.split('?')[0]==='/favicon.ico'){res.writeHead(204).end();return;}if(name==='/'||!path.extname(name))name='/index.html';const full=path.resolve(dist,'.'+name);if(!full.startsWith(dist+path.sep)){res.writeHead(403).end();return;}fs.readFile(full,(err,data)=>{if(err){res.writeHead(404).end();return;}res.setHeader('Content-Type',name.endsWith('.js')?'application/javascript':name.endsWith('.css')?'text/css':'text/html');res.end(data);});});await new Promise(r=>server.listen(0,'127.0.0.1',r));base=`http://127.0.0.1:${server.address().port}/my-books/`;}
   browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
@@ -751,6 +855,7 @@ async function runBatchC(page,width,transactionModel,concurrencyModel) {
     await check(`${width} book filter and reading storage preserve unknown IDs`,async()=>{await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','database/files-and-database'])));await visit(page,'/');await page.reload();await page.getByRole('button',{name:/^IT·기술/}).click();assert.equal(await page.locator('a.home-book[href="#/database"]').count(),1);assert.equal(await page.locator('a.home-book[href="#/database"] .home-book-volume').innerText(),'IT·기술 4권');assert((await page.locator('a.home-book[href="#/database"]').innerText()).includes(`1 / ${chapters.length}`));await page.locator('a.home-book[href="#/database"]').click();assert.equal(await page.locator('.book-volume').innerText(),'IT·기술 4권');await page.locator('nav[aria-label="챕터 목차"]').getByRole('link',{name:/01.*파일 다음/}).click();const readButton=page.getByRole('button',{name:/읽음/}).last();await readButton.click();await page.reload();const ids=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(ids.includes('unknown/keep'));assert(!ids.includes('database/files-and-database'));await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).waitFor();const restored=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(restored.includes('unknown/keep'));assert(restored.includes('database/files-and-database'));return{ids,restored};});
     await runBatchB(page,width,queryModel,indexModel,fixtureModel);
     await runBatchC(page,width,transactionModel,concurrencyModel);
+    await runBatchD(page,width,connectionModel,explainModel);
     await context.close();
   }
   // Reduced motion is the primary three-width matrix; a separate real context proves normal-motion controls too.
@@ -759,6 +864,7 @@ async function runBatchC(page,width,transactionModel,concurrencyModel) {
   wirePageDiagnostics(normalPage, 390, 'no-preference');
   for (const spec of bPlaybackSpecs(queryModel, indexModel)) await check(`390 B ${spec.lab} normal-motion keyboard pause settings reset static route cleanup`, () => exerciseBPlayback(normalPage, spec, 'no-preference'));
   for (const spec of cPlaybackSpecs(transactionModel, concurrencyModel)) await check(`390 C ${spec.lab} normal-motion keyboard pause settings reset static route cleanup`, () => exerciseCPlayback(normalPage, spec, 'no-preference'));
+  for (const spec of dPlaybackSpecs(connectionModel, explainModel)) await check(`390 D ${spec.lab} normal-motion keyboard pause settings reset static route cleanup`, () => exerciseDPlayback(normalPage, spec, 'no-preference'));
   await normalContext.close();
   await check('no browser runtime errors',async()=>{assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.consoleErrors,[]);assert.deepEqual(report.resourceErrors,[]);});
 } catch(error){report.fatal=String(error.stack||error);process.exitCode=1;}finally{await browser?.close();if(server)await new Promise(r=>server.close(r));report.finished=new Date().toISOString();report.passed=report.checks.filter(c=>c.status==='passed').length;report.failed=report.checks.filter(c=>c.status==='failed').length;fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({passed:report.passed,failed:report.failed,fatal:report.fatal,screenshots:report.screenshots.length}));if(report.failed||report.fatal)process.exitCode=1;}})();

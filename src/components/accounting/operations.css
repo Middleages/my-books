@@ -1,0 +1,40 @@
+.ac-operations h3{word-break:keep-all;text-wrap:balance}
+.ac-stock-locations{display:grid;grid-template-columns:minmax(0,1fr) 2rem minmax(0,1fr);gap:.65rem;align-items:stretch}
+.ac-stock-zone{border:2px solid #40836d;border-radius:12px;padding:1rem;min-width:0;background:#f6fbf8}
+.ac-stock-zone h3,.ac-stock-zone p{margin-top:0}
+.ac-stock-zone.is-delivered{border-style:dashed;border-color:#9a704c;background:#fcf8f2}
+.ac-stock-direction{display:grid;place-items:center;font-size:1.8rem}
+.ac-parcels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.4rem;min-height:7rem;align-content:start}
+.ac-parcel{border:1px solid #43826f;border-radius:4px;background:#d7eee3;display:flex;flex-direction:column;align-items:center;padding:.4rem .1rem}
+.ac-parcel.is-planned{background:transparent;border-style:dashed;font-size:.75rem}
+.ac-parcel.is-sold{border-color:#9a704c;background:repeating-linear-gradient(45deg,#ecd8c3,#ecd8c3 3px,#faf3e9 3px,#faf3e9 7px)}
+.ac-parcel small{font-size:.7rem}
+.ac-cost-track,.ac-owc-track,.ac-due-track{display:flex;overflow:hidden;height:30px;border:1px solid #c6d8cf;background:#f5f8f5}
+.ac-cost-track>span,.ac-owc-track>span,.ac-due-track>span{flex-shrink:0;display:block;height:100%}
+.ac-cost-remaining{background:#4c8b74}
+.ac-cost-sold{background:repeating-linear-gradient(45deg,#9b6b48,#9b6b48 4px,#e4c5a9 4px,#e4c5a9 8px)}
+.ac-inventory-scene>h3{margin-top:1.5rem}
+.ac-allocation{background:#f8f3e9;border-left:4px solid #9a704c;padding:1rem;margin:1rem 0}
+.ac-owc-row{margin:1rem 0}
+.ac-owc-row>strong{display:block;margin-bottom:.4rem}
+.ac-owc-row p{margin:.35rem 0}
+.ac-owc-receivable{background:repeating-linear-gradient(45deg,#7f67a5,#7f67a5 5px,#d4c9e6 5px,#d4c9e6 9px)}
+.ac-owc-payable{background:repeating-linear-gradient(90deg,#b68432,#b68432 4px,#e9d3a5 4px,#e9d3a5 7px)}
+.ac-owc-equation{font-weight:600;border-top:1px solid #c6d8cf;padding-top:1rem}
+.ac-cash-history{display:grid;gap:.75rem}
+.ac-cash-history-row{display:grid;grid-template-columns:4.6rem minmax(0,1fr) 2.4rem;gap:.45rem;align-items:center;font-size:.9rem}
+.ac-history-track{height:24px;border:1px solid #cad9d2;background:repeating-linear-gradient(90deg,#f7faf8,#f7faf8 calc(12.5% - 1px),#dce6e1 calc(12.5% - 1px),#dce6e1 12.5%)}
+.ac-history-track>span{display:block;height:100%;background:#397d65}
+.ac-missed{grid-column:1/-1;color:#8b332c;font-size:.85rem}
+.ac-payment-attempt{padding:1rem;border:2px solid #3a7e66;margin-top:1.2rem;border-radius:8px}
+.ac-payment-attempt.is-blocked{border-style:dashed;border-color:#9e4439}
+.ac-due-covered{background:#458a70}
+.ac-due-short{background:repeating-linear-gradient(45deg,#aa4036,#aa4036 3px,#f7d6cb 3px,#f7d6cb 6px)}
+@container (max-width:680px){
+ .ac-stock-locations{grid-template-columns:1fr}
+ .ac-stock-direction{transform:rotate(90deg);height:1.8rem}
+ .ac-parcels{min-height:3rem}
+ .ac-stock-zone{padding:.7rem}
+ .ac-cash-history-row{grid-template-columns:4.3rem minmax(0,1fr) 2rem;gap:.25rem;font-size:.8rem}
+ .ac-payment-attempt{padding:.7rem}
+}
