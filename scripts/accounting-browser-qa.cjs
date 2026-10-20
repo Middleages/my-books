@@ -1,0 +1,95 @@
+/* Production/published accounting verifier. PNG creation is not visual review. */
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
+const {execFileSync}=require('node:child_process'),{createHash}=require('node:crypto'),{pathToFileURL}=require('node:url');
+const assert=require('node:assert/strict'),{chromium}=require('playwright');
+const {classifyDiagnostic}=require('./accounting-browser-diagnostics.cjs');
+const root=path.resolve(__dirname,'..'),dist=path.join(root,'dist'),out=path.join(root,'artifacts/accounting-browser');fs.mkdirSync(out,{recursive:true});
+const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+const report={started:new Date().toISOString(),mode:process.env.LIVE_URL?'published':'production',sourceSha:git('rev-parse','HEAD'),sourceTree:git('rev-parse','HEAD^{tree}'),sourceChanges:git('status','--porcelain'),checks:[],screenshots:[],pageErrors:[],consoleErrors:[],resourceErrors:[],hostDiagnostics:[],visualReview:'PNGs require a separate direct visual review.'};
+const catalog=fs.readFileSync(path.join(root,'src/catalog.ts'),'utf8');
+const chapters=[...catalog.matchAll(/id:\s*"([^"]+)"\s*,\s*bookId:\s*"accounting"\s*,\s*readId:\s*"([^"]+)"\s*,\s*number:\s*"([^"]+)"[^}]*?heading:\s*"([^"]+)"/g)].map(m=>({id:m[1],readId:m[2],number:m[3],heading:m[4]}));
+const routes=['/accounting',...chapters.map(c=>`/accounting/${c.id}`)];
+let browser,server,base;
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+async function check(name,fn){try{const details=await fn();report.checks.push({name,status:'passed',details});console.log('PASS',name);}catch(error){report.checks.push({name,status:'failed',error:String(error.stack||error)});console.error('FAIL',name,error.message);}}
+async function snap(page,name,locator){await page.evaluate(()=>document.fonts.ready);const file=name+'.png';if(locator)await locator.screenshot({path:path.join(out,file),animations:'disabled'});else await page.screenshot({path:path.join(out,file),fullPage:true,animations:'disabled'});report.screenshots.push(file);}
+async function visit(page,route){await page.goto(base+'#'+route,{waitUntil:'networkidle'});if(route==='/')await page.locator('#home-books').waitFor();else await page.getByRole('heading',{level:1,name:chapters.find(c=>route===`/accounting/${c.id}`)?.heading||'회계와 기업의 돈',exact:true}).waitFor();}
+function observe(page,width){
+ page.on('pageerror',error=>report.pageErrors.push({width,error:String(error)}));
+ const record=(entry,collection)=>{const result=classifyDiagnostic({width,...entry},base);(result.kind==='application'?collection:report.hostDiagnostics).push(result);};
+ page.on('console',message=>{if(message.type()==='error')record({type:'console',message:message.text(),source:message.location().url,line:message.location().lineNumber,column:message.location().columnNumber},report.consoleErrors);});
+ page.on('response',response=>{if(response.status()>=400)record({type:'response',url:response.url(),status:response.status()},report.resourceErrors);});
+ page.on('requestfailed',request=>record({type:'requestfailed',url:request.url(),error:request.failure()?.errorText},report.resourceErrors));
+}
+async function audit(page){
+ const x=await page.evaluate(()=>{const visible=e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden';return{width:innerWidth,scroll:document.documentElement.scrollWidth,headings:document.querySelectorAll('main h1').length,nested:document.querySelectorAll('p p').length,inputs:[...document.querySelectorAll('main input,main select')].filter(e=>!e.labels?.length&&!e.getAttribute('aria-label')).map(e=>e.outerHTML),overflow:[...document.querySelectorAll('main *')].filter(e=>visible(e)&&!e.closest('.ac-table')&&e.getBoundingClientRect().right>innerWidth+1).slice(0,8).map(e=>({tag:e.tagName,cls:e.className?.baseVal??e.className,text:e.textContent.slice(0,60)}))};});
+ assert(x.scroll<=x.width+1,JSON.stringify(x));assert.deepEqual(x.overflow,[],JSON.stringify(x));assert.equal(x.headings,1);assert.equal(x.nested,0);assert.deepEqual(x.inputs,[]);return x;
+}
+async function assertBars(lab,frame,model){
+ const bars=lab.locator('.ac-balance');assert.equal(await bars.count(),2);
+ for(const [index,f] of [{...frame.before,scale:frame.scale},frame].entries()){
+  const bar=bars.nth(index);for(const [key,value] of Object.entries({assets:f.assets,liabilities:f.liabilities,equity:f.equity,cash:f.balances.cash,scale:f.scale}))assert.equal(await bar.getAttribute('data-'+key),String(value));
+  assert.equal(await bar.locator('.ac-equation').getAttribute('data-balanced'),'true');
+  const expected=Object.values(model.ledgerSegments(f)).flat().filter(s=>s.value>0);
+  const actual=await bar.locator('[data-account]').evaluateAll(es=>es.map(e=>{const p=e.parentElement;return{key:e.dataset.account,value:Number(e.dataset.value),fraction:Number(e.dataset.fraction),width:e.getBoundingClientRect().width,track:p.getBoundingClientRect().width-parseFloat(getComputedStyle(p).borderLeftWidth)-parseFloat(getComputedStyle(p).borderRightWidth)};}));
+  assert.equal(actual.length,expected.length);for(let i=0;i<actual.length;i++){assert.equal(actual[i].key,expected[i].key);assert.equal(actual[i].value,expected[i].value);assert(Math.abs(actual[i].fraction-expected[i].fraction)<1e-9);assert(Math.abs(actual[i].width-actual[i].track*expected[i].fraction)<1.1,JSON.stringify(actual[i]));}
+ }
+ const widths=await bars.locator('.ac-bar-track').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().width));assert(Math.max(...widths)-Math.min(...widths)<1.1,'Before and after must use the same physical scale');
+}
+async function assertBoundary(lab,f,model){
+ await assertBars(lab,f,model);const svg=lab.locator('svg:visible');assert.equal(await svg.count(),1);assert.equal(await svg.getAttribute('data-boundary-mode'),f.mode);assert.equal(await svg.getAttribute('data-committed'),String(f.committed));assert((await svg.getAttribute('aria-label')).includes(`현금 ${f.balances.cash}`));
+ assert.equal(await lab.locator('.ac-result').getAttribute('data-revenue'),'0');assert.equal(await lab.locator('.ac-result').getAttribute('data-cash-change'),String(f.cashChange));
+ const geometry=await svg.locator('[data-money-path]').evaluate(p=>{const start=p.getPointAtLength(0),end=p.getPointAtLength(p.getTotalLength());return{start:{x:start.x,y:start.y},end:{x:end.x,y:end.y},d:p.getAttribute('d'),dash:p.getAttribute('stroke-dasharray')};});
+ assert(geometry.end.x>geometry.start.x||geometry.end.y>geometry.start.y);assert.equal(geometry.dash,f.committed?null:'6 4');
+ return geometry;
+}
+async function assertDouble(lab,f,model){
+ await assertBars(lab,f,model);const rows=await lab.locator('[data-posting-account]').evaluateAll(es=>es.map(e=>({account:e.dataset.postingAccount,side:e.dataset.postingSide,amount:Number(e.dataset.postingAmount)})));
+ assert.deepEqual(rows,f.event?.rows??[]);assert((await lab.locator('.ac-result').innerText()).includes(`자산 ${f.assets} = 부채 ${f.liabilities} + 자본 ${f.equity}`));
+}
+(async()=>{try{
+ const model=await import(pathToFileURL(path.join(root,'src/simulations/accounting/foundation.mjs')));
+ assert(chapters.length>=2,'No implemented accounting chapters found');
+ const localHTML=fs.readFileSync(path.join(dist,'index.html'),'utf8');const assets=[...localHTML.matchAll(/(?:src|href)="([^"]+\/assets\/[^\"]+)"/g)].map(m=>m[1]);assert(assets.length>=2);
+ report.assets=assets.map(url=>{const name=url.split('/assets/')[1],bytes=fs.readFileSync(path.join(dist,'assets',name));return{asset:name,bytes:bytes.length,sha256:hash(bytes)};});
+ if(process.env.LIVE_URL){base=process.env.LIVE_URL.endsWith('/')?process.env.LIVE_URL:process.env.LIVE_URL+'/';await check('exact published HTML and full asset bytes match this dist',async()=>{const html=await fetch(base+'?accountingqa='+Date.now()).then(r=>{assert(r.ok);return r.text();});const compared=[];for(const url of assets){assert(html.includes(url),`Missing asset ${url}`);const remote=Buffer.from(await fetch(new URL(url,base)).then(r=>{assert(r.ok);return r.arrayBuffer();}));const local=fs.readFileSync(path.join(dist,'assets',url.split('/assets/')[1]));assert.equal(remote.length,local.length);assert.equal(hash(remote),hash(local));compared.push({url,bytes:remote.length,sha256:hash(remote)});}return compared;});if(report.checks.some(c=>c.status==='failed'))throw Error('Published bytes do not match: refusing to test unrelated code');}
+ else{server=http.createServer((req,res)=>{let name=decodeURIComponent(req.url.split('?')[0]).replace(/^\/my-books\//,'/');if(name==='/favicon.ico'){res.writeHead(204).end();return;}if(name==='/'||!path.extname(name))name='/index.html';const full=path.resolve(dist,'.'+name);if(!full.startsWith(dist+path.sep)){res.writeHead(403).end();return;}fs.readFile(full,(error,bytes)=>{if(error){res.writeHead(404).end();return;}res.setHeader('Content-Type',name.endsWith('.js')?'application/javascript':name.endsWith('.css')?'text/css':'text/html');res.end(bytes);});});await new Promise(r=>server.listen(0,'127.0.0.1',r));base=`http://127.0.0.1:${server.address().port}/my-books/`;}
+ report.base=base;
+ browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+ for(const width of [1440,390,320]){
+  const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'}),page=await context.newPage();observe(page,width);
+  for(const route of routes)await check(`${width} render ${route}`,async()=>{await visit(page,route);const result=await audit(page);await snap(page,`${width}-${route.replaceAll('/','-')}`);return result;});
+  await visit(page,'/accounting/company-boundary');const boundary=page.locator('[data-ac-lab=boundary]');
+  await check(`${width} no autoplay and one responsive scene`,async()=>{assert.equal(await boundary.locator('svg:visible').count(),1);const initial=await boundary.locator('.ac-step').innerText();await page.waitForTimeout(1750);assert.equal(await boundary.locator('.ac-step').innerText(),initial);assert.equal(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),true);});
+  for(const mode of model.boundaryModes)for(const amount of [0,50,100])await check(`${width} boundary ${mode} ${amount} all frames and real bar lengths`,async()=>{
+   await boundary.getByLabel('돈이 들어온 이유',{exact:true}).selectOption(mode);await boundary.getByLabel('비교할 금액 · 가상단위',{exact:true}).selectOption(String(amount));await boundary.getByRole('button',{name:'다시 보기',exact:true}).click();await boundary.getByLabel('먼저 예상하기',{exact:true}).selectOption('yes');
+   const frames=model.boundaryFrames({mode,amount}),geometry=[];for(let i=0;i<frames.length;i++){geometry.push(await assertBoundary(boundary,frames[i],model));if(i<frames.length-1)await boundary.getByRole('button',{name:'다음 단계',exact:true}).click();}
+   assert((await boundary.locator('.ac-feedback').innerText()).includes('입금과 매출은 다릅니다'));await audit(page);if(amount===50)await snap(page,`${width}-boundary-${mode}-final`,boundary);return{steps:frames.length,cash:frames.at(-1).balances.cash,geometry};
+  });
+  await check(`${width} boundary keyboard pause replay reset and static reading`,async()=>{
+   await boundary.getByRole('button',{name:'전체 초기화',exact:true}).click();assert.equal(await boundary.getByLabel('돈이 들어온 이유',{exact:true}).inputValue(),'contribution');assert.equal(await boundary.getByLabel('먼저 예상하기',{exact:true}).inputValue(),'');
+   const next=boundary.getByRole('button',{name:'다음 단계',exact:true});await next.focus();await page.keyboard.press('Enter');await assertBoundary(boundary,model.boundaryFrames()[1],model);
+   await boundary.getByRole('button',{name:'다시 보기',exact:true}).click();await boundary.getByRole('button',{name:'재생',exact:true}).click();await page.waitForFunction(()=>document.querySelector('[data-ac-lab=boundary] .ac-step').textContent==='2 / 3단계');await boundary.getByRole('button',{name:'정지',exact:true}).click();const frozen=await boundary.locator('.ac-step').innerText();await page.waitForTimeout(1750);assert.equal(await boundary.locator('.ac-step').innerText(),frozen);
+   await boundary.getByRole('button',{name:'다시 보기',exact:true}).click();await assertBoundary(boundary,model.boundaryFrames()[0],model);const summary=boundary.locator('.ac-static summary');await summary.focus();await page.keyboard.press('Enter');assert.equal(await boundary.locator('.ac-static[open] ol li').count(),3);await snap(page,`${width}-boundary-static`,boundary);await summary.click();return{frozen};
+  });
+  await check(`${width} setting changes stop playback and clear prediction`,async()=>{
+   await boundary.getByLabel('먼저 예상하기',{exact:true}).selectOption('no');await boundary.getByRole('button',{name:'재생',exact:true}).click();await boundary.getByLabel('돈이 들어온 이유',{exact:true}).selectOption('collection');await page.waitForTimeout(1750);assert.equal(await boundary.locator('.ac-step').innerText(),'1 / 3단계');assert.equal(await boundary.getByLabel('먼저 예상하기',{exact:true}).inputValue(),'');await assertBoundary(boundary,model.boundaryFrames({mode:'collection'})[0],model);
+  });
+  await visit(page,'/accounting/double-entry');const double=page.locator('[data-ac-lab=double-entry]');
+  await check(`${width} double entry all journal pairs and real bar geometry`,async()=>{await double.getByLabel('설비 취득의 결과 예측',{exact:true}).selectOption('down');const frames=model.doubleEntryFrames();for(let i=0;i<frames.length;i++){await assertDouble(double,frames[i],model);await snap(page,`${width}-double-entry-step-${i}`,double);if(i<frames.length-1)await double.getByRole('button',{name:'다음 단계',exact:true}).click();}assert((await double.locator('.ac-feedback').innerText()).includes('현금410+설비240=650'));await audit(page);return{steps:frames.length,cash:410,equipment:240,assets:650};});
+  await check(`${width} double entry backward keyboard static and reset`,async()=>{await double.getByRole('button',{name:'이전 단계',exact:true}).click();await assertDouble(double,model.doubleEntryFrames()[2],model);await double.getByRole('button',{name:'다음 단계',exact:true}).focus();await page.keyboard.press('Enter');await assertDouble(double,model.doubleEntryFrames()[3],model);await double.locator('.ac-static summary').click();assert.equal(await double.locator('.ac-static[open] ol li').count(),4);await double.getByRole('button',{name:'전체 초기화',exact:true}).click();assert.equal(await double.getByLabel('설비 취득의 결과 예측',{exact:true}).inputValue(),'');await assertDouble(double,model.doubleEntryFrames()[0],model);});
+  await check(`${width} route changes clean up the running timer`,async()=>{await double.getByRole('button',{name:'재생',exact:true}).click();await visit(page,'/accounting');await page.waitForTimeout(1750);await visit(page,'/accounting/double-entry');await assertDouble(page.locator('[data-ac-lab=double-entry]'),model.doubleEntryFrames()[0],model);});
+  await check(`${width} money volume 7 and reading storage preserve unknown IDs`,async()=>{
+   await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','accounting/company-boundary'])));await visit(page,'/');await page.reload();await page.getByRole('button',{name:/^돈·경제/}).click();const card=page.locator('a.home-book[href="#/accounting"]');assert.equal(await card.count(),1);assert.equal(await card.locator('.home-book-volume').innerText(),'돈·경제 7권');assert((await card.innerText()).includes(`1 / ${chapters.length}`));await card.click();assert.equal(await page.locator('.book-volume').innerText(),'돈·경제 7권');
+   const nav=page.locator('nav[aria-label="챕터 목차"]');assert.equal(await nav.locator('a[href^="#/accounting/"]').count(),chapters.length);await nav.locator('a[href="#/accounting/company-boundary"]').click();await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).click();await page.reload();let ids=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(ids.includes('unknown/keep'));assert(!ids.includes('accounting/company-boundary'));await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();ids=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(ids.includes('unknown/keep'));assert(ids.includes('accounting/company-boundary'));await audit(page);return{ids,chapters:chapters.length};
+  });
+  await context.close();
+ }
+ for(const width of [768,900]){const context=await browser.newContext({viewport:{width,height:900}}),page=await context.newPage();observe(page,width);for(const route of routes)await check(`${width} intermediate width ${route}`,async()=>{await visit(page,route);return audit(page);});await context.close();}
+ const motionContext=await browser.newContext({viewport:{width:390,height:900},reducedMotion:'no-preference'}),motionPage=await motionContext.newPage();observe(motionPage,'390-normal-motion');
+ await check('normal-motion explicit playback, stop and deterministic replay',async()=>{
+  await visit(motionPage,'/accounting/double-entry');const lab=motionPage.locator('[data-ac-lab=double-entry]');assert.equal(await motionPage.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),false);
+  await motionPage.waitForTimeout(1750);await assertDouble(lab,model.doubleEntryFrames()[0],model);await lab.getByRole('button',{name:'재생',exact:true}).click();await motionPage.waitForFunction(()=>document.querySelector('[data-ac-lab=double-entry] .ac-step').textContent==='2 / 4단계');await lab.getByRole('button',{name:'정지',exact:true}).click();await motionPage.waitForTimeout(1750);await assertDouble(lab,model.doubleEntryFrames()[1],model);await lab.getByRole('button',{name:'다시 보기',exact:true}).click();await assertDouble(lab,model.doubleEntryFrames()[0],model);await snap(motionPage,'390-normal-motion-double-entry',lab);await audit(motionPage);
+ });await motionContext.close();
+ await check('no runtime or unknown/application resource errors',async()=>{assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.consoleErrors,[]);assert.deepEqual(report.resourceErrors,[]);return{separatelyRecordedKnownHostDiagnostics:report.hostDiagnostics};});
+ }catch(error){report.fatal=String(error.stack||error);process.exitCode=1;}finally{await browser?.close();if(server)await new Promise(r=>server.close(r));report.finished=new Date().toISOString();report.passed=report.checks.filter(c=>c.status==='passed').length;report.failed=report.checks.filter(c=>c.status==='failed').length;fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({passed:report.passed,failed:report.failed,fatal:report.fatal,screenshots:report.screenshots.length}));if(report.failed||report.fatal)process.exitCode=1;}})();
