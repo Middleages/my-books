@@ -86,6 +86,9 @@ export function explainFrames(input={}) {
 
 export function appCallComparison() {
   const orders=CANONICAL_FIXTURE.orders.filter(o=>o.customer_id===1&&o.status==='confirmed');
-  return freeze({oneQuery:[{id:'call:join',label:'주문·항목 JOIN',orderIds:orders.map(o=>o.id)}],nPlusOne:[{id:'call:orders',label:'주문 목록',orderIds:orders.map(o=>o.id)},...orders.map(o=>({id:`call:items:${o.id}`,label:`주문${o.id} 항목`,orderIds:[o.id]}))],outputRows:3,
+  const items=CANONICAL_FIXTURE.order_items.filter(i=>orders.some(o=>o.id===i.order_id));
+  const oneQuery=[{id:'call:join',label:'주문·항목 JOIN',orderIds:orders.map(o=>o.id),outputIds:items.map(i=>`joined:${i.order_id}:${i.line_no}`)}];
+  const nPlusOne=[{id:'call:orders',label:'주문 목록',orderIds:orders.map(o=>o.id),outputIds:orders.map(o=>rowKey('orders',o))},...orders.map(o=>({id:`call:items:${o.id}`,label:`주문${o.id} 항목`,orderIds:[o.id],outputIds:items.filter(i=>i.order_id===o.id).map(i=>rowKey('order_items',i))}))];
+  return freeze({oneQuery,nPlusOne,applicationRows:items.length,totalReturnedRows:{oneQuery:oneQuery.reduce((n,c)=>n+c.outputIds.length,0),nPlusOne:nPlusOne.reduce((n,c)=>n+c.outputIds.length,0)},
     detail:'한 앱 요청의 DB 호출1회와3회를 비교합니다. 각 호출은 별도 실행입니다. 한 plan 노드의 loops2와 같은 카운터가 아닙니다.'});
 }

@@ -31,7 +31,7 @@ test('schematic inclusive parent times are not summed or printed startup/total c
  const f=explainFrames().at(-1),root=f.nodes[0],interval=f.intervals[0];assert.equal(root.actualStartupMs,8.2);assert.equal(interval.start,0);assert.equal(interval.end,10);
 });
 test('N+1 is separate app-call count1+2 not inner node loops',()=>{
- const c=appCallComparison();frozen(c);assert.equal(c.oneQuery.length,1);assert.equal(c.nPlusOne.length,3);assert.equal(c.outputRows,3);assert.deepEqual(c.nPlusOne.slice(1).map(c=>c.orderIds),[[1001],[1002]]);
+ const c=appCallComparison();frozen(c);assert.equal(c.oneQuery.length,1);assert.equal(c.nPlusOne.length,3);assert.equal(c.applicationRows,3);assert.deepEqual(c.totalReturnedRows,{oneQuery:3,nPlusOne:5});assert.deepEqual(c.oneQuery.map(c=>c.outputIds.length),[3]);assert.deepEqual(c.nPlusOne.map(c=>c.outputIds.length),[2,2,1]);assert.deepEqual(c.oneQuery[0].outputIds,['joined:1001:1','joined:1001:2','joined:1002:1']);assert.deepEqual(c.nPlusOne.slice(1).map(c=>c.orderIds),[[1001],[1002]]);
 });
 test('invalid input is not normalized into a valid educational result',()=>{
  for(const bad of [null,[],{example:'magic'},{observed:0},{estimate:'real'},{sql:'DROP'}])assert.throws(()=>explainFrames(bad));

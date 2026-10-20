@@ -26,6 +26,8 @@ test('D scenes read exact model identity, ownership and non-saturated quantities
  assert(explain.includes('barWidth=nw-20'));assert(!explain.includes('Math.min(100'));assert(!pool.includes('Math.min(100'));
  assert(!/Math\.random|Date\.now|fetch\(/.test(pool+explain));
  assert(pool.includes('data-binding-client-line'));assert(explain.includes('data-packet-edge'));
+ assert(pool.includes("c.ownerRequestId?'대여 중':'idle'"));assert(!pool.includes("?'사용 중'"));
+ for(const token of ['c.outputIds.length','f.applicationRows','f.totalReturnedRows.oneQuery','f.totalReturnedRows.nPlusOne','앱이 조립한'])assert(explain.includes(token),token);
 });
 test('D source keeps accessible names and scoped long-code wrapping',()=>{
  for(const label of ['한 앱의 풀 상한','연결 사용과 반환','경로를 강조할 요청','transaction의 연결 배정','앱 인스턴스 수','인스턴스별 풀 최대'])assert(pool.includes(`aria-label="${label}"`));

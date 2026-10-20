@@ -15,8 +15,8 @@ export interface ExplainFrame {
  readonly scaleMax:number;readonly activeNodeId:string|null;readonly finished:boolean;readonly result:{readonly rows:number;readonly countValue:number|null}|null;
  readonly stopProof:{readonly reason:string;readonly visited:number;readonly emitted:number;readonly possibleFullOutputs:number}|null;readonly provenance:string;readonly assumptions:readonly string[];
 }
-export interface AppCall {readonly id:string;readonly label:string;readonly orderIds:readonly number[]}
+export interface AppCall {readonly id:string;readonly label:string;readonly orderIds:readonly number[];readonly outputIds:readonly string[]}
 export const EXPLAIN_CASES:readonly ExplainCase[];
 export const EXPLAIN_ESTIMATES:readonly ExplainEstimate[];
 export function explainFrames(options?:{example?:ExplainCase;observed?:boolean;estimate?:ExplainEstimate}):readonly ExplainFrame[];
-export function appCallComparison():{readonly oneQuery:readonly AppCall[];readonly nPlusOne:readonly AppCall[];readonly outputRows:number;readonly detail:string};
+export function appCallComparison():{readonly oneQuery:readonly AppCall[];readonly nPlusOne:readonly AppCall[];readonly applicationRows:number;readonly totalReturnedRows:{readonly oneQuery:number;readonly nPlusOne:number};readonly detail:string};
