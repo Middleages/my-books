@@ -37,7 +37,7 @@ export function clusterDiagram(f,path) {
 }
 export function helmFieldLinks(f) {
  const names=[['replicas','Deployment.spec.replicas','Pod 개수'],['image','Deployment.spec.template → image','Pod template'],['message','ConfigMap.data.APP_MESSAGE','별도 설정 객체']];
- const original=f.history[0]?.values??null;
+ const original=f.before;
  return names.map(([key,destination,scope])=>({key,destination,scope,target:f.target[key],before:original?.[key]??null,live:f.live?.[key]??null,rendered:!!f.yaml,changed:!!original&&original[key]!==f.target[key]}));
 }
 export function helmRevisionTracks(frames,index) {
@@ -50,7 +50,7 @@ export function recoveryCoverage(scenario,f) {
 }
 export function airgapTrustPaths() {
  return [
- {id:'registry',caller:'노드 runtime',target:'내부 registry',trust:'노드 runtime의 registry CA',checks:['노드 DNS','노드 시각','인증 · mirror · proxy'],purpose:'이미지 pull',after:'실행 노드의 이미지 저장소'},
+ {id:'registry',caller:'노드 runtime',target:'내부 registry',trust:'노드 runtime의 registry CA',checks:['노드 DNS','노드 시각','인증 · mirror · proxy'],purpose:'이미지 pull',after:'이미지를 제공하는 원격 저장소 · 실행 노드 저장소와 별개'},
  {id:'browser',caller:'사용자 브라우저',target:'호스트 NGINX',trust:'브라우저 trust store',checks:['사용자 기기 DNS','사용자 기기 시각','요청 이름 · 인증서 SAN'],purpose:'외부 HTTPS',after:'NGINX가 내부 controller로 별도 연결'},
  {id:'proxy',caller:'호스트 NGINX',target:'Ingress controller',trust:'NGINX의 upstream CA',checks:['NGINX의 이름 조회','NGINX 호스트 시각','upstream 검증 · SNI'],purpose:'내부 HTTPS를 선택한 경우',after:'HTTP를 선택하면 이 구간 TLS는 없음'},
  {id:'database',caller:'Pod 안의 앱',target:'외부 DB',trust:'앱의 trust store',checks:['Pod DNS','앱이 보는 시각','라우팅 · 방화벽 · DB 권한'],purpose:'DB TLS 연결',after:'이미지 pull 성공과 독립'},

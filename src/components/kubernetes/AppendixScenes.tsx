@@ -7,7 +7,7 @@ export function RecoveryScene({f,scenario}:{f:RecoveryFrame;scenario:RecoverySce
   {recoveryCoverage(scenario,f).map(r=><div className={`k8v-coverage-row ${r.available===false?'k8v-coverage-missing':''}`} data-coverage={r.id} key={r.id}>
    <div className={`k8v-backup-copy ${r.available===false?'k8v-ghost':''}`}><strong>{r.available===false?'∅':r.available===null?'?':'▤'} {r.material}</strong><small>{r.available===false?'필요 재료 누락':r.available===null?'별도 보관 책임':'보관 재료 있음'}</small><div>{r.contents.map(c=><span key={c}>{c}</span>)}</div></div>
    <b className="k8v-coverage-arrow" aria-hidden="true">{r.available===false?'×':r.available===null?'?':'→'}</b>
-   <div className="k8v-restored"><strong>{r.target}</strong><b>{state[r.state]}</b><small>{r.excluded}</small></div>
+   <div className="k8v-restored" data-recovery-state={r.state}><strong>{r.target}</strong><b>{state[r.state]}</b><small>{r.excluded}</small></div>
   </div>)}
   <div className="k8v-restore-check"><strong>⇢ 아직 넘지 않은 확인 경계</strong><span>마운트 · 권한 · 파일 내용/해시 · 실제 앱 응답 · 외부 DB 정합성</span><b>앱: {state[f.app]} · 사본 존재 ≠ 복구 성공</b></div>
  </figure>;

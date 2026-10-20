@@ -5,7 +5,6 @@ import { Playback, useFoundationPlayback } from '../network/FoundationPlayback';
 import { ingressFrames, configurationFrames, secretEncoding, type IngressOptions, type ConfigurationOptions } from '../../simulations/kubernetes/edge-config.mjs';
 import './kubernetes.css';
 import './edge-config.css';
-const status:Record<string,string>={pending:'아직 도달 전',done:'도달',blocked:'여기서 중단',passed:'검증 성공',failed:'검증 실패',none:'TLS 없음'};
 function Steps({frames}:{frames:{title:string;detail:string}[]}){return <details className="k8-static"><summary>모든 단계 · 움직임 없이 읽기</summary><ol>{frames.map((f,i)=><li key={i}><strong>{f.title}</strong><p>{f.detail}</p></li>)}</ol></details>;}
 const ingressDefaults:IngressOptions={mode:'direct',host:'study.example.test',path:'/',outerValid:true,innerValid:true,controller:true,ready:true};
 export function IngressTlsLab(){

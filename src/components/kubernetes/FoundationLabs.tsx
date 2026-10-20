@@ -8,7 +8,6 @@ import {
   accessDecision,
   type RecoveryOptions,
   type AccessOptions,
-  type ClusterFrame,
 } from "../../simulations/kubernetes/foundation.mjs";
 import "./kubernetes.css";
 function StaticSteps({
@@ -163,6 +162,7 @@ export function RecoveryLab() {
           <option value="none">모두 멈춤</option>
         </select>
       </label>
+      <Playback player={player} count={frames.length} reset={reset} />
       <div className="k8-recovery-scene">
         <div className="k8-image">
           <span>실행 재료</span>
@@ -198,7 +198,7 @@ export function RecoveryLab() {
         실행 중 {f.running} / {replicas}개 · 테두리는 VM 장애 범위, ●는 실행 중,
         ×는 중단입니다. 실행 중은 HTTP 준비 완료와 다릅니다.
       </p>
-      <Playback player={player} count={frames.length} reset={reset} />
+
       <Explanation frame={f} index={player.index} />
       {player.index === frames.length - 1 && prediction && (
         <p className="k8-feedback">
@@ -232,24 +232,6 @@ const names: Record<string, string> = {
   browser: "웹 사용자",
   entry: "Ingress controller",
 };
-function Node({
-  id,
-  detail,
-  frame,
-}: {
-  id: string;
-  detail: string;
-  frame: ClusterFrame;
-}) {
-  const active = frame.active.includes(id);
-  return (
-    <div className={`k8-node ${active ? "k8-active" : ""}`}>
-      <small>{active ? "● 이번 단계" : "○ 구성 요소"}</small>
-      <strong>{names[id]}</strong>
-      <span>{detail}</span>
-    </div>
-  );
-}
 export function ClusterLab() {
   const [path, setPath] = useState<"control" | "http">("control");
   const [context, setContext] =
@@ -342,8 +324,8 @@ export function ClusterLab() {
       </label>
       <Playback player={player} count={frames.length} reset={reset} />
       <div className="k8v-cluster-scene" data-scene="cluster">
-        <h3>실습 클러스터 · 단일 VM의 역할 지도</h3>
-        <ConnectedScene {...clusterDiagram(f,path)} label={path==='control'?'제어 관계 · API를 중심으로 따로 관찰하고 기록':'HTTP 연결 · API를 지나지 않는 앱 경로'} />
+        <h3>클러스터 역할과 바깥의 호출자</h3>
+        <ConnectedScene {...clusterDiagram(f,path)} boundaryLabel="단일 VM의 내부 역할" label={path==='control'?'제어 관계 · API를 중심으로 따로 관찰하고 기록':'HTTP 연결 · API를 지나지 않는 앱 경로'} />
         <p className="k8v-model-note">{path==='control'?'API·controller·scheduler는 control plane, kubelet·runtime·앱은 노드 실행 역할입니다. 이 실습에서는 한 VM에 함께 있으며 위아래 길이는 거리나 시간을 뜻하지 않습니다. HTTP 요청은 별도 경로에서 관찰합니다.':'이미 실행 중인 같은 study-web 앱의 요청 경로입니다. Service는 대상 선택을 요약한 논리적 접점이며 API·scheduler·controller가 HTTP 중계 사슬에 끼지 않습니다.'}</p>
       </div>
       <p className="k8-edge">

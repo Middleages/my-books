@@ -177,3 +177,7 @@ Ingress를 기존 네트워크 교재와의 연결 및 k3s 사례로 설명하�
 배치 F의 모델·진단 사례·검증 범위는 [배치 F 검증](KUBERNETES-BATCH-F-VERIFICATION.md)에 기록한다.
 
 배치 G의 브라우저 모델·manifest 정적 검사·Helm 렌더·클러스터 실행·배포는 [배치 G 검증](KUBERNETES-BATCH-G-VERIFICATION.md)에서 구분한다.
+
+## 2026-10-20 시각 설명 보완
+
+사용자 요청으로 기존 소개·12장·3부록을 강화된 시각 작성 기준에 맞춰 별도 브랜치에서 보완 중이다. 새 장이나 실제 클러스터 실행은 포함하지 않는다. 관계선·TLS 범위·설정 전파·저장 수명·자원 초과 비례·Helm 이력·증거 기반 진단·복원/폐쇄망 경계를 우선 개선하며, 기존 UID·probe·rollout 모델과 읽음 호환성을 보존한다. 구현·테스트·실제 캡처·main/배포 상태를 구분한 최신 기록은 [시각 보완 검증](KUBERNETES-VISUAL-IMPROVEMENTS-VERIFICATION.md)을 따른다. 이 추가 기록은 A–G의 당시 결과를 소급 변경하지 않는다.

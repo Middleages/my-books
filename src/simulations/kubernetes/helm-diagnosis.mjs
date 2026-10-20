@@ -6,6 +6,7 @@ const clone = x => structuredClone(x);
 const last = a => a.at(-1);
 function choice(value, allowed) { if (!allowed.includes(value)) throw new RangeError('교육 모델 선택 범위 밖'); }
 const values = environment => ({ replicas: environment === 'dev' ? 1 : 2, image: 'v1', message: environment === 'dev' ? '개발 안내' : '운영 안내' });
+export function helmEnvironments(){return ['dev','prod'].map(environment=>({environment,values:values(environment)}));}
 function rendered(v) {
  return `# 설명용 발췌 · 전체 배포 manifest가 아닙니다\n# Deployment study-web\nspec:\n  replicas: ${v.replicas}\n  template:\n    spec:\n      containers:\n        - name: web\n          image: <실제-이미지>:${v.image}\n# ConfigMap study-web-config\ndata:\n  APP_MESSAGE: "${v.message}"\n# Service study-web\nports:\n  - port: 80\n    targetPort: 8080`;
 }
@@ -17,13 +18,14 @@ export function helmFrames({operation='template',environment='dev',change='confi
  if(change==='image')updated.image='v2';
  const existing=operation==='upgrade'||operation==='rollback';
  let live=existing?clone(operation==='rollback'?updated:original):null;
+ const before=clone(live);
  let deploymentRevision=existing?(operation==='rollback'&&change==='image'?2:1):null;
  let history=existing?[{revision:1,status:operation==='rollback'?'superseded':'deployed',values:clone(original)}]:[];
  if(operation==='rollback')history.push({revision:2,status:'deployed',values:clone(updated)});
  const target=operation==='upgrade'?updated:original;
  const frames=[];
  const command={template:'helm template study ./study-web -n books-lab -f values.yaml',install:'helm install study ./study-web -n books-lab -f values.yaml --wait',upgrade:'helm upgrade study ./study-web -n books-lab -f values.yaml --wait',rollback:'helm rollback study 1 -n books-lab --wait'}[operation];
- const push=(title,detail,phase,yaml='')=>frames.push(clone({title,detail,summary:`목표 ${target.replicas}개 · ${target.image} · ${target.message} / 적용 ${live?`${live.replicas}개 · ${live.image} · ${live.message}`:"없음"} / Helm revision ${history.at(-1)?.revision??"없음"} / Deployment revision ${deploymentRevision??"미관측/없음"}. 이력: ${history.map(h=>`${h.revision} ${h.status}`).join(", ")||"없음"}.`,phase,operation,environment,change,chart:'study-web · chart 0.1.0',target,live,history,deploymentRevision,yaml,command,ready:'미관측',externalState:'DB·PVC 데이터: 이 모델에서 변경·복원하지 않음'}));
+ const push=(title,detail,phase,yaml='')=>frames.push(clone({title,detail,summary:`목표 ${target.replicas}개 · ${target.image} · ${target.message} / 적용 ${live?`${live.replicas}개 · ${live.image} · ${live.message}`:"없음"} / Helm revision ${history.at(-1)?.revision??"없음"} / Deployment revision ${deploymentRevision??"미관측/없음"}. 이력: ${history.map(h=>`${h.revision} ${h.status}`).join(", ")||"없음"}.`,phase,operation,environment,change,chart:'study-web · chart 0.1.0',target,before,live,history,deploymentRevision,yaml,command,ready:'미관측',externalState:'DB·PVC 데이터: 이 모델에서 변경·복원하지 않음'}));
  push(operation==='rollback'?'현재 revision 2 · 과거 기록 1을 선택':'차트와 환경 값을 선택',existing?'기존 release study가 있습니다. 아래 실선 상자는 현재 API 객체이며 입력/목표와 구분합니다.':'아직 release나 실행 리소스가 없습니다. chart는 배포 문서의 묶음이며 앱 프로세스가 아닙니다.','input');
  push(operation==='rollback'?'보관된 revision 1의 manifest를 사용':'값을 넣어 YAML을 렌더링',operation==='rollback'?'현재 values 파일을 새로 넣는 작업이 아닙니다. 보관된 과거 릴리스의 명세를 되돌리기 대상으로 삼습니다.':'고정된 세 필드만 치환하는 브라우저 교육 모델입니다. 실제 Go template 실행·서버 검증은 하지 않습니다.','render',rendered(target));
  if(operation==='template'){
