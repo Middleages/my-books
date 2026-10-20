@@ -6,7 +6,7 @@ test('housing E SSR: first ledgers read model values and all four diagrams retai
  try{
   const {HousingComparisonLab}=await server.ssrLoadModule('/src/components/housing/ComparisonLab.tsx');const html=renderToStaticMarkup(createElement(HousingComparisonLab));
   const r=housingComparison();for(const p of Object.values(r.paths))assert(html.includes(`data-comparison-cash="${p.frames[0].cash}"`));
-  assert.equal((html.match(/data-comparison-kind=/g)||[]).length,3);assert.equal((html.match(/class="housing-fill/g)||[]).length,12);assert(html.includes('입금 전 보증금청구'));assert(html.includes('남은 원금 빚'));
+  assert.equal((html.match(/data-comparison-kind=/g)||[]).length,3);assert.equal((html.match(/class="housing-lane-controls"/g)||[]).length,3);assert.equal((html.match(/매수 경로의 종점 가격 가정/g)||[]).length,1);assert.equal((html.match(/class="housing-fill/g)||[]).length,12);assert(html.includes('입금 전 보증금청구'));assert(html.includes('남은 원금 빚'));
   const market=await server.ssrLoadModule('/src/components/housing/MarketLabs.tsx');for(const name of ['PlaceLab','MarketMixLab','HousingSupplyLab']){const output=renderToStaticMarkup(createElement(market[name]));assert(output.includes('<figcaption>'));assert(output.includes('정적 표'));assert(!output.includes('NaN'));assert(!/<p\b[^>]*>\s*<p\b/.test(output))}
  }finally{await server.close()}
 });
