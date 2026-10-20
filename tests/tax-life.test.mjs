@@ -11,6 +11,9 @@ import {
   housingRoute,
   transferBase,
   deductionComparison,
+  taxTimeline,
+  documentReview,
+  taxDocuments,
 } from "../src/simulations/tax/lifeModel.mjs";
 const close = (a, b) => assert(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 test("tax payroll: cash partitions, non-taxable classification is not another outflow", () => {
@@ -240,4 +243,46 @@ test("tax deduction comparison uses the same progressive calculation in all rows
     assert.throws(() => deductionComparison(v, 0), RangeError);
     assert.throws(() => deductionComparison(0, v), RangeError);
   }
+});
+test("tax timeline: only one settlement, delay never changes final tax", () => {
+  for (const monthly of [0, 8, 12])
+    for (const settleMonth of [13, 14, 16, 18]) {
+      const r = taxTimeline({ monthly, settleMonth });
+      assert.equal(r.frames.length, 19);
+      assert.equal(r.frames[0].cumulative, 0);
+      close(r.frames[12].cumulative, r.prepaid);
+      close(r.frames.at(-1).cumulative, 80);
+      close(
+        r.frames.reduce((s, f) => s + f.adjustment, 0),
+        r.difference,
+      );
+      close(
+        r.frames.reduce((s, f) => s + f.withheld, 0),
+        r.prepaid,
+      );
+      for (let i = 1; i < r.frames.length; i++)
+        close(
+          r.frames[i].cumulative - r.frames[i - 1].cumulative,
+          r.frames[i].withheld + r.frames[i].adjustment,
+        );
+      assert.deepEqual(taxTimeline({ monthly, settleMonth }), r);
+    }
+});
+test("tax timeline: invalid scheduling and monetary inputs rejected", () => {
+  for (const settleMonth of [0, 12, 19, 14.5, NaN])
+    assert.throws(() => taxTimeline({ settleMonth }));
+  for (const monthly of [-1, NaN, Infinity, 100000])
+    assert.throws(() => taxTimeline({ monthly }));
+});
+test("tax documents: every statement has an explained category, no reader personal input", () => {
+  assert.equal(taxDocuments.length, 3);
+  for (const d of taxDocuments) {
+    assert.equal(documentReview(d.id), d);
+    assert.equal(d.rows.length, 4);
+    for (const row of d.rows) {
+      assert(["fact", "assumption", "unknown"].includes(row.kind));
+      assert(row.why.length > 20);
+    }
+  }
+  assert.throws(() => documentReview("unknown"));
 });
