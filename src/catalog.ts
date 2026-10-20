@@ -1,6 +1,8 @@
 import DatabaseIntro from "./content/database/Intro.mdx";
 import FilesAndDatabase from "./content/database/FilesAndDatabase.mdx";
 import TablesAndConstraints from "./content/database/TablesAndConstraints.mdx";
+import QueriesAndJoins from "./content/database/QueriesAndJoins.mdx";
+import IndexesAndCosts from "./content/database/IndexesAndCosts.mdx";
 import TaxIntro from "./content/tax/Intro.mdx";
 import TaxEvents from "./content/tax/TaxEvents.mdx";
 import ProgressiveTax from "./content/tax/ProgressiveTax.mdx";
@@ -96,6 +98,8 @@ export type Chapter = {
 export const chapters: Chapter[] = [
   { id: "files-and-database", bookId: "database", readId: "database/files-and-database", number: "01", title: "파일 다음에 데이터베이스", heading: "파일도 저장하는데 DB는 무엇을 더 맡을까?", description: "같은 값을 읽은 두 사본과 공유 저장소의 변경, 데이터 관리 책임을 구분합니다.", Content: FilesAndDatabase },
   { id: "tables-and-constraints", bookId: "database", readId: "database/tables-and-constraints", number: "02", title: "표 사이의 약속", heading: "같은 이름이 아니라 어떤 값으로 관계를 지킬까?", description: "실제 행의 키 연결과 저장 경계에서 PK·FK·필수 값·범위 규칙을 살펴봅니다.", Content: TablesAndConstraints },
+  { id: "queries-and-joins", bookId: "database", readId: "database/queries-and-joins", number: "03", title: "원하는 행을 묶어 읽기", heading: "주문 두 건이 조회에서는 왜 세 행일까?", description: "JOIN의 짝과 집계 단위, NULL과 조건 위치가 바꾸는 결과를 연결합니다.", Content: QueriesAndJoins },
+  { id: "indexes-and-costs", bookId: "database", readId: "database/indexes-and-costs", number: "04", title: "빨리 찾는 길과 그 비용", heading: "인덱스가 있으면 언제나 덜 읽을까?", description: "같은 행의 페이지 위치와 인덱스 경로, 읽기·쓰기의 다른 부담을 살펴봅니다.", Content: IndexesAndCosts },
   { id: "tax-events", bookId: "tax", readId: "tax/tax-events", number: "01", title: "세금은 어디서 발생할까", heading: "모든 돈의 이동이 같은 세금 대상일까?", description: "소득·소비·보유·이전과 단순 자금 이동의 과세 검토 지점을 구분합니다.", Content: TaxEvents },
   { id: "progressive-tax", bookId: "tax", readId: "tax/progressive-tax", number: "02", title: "과세표준과 세율", heading: "높은 세율이 전체 금액에 적용될까?", description: "가상 과세표준의 구간별 금액과 세액·평균세율을 연결합니다.", Content: ProgressiveTax },
   { id: "expected-loss", bookId: "insurance", readId: "insurance/expected-loss", number: "01", title: "같은 평균, 다른 충격", heading: "같은 기대손실이면 감당할 위험도 같을까?", description: "사건 확률과 손실 크기, 같은 평균 뒤에 남는 현금 부족을 비교합니다.", Content: ExpectedLoss },
@@ -465,7 +469,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–02장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
+  { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–04장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
   { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–02장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
   { id: "insurance", categoryId: "money", volume: 4, title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 위험의 크기부터 계약·유지·해지·청구 시차와 설명서 읽기까지 연결합니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", volume: 3, title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
