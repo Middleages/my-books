@@ -61,3 +61,8 @@
 main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`의 [run39374566657](https://github.com/Middleages/my-books/actions/runs/39374566657)는 전체10개 job이 성공했다. 게시 권차 검사14/14·PNG36·오류0, sourceChanges 없음이다. [artifact12243121463](https://github.com/Middleages/my-books/actions/runs/39374566657/artifacts/12243121463)의 ZIP SHA-256 `b88b8b267b6810aabc36fac1ea3bb11aaadac16b65d69aaa087abd9774db05b4`를 대조했다. 정확한 JS/CSS는 [세금 B 최종 기록](TAX-BATCH-B-VERIFICATION.md)의 production·게시 해시와 같다.
 
 게시1440px 전체 홈과320px 세금 헤더를 직접 다시 열어 돈·경제 세금5권·주거6권, IT 데이터베이스4권, 새 읽음 분모0/4·0/2와 기존 고정 권차가 맞음을 확인했다. 이는 대표 게시 화면의 재검토이며 새36장 모두를 직접 열었다는 뜻은 아니다. 앞의 초기30장 전수 production 검토 기록과 구분한다.
+
+
+## 세금 C·주거 B의 게시 읽음 분모 확인
+
+main `7a935e1114a4260181891664fff4a453508784fc`와 [run39377349867](https://github.com/Middleages/my-books/actions/runs/39377349867)의 권차 게시14/14·PNG36·오류0, 정확한 production/게시 JS·CSS 일치를 확인했다. [artifact12244446103](https://github.com/Middleages/my-books/actions/runs/39377349867/artifacts/12244446103)의 ZIP SHA-256은 `1e102f4689bdd99d77f24bb1633f18690793650547fd220d34ad5b376bfbb762`다. 실제1440px 홈과320px 세금 헤더를 직접 열어 세금5권의0/6, 주거6권의0/4, DB IT4권의0/2와 고정 번호를 확인했다. 상세 자산·실행 범위는 [세금 C 최종 기록](TAX-BATCH-C-VERIFICATION.md)을 따른다.

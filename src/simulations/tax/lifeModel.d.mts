@@ -89,3 +89,35 @@ export declare function investmentRoute(
   }[];
   result: string;
 };
+export declare const accountKinds: {
+  id: string;
+  label: string;
+  checks: string[];
+  detail: string;
+}[];
+export declare function accountRoute(
+  id?: string,
+  states?: string[],
+): (typeof accountKinds)[number] & {
+  gates: {
+    label: string;
+    state: string;
+    symbol: string;
+    status: string;
+  }[];
+  result: string;
+};
+export declare const housingEvents: {
+  id: string;
+  label: string;
+  time: string;
+  kind: string;
+  check: string;
+  symbol: string;
+}[];
+export declare function housingRoute(index?: number): {
+  events: typeof housingEvents;
+  current: (typeof housingEvents)[number];
+  index: number;
+  result: string;
+};

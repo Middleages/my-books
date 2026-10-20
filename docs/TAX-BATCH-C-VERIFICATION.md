@@ -54,3 +54,34 @@ B와 주거 A의 정확한 게시 게이트는 이후 b97dbd4에서 닫혔으며
 B·주거 A 공개가 완료된 main b97dbd4를 보존하고, 주거 B의 검증된 remote `c07f4c71787197d1f520df67bc434c311580caf5`와 같은 tree `2ce0ce4a50410f8b15a482d375ef78d5726b2a5d`의 로컬 변경을 통합했다. 주거 최종 production·직접 화면 증거와 앞 배치의 공개 마감 문서도 포함했다. DB B·회계 A·세금 D·주거 C는 포함하지 않는다.
 
 통합 후 전체 **917/917 테스트·TypeScript·Vite production 빌드**가 통과했다. 각 책의 본문·장면·모델·브라우저 시나리오는 위에서 직접 확인한 해당 후보와 동일함을 git diff로 확인했다. 실제 분류기는 `affected`, tax·book-volumes·housing만 선택하고 보험·투자·DB·Kubernetes는 생략했다. 통합 담당자가 주거 B의1440px 계약 변경·320px 회수 변경 원본도 열어 입력 인접·계약과근거의 구분·미도착 보증금과 남은 대출을 확인했다. 이 합본의 hosted production과 게시 검증은 별도 결과로 기록한다.
+
+## 합본 production과 최종 직접 확인
+
+최종 head `7a935e1114a4260181891664fff4a453508784fc`, 실제 checkout `329a5a11770f0a3de81e039d34700f313eb4b918`, tree `4cd6040e28794066df62579b12d9e79e1dbbdbb1`의 [run39376752669](https://github.com/Middleages/my-books/actions/runs/39376752669)는 build와 선택한 세 production suite를 모두 통과했다. 정확한 selection artifact도 tax·book-volumes·housing만 선택했다. 모든 sourceChanges는 비어 있으며 애플리케이션·콘솔·별도 비애플리케이션 진단은0이다.
+
+- tax101/101·PNG72, [artifact12243965812](https://github.com/Middleages/my-books/actions/runs/39376752669/artifacts/12243965812), ZIP SHA-256 `21b4cfc6666cc248372a8a94b3aa89ec63e6fb66c704d73813edfb51b5de6724`.
+- housing74/74·고유PNG54, [artifact12243651929](https://github.com/Middleages/my-books/actions/runs/39376752669/artifacts/12243651929), ZIP `7a7de83089651718feb5114cf8a6d24929b306bcc24d26c8e778ace3176e0bff`.
+- book-volumes14/14·PNG36, [artifact12244135111](https://github.com/Middleages/my-books/actions/runs/39376752669/artifacts/12244135111), ZIP `ec045b75e92e3703822138335b396d1fac0d265993e539a1f6161f0f7efc0c86`.
+
+세 suite가 받은 JS `index-CR1dI7lf.js`2436611바이트 SHA-256 `0fedae87f50fee38a10b7ea884563fffabcf52de963d54c1eb9c1d153618ac46`, CSS `index-DhQLFKJf.css`313484바이트 `a46285276e0428b85e7a402d53be8873789556031fdf3f0da391c37fc3ec4175`가 같은 production 산출물과 일치했다.
+
+합본 원본에서 세금05의320px 변경·06의390px reduced/static와1440px 홈을 직접 다시 열었다. 앞 단독 후보에서 확인한 두 장의 desktop/320/390 그림은 소스 동일성을 유지하며, 합본에서도 면세 매입불공제20·평가/실현 구분·특례계좌 확인 경계와 세금0/6·주거0/4 읽음 분모가 맞았다. 주거 작성자도 합본1440px 계약 변경·320px 계약 초기·320px 회수 변경 세 원본을 직접 열어 계약 근거와 재확인 경계·현금1.1억원/미현금화3천만원/기관 입금0을 재확인했다. 새 시각 차단 문제는 없었다.
+
+이후 정확한 검증 head를 main에 반영했다. exact-main [run39377349867](https://github.com/Middleages/my-books/actions/runs/39377349867)의 Pages·게시 자산·실제 PNG는 아직 별도 확인 중이며 아래 최종 기록 없이 완료로 읽지 않는다.
+
+
+## 정확한 main·Pages·실제 게시 완료 — 2026-10-20
+
+main `7a935e1114a4260181891664fff4a453508784fc`, tree `4cd6040e28794066df62579b12d9e79e1dbbdbb1`의 [run39377349867](https://github.com/Middleages/my-books/actions/runs/39377349867)는 build·세 production suite·Pages 배포·세 published suite, 총8개 job이 모두 성공했다. 실제 main의 selection은 `affected`, tax·book-volumes·housing이며 보험·투자·DB·Kubernetes는 의도적으로 미실행이다. 전체917/917 단위 테스트·빌드 통과와 해당 브라우저 범위를 구분한다.
+
+- published tax **101/101·PNG72**, [artifact12243957421](https://github.com/Middleages/my-books/actions/runs/39377349867/artifacts/12243957421), ZIP SHA-256 `f9aed90864bf12583f3c5aeaf3819f0454493f4133ddd3978ddc4bb44eadebbc`.
+- published housing **74/74·고유PNG54**, [artifact12244077027](https://github.com/Middleages/my-books/actions/runs/39377349867/artifacts/12244077027), ZIP `1b332fb7a3a643624b161e1c71ca87d0fd573437e5f1393eacb10c32a8ca53aa`.
+- published book-volumes **14/14·PNG36·오류0**, [artifact12244446103](https://github.com/Middleages/my-books/actions/runs/39377349867/artifacts/12244446103), ZIP `1e102f4689bdd99d77f24bb1633f18690793650547fd220d34ad5b376bfbb762`.
+
+모든 게시 결과의 sourceSha는 위 main, sourceChanges는 비어 있고 Chromium155.0.8059.39다. tax·housing 각각 애플리케이션 오류0이며 정확히 관찰한 `https://middleages.github.io/favicon.ico`의404 한 건만 출처와 함께 비애플리케이션 진단에 보존했다. 전체 콘솔 오류0 또는 미확인 오류를 무시한 것으로 표현하지 않는다.
+
+실제 게시 JS `index-CR1dI7lf.js`2436611바이트 SHA-256 `0fedae87f50fee38a10b7ea884563fffabcf52de963d54c1eb9c1d153618ac46`, CSS `index-DhQLFKJf.css`313484바이트 `a46285276e0428b85e7a402d53be8873789556031fdf3f0da391c37fc3ec4175`가 직접 검토한 최종 production과 정확히 같았다. 각 suite가 원격 파일을 직접 내려받아 로컬 dist와 대조했다.
+
+통합 담당자는 게시05·06의1440px 초기 두 장,05의320px 변경,06의390px reduced-motion/정적 표,1440px 홈과320px 세금 권차 헤더를 직접 열었다. 공급단계의 공제 연결·면세 원가 잔류20, 투자4경로와 계좌 조건, 현재 선택·정적 표·고정 권차와0/6·0/4 읽음 분모가 유지된다. 주거 작성자는 게시320px 계약 변경 원본 및390px 회수 변경의1200–2800px 원본 해상도 구간을 직접 열어 문서 재확인·인접 제어·두 보증 경로·60일 임대인1.1억원 도착/기관0을 확인했다. 모든 생성 PNG 전수를 사람이 검토했다고 주장하지 않는다.
+
+C05–06 및 주거B03–04의 공개 게이트를 완료했다. D07–08과 후속 주거·DB·회계 후보는 이 완료 상태와 최신 main을 보존한 별도 공개 게이트를 따른다. 실제 기기·Safari/Firefox·스크린리더 음성 출력·학습 효과는 여전히 미검증이다.

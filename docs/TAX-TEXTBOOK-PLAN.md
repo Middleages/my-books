@@ -1,6 +1,6 @@
 # 세금의 구조와 생활 — 돈·경제 시리즈 5권 제작 계획
 
-작성: 2026-10-20 KST. 현재 상태: **A 소개·01–02와 B 03–04 게시 확인 완료. C05–06은 후보 검증 단계이며 D–F는 별도 로컬 준비 단계**. 배치별 실제 증거는 [A 검증](TAX-BATCH-A-VERIFICATION.md), [B 검증](TAX-BATCH-B-VERIFICATION.md)에 구분한다.
+작성: 2026-10-20 KST. 현재 상태: **A 소개·01–02, B03–04, C05–06 게시 확인 완료. D07–08은 다음 후보 검증 단계이며 E–F는 별도 로컬 준비 단계**. 배치별 실제 증거는 [A 검증](TAX-BATCH-A-VERIFICATION.md), [B 검증](TAX-BATCH-B-VERIFICATION.md), [C 검증](TAX-BATCH-C-VERIFICATION.md)에 구분한다.
 상위 계획: [돈·경제 시리즈](MONEY-TEXTBOOK-PLAN.md). 공통 규칙: [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md).
 선행 교재 상태는 착수 시 최신 main과 각 검증 문서에서 재확인한다. 보험 4권의 진행 중 변경을 보존한다.
 

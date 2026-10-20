@@ -6,6 +6,9 @@ import {
   vatChain,
   investmentKinds,
   investmentRoute,
+  accountKinds,
+  accountRoute,
+  housingRoute,
 } from "../../simulations/tax/lifeModel.mjs";
 import { Bar, fmt, Lab, Prediction, Range, Stage, StaticTable } from "./shared";
 export function WithholdingLab() {
@@ -401,6 +404,140 @@ export function InvestmentTaxLab() {
           k.category,
           k.question,
         ])}
+      />
+    </Lab>
+  );
+}
+export function TaxAccountsLab() {
+  const [id, setId] = useState("isa"),
+    [states, setStates] = useState(["yes", "unknown", "yes"]);
+  const r = accountRoute(id, states);
+  return (
+    <Lab
+      id="accounts"
+      title="계좌의 혜택 앞에 놓인 조건 문"
+      note="요건을 읽는 연습입니다. 선택값은 가상의 서류 확인 상태이며 실제 계좌의 적격 판정이 아닙니다."
+    >
+      <label>
+        계좌 유형
+        <select
+          value={id}
+          onChange={(e) => {
+            setId(e.target.value);
+            setStates(["unknown", "unknown", "unknown"]);
+          }}
+        >
+          {accountKinds.map((k) => (
+            <option value={k.id} key={k.id}>
+              {k.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p>{r.detail}</p>
+      <figure className="tax-gate-scene">
+        <div className="tax-vault">
+          <span aria-hidden="true">▤</span>
+          {r.label}
+          <small>안의 상품과 수익은 별개</small>
+        </div>
+        <div className="tax-gates">
+          {r.gates.map((g, i) => (
+            <label className="tax-gate" data-state={g.state} key={g.label}>
+              <span className="tax-gate-symbol" aria-hidden="true">
+                {g.symbol}
+              </span>
+              <strong>{g.label}</strong>
+              <select
+                aria-label={g.label}
+                value={g.state}
+                onChange={(e) =>
+                  setStates((s) =>
+                    s.map((v, j) => (j === i ? e.target.value : v)),
+                  )
+                }
+              >
+                <option value="yes">자료 확인</option>
+                <option value="unknown">미확인</option>
+                <option value="no">조건 불일치</option>
+              </select>
+            </label>
+          ))}
+        </div>
+        <figcaption>
+          ✓는 자료를 확인했다는 뜻일 뿐 세금 0 판정이 아닙니다. ?를 ×와
+          구분합니다. 문 하나의 상태가 바뀌면 아래 결론도 달라집니다.
+        </figcaption>
+      </figure>
+      <p className="tax-result" role="status">
+        {r.result}
+      </p>
+      <button
+        onClick={() => {
+          setId("isa");
+          setStates(["yes", "unknown", "yes"]);
+        }}
+      >
+        조건까지 초기화
+      </button>
+      <Prediction
+        question="계좌에 세제혜택이 있으면 원금 손실도 막아줄까요?"
+        answer={false}
+        reason="세금 규칙과 투자 손익은 별개입니다. 세금만으로 적합한 계좌를 고를 수 없습니다."
+      />
+      <StaticTable
+        title="계좌별 확인 지도"
+        headers={["계좌", "첫째 조건", "둘째 조건", "셋째 조건"]}
+        rows={accountKinds.map((k) => [k.label, ...k.checks])}
+      />
+    </Lab>
+  );
+}
+export function HousingTaxLab() {
+  const p = usePlayback(2),
+    r = housingRoute(p.step);
+  return (
+    <Lab
+      id="housing"
+      title="한 집 위에 놓인 세 번의 다른 질문"
+      note="취득·보유·양도의 과세 사건 지도입니다. 실제 세율·세액·신고기한을 계산하지 않습니다."
+    >
+      <p>
+        긴 선은 집을 가진 흐름, 점은 확인해야 할 사건입니다. 거리나 금액에
+        비례하지 않는 순서도입니다.
+      </p>
+      <figure className="tax-housing-scene">
+        <div className="tax-house" aria-hidden="true">
+          ⌂
+        </div>
+        <ol>
+          {r.events.map((e, i) => (
+            <li key={e.id} data-current={i === p.step}>
+              <button onClick={() => p.seek(i)} aria-pressed={i === p.step}>
+                <b>{e.symbol}</b>
+                {e.label}
+              </button>
+              <strong>{e.time}</strong>
+              <span>{e.kind}</span>
+            </li>
+          ))}
+        </ol>
+        <figcaption>
+          주택 매매가격, 보유단계의 평가 기준, 양도차익은 같은 금액이 아닙니다.
+        </figcaption>
+      </figure>
+      {p.controls}
+      <Stage label={r.current.label} detail={r.current.check} />
+      <p className="tax-result">{r.result}</p>
+      <Prediction
+        question="양도차익이 없으면 취득세·재산세도 자동으로 0일까요?"
+        answer={false}
+        reason="서로 다른 사건과 과세표준을 사용합니다. 한 단계의 결론을 다른 세금에 옮기면 안 됩니다."
+      />
+      <StaticTable
+        title="부동산 사건 지도"
+        headers={["사건", "시점", "세목", "추가 확인"]}
+        rows={r.events.map((e) => [e.label, e.time, e.kind, e.check])}
       />
     </Lab>
   );

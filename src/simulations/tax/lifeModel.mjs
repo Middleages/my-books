@@ -213,3 +213,91 @@ export function investmentRoute(id = "interest", account = "ordinary") {
     result: "자료 부족 · 세율과 최종세액은 확정하지 않음",
   };
 }
+export const accountKinds = [
+  {
+    id: "ordinary",
+    label: "일반계좌",
+    checks: ["소득의 종류", "원천징수·신고 조건", "국내외·납세자 조건"],
+    detail: "계좌 이름보다 그 안의 소득과 거래를 먼저 봅니다.",
+  },
+  {
+    id: "isa",
+    label: "ISA",
+    checks: ["가입·유지 요건", "편입상품·손익통산 범위", "만기·중도해지 조건"],
+    detail:
+      "계좌 안의 손익에 적용하는 특례입니다. 모든 자산이 들어가거나 모든 소득이 무조건 면세되는 뜻은 아닙니다.",
+  },
+  {
+    id: "pension",
+    label: "연금계좌",
+    checks: [
+      "납입 재원·공제 이력",
+      "인출 시점·수령 방식",
+      "연금수령·연금외수령 구분",
+    ],
+    detail: "지금 받은 공제와 나중에 돈을 꺼낼 때의 과세를 함께 확인합니다.",
+  },
+];
+export function accountRoute(id = "isa", states = ["yes", "unknown", "yes"]) {
+  const item = accountKinds.find((r) => r.id === id);
+  if (!item || !Array.isArray(states) || states.length !== 3)
+    throw new RangeError("Unknown account");
+  [0, 1, 2].forEach((i) => choice(states[i], ["yes", "no", "unknown"]));
+  const gates = item.checks.map((label, i) => ({
+    label,
+    state: states[i],
+    symbol: states[i] === "yes" ? "✓" : states[i] === "no" ? "×" : "?",
+    status:
+      states[i] === "yes"
+        ? "자료 확인"
+        : states[i] === "no"
+          ? "조건 불일치"
+          : "미확인",
+  }));
+  return {
+    ...item,
+    gates,
+    result: states.includes("no")
+      ? "조건 불일치 · 일반 규칙·예외·추징 여부 확인"
+      : states.includes("unknown")
+        ? "미확인 조건이 남음 · 혜택 확정 불가"
+        : "자료 세 가지 확인 · 실제 적용연도·세액은 별도 검토",
+  };
+}
+export const housingEvents = [
+  {
+    id: "buy",
+    label: "① 취득",
+    time: "집을 얻는 때",
+    kind: "취득세 등 · 지방세",
+    check: "취득 원인·가격·주택 수·감면 요건",
+    symbol: "＋",
+  },
+  {
+    id: "hold",
+    label: "② 보유",
+    time: "과세 기준일",
+    kind: "재산세 · 지방세 / 종합부동산세 · 국세",
+    check: "기준일의 소유자·공시가격·과세 대상",
+    symbol: "⌂",
+  },
+  {
+    id: "sell",
+    label: "③ 양도",
+    time: "대가를 받고 넘기는 때",
+    kind: "양도소득세 및 지방소득세 등",
+    check: "취득·양도 시점과 금액·필요경비·비과세 조건",
+    symbol: "−",
+  },
+];
+export function housingRoute(index = 0) {
+  if (!Number.isInteger(index) || index < 0 || index > 2)
+    throw new RangeError("Unknown stage");
+  return {
+    events: housingEvents,
+    current: housingEvents[index],
+    index,
+    result:
+      "서로 다른 사건·세목입니다. 취득 때 냈다고 보유·양도 단계가 끝나지 않습니다.",
+  };
+}

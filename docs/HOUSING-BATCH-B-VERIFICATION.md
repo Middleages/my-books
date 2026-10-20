@@ -64,3 +64,18 @@ A 공개 대기 중 별도 브랜치에서 B `0e5f37e`와 A·세금B 통합 후�
 - artifact `12242584493` ZIP SHA-256 `35a03d84ff23a6668dd8b1c758746dfc9e27daf24178ecfe59c6847111533a69`가 GitHub 기록과 일치한다. CSS `index-BuFZLwUo.css` 312,876바이트 SHA-256 `a7dacc0c878cc68c2a9b5177dce122503034430bb62aaeed7c8c8f3d98114bc7`, JS `index-CMMjuDjF.js` 2,414,999바이트 SHA-256 `e97d3239696b708fee3ceb84105fcef1fcf7c1907270168be4a82754043e6488`다.
 - 담당자가 이번 통합 번들의 실제1440px 계약 변경,320px 계약 초기·보증금 변경,390px 보증금 reduced/static 원본 PNG를 직접 열었다. 문서 일치가 법적 보호 판정과 구분되고, 실제 현금1억1,000만원·미현금화 원금3,000만원·기관 도착 전 입금0이 보존된다. 제어는 변하는 장면 가까이에 있으며 경로·라벨·수치가 모바일에서도 읽힌다. 직접 검토 PASS이며 앞선 독립 모델·화면 검토 증거도 유지한다.
 - A의 exact-main·Pages 게이트는 main `b97dbd4`와 run `39374566657`에서 완료됐다. 이 B 기록은 **공개 준비 완료**이지 B 게시 완료가 아니다. 후속 세금 C와의 통합 후보·main·Pages·실제 자산 대조는 해당 공개 창에서 다시 검증한다.
+
+## 세금 C와 최종 production 합본
+
+세금C05–06과 합친 head `7a935e1114a4260181891664fff4a453508784fc`, 실제 checkout `329a5a11770f0a3de81e039d34700f313eb4b918`의 [run39376752669](https://github.com/Middleages/my-books/actions/runs/39376752669)에서 housing74/74·고유PNG54·모든 오류 진단0을 확인했다. [artifact12243651929](https://github.com/Middleages/my-books/actions/runs/39376752669/artifacts/12243651929)의 ZIP SHA-256은 `7a7de83089651718feb5114cf8a6d24929b306bcc24d26c8e778ace3176e0bff`다. 전체917/917 unit·빌드, 같은 합본의 tax101/101와권차14/14도 통과했다. 다른 네 책의 전체 브라우저는 생략했다.
+
+작성자가 이 합본의1440 계약 변경·320 계약 초기·320 회수 변경 원본을 직접 열어 문서/근거 두 갈래, 모바일 제어와 반환 시점, 현금1.1억원·미현금화3천만원·기관 입금0의 구분을 확인했다. 기존390 reduced/static 검토와 B 앱 소스 동일성을 유지한다. 정확한 합본 JS/CSS와 통합 담당자의 추가 검토는 [세금 C 기록](TAX-BATCH-C-VERIFICATION.md)에 남긴다. 이 head의 main 반영 뒤 Pages·실제 게시 결과는 별도 후속 게이트다.
+
+
+## 정확한 main과 실제 게시 완료 — 2026-10-20
+
+main `7a935e1114a4260181891664fff4a453508784fc`, tree `4cd6040e28794066df62579b12d9e79e1dbbdbb1`의 [run39377349867](https://github.com/Middleages/my-books/actions/runs/39377349867)는 전체8개 job을 성공했다. housing published **74/74·고유PNG54·애플리케이션 오류0**, sourceChanges 없음이다. [artifact12244077027](https://github.com/Middleages/my-books/actions/runs/39377349867/artifacts/12244077027)의 ZIP SHA-256 `1b332fb7a3a643624b161e1c71ca87d0fd573437e5f1393eacb10c32a8ca53aa`를 확인했다. 정확한 host-root favicon404 한 건은 별도 보존했고 출처 불명·앱 오류는 계속 실패시켰다.
+
+게시 JS `index-CR1dI7lf.js` SHA-256 `0fedae87f50fee38a10b7ea884563fffabcf52de963d54c1eb9c1d153618ac46`, CSS `index-DhQLFKJf.css` SHA-256 `a46285276e0428b85e7a402d53be8873789556031fdf3f0da391c37fc3ec4175`는 앞 production과 같다. 작성자가 게시320px 계약 변경 원본과390px 회수 변경의1200–2800px 원본 해상도 구간을 직접 열어 문서 재확인 경계·인접 제어·두 보증 경로·60일 실제 현금1.1억원과 기관 입금0을 확인했다. 모든54장 전수 시각 검토가 아니라 명시한 대표 장면 재검토다.
+
+B03–04의 main·Pages·실제 게시 자산·직접 화면 확인을 완료했다. 세금C·권차와 전체917테스트, 의도적으로 생략한 보험·투자·DB·Kubernetes 브라우저 범위는 [세금 C 최종 기록](TAX-BATCH-C-VERIFICATION.md)을 따른다. C 이후와 실제 기기·Safari·스크린리더 음성 출력은 별도 검증 대상이다.

@@ -6,6 +6,9 @@ import {
   vatChain,
   investmentRoute,
   investmentKinds,
+  accountRoute,
+  accountKinds,
+  housingRoute,
 } from "../src/simulations/tax/lifeModel.mjs";
 const close = (a, b) => assert(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 test("tax payroll: cash partitions, non-taxable classification is not another outflow", () => {
@@ -115,4 +118,65 @@ test("tax investment routes keep all four income kinds and unknown final tax", (
     }
   assert.throws(() => investmentRoute("bogus"));
   assert.throws(() => investmentRoute("interest", "bogus"));
+});
+test("tax accounts: unknown never counted as met or failed, checked never means zero tax", () => {
+  const states = ["yes", "no", "unknown"];
+  for (const item of accountKinds) {
+    const unknown = accountRoute(item.id, ["yes", "unknown", "yes"]);
+    assert.match(unknown.result, /미확인/);
+    assert.equal(unknown.gates[1].symbol, "?");
+    assert.match(accountRoute(item.id, ["yes", "no", "yes"]).result, /불일치/);
+    assert.match(
+      accountRoute(item.id, ["yes", "yes", "yes"]).result,
+      /별도 검토/,
+    );
+    for (const a of states)
+      for (const b of states)
+        for (const c of states) {
+          const inputs = [a, b, c];
+          const r = accountRoute(item.id, inputs);
+          assert.deepEqual(
+            r.gates.map((g) => g.state),
+            inputs,
+          );
+          assert.deepEqual(
+            r.gates.map((g) => g.symbol),
+            inputs.map((v) => (v === "yes" ? "✓" : v === "no" ? "×" : "?")),
+          );
+          assert.match(
+            r.result,
+            inputs.includes("no")
+              ? /불일치/
+              : inputs.includes("unknown")
+                ? /미확인/
+                : /별도 검토/,
+          );
+          assert(!("tax" in r));
+          assert.deepEqual(accountRoute(item.id, inputs), r);
+        }
+  }
+  assert.throws(() => accountRoute("x"));
+  for (const v of [Array(3), null, { length: 3 }, ["yes", , "no"]])
+    assert.throws(() => accountRoute("isa", v));
+  assert.throws(() => accountRoute("isa", ["yes"]));
+  assert.throws(() => accountRoute("isa", ["yes", "invalid", "no"]));
+});
+test("tax housing: all events remain separate, index input bounded", () => {
+  assert.equal(housingRoute(0).current.id, "buy");
+  assert.equal(housingRoute(1).current.id, "hold");
+  assert.equal(housingRoute(2).current.id, "sell");
+  for (let i = 0; i < 3; i++) {
+    const r = housingRoute(i);
+    assert.equal(r.current, r.events[i]);
+    assert.equal(r.index, i);
+    assert.deepEqual(
+      r.events.map((e) => e.id),
+      ["buy", "hold", "sell"],
+    );
+    assert.equal(new Set(r.events.map((e) => e.kind)).size, 3);
+    assert(!("tax" in r));
+    assert.deepEqual(housingRoute(i), r);
+  }
+  for (const x of [-1, 3, 0.5, NaN, Infinity, "1", null])
+    assert.throws(() => housingRoute(x), RangeError);
 });

@@ -1,0 +1,17 @@
+export type AccountId = 'cash' | 'receivable' | 'equipment' | 'loan' | 'capital';
+export type Row = { account: AccountId; side: 'debit' | 'credit'; amount: number };
+export type Event = { id: string; label: string; detail?: string; rows: Row[] };
+export type State = { balances: Record<AccountId,number>; openingCash: number; entries: Event[]; appliedIds: string[] };
+export type Snapshot = State & { assets: number; liabilities: number; equity: number; balanced: boolean; cashChange: number; revenue: number; profit: number };
+export type Frame = Snapshot & { index:number; title:string; detail:string; before:Snapshot; event:Event|null; scale:number };
+export type BoundaryMode='contribution'|'borrowing'|'collection';
+export type BoundaryFrame=Frame & { mode:BoundaryMode; amount:number; actor:string; relation:string; committed:boolean; after:Snapshot; event:Event };
+export const accounts: Record<AccountId,{label:string;kind:'asset'|'liability'|'equity';normal:'debit'|'credit'}>;
+export const boundaryModes:readonly BoundaryMode[];
+export const modeLabels:Record<BoundaryMode,string>;
+export function createLedger(opening?:Partial<Record<AccountId,number>>):State;
+export function post(state:State,event:Event):State;
+export function snapshot(state:State):Snapshot;
+export function boundaryFrames(options?:{mode?:BoundaryMode;amount?:number}):BoundaryFrame[];
+export function doubleEntryFrames():Frame[];
+export function ledgerSegments(frame:Snapshot & {scale:number}):Record<'assets'|'claims',{key:AccountId;label:string;value:number;fraction:number}[]>;
