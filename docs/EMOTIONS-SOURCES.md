@@ -16,3 +16,7 @@
 
 ## 제외·미실행
 아이 진단·기질/애착 점수, 치료 효과 예측, 폭력 정당화, 영아에게 유아 규칙 적용, 실제 아이 기록 수집은 제외. 본문·앱·사용성 평가·의학 및 아동발달 전문가 감수는 미실행.
+
+## D 추가 근거 (2026-10-20 실제 열람)
+- E5 미국 Office of Head Start, Introduction to Temperament: https://headstart.gov/mental-health/article/introduction-temperament . 기질과 보호자 기대/돌봄의 맞춤 개념만 참고, 유형·검사·점수 생성 제외. 대상 범위는 https://headstart.gov/mental-health/article/infant-toddler-temperament-tool-it3-supporting-goodness-fit 의 출생–3세 개요를 별도로 확인. 07장 근거이며 개인 반응 예측·효과를 뒷받침하지 않는다.
+- E6 AAP HealthyChildren, How to Ease Your Child’s Separation Anxiety, 2026-05-11 표시: https://www.healthychildren.org/English/ages-stages/toddler/Pages/soothing-your-childs-separation-anxiety.aspx . 영유아 개인차·예고/재회 설명·지속 우려 상담을 참고. 특정 월령·완료일·울음 감소 보장을 채택하지 않는다. 08장 자체 인계 그림은 기관 안전 절차 인증이 아니다.
