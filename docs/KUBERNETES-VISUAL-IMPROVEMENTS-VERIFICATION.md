@@ -2,7 +2,9 @@
 
 2026-10-20 UTC. 기존 소개·01–12·선택 부록의 설명력을 보완한다. 새 책·장·URL을 만들거나 실제 Kubernetes 클러스터를 조작하지 않는다.
 
-## 기준과 현재 상태
+검증 이력은 실행 순서로 보존한다. 현재 게시 진단과 최소 수정 결과는 마지막 절을 기준으로 읽는다.
+
+## 첫 검증의 기준과 당시 상태
 
 - 원 감사 기준 main: `609e6f2cef1c449ee8760f92c98b01ace238d5e1`.
 - 병행 보험 E를 보존해 통합한 기준 main: `246167308c050d797d00501fb057e2ea61de51b4`.
@@ -73,6 +75,18 @@ read-only 리뷰에서 DNS 실패 화살표, 현재 API 연결의 양방향 표�
 - 앞선 30 PNG 검토의 TLS 실패·v2 파일/v1 앱·사라진 Pod·config-only revision·CPU/포트 진단·신뢰 경계와 합쳐 핵심 변경 관계를 확인했다. 작성자도 마지막 캡처에서 변경 상태·320px 글자와 경계·질문표를 직접 확인했다. 캡처가 있다는 사실만으로 승인한 것은 아니다.
 - exact build asset: `index-BN1Q6eZc.css` SHA-256 `bd98cb6a1fecb053cca147466ea2488294e05ee8ec671b1e944415e2e12bd2a8`, `index-DxCmWCSY.js` SHA-256 `94ca7ec7c8cbb6ced58b079e209f0f523868ecb4dea1ddc6b573c01ec0e8ec87`. production artifact와 브라우저가 받은 bytes를 대조한 값이며, 아직 게시 사이트의 값이라는 뜻은 아니다.
 
-## 통합 준비 상태와 한계
+## 통합 직전 상태와 한계 · 이전 기록
 
 시각 보완과 해당 범위 검증은 통합 준비를 마쳤다. 최종 반영에서는 병행 DB 등 최신 main·workflow의 검사 선택 규칙과 기존 suite를 보존하고, 허가된 게시 창에서만 main/Pages를 갱신한다. 게시 뒤 실제 자산·published QA 결과를 별도로 기록한다. 실제 클러스터 설치·Helm install/upgrade·복원·사내망 연결, 실제 모바일 기기·Safari·스크린리더 음성은 이 작업에서 실행하지 않는다.
+
+## DB 합본과 실제 게시 진단 · 2026-10-20 UTC
+
+- 합본 [PR production run 39366105381](https://github.com/Middleages/my-books/actions/runs/39366105381), source `5ccf5792822bff519045db74f2976a1a3e9ba80d`, tree `833f4339198a553e1758459fe91a382f3f21fca4`: K8s 94/94, 146 PNG. 다운로드 artifact `12239472477` ZIP SHA-256 `08bbffea07add629ad735156aa7d056bd9f9479068f8163ae7797bad2db00c85` 일치. 통합판 원본 PNG 24개와 긴 모바일 4개의 원본 해상도 crop을 직접 읽었다. 공유 CSS 회귀나 새로운 의미·가독성 결함을 발견하지 않았다.
+- 실제 게시 main `0071bff4c992376bea65ad3a12ce86fafbbe98be`의 [run 39368753907](https://github.com/Middleages/my-books/actions/runs/39368753907): K8s live는 **93/94**이며 최종 `console-errors` 검사만 실패했다. 정확한 JS/CSS, 모든 장면·상호작용·키보드·reduced-motion·읽음 기록 검사는 통과했다. 원래 결과는 URL 없는 404 메시지 하나만 남겨 원인을 확정할 수 없었다. 실패를 통과로 다시 쓰지 않는다.
+- 게시 artifact `12241063572` ZIP SHA-256 `d28f94eeea18e5bb3a64ae13ac891e9f84e2b2e23a4dceae4d78fdd7ac8b3d07`을 대조하고 `320-02-control-edge`, `390-06-stale-app`, `1440-08-overflow-3000`, `320-11-rollback-final`, `320-14-missing-pv` PNG를 직접 확인했다. 역할·버전 차이·비례·revision·누락 경계에 새 결함이 없었다.
+- 원인 확인용 [strict live run 39371353616](https://github.com/Middleages/my-books/actions/runs/39371353616), source `da79bfc59ea652fd8038e6313244cb2f703abb18`: 앱 바이트를 바꾸지 않고 console source/page, request 실패 URL, HTTP 실패 status를 기록했다. **제외 규칙 없이** 같은 93/94 실패를 재현했다. 유일 오류는 source `https://middleages.github.io/favicon.ico`, page `https://middleages.github.io/my-books/#/kubernetes`, message `Failed to load resource: the server responded with a status of 404 ()`였다. 앱 경로가 아닌 호스트 루트의 기본 icon 요청임을 추측이 아닌 실제 로그로 확인했다. artifact `12241407130` ZIP SHA-256 `eb09b0e0236f64a92ee5648e146c324e498216e2a1948b5434f23eb7f1fa12ca` 일치.
+- 수정은 브라우저 검증기에만 한정한다. 지정 live base·console 종류·정확한 host-root favicon URL·404 메시지가 모두 일치하는 관측을 `nonApplicationDiagnostics`에 원문 그대로 보존한다. 같은 URL의 runtime/request/HTTP 오류, 앱 경로·알 수 없는 URL·다른 origin/status·단순히 favicon을 언급하는 앱 오류는 모두 계속 fatal이다. `console-errors`의 오류 0 assertion을 유지하고 reduced-motion·읽음 기록 문맥에도 진단을 연결했다. 신규 4개 테스트 및 독립 읽기 전용 검토에서 분류 범위와 모든 미확인 오류의 실패를 확인했다.
+- 수정본 로컬 `npm test` **895/895**, `npm run build` 통과. 앱 `src`·entry·패키지·기존 Pages workflow는 main과 동일하다. JS `index-4pJeeHWT.js` SHA-256 `8a86f7dca3b5b9e4613bcc06e3325178b8e6f7e99967b72609c3868b25146ece`, CSS `index-CTJgJCai.css` SHA-256 `62ab8c3b02a829dfac3c4d18ff35fa477c716f0ff250c96dd0147155cd3419e6`는 원본 게시 run·strict probe·수정본 로컬 build에서 일치한다. branch-only 읽기 전용 진단 workflow는 최종 수정에 포함하지 않는다.
+- 수정 분류기를 적용한 [focused live run 39371795483](https://github.com/Middleages/my-books/actions/runs/39371795483), source `719b438ad56a479a4df9500a9a3cd4efe0a30ba4`, tree `c5ab48f24bae51ec8b1fa5a296c776305f2b1430`: **94/94**, **146 PNG**, fatal errors 0. 같은 host-root favicon 404 한 건은 `diagnostics`와 `nonApplicationDiagnostics`에 source/page/message를 포함해 남아 있다. artifact `12242245867` ZIP SHA-256 `fad01c276a76796c663cd553f071af377d0ffd9532917d49c330d26e5e7a285a` 일치. 게시 자산 SHA는 위 main 값과 동일하며, 수정 run의 `320-02-http-response`, `390-12-pending-evidence`, `320-15-trust-boundaries`도 직접 확인했다.
+
+이 마지막 결과는 **현재 게시된 동일 앱에 새 검증기를 적용한 focused live 검증**이다. 기존 main run의 실패 기록을 소급해서 성공으로 바꾸거나 다른 책 전체 CI 성공을 주장하지 않는다. 최종 변경은 검증기·진단 단위 테스트·이 문서 3개뿐이며, 임시 workflow·앱·기존 배포 게이트는 포함하지 않는다. 수정 검증기의 main 반영 및 정상 Pages workflow 재확인은 통합 담당 단계에서 별도로 기록한다.

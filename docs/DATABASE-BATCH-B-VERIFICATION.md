@@ -80,3 +80,9 @@ favicon 예외도 검증기 안에서 좁혔다. 정확한 공개 base·호스�
 [진단 artifact12241258742](https://github.com/Middleages/my-books/actions/runs/39372204923/artifacts/12241258742)의 ZIP SHA256 `13272ee3def38a19e01ac9881e1c0cf8f3f06587b9e36a415a13078e52ebd5d5`를 대조했다. 새 B select12개에는 눈에 보이는 label과 동일한 명시적 aria-label을 부여했다. option 문구가 포함된 label 텍스트에 exact-name 탐색을 의존하지 않는다. 소스 계약 테스트는12개 이름의 일치와 기존 exact-name 검사 유지를 확인한다. 실제 수정 UI는 새 Actions에서 다시 검증한다.
 
 검증기 또한 차단성 Playwright TimeoutError가 발생하면 실패를 기록하고 현재 화면을 저장한 뒤 비정상 종료해 같은 없는 조작을 수십 번 기다리지 않도록 바꿨다. 일반 assertion 실패와 구별하고 부분 report의 failed/fatal을 유지한다. 실행하지 않은 나머지를 통과로 세지 않으며 건강한 실행은 기존 전체 assertion을 그대로 수행한다. 임시 진단 workflow는 정상 출판 후보에 포함하지 않는다.
+
+## 접근성 수정과 최신 main 통합 후보
+
+명시적 이름 수정 후 단독 B 후보의 전체 단위 테스트는 **964/964**, build는 **329 modules**를 통과했다. 이후 최신 main `b97dbd4ee78b64118a0e88f9f3f5fd1fd08f6b0d`를 통합했다. 세금03–04·주거 소개/01–02·권차·쿠버네티스의 좁은 공개 진단 수정과 A 공개 완료 기록을 보존했다. 카탈로그는 최신 main의 다른 책을 그대로 두고 DB03–04 두 import/목차와 DB 공개 범위만 추가했다. 공유 workflow·검사 선택기를 되돌리지 않았다.
+
+이 통합 소스의 전체 `npm test`는 **982/982**, `npm run build`는 **340 modules**, `git diff --check`는 통과했다. 이는 로컬 코드·빌드 결과이며 실제 B 브라우저 통과가 아니다. 원래 B 실행의 선택 상자 timeout, 후속 접근성 수정, 최신 통합 실행을 서로 다른 증거로 남긴다. A는 공개 검증을 완료했지만 B는 아직 PR의 production·직접 PNG 검토 및 이후 조율된 main/Pages 게이트를 기다린다.
