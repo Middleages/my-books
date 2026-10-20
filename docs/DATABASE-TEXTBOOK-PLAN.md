@@ -1,6 +1,6 @@
 # 웹앱 개발자를 위한 데이터베이스 — 교재 계획
 
-작성일·공식 자료 확인일: **2026-10-20 (KST)**. 상태: **A 소개·01–02 main/Pages 공개 및 DB 125개·권차 14개 실제 공개 검사 완료. B 03–04는 별도 PR19에서 구현·검증 중이며 이 main에는 없다. C–G 본문 미구현. 실제 DB 미실행**.
+작성일·공식 자료 확인일: **2026-10-20 (KST)**. 상태: **A 소개·01–02 공개 완료. B 03–04 source/production/직접 시각 검증 완료, 합본 공개 대기. C 05–06 source/production/직접 시각 검증 완료, 게시 대기. D 07–08 별도 로컬 구현·검증 중. E–G 본문 미구현. 실제 DB 미실행**.
 기획 시 확인한 main: `609e6f2cef1c449ee8760f92c98b01ace238d5e1`. 구현은 이 SHA에 고정하지 않고 항상 최신 main과 병행 작업을 확인한다.
 
 관련 기준: [AGENTS.md](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [네트워크 계획](NETWORK-TEXTBOOK-PLAN.md), [쿠버네티스 계획](KUBERNETES-TEXTBOOK-PLAN.md), [독립 실행 프롬프트](DATABASE-SESSION-PROMPTS.md).
@@ -189,8 +189,8 @@ A에서 실제 구현한 소개·01–02만 카탈로그와 자체 SVG 장식 �
 - **학습 목표:** HTTP 요청·앱 프로세스·풀·DB 세션의 경계를 구분하고 연결 대기와 SQL/잠금 대기를 따로 관찰한다.
 - **눈으로 발견할 관계:** pool 크기2에서 요청4개가 오면 두 개는 연결을 빌리고 두 개는 기다린다. connection을 반환하지 않으면 SQL이 끝나도 자리는 풀리지 않는다. 앱 replica가 늘면 DB 연결 총량도 늘 수 있다.
 - **장면·기하:** 요청 대기열→번호 있는 pool 슬롯→DB 세션 lane을 잇고 같은 요청 색/번호를 전체 구간에 유지한다. 요청별 시간막대는 acquire wait, DB 사용, 반환을 겹치지 않는 구간으로 분해한다. lock wait는 DB 사용 구간 안에 포함되며 중복 합산하지 않는다.
-- **전환·조작:** pool1/2, 요청4개 고정, 각 요청 사용2단계인 기본값과 긴 transaction·반환 누락·연결 실패를 비교한다. 기본 FIFO·동시 도착·순차 query는 교육 모델의 가정이다. 초기 2개가 끝나는 단계에 나머지가 들어가는 모습을 한 단계로 관찰한다.
-- **모델·불변식:** `poolFrames`에서 request ownership·idle/inUse·queue·timeouts를 생성한다. 사용중<=pool크기, 한 슬롯에 동시 소유자1, 완료/실패의 정상 경로에서 반환, 한 transaction은 동일 connection을 유지한다. pool2/요청4/사용2단계의 이상적 완료는 2·2·4·4단계다. 실제 지연값이나 최적 pool 크기로 제시하지 않는다.
+- **전환·조작:** pool1/2, 요청4개 고정, 각 요청 사용2단계인 기본값과 SQL 종료 뒤 긴 앱 보유·반환 누락·연결 획득 실패를 비교한다. 긴 보유만으로 열린 transaction/잠금을 추론하지 않는다. 기본 FIFO·동시 도착·순차 query는 교육 모델의 가정이다. 초기 2개가 끝나는 단계에 나머지가 들어가는 모습을 한 단계로 관찰한다.
+- **모델·불변식:** `poolFrames`에서 request ownership·idle/inUse·queue·timeouts를 생성한다. 사용중<=pool크기, 한 client에 동시 소유자1, 정상 완료 뒤 대여 반환, 한 transaction은 동일 connection을 유지한다. 설정 용량 칸·지연 생성되는 client·현재 lease를 분리하고, 정상 반환 뒤 idle client/session과 연결선은 남는다. 획득 실패에는 client/SQL/반환을 만들지 않는다. timeout·장애 client 폐기 자체는 이번 유한 그림 밖이다. pool2/요청4/사용2단계의 이상적 완료는 2·2·4·4단계다. 실제 지연값이나 최적 pool 크기로 제시하지 않는다.
 - **실제 적용·경계:** 모든 앱 인스턴스의 pool 상한 합계와 관리·다른 앱용 연결 여유를 DB 한도와 비교하되 메모리·처리량을 포함한 튜닝 공식으로 쓰지 않는다. finally 반환/오류 처리, 값 매개변수화, 최소 권한, 비밀정보의 서버 보관을 짧게 연결한다. DB 계정정보를 브라우저에 넣지 않는다. 큰 pool이 느린 SQL·잠금을 고치지 않는다.
 - **근거:** S09, S10. 실제 driver 예제를 넣으면 pool.query 여러 번을 하나의 transaction처럼 쓰지 않는다. 실제 SQL 실행과 브라우저 모델 시간을 구별한다.
 
@@ -198,9 +198,9 @@ A에서 실제 구현한 소개·01–02만 카탈로그와 자체 SVG 장식 �
 
 - **학습 목표:** 실행계획의 부모/자식 관계, 추정 rows와 관측 rows·loops, 비용 단위와 실제 시간을 구분한다.
 - **눈으로 발견할 관계:** 아래 scan에서 예상보다 많은 행이 나오면 위 join·aggregate로 전달되는 일도 달라진다. 루트 한 줄만 보거나 모든 노드 시간을 더하면 병목을 잘못 읽는다.
-- **장면·기하:** Scan→Filter/Join→Aggregate의 트리를 아래에서 위로 연결하고 행 묶음의 폭/타일 수를 rows에 대응시킨다. 예상은 외곽선, 관측은 채움으로 같은 축에 비교한다. 반복 노드는 loops와 회당 행 수를 별도 라벨로 둔다. 큰 값은 명시적 눈금·확대 상세로 처리하고 임의로 포화시키지 않는다.
+- **장면·기하:** 필터가 붙은 Scan→Aggregate, 별도 Nested Loop의 자식 연결, 별도 streaming Scan→Limit 트리를 아래에서 위로 연결하고 행 묶음의 폭/타일 수를 rows에 대응시킨다. 예상은 익명 수량 외곽선, 관측은 채움으로 같은 축에 비교한다. 예상에 미리 일치 행 ID를 부여하지 않는다. 반복 노드는 loops와 회당 행 수를 별도 라벨로 둔다. 큰 값은 명시적 눈금·확대 상세로 처리하고 임의로 포화시키지 않는다.
 - **전환·조작:** 같은 고정 fixture·query에 대해 추정만/관측 포함, 최신/낡은 통계라는 **교육용 plan fixture**, 선택도·N+1 앱 호출 수를 비교한다. N+1은 DB plan 한 트리의 loops와 별도 앱 호출 lane에 놓는다. 짧은 진단 순서는 앱 전체 지연→pool/lock/SQL 구간→plan 증거→변경 후 재측정이다.
-- **모델·불변식:** `explainFrames`는 typed plan node와 estimate/actual provenance를 가진다. 예: 단순 scan의 estimatedRows=4·actualRows=40·loops=1은 10배, actualRows=2·loops=10 노드는 총20행 처리 관찰로 표시한다. 실제 EXPLAIN의 회당 평균·반올림과 교육용 정수 모델을 구분한다. 부모 시간은 자식 포함이므로 단순 합산 판정을 하지 않는다.
+- **모델·불변식:** `explainFrames`는 typed plan node와 estimate/actual provenance를 가진다. 예: 64개 확인→scan estimatedRows4/actual40→COUNT 값40인 결과1행을 구별한다. 원래 고객1의 두 주문은 안쪽 항목2/1행으로 평균1.5·loops2·누적3행이다. LIMIT는 scan 후보4개/출력2개에서 멈추며 끝까지의 예상10과 차이가 나도 통계 오류로 단정하지 않는다. 실제 표시 평균·반올림과 모델의 정확값을 구분한다. 부모 시간·BUFFERS는 자식을 포함하므로 합산하지 않고, BUFFERS 누적에 loops를 다시 곱하지 않는다. actual time 두 수를 공통 시계의 시작/끝으로 쓰지 않으며 포함 시간표는 별도 합성 예임을 명시한다.
 - **실제 적용·경계:** planner cost는 ms가 아니다. EXPLAIN ANALYZE는 실제 문장을 실행하므로 임의 운영 쿼리·변경 SQL에 권하지 않는다. 기본 실제 예는 합성 DB의 부작용 없는 SELECT만. rollback으로 외부 부작용·sequence까지 모두 취소된다고 안전을 보장하지 않는다. `BUFFERS`는 실제 디스크 읽기량과 동일하지 않고 cache 조건을 기록한다.
 - **근거:** S11. 가상 계획은 '교육용, 서버 출력 아님'으로 표시하고 실제 plan JSON/SQL/data/version을 수집한 경우에만 실제 관측으로 소개한다.
 
@@ -349,7 +349,7 @@ A에서 정한 환경 기록을 사용하고, G에서 제공할 경우 `examples
 - 기획 완료: 12장의 질문·시각 관계·조작/전환·모델/반례·공식 근거, 고정 식별자·fixture·구조·세션별 인계/검증 계획과 독립 실행 프롬프트.
 - A 구현 완료: 소개·01–02 본문, 공통 fixture와 파일 경쟁/관계/제약 모델, 시각 UI, 카탈로그의 공개 2장·표지, 검증 스크립트와 기록. 단위 테스트·빌드, DB production browser 124개와 실제 PNG 직접·교차 검토를 통과했다. 세부 기준 commit·실행 환경·결과는 [배치 A 검증 기록](DATABASE-BATCH-A-VERIFICATION.md)을 따른다.
 - A 공개 완료: main `0071bff4c992376bea65ad3a12ce86fafbbe98be`의 production 여섯 suite·Pages 배포와 DB 공개125/125·권차14/14 및 정확한 JS/CSS 일치를 확인했다. 같은 main의 쿠버네티스 host-root favicon404 실패는 원래 기록에 남기고, 앱 바이트 불변의 strict 진단/수정 집중 공개94/94 증거로 구분한다. 보험·투자·세금·권차·DB 공개 검사는 성공했고 모든 job이 종료된 뒤 다음 통합 창을 넘겼다. 원래 run 전체가 성공이었다고 쓰지 않는다. 세부 근거는 배치 A·쿠버네티스 검증 기록을 따른다.
-- B 소스 검증 완료: [PR19](https://github.com/Middleages/my-books/pull/19)의 03–04 본문·모델·시각 UI는 head `bae858c964f4cbdf797bf7afe2fac874581127a4`에서 전체992개 단위 테스트·build, 실제 production DB339/339·135PNG 및 직접·독립 시각 검토를 통과했다. 320px 본문/설명 잘림의 발견·수정·재검증은 [배치 B 기록](DATABASE-BATCH-B-VERIFICATION.md)에 구분한다. B의 main·Pages 공개는 아직 대기 중이다. C–F의 05–12와 G 전체 편집/선택 실습 묶음은 미구현이다. 실제 공개 main에는 검증해 게시하는 장만 등록한다.
+- B 소스 검증 완료: [PR19](https://github.com/Middleages/my-books/pull/19)의 03–04 본문·모델·시각 UI는 head `bae858c964f4cbdf797bf7afe2fac874581127a4`에서 전체992개 단위 테스트·build, 실제 production DB339/339·135PNG 및 직접·독립 시각 검토를 통과했다. 320px 본문/설명 잘림의 발견·수정·재검증은 [배치 B 기록](DATABASE-BATCH-B-VERIFICATION.md)에 구분한다. B는 main `05602d24c6946f4e4c1b95f5f926e2e8eb51b316`의 실제 게시340/340·135PNG 및 직접 대표6장 확인으로 공개 게이트까지 완료했다. C의 05–06은 [PR33](https://github.com/Middleages/my-books/pull/33) head `840b9138877c015d59505e520d2f6fb66ba2a9d5`에서 전체1062개 단위 테스트·build, 실제 production DB415/415·259PNG와 권차14/14·39PNG, 직접22장 및 교차2장 시각 검토를 통과했다. C의 main·Pages는 B 공개 이후 대기하며 [배치 C 기록](DATABASE-BATCH-C-VERIFICATION.md)을 따른다. D의07–08은 별도 로컬 구현·검증 중이며 [배치 D 기록](DATABASE-BATCH-D-VERIFICATION.md)을 따른다. E–F의09–12와 G 전체 편집/선택 실습 묶음은 미구현이다. 실제 공개 main에는 검증해 게시하는 장만 등록한다.
 - 미실행: 실제 PostgreSQL/MSSQL·컨테이너/서버 설치·SQL·두 세션·성능 측정·backup/restore. 브라우저 모델과 실제 DB 실행을 구분한다.
 - 최초 기획 문서만의 검사는 경로/링크·목차/ID·수치/시나리오·지침 일관성과 `git diff --check`였다. 이후 A 구현·테스트·시각 검토 결과는 별도 기록이며 과거 문서 검사에서 실행한 것으로 소급하지 않는다.
-- 다음 작업: 검증된 B를 최신 main과 조율된 창에 공개하고 실제 게시를 확인한다. B 소스 게이트를 통과했으므로 **C: 05 트랜잭션, 06 동시 변경**은 독립 정확성 계약을 바탕으로 별도 작업 트리에서 로컬 구현을 시작할 수 있다. B 게시 확인 전 C를 공개하지 않는다. 사용자가 쿠버네티스 보완도 병행하도록 순서를 변경했으므로 DB는 독립 범위를 유지하고 공통 파일·main 쓰기만 조율한다. 실제 운영 DB 연결이나 추가 장을 이 승인에 포함시키지 않는다.
+- 다음 작업: 검증된 C05–06을 최신 main과 조율된 창에 공개하고 실제 게시를 확인한다. D07–08은 별도 로컬 구현·검증 중이며 C 게시 확인 전 D를 공개하지 않는다. D source/실제 browser/직접 시각 게이트 뒤 E09–10을 별도 작업 트리에서 준비한다. 실제 운영 DB 연결을 이 작업에 포함시키지 않는다.
