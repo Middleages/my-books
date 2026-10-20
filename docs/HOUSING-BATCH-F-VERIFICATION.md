@@ -74,3 +74,43 @@ artifact12249382597의 실제 ZIP SHA-256 `92bcf8b4d8ffb7aa7f2c5931061159f0ea56b
 최종 CSS 보정 후 전체955/955, TypeScript·Vite build, verifier 문법 및 diff 검사가 통과했다. 모델 파일은 독립576조합 재검증을 마친77aa31ca와 변경이 없다. 모델15/15 및 F SSR 포함17/17, 보존2,880프레임·충격45조건의 의미와 검사 범위를 유지한다. 이후 이 검증 결과를 쓰는 문서만 수정했으며 앱 바이트를 다시 바꾸지 않았다.
 
 **남은 공개 게이트:** 현재 main의 E까지 실제 공개한 결과와 다른 책의 최종 회귀를 보존한 뒤 F를 최신 main 후보에 통합한다. 정확한 합본 production·영향 화면 직접 확인, 전체권 마감의 폭넓은 browser 회귀, Pages 및 실제 게시 자산/대표 화면 확인을 완료해야 F 게시로 기록한다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증이다.
+
+
+## 정확한 main·Pages·실제 게시 확인 · 2026-10-20
+
+합본 main `47c36cc06fad15d87afd040ac5c259b421714d52`, tree `09766eee17e80d322b382d544b99085f7450916a`를 [Actions39397074938](https://github.com/Middleages/my-books/actions/runs/39397074938)에서 검사했다. 전체1134/1134 단위 테스트와 TypeScript/Vite393 modules build, 선택된 book-volumes·database·housing·accounting production4개, Pages 배포(09:06:30 UTC), 실제 게시4개가 모두 성공했다. 마지막 job까지09:15:45 UTC에 닫혔다. 보험·투자·세금·쿠버네티스 browser4개는 이 영향 범위 실행에서 생략됐으며 통과로 기록하지 않는다. 주거 전체권의 고정8×2 넓은 회귀는 별도 게이트다.
+
+실제 게시 JS `index-DsaNx52x.js`(2,955,457bytes) SHA-256 `42e3024c3a64992ebbd360cb3c32b72e80b7d72570ee3bf0103d1e26517bb163`, CSS `index-f58pl4aP.css`(356,058bytes) `be5043e056f9ded15ecad6ab7db8aeb0a2e1319bcfad3526864c88669613af78`가 같은 build의 전체 바이트와 일치했다. 작업 트리 변경은 없었다. 이 기록은 새로 실행한 합본의 결과이며 이전 단독 PR 기록과 구별한다.
+
+이 책의 published **189/189**, 고유 원본PNG **248**, 앱 오류0. 알려진 호스트 루트 favicon404 한 건은 별도 진단에 보존했다. artifact `12253461905`, ZIP SHA-256 `d127126a9208a369d506e0a38ad35ef335e4de1193b3f8ba2794982b49968987`를 대조했다. 실제 게시850 월충격 전체·320이사 changed·320매매 문서 추가확인 native상단을 직접 읽었다. 현금 막대폭과 별도 눈금·14월 동결,20일 부족을30일 반환으로 소급 해소하지 않는 구조,예정일 확인과 실제 입금의 구별이 유지됐다. F까지 실제 게시와 영향 범위 확인은 완료했지만 전체권 마지막8×2 넓은 회귀는 별도이며 아직 통과로 기록하지 않는다. 정확한 파일별 직접 검토 범위와 합본 표는 [통합 기록](EXISTING-BOOKS-WAVE-VERIFICATION.md)을 따른다.
+
+
+## 고정 main 전체권 최종 회귀 완료 · 2026-10-20
+
+[읽기 전용 최종 실행39399756955](https://github.com/Middleages/my-books/actions/runs/39399756955)은 09:42:41 UTC에 build와 production/published 각8suite, 총17job 모두 성공했다. 실제 앱 checkout은 main `47c36cc06fad15d87afd040ac5c259b421714d52`, tree `09766eee17e80d322b382d544b99085f7450916a`로 고정했다. 별도 verify 브랜치의 workflow commit `75020ab7704026b62897060a227f5fce1f91299b`만 사용하고 main workflow·배포 권한·앱 소스를 바꾸지 않았다. 이 검사는 재배포가 아니다. 앞선 main1134/1134 단위·393 modules build/Pages 성공과 함께 판정한다.
+
+단일 build 산출물을 모든16job이 공유하고 각 job 전후 source/tree·clean·main 고정 여부를 확인했다. 전체 JS/CSS bytes를 같은 build와 대조했고 published에서는 실제 Pages 응답 bytes도 일치했다. JS `index-DsaNx52x.js` SHA-256 `42e3024c3a64992ebbd360cb3c32b72e80b7d72570ee3bf0103d1e26517bb163`, CSS `index-f58pl4aP.css` `be5043e056f9ded15ecad6ab7db8aeb0a2e1319bcfad3526864c88669613af78`다. 최종 별도 API 재확인도 main47을 유지했다.
+
+총 **2589개 검사·4430개 고유 원본 PNG(각 job 내부 고유 수의 합)**를 생성했다.16개 ZIP의 GitHub SHA-256 digest와 내부 source/lease/결과를 모두 대조했다. 생략 suite는 없다. 모든 앱 오류·미확인 console/resource 오류는0이다. tax·database·kubernetes·housing·accounting의 published에는 알려진 호스트 루트 favicon404가 각각1건 별도 진단으로 남는다. 이를 전체 콘솔 메시지0으로 바꾸어 쓰지 않는다.
+
+| suite | production / published 검사 | 원본 PNG(각 실행) | published artifact | published ZIP SHA-256 |
+| --- | --- | --- | --- | --- |
+| insurance | 138 / 138 | 603 | 12255956123 | `e1fd9e68837e35a9fff7bdf78d3e6bebad60b1f2824378845d112726ec99b5f0` |
+| investing | 160 / 161 | 680 | 12253903968 | `49652acb47f84d1d806cf85e773ca1e901966a1145b0f4b745f07f766390a048` |
+| tax | 182 / 182 | 138 | 12255121852 | `057c6121ce24864d07b1d099e7939d40bd14b388fe479417cf1253271c4c0e1c` |
+| book-volumes | 14 / 14 | 39 | 12254022727 | `36be94a1615600dc67bcdb17428f90829475c93f550f59d02c7484e2e4f536d1` |
+| database | 415 / 416 | 259 | 12253429219 | `8a25dfdf5ce42b7c12667902b398bdda87463dba1e837cd8d2642b598d39b2d5` |
+| kubernetes | 94 / 94 | 146 | 12254801860 | `99f16bf814de4db4356514aea5f554bc6364c3419314e769694359ae54fc0eca` |
+| housing | 189 / 189 | 248 | 12253544090 | `232f9a8e2095ee7a600dab354e89a120fbb5fac774d7e9e917ac2951c0915e62` |
+| accounting | 101 / 102 | 102 | 12253578506 | `cc884aabdba7fe60f9989186b31b7479ba814fac8efef3ad8b6e9daffcf8cc55` |
+
+이번 final published의 주거 원본13장면(소개와01–12)을 직접 열었다. 전체 원본은1440 소개·1440 임차/매수 부족·850 월 충격이며, 나머지 긴 원본은 원래 해상도의 상단0–1900px,05는 추가1700–3400px를 읽었다. 범위는 다음과 같다.
+
+- `1440-intro-initial`, `320-housing-rights-changed`, `1440-rent-and-deposit-changed`: 당사자·현금·권리·부채, 모바일 방향, 반환 원금과 반복 월세/가상 전환비율의 구별.
+- `320-rental-contract-changed`, `1440-deposit-risk-changed`: 문서/재확인 경계와 법적 판정 미실행, 순차 배분·남은 청구·보증 경로와 실제 입금 구별.
+- `320-purchase-cash-changed`, `1440-mortgage-limits-changed`: 가격의 세 부분·별도 비용, 정확1원 부족과 받은 대출채무 유지, 담보/연간 심사/월 생활의 다른 분모.
+- `320-mortgage-paths-initial`, `1440-running-costs-changed`:13개월 경계의 원금/이자와 동일 축,12개월 저축120만원·수선지급0·6개월 부족 이력 유지.
+- `1440-rent-or-buy-shortage`, `320-market-mix-changed`:39개월 마지막 반영·40개월 부족으로 정산 미완료, 거래 구성 평균과 자체 고정구성110의 다른 의미.
+- `850-housing-shocks-initial`, `320-reading-housing-buy-revealed`:14개월 동결·현금 공통 눈금과 별도 지급 눈금·폭 보존,2억원의 계약금/중도금/잔금과 예정대출8000만원≠실제 입금.
+
+위 실제 원본 범위에서 새 잘림·겹침·모바일 방향 모순·그림/값/해설 불일치의 차단점은 없었다. 검토용 crop은 원본 PNG 수에 포함하지 않는다.248개 주거 원본 전부, 정적 표의 모든 가로 열이나 crop 아래 본문까지 사람이 읽었다는 뜻은 아니다. 앞선 A–F 원본·독립 모델/의미·공식출처 검토를 보존한다. 소개·12장 순차 구현과 main/Pages/실제 게시·전체권 넓은 회귀를 완료했다. 실기기·Safari/Firefox·스크린리더 음성·임상/금융/법률 감수·학습효과 및 실제 거래/계약 실행은 미검증이다.
