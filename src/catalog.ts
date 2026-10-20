@@ -5,6 +5,8 @@ import ContractMap from "./content/insurance/ContractMap.mdx";
 import Payout from "./content/insurance/Payout.mdx";
 import CoverageConditions from "./content/insurance/CoverageConditions.mdx";
 import Overlap from "./content/insurance/Overlap.mdx";
+import Timelines from "./content/insurance/Timelines.mdx";
+import Surrender from "./content/insurance/Surrender.mdx";
 import PerformanceHistory from "./content/investing/PerformanceHistory.mdx";
 import ReadingInvestments from "./content/investing/ReadingInvestments.mdx";
 import CostsFx from "./content/investing/CostsFx.mdx";
@@ -90,6 +92,8 @@ export const chapters: Chapter[] = [
   { id: "payout", bookId: "insurance", readId: "insurance/payout", number: "04", title: "보험금은 어떻게 정해질까", heading: "손실과 보험금이 왜 다를까?", description: "제외·공제·자기부담·한도로 나뉘는 손실과 반복 청구의 연간한도를 봅니다.", Content: Payout },
   { id: "coverage-conditions", bookId: "insurance", readId: "insurance/coverage-conditions", number: "05", title: "보장되는 사건과 빠지는 조건", heading: "같은 사건인데 왜 지급 여부가 달라질까?", description: "사건일과 청구일, 보장·제외·대기·감액의 경계를 따로 확인합니다.", Content: CoverageConditions },
   { id: "overlap", bookId: "insurance", readId: "insurance/overlap", number: "06", title: "보험이 겹치면 두 번 받을까", heading: "두 계약이 같은 손실을 어떻게 나눌까?", description: "한 손실을 채우는 실손 배분과 각 조건에 따른 정액 약속을 구분합니다.", Content: Overlap },
+  { id: "timelines", bookId: "insurance", readId: "insurance/timelines", number: "07", title: "보험료와 보장의 시간표", heading: "납입이 끝나면 보장도 끝날까?", description: "같은 시간축에서 납입 종료·보장 종료·갱신과 재가입의 경계를 구분합니다.", Content: Timelines },
+  { id: "surrender", bookId: "insurance", readId: "insurance/surrender", number: "08", title: "해지하면 돌려받는 돈", heading: "낸 보험료와 돌려받는 돈은 같을까?", description: "누적 납입과 해약환급금, 해지 이후 보장과 만기의 차이를 비교합니다.", Content: Surrender },
   { id: "ownership", bookId: "investing", readId: "investing/ownership", number: "01", title: "주식으로 무엇을 소유할까", heading: "주식을 사면 회사에 내 돈이 들어갈까?", description: "발행과 유통의 돈·지분 흐름, 회사 자산과 지분 비율을 구분합니다.", Content: Ownership },
   { id: "total-return", bookId: "investing", readId: "investing/total-return", number: "02", title: "가격·배당·총수익", heading: "배당을 받으면 그만큼 더 부자가 될까?", description: "같은 장부에서 평가액·현금·가격 수익·배당·재투자를 연결합니다.", Content: TotalReturn },
   { id: "orders", bookId: "investing", readId: "investing/orders", number: "03", title: "주문과 체결", heading: "현재가에 주문하면 그 가격에 모두 살 수 있을까?", description: "가격별 잔량을 따라 체결 가격·수량·대금과 미체결 이유를 읽습니다.", Content: Orders },
@@ -445,7 +449,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "insurance", categoryId: "money", title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–06장 공개 · 위험의 크기부터 계약 조건과 중복 보장의 관계까지 살펴봅니다.", Intro: InsuranceIntro },
+  { id: "insurance", categoryId: "money", title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–08장 공개 · 위험의 크기부터 계약 조건·중복·유지와 해지의 시간표까지 살펴봅니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
   { id: "economics", categoryId: "money", title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–12장 공개 · 가상 실험으로 경제 뉴스의 원리와 해석 조건을 익힙니다.", Intro: EconomicsIntro },
   {

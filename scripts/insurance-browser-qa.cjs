@@ -529,6 +529,189 @@ async function overlapVerifier(page, lab) {
   };
   return { projectOverlap, overlapDefaults, inspect, cells, outcome };
 }
+// D verifiers compare one frozen calendar/money model with actual painted geometry.
+async function timelinesVerifier(page, lab) {
+  const { projectTimelines, timelinesDefaults } = await import('../src/simulations/insurance/timelines.mjs');
+  const won = value => `${(value / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}만원`;
+  const cells = model => [
+    ...model.frames.map(frame => [`${frame.year}년`, won(frame.fixed.premium), won(frame.fixed.cumulativePremium), frame.fixed.covered ? '기간 안' : '기간 밖', won(frame.renewing.premium), won(frame.renewing.cumulativePremium), frame.renewing.covered ? '기간 안' : '기간 밖', frame.renewal.label]),
+    ...model.periods.map(period => [`${period.start}년 이상 · ${period.end}년 미만`, `${won(period.annualPremium)} / 년`, `${period.start}·${period.end - 1}년 시작`, period.active ? '유지' : '갱신하지 않아 미적용']),
+  ];
+  const inspect = async (frame, model) => {
+    await assertFrameSelection(lab, frame);
+    const painted = await lab.evaluate(element => {
+      const rect = node => node.getBoundingClientRect().toJSON();
+      const paint = node => { const style = getComputedStyle(node); return { color: style.backgroundColor, image: style.backgroundImage, border: style.borderTopStyle, opacity: Number(style.opacity) }; };
+      return {
+        year: Number(element.querySelector('input[type=range]').value),
+        tracks: [...element.querySelectorAll('[data-timelines-track]')].map(track => ({ kind: track.dataset.timelinesTrack, contract: track.dataset.contract, box: rect(track), height: track.clientHeight, width: track.clientWidth, top: parseFloat(getComputedStyle(track).borderTopWidth), label: track.getAttribute('aria-label'), marker: (() => { const m = track.querySelector('[data-timelines-marker]'); return { year: Number(m.dataset.year), position: Number(m.dataset.position), box: rect(m), border: getComputedStyle(m).borderLeftStyle }; })(), payments: [...track.querySelectorAll('[data-timelines-payment]')].map(mark => ({ year: Number(mark.dataset.year), amount: Number(mark.dataset.amount), position: Number(mark.dataset.position), heightFraction: Number(mark.dataset.heightFraction), paid: mark.dataset.paid, box: rect(mark), paint: paint(mark), point: rect(mark.querySelector('b')) })), coverage: (() => { const c = track.querySelector('[data-timelines-coverage]'); return c && { start: Number(c.dataset.start), end: Number(c.dataset.end), fraction: Number(c.dataset.fraction), box: rect(c), paint: paint(c), endpoints: [...c.querySelectorAll('b')].map(node => ({ box: rect(node), background: getComputedStyle(node).backgroundColor, border: getComputedStyle(node).borderTopStyle })) }; })() })),
+        periods: [...element.querySelectorAll('[data-timelines-period]')].map(period => ({ index: Number(period.dataset.timelinesPeriod), active: period.dataset.active, position: Number(period.dataset.position), fraction: Number(period.dataset.fraction), box: rect(period), paint: paint(period) })),
+        renewals: [...element.querySelectorAll('[data-timelines-renewal]')].map(mark => ({ year: Number(mark.dataset.timelinesRenewal), state: mark.dataset.state, position: Number(mark.dataset.position), symbol: mark.textContent, box: rect(mark), font: parseFloat(getComputedStyle(mark).fontSize) })),
+        axes: [...element.querySelectorAll('.timelines-year-axis')].map(axis => ({ box: rect(axis), labels: [...axis.children].map(node => ({ text: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize) })) })),
+        current: [...element.querySelectorAll('[data-timelines-current]')].map(row => ({ id: row.dataset.timelinesCurrent, premium: Number(row.dataset.premium), cumulative: Number(row.dataset.cumulative), covered: row.dataset.covered, values: [...row.querySelectorAll('dd')].map(node => node.textContent), box: rect(row) })),
+        renewalStatus: element.querySelector('[data-timelines-renewal-status]').dataset.timelinesRenewalStatus,
+        renewalLabel: element.querySelector('[data-timelines-renewal-status] strong').textContent,
+        feedback: element.querySelector('.insurance-result').textContent,
+        caption: element.querySelector('.timelines-comparison figcaption').textContent,
+      };
+    });
+    assert.equal(painted.year, frame.year);
+    assert.equal(painted.tracks.length, 5, 'A/B payment and coverage plus one renewal lane are all required');
+    const common = painted.tracks[0].box;
+    for (const track of painted.tracks) {
+      assert(track.width > 100 && track.height >= 25, 'A shared time lane became unreadable');
+      assert(Math.abs(track.box.left - common.left) <= 1 && Math.abs(track.box.width - common.width) <= 1, 'Payment, coverage and renewal do not share the same painted time scale');
+      assert.deepEqual([track.marker.year, track.marker.position], [frame.year, frame.position]);
+      assert(Math.abs(track.marker.box.left - track.box.left - frame.position * track.width) <= 1, 'Observation cursor is not painted at the exact model year');
+      assert.equal(track.marker.border, 'solid');
+      if (track.contract) {
+        const contract = model.contracts.find(item => item.id === track.contract);
+        if (track.kind === 'payment') {
+          assert.equal(track.payments.length, contract.payments.length, 'Payment marks must not add premiums after stopping or at year10');
+          track.payments.forEach((mark, index) => {
+            const expected = contract.payments[index];
+            assert.deepEqual([mark.year, mark.amount, mark.position, mark.heightFraction], [expected.year, expected.amount, expected.position, expected.heightFraction]);
+            assert.equal(mark.paid, String(expected.year <= frame.year));
+            assert(Math.abs(mark.box.left - track.box.left - expected.position * track.width) <= 1, 'Premium mark is at the wrong exact payment instant');
+            assert(Math.abs(mark.box.height - expected.heightFraction * track.height) <= 1, 'Premium height does not use the common fixed24만원 scale');
+            assert(Math.abs(mark.box.bottom - (track.box.top + track.top + track.height)) <= 1, 'Premium bars do not share the zero baseline');
+            assert(mark.point.width >= 4 && mark.point.height >= 4 && mark.box.width >= 7, 'Exact payment marker or bar became unreadable');
+            assert.equal(mark.paint.opacity, expected.year <= frame.year ? 1 : .4, 'Future planned payments are not distinguished from observed payments');
+            assert.equal(mark.paint.image === 'none', contract.id === 'fixed', 'Renewing premiums need a non-color pattern distinct from A');
+            assert(track.label.includes(`${expected.year}년 시작에 ${won(expected.amount)}`), 'Payment accessible description omits a model premium');
+          });
+        } else {
+          const coverage = track.coverage;
+          assert(coverage);
+          assert.deepEqual([coverage.start, coverage.end, coverage.fraction], [contract.coverage.start, contract.coverage.end, contract.coverage.fraction]);
+          assert(Math.abs(coverage.box.left - track.box.left) <= 1 && Math.abs(coverage.box.width - contract.coverage.fraction * track.width) <= 1, 'Painted coverage end differs from the exact contract boundary');
+          assert.equal(coverage.endpoints.length, 2);
+          for (const endpoint of coverage.endpoints) assert(endpoint.box.width >= 9 && endpoint.box.height >= 9 && endpoint.border === 'solid', 'Included/excluded endpoint shape is unreadable');
+          assert.notEqual(coverage.endpoints[0].background, coverage.endpoints[1].background, 'Included start and excluded end lost their solid/open distinction');
+          assert(track.label.includes(`0년 포함, ${contract.coverage.end}년 미만`));
+        }
+      }
+    }
+    const renewalTrack = painted.tracks.find(track => track.kind === 'renewal');
+    assert.equal(painted.periods.length, model.periods.length);
+    painted.periods.forEach((period, index) => {
+      const expected = model.periods[index];
+      assert.deepEqual([period.index, period.active, period.position, period.fraction], [expected.index, String(expected.active), expected.position, expected.fraction]);
+      assert(Math.abs(period.box.left - renewalTrack.box.left - expected.position * renewalTrack.width) <= 1 && Math.abs(period.box.width - expected.fraction * renewalTrack.width) <= 1, 'Renewal interval geometry differs from the shared year axis');
+      assert.equal(period.paint.border, expected.active ? 'solid' : 'dashed', 'A stopped planned renewal must not look like active coverage');
+      assert.equal(period.paint.image === 'none', expected.active);
+    });
+    assert.equal(painted.renewals.length, model.renewals.length);
+    painted.renewals.forEach((mark, index) => {
+      const expected = model.renewals[index];
+      assert.deepEqual([mark.year, mark.state, mark.position, mark.symbol], [expected.year, expected.state, expected.position, expected.state === 'stopped' ? '×' : '◇']);
+      assert(Math.abs(mark.box.left + mark.box.width / 2 - renewalTrack.box.left - expected.position * renewalTrack.width) <= 1, 'Renewal symbol is not centered on its actual boundary');
+      assert(mark.font >= 24);
+    });
+    assert.equal(painted.axes.length, painted.tracks.length);
+    painted.axes.forEach(axis => {
+      assert.deepEqual(axis.labels.map(label => label.text), model.axis.ticks.map(tick => String(tick.year)));
+      for (const label of axis.labels) assert(label.font >= 11 && label.box.left >= axis.box.left - 1 && label.box.right <= axis.box.right + 1, 'Year labels spill beyond the readable axis');
+    });
+    assert.equal(painted.current.length, model.contracts.length);
+    painted.current.forEach((row, index) => {
+      const expected = frame[model.contracts[index].id];
+      assert.deepEqual([row.id, row.premium, row.cumulative, row.covered], [expected.id, expected.premium, expected.cumulativePremium, String(expected.covered)]);
+      assert.deepEqual(row.values, [won(expected.premium), won(expected.cumulativePremium), expected.paymentStatus, expected.covered ? '✓ 기간 안' : '× 기간 밖']);
+    });
+    if (page.viewportSize().width <= 650) assert(painted.current[1].box.top >= painted.current[0].box.bottom, 'Mobile A/B summaries must stack without shrinking labels');
+    assert.deepEqual([painted.renewalStatus, painted.renewalLabel], [frame.renewal.state, frame.renewal.label]);
+    if (frame.year < 5) assert(!painted.feedback.startsWith('예측과'), 'A year5 prediction was revealed before its observation');
+    assert.match(painted.caption, /0–12년/); assert.match(painted.caption, /0–24만원/); assert.match(painted.caption, /막대 폭/);
+    assert.equal(frame.fixed.cumulativePremium, Math.min(frame.year + 1, 5) * 100000);
+    if (frame.year === 5) assert(frame.fixed.premium === 0 && frame.fixed.covered, 'Payment end was confused with coverage end');
+    if (frame.year >= 10) assert(!frame.fixed.covered && !frame.renewing.covered && frame.fixed.premium === 0 && frame.renewing.premium === 0);
+  };
+  return { projectTimelines, timelinesDefaults, inspect, cells, outcome: model => model.comparison.answer };
+}
+async function surrenderVerifier(page, lab) {
+  const { projectSurrender } = await import('../src/simulations/insurance/surrender.mjs');
+  const won = value => `${(value / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}만원`;
+  const percent = value => `${(value * 100).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}%`;
+  const cells = (model, frame = model.frames.at(-1)) => [
+    ...model.frames.map(row => [`${row.exitYear}년 · ${row.kind === 'surrender' ? '해지' : '만기'}`, won(row.timeline[row.exitYear].paidPremium), won(row.cumulativePremium), row.surrenderValue === null ? '해당 없음' : won(row.surrenderValue), row.maturityValue === null ? '해당 없음' : won(row.maturityValue), percent(row.returnRatio)]),
+    ...frame.timeline.map(row => [`${row.year}년 이상 ${row.endYear}년 미만`, won(row.paidPremium), row.coverageStatus === 'covered' ? '구간 안 · 다른 조건도 확인' : row.coverageStatus === 'canceled' ? '해지 뒤 · 보장 없음' : '원래 기간 밖', row.exitHere ? `${frame.kind === 'surrender' ? '해지' : '만기'} · ${won(row.cashAtExit)}` : '—']),
+  ];
+  const inspect = async (frame, model) => {
+    await assertFrameSelection(lab, frame);
+    assert.equal(await lab.getAttribute('data-surrender-year'), String(frame.exitYear));
+    assert.equal(await lab.getAttribute('data-surrender-kind'), frame.kind);
+    for (const [name, value, label] of [['premium', frame.cumulativePremium, won(frame.cumulativePremium)], ['return', frame.exitValue, won(frame.exitValue)], ['difference', frame.difference, won(frame.difference)], ['ratio', frame.returnRatio, percent(frame.returnRatio)]]) {
+      const element = lab.locator(`[data-surrender-${name}]`);
+      assert.equal(await element.getAttribute('data-value'), String(value));
+      assert.equal(await element.innerText(), label, 'Money label differs from its observation frame');
+    }
+    assert.equal(await lab.locator('[data-surrender-return]').getAttribute('data-kind'), frame.kind);
+    await assertBars(lab.locator('.surrender-money-track'), [[frame.paidFraction], [frame.exitFraction, frame.differenceFraction]], 'Paid premiums and returned money use the same fixed50만원 scale', '[data-surrender-bar]');
+    await assertBars(lab.locator('[data-surrender-coverage]'), [frame.coverageSegments.map(segment => segment.fraction)], 'Covered/canceled/outside exactly partition one12year interval', '[data-surrender-coverage-segment]');
+    const painted = await lab.evaluate(element => {
+      const rect = node => node.getBoundingClientRect().toJSON();
+      const paint = (node, pseudo) => { const style = getComputedStyle(node, pseudo); return { color: style.backgroundColor, image: style.backgroundImage, size: style.backgroundSize }; };
+      const coverage = element.querySelector('[data-surrender-coverage]'), payments = element.querySelector('.surrender-payment-track'), money = element.querySelector('.surrender-money');
+      return {
+        year: Number(element.querySelector('input[type=range]').value),
+        moneyTracks: [...money.querySelectorAll('.surrender-money-track')].map(node => ({ box: rect(node), label: node.getAttribute('aria-label') })),
+        moneyAxis: [...money.querySelectorAll('.surrender-money-axis span')].map(node => node.textContent),
+        paid: [...money.querySelectorAll('.surrender-paid > i')].map(node => ({ title: node.title, box: rect(node) })),
+        returned: { paint: paint(money.querySelector('.surrender-return')), label: money.querySelector('[data-surrender-return]').previousElementSibling.textContent },
+        gapBorder: getComputedStyle(money.querySelector('.surrender-difference')).borderTopStyle,
+        caption: money.querySelector('figcaption').textContent,
+        coverage: rect(coverage), coverageEnd: Number(coverage.dataset.end), coverageLabel: coverage.getAttribute('aria-label'),
+        baseline: (() => { const track = element.querySelector('.surrender-time-track'); return { box: rect(track), covered: rect(track.querySelector('.covered')), outside: rect(track.querySelector('.outside')) }; })(),
+        cut: rect(element.querySelector('.surrender-cut')),
+        segments: [...coverage.querySelectorAll('[data-surrender-coverage-segment]')].map(node => ({ id: node.dataset.surrenderCoverageSegment, start: Number(node.dataset.start), end: Number(node.dataset.end), fraction: Number(node.dataset.fraction), paint: paint(node), legend: paint(element.querySelector(`.surrender-legend .${node.dataset.surrenderCoverageSegment}`), '::before') })),
+        paymentTrack: rect(payments), payments: [...payments.querySelectorAll('[data-surrender-payment]')].map(node => ({ year: Number(node.dataset.surrenderPayment), paid: node.dataset.paid, symbol: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize) })),
+        timeAxis: [...element.querySelectorAll('.surrender-time-axis span')].map(node => ({ label: node.textContent, box: rect(node), font: parseFloat(getComputedStyle(node).fontSize) })),
+        coverageCaption: element.querySelector('.surrender-coverage figcaption').textContent,
+      };
+    });
+    assert.equal(painted.year, frame.exitYear);
+    assert.deepEqual(painted.moneyAxis, ['0원', won(model.moneyScale / 2), won(model.moneyScale)]);
+    assert(Math.abs(painted.moneyTracks[0].box.width - painted.moneyTracks[1].box.width) <= 1, 'Premium and return bars use different money scales');
+    assert(painted.moneyTracks.every(track => track.box.height >= 35));
+    assert(painted.moneyTracks[0].label.includes(`누적보험료 ${won(frame.cumulativePremium)}, 10만원씩 ${frame.paymentCount}회`));
+    assert.equal(painted.paid.length, frame.paymentCount, 'Premium blocks do not equal actual payments before this exit');
+    painted.paid.forEach((paid, index) => {
+      assert.equal(paid.title, `${frame.paymentEvents[index].year}년 납입 ${won(frame.paymentEvents[index].amount)}`);
+      assert(Math.abs(paid.box.width - painted.moneyTracks[0].box.width / 5) <= 1, 'One payment block is not exactly10만원 on the common50만원 scale');
+    });
+    assert.equal(painted.returned.label, frame.kind === 'surrender' ? '그날의 해약환급금' : '별도 만기보험금');
+    assert.equal(painted.returned.paint.image === 'none', frame.kind === 'maturity', 'Maturity must not reuse the patterned surrender-quote meaning');
+    assert.equal(painted.gapBorder, 'dashed', 'Difference is an unfilled comparison, not another cash receipt');
+    assert.match(painted.caption, /위약금이나 회사 이익/); assert.match(painted.caption, /수익률이 아닙니다/);
+    assert.deepEqual(painted.segments.map(segment => [segment.id, segment.start, segment.end, segment.fraction]), frame.coverageSegments.map(segment => [segment.id, segment.start, segment.end, segment.fraction]));
+    for (const segment of painted.segments) assert.deepEqual(segment.paint, segment.legend, 'Coverage paint differs from its semantic legend');
+    assert.equal(new Set(painted.segments.map(segment => JSON.stringify(segment.paint))).size, 3);
+    assert.equal(painted.segments[0].paint.image, 'none');
+    assert(painted.segments.slice(1).every(segment => segment.paint.image !== 'none'), 'Canceled and naturally outside coverage need non-color distinctions');
+    for (const track of [painted.baseline.box, painted.paymentTrack]) assert(Math.abs(track.left - painted.coverage.left) <= 1 && Math.abs(track.width - painted.coverage.width) <= 1, 'Money exit and coverage tracks lost their common time scale');
+    assert(Math.abs(painted.baseline.covered.width - painted.baseline.box.width * model.scheduledCoverageEnd / model.observationEnd) <= 1, 'No-exit reference coverage changed with the selected surrender');
+    assert(Math.abs(painted.cut.left - painted.coverage.left - frame.exitTimeFraction * painted.coverage.width) <= 1, 'Exit line is painted at the wrong year');
+    assert.equal(painted.coverageEnd, frame.coverageEnd);
+    assert(painted.coverageLabel.includes(`${frame.exitYear}년 ${frame.kind === 'surrender' ? '해지' : '만기'} 이후 새 사건 보장 없음`));
+    assert.equal(painted.payments.length, frame.paymentEvents.length);
+    painted.payments.forEach((mark, index) => {
+      const expected = frame.paymentEvents[index];
+      assert.deepEqual([mark.year, mark.paid, mark.symbol], [expected.year, String(expected.paid), expected.paid ? '●' : '×']);
+      const anchor = mark.year === 0 ? mark.box.left : mark.box.left + mark.box.width / 2;
+      assert(Math.abs(anchor - painted.paymentTrack.left - expected.timeFraction * painted.paymentTrack.width) <= 1, 'Paid/skipped marker moved away from its scheduled exact year');
+      assert(mark.font >= 16);
+    });
+    assert.deepEqual(painted.timeAxis.map(tick => tick.label), ['0년', '2년', '4년', '6년', '8년', '10년', '12년']);
+    for (const tick of painted.timeAxis) assert(tick.font >= 10 && tick.box.left >= painted.coverage.left - 1 && tick.box.right <= painted.coverage.right + 1);
+    assert.match(painted.coverageCaption, /해지 전 사건/); assert.match(painted.coverageCaption, /먼저 낸 다음 해지/);
+    assert.equal(frame.cumulativePremium, frame.exitValue + frame.difference, 'Returned money was subtracted twice or added to premiums');
+    if (frame.exitYear === 0) assert(frame.cumulativePremium === 100000 && frame.exitValue === 0 && frame.coverageSegments[0].fraction === 0, 'Year0 must keep the first premium while removing all later new-event coverage');
+    if (frame.exitYear === 10) assert(frame.kind === 'maturity' && frame.surrenderValue === null && frame.maturityValue === 0 && frame.coverageSegments[1].fraction === 0, 'Maturity incorrectly extrapolates the surrender schedule');
+  };
+  return { projectSurrender, inspect, cells, outcome: model => model.frames.at(-1).comparison };
+}
+
 async function conditionChecks(page, lab, name) {
   const { projectExpectedLoss, expectedLossDefaults } = await import('../src/simulations/insurance/probability.mjs');
   const { projectPooling, poolingDefaults } = await import('../src/simulations/insurance/pooling.mjs');
@@ -562,16 +745,24 @@ async function conditionChecks(page, lab, name) {
     await delay(1850);
     assert.equal(await controls.locator('span').innerText(), initial, 'A stale timer advanced after the model input changed');
   };
-  const verify = async (scenario, model, outcome, inspectFrame, tableRows) => {
+  const verify = async (scenario, model, outcome, inspectFrame, tableRows, frameIndices = model.frames.map((_, index) => index)) => {
     await prediction.selectOption(outcome);
     await controls.getByRole('button', { name: '처음부터', exact: true }).click();
-    for (let index = 0; index < model.frames.length; index++) {
-      const frame = model.frames[index];
+    assert.equal(frameIndices[0], 0, 'Scenario must inspect its initial state');
+    assert.equal(frameIndices.at(-1), model.frames.length - 1, 'Scenario must inspect its terminal state');
+    for (let cursor = 0; cursor < frameIndices.length; cursor++) {
+      const index = frameIndices[cursor], frame = model.frames[index];
       assert.equal(await controls.locator('span').innerText(), `${index} / ${model.frames.length - 1} 단계`, `${scenario}: observation index differs from model`);
       assert.equal(await lab.locator('[data-insurance-stage]').getAttribute('data-insurance-stage'), frame.phase);
       assert.equal(await lab.locator('[data-insurance-stage] > strong').innerText(), frame.label);
       await inspectFrame(frame, model);
-      if (index < model.frames.length - 1) { assert(await step.isEnabled()); await step.click(); }
+      if (cursor < frameIndices.length - 1) {
+        assert(await step.isEnabled());
+        const next = frameIndices[cursor + 1];
+        assert(next > index && next < model.frames.length, 'Scenario observation indices must be increasing and valid');
+        if (next === index + 1) await step.click();
+        else { await lab.getByRole('button', { name: model.frames[next].label, exact: true }).focus(); await page.keyboard.press('Enter'); }
+      }
     }
     assert(await step.isDisabled(), 'UI advanced beyond the model frames');
     assert((await lab.locator('.insurance-result').innerText()).startsWith('예측과 같습니다.'), `${scenario}: correct model prediction rejected`);
@@ -585,7 +776,7 @@ async function conditionChecks(page, lab, name) {
     assert.deepEqual(actualRows, tableRows(model), `${scenario}: static table differs from complete model frames`);
     await domAudit(page);
     await capture(page, `${name}-${scenario}-scene`, lab);
-    observed.push({ scenario, frames: model.frames.length, rows: actualRows.length, lastRow: actualRows.at(-1) });
+    observed.push({ scenario, frames: model.frames.length, inspectedFrames: frameIndices, rows: actualRows.length, lastRow: actualRows.at(-1) });
   };
   if (kind === 'expected-loss') {
     const cells = model => model.frames.flatMap(frame => frame.scenarios.map(scenario => {
@@ -1147,6 +1338,89 @@ async function conditionChecks(page, lab, name) {
     await reset(); await run('repeated-default-no-double-allocation', {}, [1500000, 1500000, 0]);
     for (const [slider, key] of [[gross, 'grossLoss'], [outside, 'excludedLoss'], [capA, 'capA'], [capB, 'capB']]) assert.equal(await slider.inputValue(), String(overlapDefaults[key] / 10000));
     for (const input of [eligibleA, eligibleB, fixedA, fixedB]) assert.equal(await input.isChecked(), true);
+  } else if (kind === 'timelines') {
+    const { projectTimelines, timelinesDefaults, inspect, cells, outcome } = await timelinesVerifier(page, lab);
+    const stop = lab.locator('[data-timelines-stop]');
+    const year = lab.getByRole('slider', { name: /^관찰 시점/ });
+    const run = async (scenario, stopRenewalYear = null, frameIndices) => {
+      const model = projectTimelines({ stopRenewalYear });
+      await verify(scenario, model, outcome(model), inspect, cells, frameIndices);
+      return model;
+    };
+    const frozen = projectTimelines();
+    const overview = page.locator('.timelines-overview');
+    assert.equal(await overview.count(), 1, 'Authored payment/coverage contrast is missing');
+    const overviewGeometry = await overview.locator('[data-timelines-track]').evaluateAll(tracks => tracks.map(track => {
+      const box = track.getBoundingClientRect(), cursor = track.querySelector('[data-timelines-marker]').getBoundingClientRect(), coverage = track.querySelector('[data-timelines-coverage]');
+      return { left: box.left, width: track.clientWidth, cursor: cursor.left, year: Number(track.querySelector('[data-timelines-marker]').dataset.year), coverage: coverage?.getBoundingClientRect().width, payments: [...track.querySelectorAll('[data-timelines-payment]')].map(node => Number(node.dataset.amount)) };
+    }));
+    assert.equal(overviewGeometry.length, 2);
+    for (const track of overviewGeometry) assert(track.year === 5 && Math.abs(track.cursor - track.left - 5 / 12 * track.width) <= 1, 'Overview must visibly observe year5, after payments and before coverage ends');
+    assert.deepEqual(overviewGeometry[0].payments, frozen.contracts[0].payments.map(payment => payment.amount));
+    assert(Math.abs(overviewGeometry[1].coverage - frozen.contracts[0].coverage.fraction * overviewGeometry[1].width) <= 1);
+    await reset();
+    const initial = await run('annual-premiums-payment-end-and-coverage-end');
+    await keyboardFrameSelection(page, lab, initial, inspect);
+    await prediction.selectOption(outcome(initial));
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await controls.getByRole('button', { name: '재생', exact: true }).click();
+    await setExactRange(page, year, 5);
+    assert.equal(await controls.getByRole('button', { name: '정지', exact: true }).count(), 0, 'Seeking a year must pause playback');
+    assert.equal(await prediction.inputValue(), outcome(initial), 'Moving the observation should not rewrite a condition prediction');
+    await inspect(initial.frames[5], initial);
+    await delay(1850); await inspect(initial.frames[5], initial);
+    await capture(page, `${name}-year-5-payment-ended-coverage-continues`, lab);
+    for (const boundary of [2, 4, 6, 8]) {
+      await changingStopsPlayback(() => selectWithKeyboard(page, stop, String(boundary)));
+      // All13 complete rows remain checked. Paint each distinct before/at/after stop
+      // plus both fixed-contract boundaries, without repeating every similar year.
+      const indices = [...new Set([0, boundary - 1, boundary, boundary + 1, 5, 9, 10, 12])].sort((a, b) => a - b);
+      const model = await run(`do-not-renew-at-exact-year-${boundary}`, boundary, indices);
+      assert(model.frames[boundary - 1].renewing.covered);
+      for (const frame of model.frames.slice(boundary)) assert(!frame.renewing.covered && frame.renewing.premium === 0, 'A stopped contract silently resumed coverage or payments');
+      const button = lab.getByRole('button', { name: model.frames[boundary].label, exact: true });
+      await button.focus(); await page.keyboard.press('Enter');
+      await inspect(model.frames[boundary], model);
+      await capture(page, `${name}-stop-${boundary}-boundary-scene`, lab);
+    }
+    await changingStopsPlayback(() => selectWithKeyboard(page, stop, 'continue'));
+    await run('repeat-default-no-duplicated-premiums', null, [0, 4, 5, 9, 10, 12]);
+    await reset();
+    assert.equal(await stop.inputValue(), timelinesDefaults.stopRenewalYear ?? 'continue');
+    assert.equal(await year.inputValue(), '0');
+  } else if (kind === 'surrender') {
+    const { projectSurrender, inspect, cells, outcome } = await surrenderVerifier(page, lab);
+    const model = projectSurrender();
+    const year = lab.getByRole('slider', { name: '비교할 종료 시점', exact: true });
+    const overview = page.locator('.surrender-overview');
+    assert.equal(await overview.count(), 1, 'Authored year5 premium/return comparison is missing');
+    await assertBars(overview.locator('.surrender-money-track'), [[1], [.4, .6]], 'Overview independently shows50만원 paid versus20만원 returned', '[data-surrender-bar]');
+    assert.equal(await overview.locator('[data-surrender-premium]').getAttribute('data-value'), '500000');
+    assert.equal(await overview.locator('[data-surrender-return]').getAttribute('data-value'), '200000');
+    await reset();
+    await verify('all-exit-years-and-separate-maturity', model, outcome(model), async (frame, current) => {
+      await inspect(frame, current);
+      if ([4, 5, 9].includes(frame.exitYear)) await capture(page, `${name}-year-${frame.exitYear}-surrender-scene`, lab);
+    }, cells);
+    await keyboardFrameSelection(page, lab, model, inspect);
+    await controls.getByRole('button', { name: '처음부터', exact: true }).click();
+    await prediction.selectOption('less');
+    await controls.getByRole('button', { name: '재생', exact: true }).click();
+    await setExactRange(page, year, 5);
+    assert.equal(await controls.getByRole('button', { name: '정지', exact: true }).count(), 0, 'Changing the independent exit case must stop playback');
+    assert.equal(await prediction.inputValue(), '', 'Changing the exit case must clear its prior prediction');
+    await inspect(model.frames[5], model);
+    await delay(1850); await inspect(model.frames[5], model);
+    await openTables(page, lab);
+    assert.deepEqual(await lab.locator('.insurance-static table tbody tr').evaluateAll(rows => rows.map(row => [...row.querySelectorAll('th,td')].map(cell => cell.textContent.trim()))), cells(model, model.frames[5]), 'Year5 static timeline is stale after seeking from maturity');
+    await controls.getByRole('button', { name: '재생', exact: true }).click();
+    await reset();
+    await delay(1850);
+    await inspect(model.frames[0], model);
+    assert.equal(await prediction.inputValue(), '');
+    await prediction.selectOption('less');
+    await verify('repeat-all-exits-no-accumulated-double-payments', model, outcome(model), inspect, cells);
+    assert.equal(await lab.locator('[data-static-surrender][data-selected="true"]').count(), 1, 'Exactly one independent exit case must be highlighted');
   } else assert.fail(`No model-specific verifier exists for published lab ${JSON.stringify(kind)}`);
   await reset();
   assert.match(await controls.locator('span').innerText(), /^0 \/ /);
@@ -1223,7 +1497,7 @@ async function verifyAssets() {
         const labs = page.locator('.insurance-lab');
         for (let i = 0; i < await labs.count(); i++) {
           const name = `${width}-${safe(route)}-${i + 1}`;
-          if (['coverage-conditions', 'overlap'].includes(await labs.nth(i).getAttribute('data-insurance-lab'))) {
+          if (['coverage-conditions', 'overlap', 'timelines', 'surrender'].includes(await labs.nth(i).getAttribute('data-insurance-lab'))) {
             await check(`static-disclosure-geometry-${name}`, page, () => tableDisclosureGeometryChecks(page, labs.nth(i), name));
           }
           await check(`playback-${name}`, page, () => playbackChecks(page, labs.nth(i), name));
@@ -1273,7 +1547,7 @@ async function verifyAssets() {
       await capture(intermediatePage, '850-pooling-common-final-scene', lab);
       return { disclosures, audit: await verifyStack() };
     });
-    for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout', 'coverage-conditions', 'overlap'].includes(chapter.id))) {
+    for (const chapter of insuranceChapters.filter(chapter => ['contract-map', 'payout', 'coverage-conditions', 'overlap', 'timelines', 'surrender'].includes(chapter.id))) {
       await check(`intermediate-850-${chapter.id}-layout-and-model`, intermediatePage, async () => {
         await visit(intermediatePage, chapter.route);
         await domAudit(intermediatePage);
@@ -1331,8 +1605,8 @@ async function verifyAssets() {
       for (const lab of await page.locator('.insurance-lab').all()) {
         await openTables(page, lab);
         const kind = await lab.getAttribute('data-insurance-lab');
-        const verifier = kind === 'coverage-conditions' ? await coverageConditionsVerifier(page, lab) : kind === 'overlap' ? await overlapVerifier(page, lab) : null;
-        const model = verifier ? (kind === 'coverage-conditions' ? verifier.projectConditions() : verifier.projectOverlap()) : null;
+        const verifier = kind === 'coverage-conditions' ? await coverageConditionsVerifier(page, lab) : kind === 'overlap' ? await overlapVerifier(page, lab) : kind === 'timelines' ? await timelinesVerifier(page, lab) : kind === 'surrender' ? await surrenderVerifier(page, lab) : null;
+        const model = verifier ? (kind === 'coverage-conditions' ? verifier.projectConditions() : kind === 'overlap' ? verifier.projectOverlap() : kind === 'timelines' ? verifier.projectTimelines() : verifier.projectSurrender()) : null;
         if (verifier) await verifier.inspect(model.frames[0], model);
         const controls = lab.locator('.money-playback');
         const step = controls.getByRole('button', { name: '한 단계 진행', exact: true });

@@ -40,3 +40,41 @@ CI 변경은 독립 검토자가 의존성·동일 artifact·격리된 runner·�
 현 단계는 코드·본문·로컬 실행·독립 소스 검토 완료다. 새 병렬 Actions의 실제 production·게시 브라우저, 대표 PNG 직접 검토, main/Pages 최종상태와 자산 바이트 일치는 아래 후속 증거로 기록한다. 로컬 브라우저의 기존 환경권한 제한을 우회하지 않는다.
 
 최신 main 통합: 게시 직전 병행 세금 계획 PR#8이 `ff16ea7063c9f44b0c37a24d3b245458e085a50a`에 먼저 병합되어 이전 기대 SHA로의 갱신은 반영되지 않았다. 새 main의 TAX 계획·프롬프트 두 파일을 원문 그대로 보존하고 그 위에 C 변경을 재구성했다. 병행 변경은 문서 두 개뿐이며 앱·모델·테스트·워크플로 충돌은 없었다. 강제 갱신을 사용하지 않는다.
+
+## 실제 production·게시 게이트 완료
+
+2026-10-20 UTC/KST, main `1ff04e672cb10f0b25d118f78069860d4f139359` / tree `8dc9a98dba3c8ae3cc4df99b4a85e79071056476`의 [run39343057214](https://github.com/Middleages/my-books/actions/runs/39343057214)이 00:07:59 UTC에 최종 success로 끝났다. build·production 보험/투자 두 job·Pages deploy·published 보험/투자 두 job 모두 success다. 병렬 검증에서 한 쪽의 결과로 다른 쪽을 대신하지 않았다.
+
+게시 보험 artifact `12230593513`을 다운로드해 `results.json`을 직접 읽었다. Chromium `155.0.8059.39`, mode published, source/workflow SHA가 위 커밋과 일치하고 sourceChanges는 빈 값이다. 82/82 검사 통과, 403PNG 생성, 앱 콘솔·페이지·리소스 오류0이다. 소개·01–06의 MDX/링크·화면, 모델/실제 도형, 1440/390/320/850px, 키보드·정지·초기화·정적표·reduced-motion, 기존 읽음/미확인 ID 보존을 포함한다. PNG 생성 수는 직접 검토 수가 아니다.
+
+게시 HTML에 연결된 JS/CSS는 정확한 build artifact와 전체 바이트 및 SHA-256이 일치했다.
+
+| 게시 자산 | 바이트 | SHA-256 |
+| --- | ---: | --- |
+| index-C_9qgmoC.js | 2,036,011 | 8851f536263f3ab39c4105ef7b094b27e38de61fb03e8bacb10e5f4fa9fccd11 |
+| index-DbQH4In0.css | 235,483 | 779e9eb463410ef7bfdfb83ecdb3b2f83e3438efde35e6efe4ca110134e4bbc8 |
+
+조정자가 직접 연 게시 장면 네 개:
+- `1440--insurance-coverage-conditions-initial-scene-1.png`
+- `320--insurance-coverage-conditions-1-coverage-start-day-30-half-benefit-scene.png`
+- `1440--insurance-overlap-1-unequal-caps-one-to-three-shares-scene.png`
+- `320--insurance-overlap-1-two-caps-leave-a-visible-gap-scene.png`
+
+05에서 사건일/청구일은 분리된 행의 같은 날짜 눈금을 읽고, 30일 경계의 50% 지급과 관문 판단이 일치했다. 06의 한 손실 띠에서 A/B 75/225만원 비율과 미보전 공백을 읽을 수 있고, 정액 약속은 손실 밖의 별도 영역에 남는다. 모바일은 라벨·관문·정액 경로를 재배치하며 긴 표만 이름 있는 내부 스크롤에 둔다. 정지·키보드·재생 성공은 실제 브라우저 assertions의 근거이며 정적 PNG만으로 주장하지 않는다.
+
+이 사후 증거는 D 변경에 함께 기록한다. 사용자 컴퓨터는 사용하지 않았으며 새 cloud workspace의 로컬 Chromium도 socket 권한 제한으로 실행되지 않아, 기존 지원 경로인 Actions Chromium 증거를 검토했다. 실제 기기·Safari/Firefox·스크린리더 음성·현실 계약의 적합성은 미검증이다.
+
+독립 게시 화면 검토도 통과했다. 검토자는 아래 원본 PNG10개와 320px 핵심 그림·reduced-motion 정적표의 원본 해상도 영역을 직접 확인했다. 확정/미확인 관문, 겹치는 날짜의 별도 행, 손실0일 때 채움0, 양쪽 제외의 미보전 손실과 별도 정액 약속, 모바일 아래쪽 화살표와 라벨에서 차단할 결함을 발견하지 못했다. 표의 잘린 오른쪽 열은 의도된 이름 있는 내부 스크롤 영역이며 실제 전체표 접근성 검사는 위 브라우저 결과로 확인한다.
+
+- `1440--insurance-coverage-conditions-1-first-full-day-90-scene.png`
+- `1440--insurance-overlap-1-equal-caps-share-one-loss-scene.png`
+- `850-coverage-conditions-initial-scene.png`
+- `850-overlap-two-caps-leave-a-visible-gap-scene.png`
+- `390--insurance-coverage-conditions-1-same-day-event-and-claim-use-separate-markers-scene.png`
+- `320--insurance-coverage-conditions-1-unconfirmed-information-is-unresolved-scene.png`
+- `390--insurance-overlap-1-both-ineligible-with-visible-loss-scene.png`
+- `320--insurance-overlap-1-zero-loss-zero-painted-partition-fixed-promises-separate-scene.png`
+- `390-coverage-conditions-reduced-motion-static.png`
+- `390-overlap-reduced-motion-static.png`
+
+C 게이트를 닫은 뒤 D07–08을 진행한다. 이 결과는 당시 C 판의 근거이며 이후 D/E 검증을 대신하지 않는다.
