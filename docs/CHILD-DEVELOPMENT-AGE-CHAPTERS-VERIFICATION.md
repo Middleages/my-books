@@ -9,3 +9,5 @@ PR80 최종0cae080의 age-scenes.mjs/d.mts를 바이트 그대로 재사용한�
 새/기존 관련 모델4/4 및 브라우저 스크립트 문법·diff 공백 검사 통과. 전체 단위/build·정상 PR CI·08–10 실제 원본 직접 검토는 아직 대기다. 우선 패치의 화면 검증을 이 후속의 화면 성공으로 대체하지 않는다.
 
 로컬 후속: 전체1053/1053 unit와 NODE2048 제한 build1회가 exit0으로 통과했다. 기존 큰 청크 경고는 보존했다. 카탈로그·소개·02와 다른 책 변경0. 공유 모델 SHA256: age-scenes.mjs 7bf765debb4c295de4914e3f05c2ed4fde873fcb89a5cf386f6f1721f509f9b4, d.mts b437805380143d3989b1677795cc9780b7f5a5d438fad95c6c497a3f299322ad. [PR80](https://github.com/Middleages/my-books/pull/80)의 원본과 같다. 정상 후속 PR·실제08–10 화면은 아직 대기다.
+
+최초 PR83/run39422211704 build+선택2종 production 성공: actual875a68690d8bc62df737cc461a770161298688ed/tree6980d60590101e0b516332847820230cbee0fd4e/clean,117검사401PNG·진단0. artifact12264222004 ZIPc4051b310ded65dbf63a918d9ee3dc83d6a69f53894edba9b6629b4d47a41f48. 직접320-first-year-6-all,1440-first-year-2-all 원본에서 ‘모든 영역’ 카드에 책 태그가 보이지 않고 원출처 영역만 보이는 표현상의 부족을 발견했다. 각 카드에 책의 몸/손/말/놀이/관계 태그를 추가하고 일상 장면은 그대로 유지한다. 자동 텍스트 대조와 모바일 단독 카드 원본도 추가하며 보완 뒤 실제 화면 게이트는 대기다. 이 보완은 PR80의 소개/02에 영향을 주지 않는다.

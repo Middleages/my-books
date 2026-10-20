@@ -5,3 +5,5 @@
 
 /* Source-aged everyday examples: keep all five domains readable. */
 .cd-lab[data-cd-lab$="year"] .cd-result>ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.cd-lab[data-cd-lab$="year"] .cd-result>ul>li{padding:.9rem;border:1px solid #aebfaf;background:#fff;border-radius:.5rem;min-width:0}.cd-lab[data-cd-lab$="year"] .cd-result>ul p{margin:.5rem 0;line-height:1.65}.cd-lab[data-cd-lab$="year"] .cd-result>ul small{display:block;font-size:.85rem;line-height:1.5}@media(max-width:650px){.cd-lab[data-cd-lab$="year"] .cd-result>ul{grid-template-columns:1fr}}
+
+.cd-lab[data-cd-lab$="year"] .cd-result>ul .cd-example-tag{font-weight:700;color:#365f50;margin-bottom:.4rem}
