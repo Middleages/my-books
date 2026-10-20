@@ -27,3 +27,10 @@ technology6 authentication, 소개·identity-and-permission·cookies-and-session
 2026-10-20 09:12 UTC에 run `39395892602`의 completed/success를 확인했다. 전체 unit/build와 최초 등록의 넓은10개 browser suite가 모두 성공했다. 최종 인증 소스는 앞서 적은 `4031b794…`/tree `e9ce388b…` 그대로다.
 
 신규4A 통합 후보 PR51 head `dd1bdf10693076b4ced3b0af7e763c1386f30e97`, 실제 checkout `4c68a53cfcf7e5f8f56dba587ebf0abf56e96d1a`/tree `97d1a12844afbcddcc90c067000cb14877ee9db6`의 인증 report도11개 검사·오류0을 확인했다. 원본 `1440-session-valid.png`, `320-session-expired.png`, `390-identity-denied.png`를 직접 열어 두 저장소·요청/응답 방향·만료/인가 거절·320px 줄바꿈이 유지됨을 확인했다. 이는 표본의 통합 시각 검토이며 통합 전체12-suite와 main/Pages/live 성공을 대신하지 않는다. 실제 로그인/SSO와 실기기 접근성은 미실행이다.
+
+
+## A 정확한 게시 완료 · 2026-10-20
+
+새4권 합본의 actual main `9c1df885218915bd368744e1420c3c17ce911fd1`, tree `5eaa478898fc3a7b4cab4bac2a54b13d584367ba`에서 [run39404076837](https://github.com/Middleages/my-books/actions/runs/39404076837)의 전체1166 단위/build·12 production·Pages·12 published가 모두 성공했다. 배포10:17:30 UTC, 전체 workflow 성공10:41:27 UTC, 최종 자산 검사 동안 main은 고정됐다. 인증 자체 production11 / published12 검사, 각각 원본45PNG, 앱 오류0이다. published의 정확한 host-root favicon4041건은 별도 진단으로 보존했다.
+
+작성자가 실제 게시 원본 `320-session-expired,390-identity-denied`를 직접 열어 앞서 검증한 의미관계·모바일 라벨과 조작부의 회귀가 없음을 해당 범위에서 확인했다. 전체 PNG나 실제기기/스크린리더·실제 시스템/개인 결과 검증으로 확대하지 않는다. 전체 ZIP digest·정확 JS/CSS·다른 suite·직접 검토 한계는 [새4권 합본 최종 기록](NEW-BOOKS-A-WAVE-VERIFICATION.md#정확한-mainpages실제-게시-게이트-완료--2026-10-20)에 남겼다. A 소개·01–02만 이 source에 포함되며 후속 배치 공개는 별도 순서를 따른다.

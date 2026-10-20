@@ -79,3 +79,10 @@ PR36의 아래 동일 tree에서 전체 unit1049/1049, TypeScript/Vite build와 
 - PR 검증 중 main은 세금F·주거E를 포함하는 `d76ed55e9969108449124a154c7c67e946068740`으로 이동했다. 위 PR 검증은 그 이후 main의 결과가 아니다. 다음 신규책 파동은 그때의 최신 main과 병행 책 변경을 보존하여 직렬 담당자가 통합한다.
 - PR의 deploy/published-browser는 skipped이며 게시 성공이 아니다. 통합된 정확한 tree의 전체 unit/build·필수 넓은 suite, Actions/Pages/verify-published와 같은 자산의 실제 게시 바이트/해시·공개2장 대조가 남아 있다.
 - 이 최종 기록은 위 검증된 tree 이후의 문서 전용 보완이다. 앱 코드·검증 스크립트는 바꾸지 않는다. 통합 후 기록 자체의 새로운 tree와 이전 앱 검증 근거를 구분한다.
+
+
+## A 정확한 게시 완료 · 2026-10-20
+
+새4권 합본의 actual main `9c1df885218915bd368744e1420c3c17ce911fd1`, tree `5eaa478898fc3a7b4cab4bac2a54b13d584367ba`에서 [run39404076837](https://github.com/Middleages/my-books/actions/runs/39404076837)의 전체1166 단위/build·12 production·Pages·12 published가 모두 성공했다. 배포10:17:30 UTC, 전체 workflow 성공10:41:27 UTC, 최종 자산 검사 동안 main은 고정됐다. 확률 자체 production83 / published84 검사, 각각 원본32PNG, 앱 오류0이다. published의 정확한 host-root favicon4041건은 별도 진단으로 보존했다.
+
+작성자가 실제 게시 원본 `320-distribution-median,320-loss-large-figure,320-loss-date-figure,320-loss-controls`를 직접 열어 앞서 검증한 의미관계·모바일 라벨과 조작부의 회귀가 없음을 해당 범위에서 확인했다. 전체 PNG나 실제기기/스크린리더·실제 시스템/개인 결과 검증으로 확대하지 않는다. 전체 ZIP digest·정확 JS/CSS·다른 suite·직접 검토 한계는 [새4권 합본 최종 기록](NEW-BOOKS-A-WAVE-VERIFICATION.md#정확한-mainpages실제-게시-게이트-완료--2026-10-20)에 남겼다. A 소개·01–02만 이 source에 포함되며 후속 배치 공개는 별도 순서를 따른다.
