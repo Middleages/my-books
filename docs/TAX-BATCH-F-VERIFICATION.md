@@ -1,8 +1,8 @@
 # 세금 배치 F 검증 기록
 
-작성: 2026-10-20. 상태: 로컬 구현·검증 중, 이 배치의 main·Pages 게시 전.
+작성: 2026-10-20. 상태: main d76ed55e의 production·Pages·실제 게시 자산·직접 화면 검토 완료. 최종8개 suite production/published 넓은 회귀까지 완료. 이전 절의 게시 전 문구는 당시 기록이다.
 
-전체권을 로컬에서 선행 교차 검증한 뒤 A→B→C→D→E→F 순서로 공개한다. 각 배치에서 공개하는 장만 카탈로그·본문 링크·읽음 분모에 반영하며 선행 게시 게이트가 닫히기 전에 다음 배치를 공개하지 않는다. 현재 기록은 선행 게시를 완료했다고 주장하지 않는다.
+전체권을 로컬에서 선행 교차 검증한 뒤 A→B→C→D→E→F 순서로 공개한다. 각 배치에서 공개하는 장만 카탈로그·본문 링크·읽음 분모에 반영하며 선행 게시 게이트가 닫히기 전에 다음 배치를 공개하지 않는다. 이 문단은 초기의 순차 공개 계약이며 최종 실제 완료 근거는 마지막 절에 기록한다.
 
 범위·설계·공통 모델 경계는 [전체 점검 기록](TAX-BOOK-REVIEW.md)을 따른다. 해당 배치의 실제 테스트·빌드·production 화면·직접 PNG 검토·CI·Pages·자산 비교는 실행 후 아래에 추가한다.
 
@@ -70,3 +70,70 @@ PR29의 새 head `df0b68f361da90f9a0d0c7dd4d037e332916c77a`, tree `262a9d477235c
 ## F 게시 직전 최신 main 보존 점검
 
 E의 실제 공개 main05602d24와 세금E·주거D·DB B 마감 문서를 보존했다. PR29 df0b68f의 본문·모델·UI·검증기·테스트·workflow와 최종 후보의 차이는0이며, 전체1061/1061 단위 테스트·TypeScript/Vite build·diff 검사를 다시 통과했다. 생성된 JS `index-DyxQeQd2.js` SHA-256 `b017248f59b8a9f59a0d21ec352066fd20097fb3059785676cf36be4f6d7f74c`, CSS `index-sYxM-qHK.css` `b370b942359b5a14defc7a9012531c85c6854223b37ca56b51c4bdf72e151723`는 PR29 production과 동일하다. 최종 범위 분류기는 tax·book-volumes·housing3개를 선택했고 DB·회계·보험·투자·Kubernetes5개는 이번 영향 검사에서 의도적으로 생략한다. 이후 고정된 F source의 별도 읽기 전용 전체8개 suite production/published 검사에서는 생략 없이 다시 검증한다. 이 절은 게시 직전 검증이며 아직 그 이후 main/Pages/live/전체 회귀의 완료 증거가 아니다.
+
+
+## F 실제 main·Pages·공개 화면 게이트
+
+main `d76ed55e9969108449124a154c7c67e946068740`, tree `2d361e04d653c1c541fe2e345aa0973baaf271c3`의 [run39389395940](https://github.com/Middleages/my-books/actions/runs/39389395940)는 전체1061단위 테스트·build, tax·housing·book-volumes3개 production, Pages,3개 published의8개 job을 모두 통과했다. Pages는2026-10-20 07:58:33 UTC에 게시됐다. 공개 세금182/182·원본138PNG, 주거160/160·고유160PNG, 권차14/14·39PNG이며 sourceChanges는 빈 값이다. 세금·주거의 정확한 호스트 기본 favicon404 한 건씩을 별도 진단에 보존했고 앱/page/resource 오류는0이다.
+
+- main build artifact12249012321 ZIP SHA-256 `87593e6fa62ee34bf55c82912c9ff7683eae3e00076609b99d444dfc7fbee2b4`, 공개 세금12248729604 `44fdfacf94246cc47d2a2a9438faa634c5aa3b4acb007303ffefe49e0b5b8bc6`, 주거12250020001 `7ed7c9ab80f458a2c9d2c01ddb3b8c4fcfe776528b6731b3a480b4cdf482980b`, 권차12249455761 `161b2d72b88c1bc94fcce4725c18f255df7835a00cebe6797fa10a375324eb23`를 내려받아 일치 확인했다.
+- main build 및3개 공개 suite가 JS `index-DyxQeQd2.js`(2769564 bytes, SHA-256 `b017248f59b8a9f59a0d21ec352066fd20097fb3059785676cf36be4f6d7f74c`), CSS `index-sYxM-qHK.css`(339563 bytes, `b370b942359b5a14defc7a9012531c85c6854223b37ca56b51c4bdf72e151723`)의 정확한 동일 바이트를 증명했다.
+- 작성자는 새 공개11·12 각각1440 초기·320 변경·390 reduced-static6원본과320 시간표 native 상단,1440 홈·세금 권차를 직접 열었다.11의 Y/Y+1 및0–18개월, 누적 순유출0–150,144에서18개월 환급64 뒤80으로 줄어드는 막대·현재값·정적 표가 일치했다.12의 사실/해석·가정/추가 확인은 기호와 선택선으로 구별되고 선택4의 세제 혜택≠원금 보장 설명이 연결됐다. 홈은 세금12·주거10·DB4·회계2의 실제 읽음 분모를 유지했다. 넓은 정적 표의 모든 열을 모바일 한 화면에서 읽었다고 주장하지 않는다.
+- 주거 담당자는 새 공개1440-rent-or-buy-shortage 전체,320-market-mix-changed0–2100px,390-housing-supply-reduced-static 전체를 직접 보았다.39개월 마지막 원장·40개월 부족·60개월 정산 미완료, 변화 바구니 우선·평균36,666.67와 고정구성110, 같은100호의 단계 보존·인접 제어·준공과 실제 입주의 차이가 읽혔다. 검사한 범위에 차단점이 없다.
+
+세금 소개·01–12의 A→F 순차 게시를 마쳤다. 여기서는 영향 밖5개 suite를 의도적으로 생략했으므로 아직 최종 넓은 회귀 완료는 아니다. 별도 읽기 전용 branch의 [run39391228232](https://github.com/Middleages/my-books/actions/runs/39391228232)가 실제 main d76ed55e/tree2d361e04를 고정 checkout하고, 단일 빌드를 기존8개 suite의 production/published16개 검사에 공급한다. 배포 권한·main workflow 변경은 없으며 각 job 전후 main 고정과 정확한 자산을 확인한다. 완료 결과는 아래에 실제 실행 뒤 추가한다.
+
+
+## 최종 전체권 넓은 회귀 — 실제 고정 source에서 완료
+
+[읽기 전용 run39391228232](https://github.com/Middleages/my-books/actions/runs/39391228232)는 2026-10-20 08:31:44 UTC에 **17/17 job 성공**으로 종료했다. workflow를 담은 별도 branch commit은 `786f7fceb3f074c7dd2e89b8803a6baee590b1d0`이며, 실행 앱은 매번 실제 공개 main **`d76ed55e9969108449124a154c7c67e946068740`**, tree **`2d361e04d653c1c541fe2e345aa0973baaf271c3`**를 고정 checkout했다. 두 SHA를 혼동하지 않는다. main workflow·배포 권한·앱은 바꾸지 않았다.
+
+전체 **1061/1061 단위 테스트·build**의 한 산출물을 아래16개 job에 공급했다. 각 job은 시작·종료 시 clean source와 고정 main을 확인했다. production은 같은 build, published는 그 build와 실제 게시 JS/CSS의 정확한 바이트 일치를 확인했다. 최종08:34 UTC의 별도 main 읽기도 d76ed55e였다. 따라서 이 gate 동안 다른 게시 버전으로 결과가 섞이지 않았다.
+
+| 기존 suite | production 검사 | published 검사 | 각 모드 원본 PNG |
+| --- | ---: | ---: | ---: |
+| insurance | 138/138 | 138/138 | 603 |
+| investing | 160/160 | 161/161 | 680 |
+| tax | 182/182 | 182/182 | 138 |
+| book-volumes | 14/14 | 14/14 | 39 |
+| database | 339/339 | 340/340 | 135 |
+| kubernetes | 94/94 | 94/94 | 146 |
+| housing | 160/160 | 160/160 | 160 |
+| accounting | 65/65 | 66/66 | 34 |
+
+합계 **2307개 검사와 원본3870PNG**다. PNG 생성 수는 직접 읽은 수가 아니다. 각 결과의 앱/page/console/resource 실패 배열은 비어 있다. 세금·DB·Kubernetes·주거의 published에서 알려진 정확한 호스트 루트 favicon404가 각각1건 별도 보존됐다. 이를 전체 브라우저 진단0이라고 표현하지 않는다.
+
+### 정확한 artifact 및 자산
+
+모든 ZIP을 직접 내려받아 Actions가 선언한 SHA-256과 일치하는지 확인하고, 압축 원본의 결과·before/after source 증명을 읽었다. 검토용 crop은 원본 PNG 수에 더하지 않았다.
+
+| artifact | ID | ZIP SHA-256 |
+| --- | --- | --- |
+| tax-final-production-insurance | 12250582286 | `89609bf78c7d4d8c1c1f2578b7c6d2d044bcd9ee6eeb5d0339364dde650a4a1e` |
+| tax-final-published-kubernetes | 12250420766 | `ba088cc5ef1ca6ef43fbc5a7ba7addd25d7e3270a6f2948925ac43dbabc6530a` |
+| tax-final-published-insurance | 12250269423 | `6801e516314b1cd9a7bc65a97b404d45e4d722e7514ce4095810e9d64249898c` |
+| tax-final-source | 12250205475 | `4620c7eb48f42a7e01fefeaa57c097d048bd2c63c2bacb2517e51216a1c4e23f` |
+| tax-final-published-investing | 12250182297 | `488cc643c5a97692eba6a2a968aeff982d423b2d9c27bc40f591149657f1043e` |
+| tax-final-published-housing | 12250116750 | `a802393a1e616475ac204f983dd8b94607cabd445a9879d6f576078dc33e64d2` |
+| tax-final-production-database | 12250096781 | `a7fb52d797fb841c8837825d42a29b5b2aa0605590db1c2d890d46fe6efa2e5b` |
+| tax-final-production-housing | 12250056955 | `9f71ce3f392cfc1f43dc6e0da982ddcb737825104fac983d3357fe9302ffaee0` |
+| tax-final-production-investing | 12250002449 | `e4e5bc13931ac2f5196e16422a652709b4bf62607ff60228b59878e4651f63de` |
+| tax-final-built-dist | 12249951063 | `4af3be216a08b2ba266d5f08a6a4b7a0cde93d51a10412fcf454441d47edd45b` |
+| tax-final-production-tax | 12249796955 | `db8809247f96d3404f1e668e73114e96a17f13457f2d4005f5f3c789b7e3ed7d` |
+| tax-final-published-book-volumes | 12249736870 | `f571ee8d74a2a4adb48ed6e3c0c6937492f3edd7a425d88927654ca1db7057ff` |
+| tax-final-published-accounting | 12249547985 | `4fa01a2fd73638ea195523e9836d5f859cecba9b25a2cf4ba73acb30718a25e0` |
+| tax-final-production-accounting | 12249542938 | `af317a662903abfbfac8e0e973c8a448119bf84ca5c62657ca158539c0bb1d7c` |
+| tax-final-published-database | 12249528891 | `584cf9b31b340cd6da6591950d6fed7c4ef319f9c32f209194083532f06120f2` |
+| tax-final-production-kubernetes | 12249372693 | `517be84bf4588bf54324bb1e39f09c3f595e0481c67e161d3859bcc2907644c7` |
+| tax-final-published-tax | 12249214057 | `8b24b8a4bd7f17336ad30a6525812cfb8056a6feb34022264b77e8a8c635d1f8` |
+| tax-final-production-book-volumes | 12249198833 | `812365ea50440b284a99847c3237bb4c356d9e356d6cbc4167fea4c71804cdfd` |
+
+16개 job의 공통 JS는 `index-DyxQeQd2.js`,2769564bytes, SHA-256 `b017248f59b8a9f59a0d21ec352066fd20097fb3059785676cf36be4f6d7f74c`이고 CSS는 `index-sYxM-qHK.css`,339563bytes, `b370b942359b5a14defc7a9012531c85c6854223b37ca56b51c4bdf72e151723`다.
+
+### 마지막 직접 시각 검토와 한계
+
+새 published의 세금 소개와01–12를 포함하는14원본을 직접 열었다.1440 초기 화면은 사건 경계·400의 구간 분해/80세액·급여300의260/25/15 분리·VAT 공급 장부·계좌의 조건 문·350의 이전 과세 바탕·80/65/30 공제 비교·0–18개월 시간표를,320 변경 및390 reduced/static은0과 미정의·환급70/150/80·투자 분류·주택의 세 사건·문장4와 가정 해설을 확인했다. 공통 눈금·단위·현재 입력과 결과·인접 제어·정적 대안이 유지되고 검사한 영역에서 의미/가독성 차단점이 없었다.
+
+다른 책은 새 공개 원본에서 Kubernetes320 HTTP응답, 회계320 복식3단계, DB320 COUNT분기, 주거390 공급 정적 대안, 투자320 외상매출120의 회수 및 native범위, 보험320 5년 납입 종료/10년 보장 장면 및 native상단을 직접 확인했다. 각각 경로 방향·현금410+설비240·COUNT의 다른 기준·같은100호 단계·새 매출 없는 회수·납입 종료와 보장 종료의 차이가 읽혔다. 앞선 각 배치의 직접·독립 검토 증거도 보존했다. 원본3870장 전체나 모든 표 셀을 수동으로 읽었다고 주장하지 않는다.
+
+**세금5권 소개·12장의 구현, A→F 순차 main·Pages 게시, 공식 출처/가상 모델 경계, 단위·브라우저·정확 게시 자산·대표 화면 직접 검토와 마지막 넓은 회귀를 완료했다.** 실제 Safari/Firefox·물리 기기·스크린리더 음성·학습효과 연구는 미실행이다. 실제 법률 적용·개인 세액·절세 적격 판정 또는 신고 도구로 보증하지 않는다.

@@ -1,6 +1,6 @@
 # 세금의 구조와 생활 — 돈·경제 시리즈 5권 제작 계획
 
-작성: 2026-10-20 KST. 현재 상태: **A 소개·01–02부터 E09–10까지 main05602d24·Pages·실제 게시 검증 완료. F11–12는 별도 합본 production·직접 검토를 완료했으나 순차 게시와 마지막 전체권 회귀는 대기 중**. 실제 증거는 [A](TAX-BATCH-A-VERIFICATION.md), [B](TAX-BATCH-B-VERIFICATION.md), [C](TAX-BATCH-C-VERIFICATION.md), [D](TAX-BATCH-D-VERIFICATION.md), [E](TAX-BATCH-E-VERIFICATION.md), [F](TAX-BATCH-F-VERIFICATION.md) 기록에서 구분한다.
+작성: 2026-10-20 KST. 현재 상태: **A 소개·01–02부터 F11–12까지 main d76ed55e·Pages·실제 게시 자산·직접 화면 검증 완료. 마지막 전체권8개 suite production/published 넓은 회귀까지 완료**. 실제 증거는 [A](TAX-BATCH-A-VERIFICATION.md), [B](TAX-BATCH-B-VERIFICATION.md), [C](TAX-BATCH-C-VERIFICATION.md), [D](TAX-BATCH-D-VERIFICATION.md), [E](TAX-BATCH-E-VERIFICATION.md), [F](TAX-BATCH-F-VERIFICATION.md) 기록에서 구분한다.
 상위 계획: [돈·경제 시리즈](MONEY-TEXTBOOK-PLAN.md). 공통 규칙: [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md).
 선행 교재 상태는 착수 시 최신 main과 각 검증 문서에서 재확인한다. 보험 4권의 진행 중 변경을 보존한다.
 
@@ -12,7 +12,7 @@
 
 ## 책·URL·읽음 ID
 
-bookId: `tax`, 분야 `money`, 분야 내 5권. 소개 `#/tax`; 장 URL `#/tax/<chapterId>`; readId `tax/<chapterId>`. 아래 ID는 전체 계획이며 **실제 공개된 배치만** 카탈로그·읽음 분모에 반영한다. A–E가 실제 게시됐으며 이 F 최종 후보는 소개·01–12와 읽음 분모12장을 등록한다. F의 production·직접 검토가 F 게시와 최종 넓은 회귀 완료를 뜻하지 않는다. 기존 모든 URL·chapter id·readId·`my-books:read:v1` 및 알 수 없는 저장 ID를 유지한다.
+bookId: `tax`, 분야 `money`, 분야 내 5권. 소개 `#/tax`; 장 URL `#/tax/<chapterId>`; readId `tax/<chapterId>`. 아래 ID는 전체 계획이며 **실제 공개된 배치만** 카탈로그·읽음 분모에 반영한다. A–F가 실제 게시됐으며 소개·01–12와 읽음 분모12장을 등록한다. 순차 게시 완료와 마지막 넓은 회귀 결과는 별도 기록으로 구분한다. 기존 모든 URL·chapter id·readId·`my-books:read:v1` 및 알 수 없는 저장 ID를 유지한다.
 
 | 배치 | 장 / chapterId | 제목 | 핵심 질문 | 눈으로 발견할 관계 |
 | --- | --- | --- | --- | --- |
