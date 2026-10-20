@@ -12,3 +12,6 @@ SAFETY-SOURCES B1–B3의 국가·대상·확인 범위 참조. 국내 최신 �
 
 ## 현재 실행 결과
 모델 4/4 통과. 전체 unit, production build, 정상 PR CI, 원본 desktop/mobile PNG 직접 검토, 실제 Pages 게이트는 아직 미실행. 소스 작성과 배포 완료를 구분한다.
+
+## 최초 전체 검증과 수정
+local135ede5/tree42df35e39634d08dfb85d3558b565c764624d42b: unit1504/1504 및 build2048 통과. 로컬 Chromium은 socket/crashpad 환경 오류로 실행 전 실패(화면 검증0). PR99 headce9dcd8의 CI39471784682 build/unit 및 book-volumes 브라우저 성공. 안전 전용 브라우저는7통과 후03 입력의 정확한 label 선택자가 일치하지 않아 중단했다. 옵션 문구가 입력 이름에 섞이지 않도록 명시적 aria-label을 추가한다. 검사를 삭제하거나 성공으로 바꾸지 않았다. 원본 화면 검토와 수정 후 CI는 대기 중이다.
