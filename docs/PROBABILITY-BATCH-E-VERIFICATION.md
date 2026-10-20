@@ -53,3 +53,14 @@
 로컬 자산 정본은 다음과 같다. 향후 실제 CI checkout/tree와 응답 바이트를 별도로 대조한다.
 - `index-BpVHSjOg.css`: 367239 bytes, SHA256 `3fa0fa0310c0f921557fbec288c690a17d9c7b3e67d4b00e2f6e0d6217bfd64b`.
 - `index-BrhitWb_.js`: 2995172 bytes, SHA256 `aa8482cd725cbf6e7743595b404fc6ad8aac4a16fb1d12eaa94faae2cb156f32`.
+
+
+## PR67 실제 production · 11:02 UTC 확정
+
+- 동결 로컬 `bd2140ff69fbbcdd4e9a7f943ac8dee3cdf64976`, 공개 head `766af103c7063d0663ca99ceb19a985fea3046af`, tree `2d874f6d658d9175e83b0ec7a987a34b666b2b21`. PR67은 동결 D 위 stacked 후보이며 최신 main 대체 트리가 아니다.
+- run `39410787526`의 실제 checkout은 `66e08c3ba0b5b24642845c67a9131d86989cfaf7`, 같은 tree, clean이다. 전체 단위검사 1,109/1,109·실패/건너뜀0, TypeScript/Vite build와 선택한 확률/홈 두 production suite가 성공했다.
+- 확률 595/595, PNG259개; 홈 14/14, PNG42개. 두 suite의 페이지·콘솔·리소스 오류0이며 이 실행의 host 진단도0이다. 실제 응답 JS/CSS는 위 로컬 정본과 byte/SHA256가 모두 일치했다.
+- 보험·투자·세금·DB·Kubernetes·주거·회계 7 suite는 영향 범위 정책으로 생략했으며 통과라고 세지 않는다. 이 stacked 소스에는 이후 main의 다른 신규 책 등록이 아직 없다. deploy/published는 PR에서 건너뛰었다. 최종 F의 최신 통합 소스에서 전체 넓은 회귀를 별도로 수행한다.
+- 확률 원본19개(320폭17개,1440 금액 명부1개,390 잠금 장면1개)와 홈320 권차 heading1개를 직접 열었다. 미상 회수액/전체 성과가0으로 바뀌지 않으며 보류값도 공개 전 가림이다. 민감도 범위/CI 경계, 최초10/존속8의 분모, 독립/복제 분포, 보류 재사용, 정보 공개 시점, 인접 제어와 정적 표의 끝 열을 확인했다. 확인 범위에서 차단할 겹침을 찾지 않았다. 모든259개를 직접 봤다는 뜻은 아니다.
+- artifact `12260210460` ZIP SHA256 `e3dad5c1922c3ca63e9b13f49ccaa04ff4ec881d0ffc1b529a222a57f9444fc3`; 홈 `12259386673` SHA256 `3b3d5bdad089ff4dcd2d26f36399f223b680fd9939ead7efc60d715b4b9ff8e3`; scope `12258853714` SHA256 `cae268686d296bf4f4d291447d8203c4ffaecb8c6f5a1490c3cf549276236448`. 다운로드 후 해시 대조·ZIP 추출을 완료했다.
+- 최종 문서 보강은 검증된 실행 소스를 바꾸지 않는 별도 패치다. D 실제 게시 뒤 직렬 통합·Pages·실제 게시의 정확한 버전/자산/화면 게이트가 남아 있다. 실제 기기·Safari/Firefox·스크린리더 음성·학습효과·전문 감수는 여전히 미검증이다.
