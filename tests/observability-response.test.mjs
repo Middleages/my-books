@@ -4,3 +4,6 @@ test('empty zero errors no data and query error are distinct',()=>{assert.equal(
 test('correlation is not fabricated from a metric result',()=>{assert.equal(dashboardFrame(3,{correlation:false}).traceId,null);assert.equal(dashboardFrame(3,{environment:'staging'}).traceId,null);assert.equal(dashboardFrame(1).denominator,null);});
 test('pending duration is measured from first observed condition',()=>{assert.equal(alertFrame(1).state,'pending');assert.equal(alertFrame(2).state,'pending');assert.equal(alertFrame(3).state,'firing');assert.equal(alertFrame(4).state,'inactive');assert.equal(alertFrame(1,{hold:0}).state,'firing');});
 test('sparse evaluation can miss a spike and missing data is not healthy',()=>{assert.equal(alertFrame(3,{mode:'spike',interval:2,hold:0}).state,'inactive');const f=alertFrame(2,{mode:'missing'});assert.equal(f.state,'unknown');assert.equal(f.since,null);assert.equal(alertFrame(4,{mode:'missing'}).state,'pending');assert.equal(alertFrame(3,{interval:2}).currentEvaluated,false);});
+
+import {readFileSync} from 'node:fs';
+test('book card describes the actually registered chapter count',()=>{const catalog=readFileSync(new URL('../src/catalog.ts',import.meta.url),'utf8');const line=catalog.split('\n').find(l=>l.includes('{ id: "observability", categoryId:'));assert(line.includes('소개·01–10장 공개'));});
