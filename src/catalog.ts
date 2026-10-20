@@ -1,3 +1,6 @@
+import ChildSafetyIntro from "./content/child-safety/Intro.mdx";
+import SafetyLayers from "./content/child-safety/SafetyLayers.mdx";
+import ReachAndMovement from "./content/child-safety/ReachAndMovement.mdx";
 import ChildFeedingIntro from "./content/child-feeding/Intro.mdx";
 import FeedingMap from "./content/child-feeding/FeedingMap.mdx";
 import Readiness from "./content/child-feeding/Readiness.mdx";
@@ -165,6 +168,8 @@ export type Chapter = {
   Content: ComponentType;
 };
 export const chapters: Chapter[] = [
+  { id: "safety-layers", bookId: "child-safety", readId: "child-safety/safety-layers", number: "01", title: "안전은 아이의 주의력만이 아니다", heading: "주의하라는 말과 환경 변경은 어떻게 다를까?", description: "물건의 접근선과 남아 있는 보호 층을 구분합니다.", Content: SafetyLayers },
+  { id: "reach-and-movement", bookId: "child-safety", readId: "child-safety/reach-and-movement", number: "02", title: "아이의 이동이 바꾸는 집", heading: "어제의 배치가 오늘도 같은 뜻일까?", description: "새 움직임과 가구 배치의 연결을 안전 점수 없이 살핍니다.", Content: ReachAndMovement },
   { id: "feeding-map", bookId: "child-feeding", readId: "child-feeding/feeding-map", number: "01", title: "먹는 일의 여러 역할", heading: "섭취량과 식사 경험은 같은 것일까?", description: "제시·탐색·섭취와 양의 미확인을 따로 읽습니다.", Content: FeedingMap },
   { id: "readiness", bookId: "child-feeding", readId: "child-feeding/readiness", number: "02", title: "시작할 때 무엇을 볼까", heading: "달력과 준비의 신호는 어떻게 함께 볼까?", description: "일반 안내와 개별 관찰, 상담 질문을 구분합니다.", Content: Readiness },
   { id: "sleep-record", bookId: "child-sleep", readId: "child-sleep/sleep-record", number: "01", title: "잠든 시간과 누워 있던 시간", heading: "밤에 열 시간은 무엇을 센 말일까?", description: "침대 시간과 확인 수면, 미확인 기록을 구분합니다.", Content: SleepRecord },
@@ -600,6 +605,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
+  { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–02장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–02장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
   { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–02장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–04장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },

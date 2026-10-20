@@ -8,8 +8,8 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const ts = require('typescript');
 
-const suiteOrder = ['insurance', 'investing', 'tax', 'book-volumes', 'database', 'kubernetes', 'housing', 'accounting', 'probability', 'observability', 'child-development', 'authentication', 'child-sleep', 'child-feeding'];
-const bookNames = ['computer', 'network', 'money', 'economics', 'investing', 'insurance', 'tax', 'database', 'kubernetes', 'housing', 'accounting', 'probability', 'observability', 'child-development', 'authentication', 'child-sleep', 'child-feeding'];
+const suiteOrder = ['insurance', 'investing', 'tax', 'book-volumes', 'database', 'kubernetes', 'housing', 'accounting', 'probability', 'observability', 'child-development', 'authentication', 'child-sleep', 'child-feeding', 'child-safety'];
+const bookNames = ['computer', 'network', 'money', 'economics', 'investing', 'insurance', 'tax', 'database', 'kubernetes', 'housing', 'accounting', 'probability', 'observability', 'child-development', 'authentication', 'child-sleep', 'child-feeding', 'child-safety'];
 const sharedPresentation = new Set(['src/components/BookCover.tsx', 'src/components/Library.tsx', 'src/components/library.css']);
 const sharedControls = new Set(['src/components/money/shared.tsx', 'src/content/money/shared.tsx']);
 const printer = ts.createPrinter({ removeComments: true });
@@ -95,7 +95,7 @@ function classify({ files, available, fullReason, catalogBefore, catalogAfter })
     const bookPath = file.match(/^src\/(?:content|components|simulations)\/([^/]+)\//);
     if (bookPath && bookNames.includes(bookPath[1])) { addBook(bookPath[1], `Book-local source: ${file}`); continue; }
     if (file === 'src/kubernetesAppendices.ts') { addBook('kubernetes', `Kubernetes appendix registry: ${file}`); continue; }
-    const specific = file.match(/^(?:scripts\/([a-z-]+)-browser-qa\.cjs|tests\/(insurance|investing|tax|database|kubernetes|housing|accounting|probability|observability|child-development|authentication|child-sleep|child-feeding|book-volumes)(?:-[a-z0-9-]+)?\.test\.mjs)$/);
+    const specific = file.match(/^(?:scripts\/([a-z-]+)-browser-qa\.cjs|tests\/(insurance|investing|tax|database|kubernetes|housing|accounting|probability|observability|child-development|authentication|child-sleep|child-feeding|child-safety|book-volumes)(?:-[a-z0-9-]+)?\.test\.mjs)$/);
     if (specific?.[1]) assert(available.includes(specific[1]), `Changed browser verifier is missing or unregistered: ${file}`);
     if (specific && available.includes(specific[1] || specific[2])) {
       selected.add(specific[1] || specific[2]); reasons.push(`Book-specific verifier/test: ${file}`); continue;

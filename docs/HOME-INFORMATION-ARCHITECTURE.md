@@ -146,3 +146,8 @@ E 게시 검사는 production132/게시133개를 통과했고 실제 자산 바�
 ### 인증 A 로컬 후보 · 2026-10-20
 
 IT·기술6권 authentication의 소개·01 identity-and-permission·02 cookies-and-sessions를 로컬 후보로 등록했다. 아직 실제 게시 검증 전이며 후속 장은 노출하지 않는다. 관측5와 기존 권차·읽음 ID를 보존한다.
+
+
+## 육아 5권 A 후보 (2026-10-20)
+
+child-safety는 기존 parenting 분류의 명시적 volume 5다. 소개와 safety-layers·reach-and-movement 두 장만 등록하며 1–3권과 후속 통합되는 4권의 기존 ID를 보존한다. 안전 점수·개인 자료·처치 게임을 제공하지 않는다. 원격 CI·화면·게시 상태는 별도 검증 기록을 따른다.
