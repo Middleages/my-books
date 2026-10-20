@@ -1,6 +1,6 @@
 # 회계와 기업의 돈 · D 구현 및 검증
 
-기준: 2026-10-20. **07–08장 로컬 구현·단위·빌드 검사까지 완료한 후보이며, 수정본의 실제 production·PNG 직접 검토·main·Pages는 대기 중이다.** C의 전용 production200/200과 원본16개 직접 검토를 마친 뒤 별도 작업 트리에서 이어 썼다. C 브랜치 기반 draft PR에서 검사하며 B→C→D의 실제 게시 순서를 지킨다. 자동 병합하거나 main을 직접 변경하지 않는다.
+기준: 2026-10-20. **07–08장 수정본의 전체 unit994·build367·실제 production251/251·새 원본18개 직접 검토를 통과했다. 최신 main 통합·Pages·exact-live는 아직 별도 대기 중이다.** C의 전용 production200/200과 원본16개 직접 검토를 마친 뒤 별도 작업 트리에서 이어 썼다. C 브랜치 기반 draft PR에서 검사하며 B→C→D의 실제 게시 순서를 지킨다. 자동 병합하거나 main을 직접 변경하지 않는다.
 
 ## 범위와 보존
 
@@ -66,7 +66,7 @@ IFRS18은2027-01-01 이후 시작 연차기간부터 적용, 조기 적용 가�
 
 ## 아직 남은 게이트
 
-D actual production·accounting+book-volumes·원본 PNG 직접 검토는 아직 대기 상태다. 통과한 로컬 계산/SSR을 그 대체로 쓰지 않는다. B/C 선행 게시 후 최신 main 통합·Pages·exact-live도 별도다. 실기기·Safari/Firefox·음성 스크린리더·학습효과 검사는 미실행이다. 다른 모든 책의 상세 브라우저를 이 D 배치에서 검사했다고 주장하지 않는다. 마지막 F에서 넓은 전체 교재 회귀를 수행한다.
+D actual production·accounting+book-volumes·원본 PNG 직접 검토는 아래 수정본으로 통과했다. 로컬 계산/SSR만으로 대신하지 않았다. B/C 선행 게시 후 최신 main 통합·Pages·exact-live도 별도다. 실기기·Safari/Firefox·음성 스크린리더·학습효과 검사는 미실행이다. 다른 모든 책의 상세 브라우저를 이 D 배치에서 검사했다고 주장하지 않는다. 마지막 F에서 넓은 전체 교재 회귀를 수행한다.
 
 
 ## 첫 production과 직접 검토에서 발견한 수정 사항
@@ -76,4 +76,16 @@ D actual production·accounting+book-volumes·원본 PNG 직접 검토는 아직
 - 원인은 새 랩 컨테이너가 기존 장부 색상 클래스 `.ac-capital`을 재사용한 것이었다. 기존 장부 색은 건드리지 않고 새 컨테이너만 `.ac-capital-lab`으로 분리했다. 좁은 월별 칸의 월/금액 글자도14px로 보강했다.
 - 재발 방지 unit 및 실제 computed background·heading contrast·월/금액 최소 글자 크기 검사를 추가했다. 기존 기능·금액/방향 assertion은 유지한다. 수정본의 전체 unit/build·실제 production·새 원본 직접 검토가 끝나기 전에는 D를 준비 완료로 표시하지 않는다.
 
-- 위 시각 수정본의 전체 unit **994/994 통과**, TypeScript/Vite **367 modules 통과**를 실제로 다시 확인했다. 수정은 D 컨테이너·월 칸 글자·검증기·회귀 검사·이 기록의5파일뿐이다. 새 production 및 새 원본 검토는 아직 대기 중이다.
+- 위 시각 수정본의 전체 unit **994/994 통과**, TypeScript/Vite **367 modules 통과**를 실제로 다시 확인했다. 수정은 D 컨테이너·월 칸 글자·검증기·회귀 검사·이 기록의5파일뿐이다. 당시 새 production 및 새 원본 검토는 대기였으며, 아래 후속 실행으로 확인했다.
+
+
+## 수정본 최종 전용 게이트 · 2026-10-20
+
+- [PR40](https://github.com/Middleages/my-books/pull/40)은 C 브랜치에 쌓은 draft다. 검증 소스 head `f9d61a73f08013901197a8b59963413d7ca855b6`, 대응 로컬 `aeddaf367ab8085103519be49162c94744cfd6fe`.
+- [run39392542967](https://github.com/Middleages/my-books/actions/runs/39392542967)의 실제 checkout `7b4b0b2fd5dc5521c1b1a06a50f1e2831569b412`, tree `2bbd5e3f217ea28b2c1da6a99367d6efadde2386`는 검증 소스와 일치하고 sourceChanges는 비었다. 전체 CI unit **994/994**, build **367 modules**, `book-volumes`와 회계 production **251/251** 성공을 실제 job 로그·report로 확인했다.
+- 회계 실행 시각08:20:05–08:24:46 UTC. failed0·fatal없음, pageErrors/consoleErrors/resourceErrors/hostDiagnostics 모두0이다. draft의 Pages 및 공개 사이트 검사는 실행하지 않았다.
+- artifact `12250188457`, ZIP SHA-256 `192cf2d97bc9d50165a4c011886b6ab5d913e26e3472c8b91099724938786496`를 다운로드해 해시를 확인했다. 새 원본229 PNG 중 아래18개를 직접 열어 검토했다. 기존 실패 후보의 이미지를 새 수정본 검토로 대신하지 않았다.
+- 설비의 취득 현금 감소와 상각의 현금 불변, 잔존24의 마지막·다음 달, 금액 띠와 월별 칸, 모바일 세로 당사자와 출자/차입/원금/배당 화살표, 이자5만 이익을 줄이는 관계를 확인했다. 연한 랩 배경과 읽을 수 있는 글자 대비가 복구됐으며 잘림·가로 넘침을 발견하지 않았다. 긴320 정적 원본은 전체 배치 검토로 한정했고 모든 작은 글자를 확대해 읽었다고 주장하지 않는다. 정적 내용 자체는 동일 모델의 SSR/DOM 검사와 데스크톱 직접 검토로 확인했다.
+- 직접 검토 파일: `1440-equipment-24-0-M1-step-1.png`, `1440-equipment-24-0-M1-step-2.png`, `320-equipment-48-24-M3-step-4.png`, `390-equipment-48-24-M3-step-52.png`, `1440-equipment-24-24-M3-step-2.png`, `320-equipment-24-24-M3-step-28.png`, `1440-financing-capital-step-1.png`, `1440-financing-loan-step-1.png`, `1440-financing-settlement-step-1.png`, `1440-financing-settlement-step-2.png`, `320-financing-settlement-step-2.png`, `390-financing-settlement-step-3.png`, `320-equipment-static.png`, `1440-financing-static.png`, `390-normal-motion-equipment.png`, `390-normal-motion-financing.png`, `320-financing-capital-step-1.png`, `390-financing-loan-step-1.png`.
+
+이 최종 기록 추가는 문서만의 변경이다. 검증된 앱·본문·모델·검증기 tree의 해당 파일을 바꾸지 않는다. B/C/D를 최신 main에 통합한 합본 검증, Pages와 exact-live가 닫히기 전에는 실제 게시 완료로 표시하지 않는다.
