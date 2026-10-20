@@ -24,3 +24,11 @@ A PR35 tree `b52b7a4774cd4e79827dbf2a7ddfe71262c9ea29`는 전체 unit/build, pro
 ## 내용 대조에서 발견한 추가 수정
 
 첫 browser 통과 뒤 모델을 다시 대조해 scrape 누락이 counter만 미정으로 만들고 gauge를 남기는 의미 불일치를 발견했다. 같은20초 scrape에서 두 지표를 모두 null로 만들고 정적표·SVG 물음표·모델 회귀·browser assertion을 함께 고쳤다. 또한 요청별 duration 막대는 수집 누락을 복원한 값이 아니라 교재가 알고 있는 합성 원본임을 그림 가까이에 명시했다. 초기 production 통과가 이 의미 검증을 대신하지 않으며 수정 후 production/직접 PNG를 다시 확인해야 한다.
+
+## 최신 main 보존 병합 · 2026-10-20 09:03 UTC
+
+수정 후보의 CI가 생성되지 않아 확인한 결과, main `47c36cc06fad15d87afd040ac5c259b421714d52` 전진 뒤 catalog 병합 충돌이 원인이었다. 기존 주거 완결·회계 B·DB C를 보존하고 관측 import와 registry를 함께 유지했다. 로컬 전체1149/1149·TypeScript/Vite build를 재통과했다. PR42 새 head `faf007c04597de593d146ba1553522562cb70f73`, tree `50d700deb8fa7944d6518dcf32e777fb82a8c46e`, run `39397895387`의 생성과 queued를 확인했다. 이 수정 후보의 production·PNG 재검토는 아직 대기 중이며, 앞선 후보 성공을 새 소스 성공으로 대체하지 않는다.
+
+수정 후보 production 자체 게이트는 18개 검사묶음·69 PNG·오류/진단0으로 통과했다. artifact `12253545398`, ZIP SHA256 `94ecc4f1850aa7738a1e2e14aef0526a087db7e8d3c470578d066b994be83ee1`. report sourceTree는 위 `50d700de…`와 일치한다. 최종 1440px/320px 누락 장면 원본을 직접 열어 counter와 gauge가 모두20초를 물음표로 표시하고, 인접 증가율은 알 수 없음이며, 요청별 시간 막대가 수집값 복원이 아닌 실험 원본임을 밝히는지 확인했다. 320px 원본 해상도에서도 범례와 버튼이 잘리지 않았다. 앞선 동일 logs·나머지 metrics 분기 직접 검토와 함께 자체 시각 게이트를 닫는다. 전체9 browser 회귀는 여전히 진행 중이며 main/Pages/live는 미게시다.
+
+2026-10-20 09:28 UTC에 run `39397895387`의 completed/success를 확인했다. 수정 소스 tree `50d700deb8fa7944d6518dcf32e777fb82a8c46e`의 전체 unit1149/1149·build·9개 browser suite가 모두 통과했다. 자체 production와 직접 시각 검토는 앞선 기록대로이며, B는 A 이후 후속 통합 대상이다. main/Pages 게시 성공은 아직 주장하지 않는다.
