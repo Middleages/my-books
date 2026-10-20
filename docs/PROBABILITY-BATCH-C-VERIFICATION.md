@@ -35,3 +35,18 @@
 - 원본 19개를 직접 열어 320px 모집단/선택/복사/편의표본/반복 히스토그램, CI/PI/σ0/생성 결과/포함 표/0건 상한/정적 표/인접 제어, 1440px와390px normal-motion 결과, 전체 홈을 검토했다. 구간 자료 선택 상자의 긴 값이320px에서 잘리는 것을 발견해 짧은 선택명으로 바꾸고 바로 아래의 전체 조건 설명은 유지했다. canvas 텍스트 폭과 실제 선택 상자 가용 폭을 비교하는 브라우저 검사를 추가했다. 수정 후 로컬 full unit 1,092/1,092와 TypeScript/Vite build도 다시 성공했다. 수정된 원격 production 결과는 아직 없으므로 첫 성공을 최종 소스의 browser 성공으로 쓰지 않는다.
 - 로컬 Chromium 환경 제한은 우회하지 않고 승인된 정상 PR CI를 사용한다. published browser와 Pages/live는 아직 미실행이다.
 - 실제 기기·Safari/Firefox·스크린리더 음성·학습효과는 미검증. 원격 C draft PR52만 작성했으며 main/Pages 게시를 시도하지 않았다.
+
+
+## 최종 source 검증 — 2026-10-20 09:35 UTC
+
+최종 로컬631affd730a6dd0c9e034f6742d59fb4c372dd2a와 원격af9366499cb2d011c913e33713bc5de8da1be702는 동일 tree556b7cef735fd0ff5ed436193295b859ed5bf685다. [PR52](https://github.com/Middleages/my-books/pull/52)는 B PR44 위의 draft이며 A/B source는 변경하지 않았다.
+
+[최종 CI39400688165](https://github.com/Middleages/my-books/actions/runs/39400688165)는 실제 checkout5e84973e1b05484e3406c46976dfa658bfa4b1bf와 같은 tree에서 full unit1,092/1,092·TypeScript/Vite build, 선택된 book-volumes/probability 두 production suite가 모두 성공했다. 확률462/462·123 PNG·page/console/resource 오류0, 홈14/14·오류0다. 보험·투자·세금·DB·쿠버네티스·주거·회계7개는 의도적 미실행이며 통과가 아니다.
+
+JS index-Ce1P-HIY.js는2,898,148bytes/SHA25684ae6d9f5f0ea55b0eb6cfea2a1baae0ff99c8b70161d25a47b86262d1fe92fc, CSS index-BSNNifP8.css는356,563bytes/SHA256d7640f3425cb638a905d251e825efb06e515262cfb6a121cf1a262e9b276a9bf다. 로컬 최종 dist와 두 browser report의 전체 bytes/hash가 일치한다.
+
+원본 재검토: 최종320/390px 구간 제어,320px σ0/표본평균 분포,390px normal-motion 생성 구간5개를 직접 열었다. 수정한 선택명은 잘리지 않고 전체 가정 설명을 보존한다. 앞서 열었던19개 중 수정된 제어를 뺀18개(확률17+홈1)는 최종 PNG와 바이트 단위로 동일함을 확인했다. 재열람5개와 기존18개 동일성은 구별해 기록하며, 모든123개를 직접 읽었다고 주장하지 않는다.
+
+최종 artifact ZIP SHA256: probability12254813964=12ca0f9a05fb0da16044ada09c786a83b737741ef6da36fe3823c5748ed06077, home12255038052=fb750a6a8c3d22a9a6e9c662466e4f1375d51bf5bf61d862740853b86a75762d, scope12253613881=0bc603ba6aae0fb0c0eddc3b975b9e3660453e31234c96054c25b600d08c6ed1.
+
+최종 source는 동결한다. 이 마지막 기록은 별도 docs-only 인수 패치이며 검증된 tree에 반영한 척하지 않는다. 최신 main 통합과 A→B→C 순차 Pages/live 검증은 남아 있다. deploy/published jobs의 skipped를 배포 성공으로 세지 않는다. 실제 기기·다른 브라우저·스크린리더 음성·독립 학습효과는 여전히 미검증이다.
