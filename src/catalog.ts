@@ -1,3 +1,5 @@
+import ResponsiveFeeding from "./content/child-feeding/ResponsiveFeeding.mdx";
+import ToolsAndSelfFeeding from "./content/child-feeding/ToolsAndSelfFeeding.mdx";
 import FoodVariety from "./content/child-feeding/FoodVariety.mdx";
 import AllergensAndRecords from "./content/child-feeding/AllergensAndRecords.mdx";
 import TextureAndShape from "./content/child-feeding/TextureAndShape.mdx";
@@ -136,6 +138,8 @@ export const chapters: Chapter[] = [
   { id: "mealtime-safety", bookId: "child-feeding", readId: "child-feeding/mealtime-safety", number: "04", title: "자세·관찰·질식 예방", heading: "음식 밖에서 무엇을 더 살펴야 할까?", description: "앉은 자세·이동 여부·관찰의 경계를 구분합니다.", Content: MealtimeSafety },
   { id: "food-variety", bookId: "child-feeding", readId: "child-feeding/food-variety", number: "05", title: "다양한 식품을 만나는 법", heading: "음식 이름이 많으면 영양도 충분할까?", description: "식품군과 제시·섭취 확인 기록을 구분합니다.", Content: FoodVariety },
   { id: "allergens-and-records", bookId: "child-feeding", readId: "child-feeding/allergens-and-records", number: "06", title: "알레르기 정보를 읽고 대응 준비하기", heading: "음식 뒤에 생긴 일은 곧 알레르기일까?", description: "재료·관찰 사실과 진단의 경계를 살펴봅니다.", Content: AllergensAndRecords },
+  { id: "responsive-feeding", bookId: "child-feeding", readId: "child-feeding/responsive-feeding", number: "07", title: "배고픔과 포만감에 반응하기", heading: "신호와 반응을 어떻게 구분할까?", description: "본 사실과 보호자 반응, 다음 관찰을 연결합니다.", Content: ResponsiveFeeding },
+  { id: "tools-and-self-feeding", bookId: "child-feeding", readId: "child-feeding/tools-and-self-feeding", number: "08", title: "컵·숟가락·손으로 먹기", heading: "흘리는 것은 언제나 실패일까?", description: "도구 경험과 음식의 행선지를 따로 읽습니다.", Content: ToolsAndSelfFeeding },
   { id: "sleep-record", bookId: "child-sleep", readId: "child-sleep/sleep-record", number: "01", title: "잠든 시간과 누워 있던 시간", heading: "밤에 열 시간은 무엇을 센 말일까?", description: "침대 시간과 확인 수면, 미확인 기록을 구분합니다.", Content: SleepRecord },
   { id: "safe-sleep-space", bookId: "child-sleep", readId: "child-sleep/safe-sleep-space", number: "02", title: "안전한 잠자리의 구조", heading: "같은 방과 같은 침대는 왜 다를까?", description: "영아의 별도 수면 표면과 공간의 경계를 살펴봅니다.", Content: SafeSleepSpace },
   { id: "development-map", bookId: "child-development", readId: "child-development/development-map", number: "01", title: "발달은 한 줄의 순위가 아니다", heading: "몸·말·놀이·관계가 같은 속도로 발달할까?", description: "한 아이의 여러 영역과 관찰 상태를 점수 없이 읽습니다.", Content: DevelopmentMap },
@@ -533,7 +537,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–06장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
+  { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–08장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
   { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–02장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
   { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–02장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
