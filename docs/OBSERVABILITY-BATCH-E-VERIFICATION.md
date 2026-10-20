@@ -17,3 +17,11 @@
 - artifact `12260233123`, ZIP SHA256 `17fe4a4d75cc418c637070a47c8748a1ba8e15053465de58017fcce7699daaa6`.
 - 최종 원본 `320-alerts-no-data.png`, `390-dashboard-empty.png`, `390-alerts-missed-spike.png`, `1440-alerts-firing.png`, `1440-dashboard-two.png`, `320-delivery-ack-pending.png` 핵심 구간을 직접 열었다. 긴 원본은 같은 픽셀의 세로 구간으로 나눠 확인했다. 모바일 축 글자가 읽히고, 연결 없음은 회전하지 않는 평문이며, 빈 결과0과 누락·발화·미평가가 분리된다. 기존 D의 저장됐지만 ACK가 없는 큐/수신 저장소 표시도 유지된다.
 - 실제 Grafana/Tempo/Loki/Alertmanager 쿼리·알림 전송·복구는 실행하지 않았다. 이 기록은 후보 소스 검증이며 main 통합·실제 Pages 공개 완료는 별도다.
+
+## 카탈로그 범위 보완 후 최종 확인
+
+통합 회귀에서 공개 범위 소개 문구가 실제 장수보다 뒤처진 점을 발견했다. 자기 책의 future를 소개·01–10장으로 맞추고 카탈로그 범위 회귀 테스트를 추가했다. 다른 책의 범위는 변경하지 않았다. 모델·UI·본문·browser 검증기 바이트는 위 직접 검토본과 같다.
+
+최종 PR70 head `e492452e0c25f614242143384f90424dc35ae053`, tree `9c0f77512b644ed929db7f8404c731823ddbee82`, 로컬 source `d3c459c1b3af52e0a146d0b4e8948b6a85cde1c9`. [CI39414523767](https://github.com/Middleages/my-books/actions/runs/39414523767) 전체 unit/build·관측42검사195PNG·book-volumes 성공. 실제 checkout `be9ffcd76f2a9ce544d7a39bea515f21434ee14e`/동일 tree/clean/errors0.
+
+원본 artifact `12260736785`, ZIP SHA256 `6c16c96554ca94c36457580f8855111f579bc3517f4a2f7c229ae1ab6afaeb73`. 최종390-intro.png의 소개·01–10장 문구와 실제 장 목록을 직접 열어 일치를 확인했다. book-volumes의1440-home.png와320-observability-heading.png에서10장 분모와IT5권도 직접 확인했다. 본문 미변경 부분의 직접 검토 범위는 바로 위 최종 E 기록을 따른다. 실제 main/Pages 게이트는 여전히 별도다.
