@@ -11,3 +11,11 @@
 전체1158 unit tests 통과. 마지막 환경 선택 UI와 browser 검증기 연결을 포함한 정확한 소스의 build·production은 별도 draft PR CI에서 확인한다. 공용 자원을 중복 소비하지 않도록 로컬 build는 실행하지 않았다. 이 후보를 아직 게시 완료로 표시하지 않는다.
 
 첫 CI39409232556 전체 성공과 관측 원본을 확인했다. ACK 유실 반례의 방향 화살표가 고정 ‘ACK 확인’ 문구여서 실제 수신 성공처럼 읽힐 여지가 있었다. 현재 단계의 전송 실패/저장됨/ACK 유실/ACK 수신을 동적으로 표시하고 browser assertion을 추가한다. 최초 캡처를 최종 시각 통과로 사용하지 않고 수정 소스로 재검증한다.
+
+## 수정 후 소스 게이트 마감
+
+2026-10-20 run39409788373 completed/success. PR64 head `28cc3d74298cf15a5149edcd0d70553590d1ca7b`, tree `2aff2c0df778114673764a680a5c923cf20e8221`, 실제 checkout `09d5e1388bb954b89feeec4f9a5a3fe37b8fc4b2`의 tree 일치. 전체1158테스트/build·관측34검사144PNG·오류0 및 book-volumes 성공. Chromium155.0.8059.84. artifact12258522656 ZIP SHA256 `30a64e8b21ce93df54eb0f5e286f924cbc44bb62a165c34617b6f8b555b656ee`.
+
+최종 원본1440-instrumentation-manual,320-instrumentation-propagation,1440-delivery-ack-pending,320-delivery-ack-retry,390-sampling-tail-complete,1440-traces-parallel을 직접 열어 핵심 영역을 확인했다. 업무1회와 기록2/3개, 브라우저·서버 경계, 저장됨/ACK 유실 동시 상태, 고유3·복사본6·시도6, 전체20%/표본66.7%가 구별된다. 모바일 제어가 표본 및 전달 실험 가까이에 있고 화살표 방향·현재 전송 상태가 일치한다. 기존 C 공통 시간축도 유지됐다.
+
+이 마감은 C 선행 소스의 production 게이트다. 최신 main 통합·실제 Pages 게이트는 별도이며, 실제 스택 계측·장애 실습은 미실행이다.
