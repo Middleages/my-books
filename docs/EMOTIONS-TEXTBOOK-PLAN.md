@@ -1,6 +1,6 @@
 # 육아 4권: 감정과 관계를 배우는 시간
 
-작성·자료 확인일: 2026-10-20. 상태: A 소개·01–02 소스에 이어 B 03–04 로컬 구현. B 실행 검증과 원격 게이트는 EMOTIONS-BATCH-B-VERIFICATION.md를 따른다. C 05–06도 로컬 소스 준비 중이며 EMOTIONS-BATCH-C-VERIFICATION.md에 별도 실행 상태를 기록한다. D 07–08은 로컬 준비 중이며 추가 근거와 실행 상태는 EMOTIONS-BATCH-D-VERIFICATION.md에 기록한다. E 09–10은 로컬 소스 준비 중이며 EMOTIONS-BATCH-E-VERIFICATION.md에 별도 기록한다. 11–12는 계획이며 공개 등록하지 않는다. 전문가 감수 미실행.
+작성·자료 확인일: 2026-10-20. 상태: A 소개·01–02 소스에 이어 B 03–04 로컬 구현. B 실행 검증과 원격 게이트는 EMOTIONS-BATCH-B-VERIFICATION.md를 따른다. C 05–06도 로컬 소스 준비 중이며 EMOTIONS-BATCH-C-VERIFICATION.md에 별도 실행 상태를 기록한다. D 07–08은 로컬 준비 중이며 추가 근거와 실행 상태는 EMOTIONS-BATCH-D-VERIFICATION.md에 기록한다. E 09–10은 로컬 소스 준비 중이며 EMOTIONS-BATCH-E-VERIFICATION.md에 별도 기록한다. F 11–12도 소스 준비 중이다. 전체12장 소스와 검증·공개 상태를 혼동하지 않으며 EMOTIONS-BATCH-F-VERIFICATION.md와 최종 G 기록으로 실제 게이트를 확인한다. 전문가 감수 미실행.
 
 ## 목적·독자
 0–36개월 아이를 돌보는 비전공 성인을 위한 관계·정서 입문. 핵심 질문은 “아이의 마음을 단정하지 않으면서 안전한 경계를 세우고 다시 연결하려면 무엇을 볼까?”다. 0–12개월 비언어 돌봄, 12–23개월 환경·짧은 안내, 24–36개월 언어·선택 사례를 구분한다. 이는 발달 합격표가 아니다.
