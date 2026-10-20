@@ -12,7 +12,13 @@ export function BookCover({ bookId }: { bookId: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {bookId === "accounting" ? (
+      {bookId === "child-development" ? (
+        <>
+          <circle cx="82" cy="39" r="18" /><circle cx="155" cy="57" r="12" />
+          <path d="M48 106V82c0-32 68-32 68 0v24M133 106V87c0-22 44-22 44 0v19M104 73l29 12" />
+          <circle cx="216" cy="33" r="13" /><path d="M200 85h32V53h-32zM190 106l29-17 28 17" fill="currentColor" fillOpacity=".08" />
+        </>
+      ) : bookId === "accounting" ? (
         <>
           <path d="M79 22h122v85H79zM140 22v85M91 41h37M91 57h37M91 73h24M152 41h37M152 57h37M152 73h24" fill="currentColor" fillOpacity=".06" />
           <path d="M103 13h72M25 75l18-11 18 11v24H25zM25 75l18 11 18-11M43 86v13" />
