@@ -1,0 +1,10 @@
+export type FrequencyParams = { n: number; p: number; sampleIndex: number };
+export type MassRow = { k: number; probability: number; logProbability: number; possible: boolean; underflow: boolean };
+export type BinomialModel = { n: number; p: number; rows: MassRow[]; expected: number; variance: number; probabilitySum: number; zeroProbability: number; zeroPossible: boolean };
+export type RecordRow = { index: number; event: boolean; u: number };
+export type RecordGroup = { lower: number; upper: number; size: number; seen: number; count: number; fraction: number };
+export type FrequencyFrame = { step: number; seen: number; count: number; rate: number | null; groups: RecordGroup[]; label: string; explanation: string };
+export type FrequencyModel = { params: FrequencyParams; dataKind: string; theory: BinomialModel; massGroups: { lower: number; upper: number; label: string; outcomes: number; probability: number; possible: boolean }[]; records: RecordRow[]; observed: number; observedRate: number; groupSize: number; frames: FrequencyFrame[]; finiteGridProbability: number; comparison: { before: number; after: number; absoluteChange: number; relativeChange: number; denominator: number; expectedBefore: number; expectedAfter: number }; verdict: string };
+export const frequencyDefaults: Readonly<FrequencyParams>;
+export function binomial(n: number, p: number): BinomialModel;
+export function frequencyModel(input?: Partial<FrequencyParams>): FrequencyModel;

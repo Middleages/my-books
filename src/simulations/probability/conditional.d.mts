@@ -1,0 +1,10 @@
+export type SignalId = 'standard' | 'perfect' | 'uninformative' | 'silent';
+export type ConditionalParams = { errors: number; signal: SignalId };
+export type SignalMode = { label: string; sensitivity: number; falsePositive: number };
+export type CountRatio = { numerator: number; denominator: number; value: number | null; label: string };
+export type NaturalCounts = { total: number; errors: number; normal: number; tp: number; fn: number; fp: number; tn: number; alerted: number; silent: number; baseRate: number; posterior: CountRatio; sensitivity: CountRatio; falsePositive: CountRatio; cells: { id: string; truth: string; alert: string; count: number }[]; alertedParts: { id: string; label: string; count: number; fraction: number | null }[] };
+export type ConditionalFrame = { step: number; label: string; explanation: string; denominator: number; selected: string[] };
+export const conditionalDefaults: Readonly<ConditionalParams>;
+export const signalModes: Readonly<Record<SignalId, Readonly<SignalMode>>>;
+export function naturalCounts(total: number, errors: number, sensitivity: number, falsePositive: number): NaturalCounts;
+export function conditionalModel(input?: Partial<ConditionalParams>): { params: ConditionalParams; dataKind: string; mode: SignalMode; counts: NaturalCounts; frames: ConditionalFrame[]; verdict: string };

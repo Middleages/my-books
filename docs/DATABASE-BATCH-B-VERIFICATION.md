@@ -132,3 +132,10 @@ SQL 줄바꿈 수정 head `f3412fd8092b7bbf06aeb346e5fe733c8035ea3f`, tree `fad1
 PR28 source `733b517ae6c1ad55a40e281eb43954dc1029740b`/tree `412eb486c6fdd7ac6dbf8a8f80d27a336483093a`, run39381621193의 실제 checkout `d6b9acaf17979891e1c566eec8f9c43c395871e5`에서 DB339/339·PNG135·page/console/resource 오류0을 확인했다. DB 본문·모델·컴포넌트·검증기는 검증 source `bae858c`와 차이가 없다. 전체1037단위 테스트·build와 선택한4suite가 성공했고 나머지는 의도적으로 생략했다.
 
 담당자는 이번 합본의320-b03-fork-count3,320-b03-left-null-sum-null,320-b04-wide-third-leaf-boundary33-not-fetched,320-b04-all-scattered-final,390-b-queries-no-preference-static-open,1440-b04-write-indexed-key-update-new-L3-final 원본6장을 직접 열었다. COUNT 세 기준의 현재/정적 설명이 경계 안에서 줄바꿈되고 JOIN 분기·NULL 자리·미반환33 경계·8vs13 공통눈금·이전키 제거/새L3 연결이 유지됨을 확인했다. 새 합본 시각 회귀는 발견하지 않았으며 모든 PNG의 직접 검토라는 뜻은 아니다. artifact ZIP·공통 빌드 자산 해시·범위는 [세금E 합본 기록](TAX-BATCH-E-VERIFICATION.md)을 따른다. B 실제 main·Pages·live 완료와는 아직 별도다.
+
+
+## B 실제 공개 마감
+
+main `05602d24c6946f4e4c1b95f5f926e2e8eb51b316`/tree `0ca7456a62073d547341a6e7d8c75c019e37ffb4`의 [run39386985842](https://github.com/Middleages/my-books/actions/runs/39386985842)에서 전체1037단위/build·4개 production·Pages·4개 published가 성공했다. DB production339/339, 실제 공개340/340(정확한 공개 산출물 대조1개 추가), 원본135PNG, page/console/resource 앱 오류0을 확인했다. `https://middleages.github.io/favicon.ico`의 정확한 알려진 호스트 기본404 한 건은 별도 진단에 남겼다. Pages07:37:09 UTC, 동일 JS/CSS 및 ZIP artifact12249030339 SHA-256 근거는 [세금E 마감](TAX-BATCH-E-VERIFICATION.md)을 따른다.
+
+담당자가 이번 공개 원본6장320-b03-fork-count3,320-b03-left-null-sum-null,320-b03-where-candidates,320-b04-write-indexed-key-update-new-L3-final,390-b04-wide-scattered-final,1440-b04-composite-1-spans를 직접 열었다.320의 긴 COUNT 설명·집계가 경계 안에서 읽히고 NULL은0 막대가 아니라 없음으로, JOIN 분기와 WHERE 후보·인덱스 이동·페이지8vs12·연속 범위가 구별된다. 이6장 범위에서 새 시각 결함이 없다. 모든135장을 사람이 읽었다고 확대하지 않는다. B03–04까지 실제 공개를 완료했으며 C는 별도 준비 후보로 남긴다. 실제 DB 서버·동시 두 세션·백업복원·다른 브라우저 엔진과 실제 기기는 이 교육용 모형 검증 범위가 아니다.

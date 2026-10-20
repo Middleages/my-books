@@ -1,9 +1,13 @@
 # 확률과 금융 의사결정 — 돈·경제 시리즈 8권 제작 계획
 
 작성·자료 확인: **2026-10-20 UTC/KST**. 기준: `origin/main` **7a935e1114a4260181891664fff4a453508784fc**.
-상태: **계획만 작성. 본문·모델·UI·카탈로그·표지·읽음 분모·배포는 변경하지 않았다. 공개 PR/main 반영은 별도 승인 전 진행하지 않는다.**
+최초 계획 당시 상태: **계획만 작성. 본문·모델·UI·카탈로그·표지·읽음 분모·배포는 변경하지 않았다. 공개 PR/main 반영은 별도 승인 전 진행하지 않는다.**
 
 상위 [시리즈 계획](MONEY-TEXTBOOK-PLAN.md)의 8권 질문을 구체화한다. [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [변경 범위별 브라우저 검증](BROWSER-VERIFICATION-SCOPE.md)을 따른다. [독립 A–F 실행 프롬프트](PROBABILITY-SESSION-PROMPTS.md)는 후속 집필용이며 지금의 구현 승인이나 완료 기록이 아니다. 착수 때 최신 main·병행 작업·실제 공개 상태를 다시 확인한다. 기준 SHA를 영구 기준으로 고정하지 않는다.
+
+## 현재 구현 기록 — 2026-10-20
+
+후속 승인에 따라 A 소개·01–02는 PR36의 전체 unit1,049·build·9개 browser suite와 원본 화면 검토를 완료했다. 최신 main 통합/게시 여부는 [A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에 따로 남긴다. B 03–04는 별도 worktree의 로컬 후보로 추가하며 등록 분모는4다. 아래12장 계획은 완성 범위가 아니고, [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)이 실제 실행·미실행·게시 상태를 구분한다. C–F의 본문·모델은 아직 등록하지 않았다.
 
 ## 1. 목적: 좋아 보이는 숫자를 어디까지 믿어도 될까?
 
