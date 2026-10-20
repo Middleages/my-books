@@ -1,3 +1,5 @@
+import TemperamentAndFit from "./content/child-emotions/TemperamentAndFit.mdx";
+import SeparationAndReunion from "./content/child-emotions/SeparationAndReunion.mdx";
 import GentleBoundaries from "./content/child-emotions/GentleBoundaries.mdx";
 import IntenseEmotions from "./content/child-emotions/IntenseEmotions.mdx";
 import NoticingSignals from "./content/child-emotions/NoticingSignals.mdx";
@@ -237,6 +239,8 @@ export const chapters: Chapter[] = [
   { id: "emotion-language", bookId: "child-emotions", readId: "child-emotions/emotion-language", number: "04", title: "편안한 때 연습하는 감정 말", heading: "감정 대화는 언제 함께 할 수 있을까요?", description: "안전한 돌봄을 유지하며 대화의 자리를 비교합니다.", Content: EmotionLanguage },
   { id: "gentle-boundaries", bookId: "child-emotions", readId: "child-emotions/gentle-boundaries", number: "05", title: "친절하고 분명한 행동 경계", heading: "말 이외에 무엇을 바꿀 수 있을까요?", description: "환경·짧은 안내·안전한 대안의 역할을 나눕니다.", Content: GentleBoundaries },
   { id: "intense-emotions", bookId: "child-emotions", readId: "child-emotions/intense-emotions", number: "06", title: "큰 감정이 지나가는 동안", heading: "지금 확인과 나중 대화를 어떻게 나눌까요?", description: "안전·필요한 돌봄·미확인 원인을 구분합니다.", Content: IntenseEmotions },
+  { id: "temperament-and-fit", bookId: "child-emotions", readId: "child-emotions/temperament-and-fit", number: "07", title: "기질을 고치는 대신 맞추기", heading: "아이뿐 아니라 환경의 요구도 보았나요?", description: "같은 관찰에서 소리와 접근 조건을 비교합니다.", Content: TemperamentAndFit },
+  { id: "separation-and-reunion", bookId: "child-emotions", readId: "child-emotions/separation-and-reunion", number: "08", title: "헤어짐과 다시 만남", heading: "누가 돌봄을 이어받고 다시 만나나요?", description: "예고·인계·재회의 역할을 연결합니다.", Content: SeparationAndReunion },
   { id: "feeding-map", bookId: "child-feeding", readId: "child-feeding/feeding-map", number: "01", title: "먹는 일의 여러 역할", heading: "섭취량과 식사 경험은 같은 것일까?", description: "제시·탐색·섭취와 양의 미확인을 따로 읽습니다.", Content: FeedingMap },
   { id: "readiness", bookId: "child-feeding", readId: "child-feeding/readiness", number: "02", title: "시작할 때 무엇을 볼까", heading: "달력과 준비의 신호는 어떻게 함께 볼까?", description: "일반 안내와 개별 관찰, 상담 질문을 구분합니다.", Content: Readiness },
   { id: "texture-and-shape", bookId: "child-feeding", readId: "child-feeding/texture-and-shape", number: "03", title: "부드러움과 모양을 바꾸기", heading: "같은 재료라도 준비가 왜 중요할까?", description: "모양과 질감의 변화를 따로 살펴봅니다.", Content: TextureAndShape },
@@ -727,7 +731,7 @@ type Book = {
 };
 export const books: Book[] = [
   { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–02장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
-  { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–06장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
+  { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–08장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
   { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
   { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–12장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
