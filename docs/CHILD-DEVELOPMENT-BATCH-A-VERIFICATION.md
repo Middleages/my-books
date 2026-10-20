@@ -30,3 +30,17 @@
 Draft PR [#38](https://github.com/Middleages/my-books/pull/38), 원격 소스 `39cd34d2ef5b3bcd871bd5981dc7b1e482b63ac0`, 구현 tree `d7f23e04a4ccbfcce10c7f70b1ec651ea071cfdb`. GitHub API에서 생성한 tree가 로컬 `1799630`과 일치한다. 계획은 별도 원격 커밋 `3950b2b2c3383258a1ef77407b57d648e90dac49`로 보존했다. [CI run 39388647767](https://github.com/Middleages/my-books/actions/runs/39388647767)의 lockfile 설치·unit·build 통과를 확인했으며 9개 브라우저 suite는 진행 중이다.
 
 첫 CI의 육아 suite는 데스크톱 3개 장 렌더와 무자동재생·포커스 검사 후, select의 접근성 이름에 옵션 텍스트가 합쳐져 exact label 선택에서 중단됐다. 실제 조작 UI의 명확한 접근성 이름을 명시해 수정했다. 첫 원본 관찰 띠 PNG에서 세 시점·네 상태·선택 강조·범례의 관계를 직접 확인했다. 모바일·날짜선·전체 브라우저 통과는 아직 확정하지 않았다.
+
+## 수정 후 전용 브라우저 및 원본 화면
+
+[CI run 39389065278](https://github.com/Middleages/my-books/actions/runs/39389065278), PR head `5ff29e5a1713f7133887c6dd973484be5b9e1ddd`, CI synthetic merge `6c2b0bf1470b8377f0f1a0b04f4f2e48513096ac`, tree `749e591a1714ca4a8b5ded528c0e8b844f484d79`를 구분한다. 구현 tree는 로컬 `6908194`와 같다.
+
+육아 전용 검사는 37개 통과, 실패 0이며 PNG 41개를 생성했다. page/console/resource 오류 0. 5개 폭의 실제 렌더·관찰 시점과 상태·영역 필터·키보드·초기화·static 펼치기, 15개 날짜 조합의 실제 좌표 비례, 원출처 연령 보존, 읽음/알 수 없는 ID 유지, normal/reduced-motion의 정적 동등성을 실행했다.
+
+직접 연 원본 PNG: `320-observation-1`, `390-observation-0`, `390-observation-2`, `390-age-before-due`, `320-age-initial`, `1440-age-initial`, `390--child-development` (확장자 .png). 모바일에서도 세 관찰 시점의 선택 테두리, 네 상태의 서로 다른 기호·범례, ◆ 예정일과 ● 관찰일의 전후 관계, 일수 축과 날짜가 읽힌다. 조작부는 해당 그림 바로 앞에 있고 연령 표지는 줄바꿈되어 가로 넘침 없이 남는다. 관찰 띠의 연결선은 능력 증가 그래프가 아니며 경고가 그림 앞에 보인다. 320px의 놀이·탐색 라벨은 두 줄로 표시되지만 잘림은 없다.
+
+위 검사는 임상 검증이 아니다. 2026-10-20 08:17 UTC 확인 시 전체 9개 production browser suite가 모두 success다. PR 실행이므로 deploy와 published 검사는 skipped이며 main/Pages 실제 게시 검사는 별도 대기다.
+
+## 최종 인계
+
+소스·unit/build·첫 카테고리 전체 9-suite 및 위 원본 화면 검토 완료. 이 문서의 후속 갱신은 교육 소스를 바꾸지 않는 기록 변경이며, 실제 검사 대상 tree는 위에 명시했다. 최신 main 통합 시 병행 세금·주거·DB·회계 변경을 보존하고 범위 선택 및 exact-live 게이트를 다시 확인해야 한다. 본 브랜치에서 main/Pages를 직접 변경하지 않았다.
