@@ -1,3 +1,5 @@
+import PoisonPrevention from "./content/child-safety/PoisonPrevention.mdx";
+import TravelSafety from "./content/child-safety/TravelSafety.mdx";
 import WaterSupervision from "./content/child-safety/WaterSupervision.mdx";
 import BurnPrevention from "./content/child-safety/BurnPrevention.mdx";
 import FallsAndEntrapment from "./content/child-safety/FallsAndEntrapment.mdx";
@@ -235,6 +237,8 @@ export const chapters: Chapter[] = [
   { id: "small-objects", bookId: "child-safety", readId: "child-safety/small-objects", number: "04", title: "입으로 탐색하는 시기의 물건", heading: "큰 본체 밖으로 나온 작은 물건은 어디에 있을까?", description: "물건의 위치 변경과 제품 확인을 구별합니다.", Content: SmallObjects },
   { id: "water-supervision", bookId: "child-safety", readId: "child-safety/water-supervision", number: "05", title: "물 주변에서는 누가 보고 있나", heading: "부탁과 인수 확인은 어떻게 다를까?", description: "물 접근 제한과 성인 관찰을 서로 다른 층으로 봅니다.", Content: WaterSupervision },
   { id: "burn-prevention", bookId: "child-safety", readId: "child-safety/burn-prevention", number: "06", title: "뜨거운 것과 닿는 경로", heading: "본체만 옮기면 연결선도 달라질까?", description: "직접 접촉과 선을 당기는 경로를 구분합니다.", Content: BurnPrevention },
+  { id: "poison-prevention", bookId: "child-safety", readId: "child-safety/poison-prevention", number: "07", title: "약·세제·생활화학제품의 자리", heading: "보관을 바꾸면 내용물도 알게 될까?", description: "표시 정보와 접근 분리를 서로 다른 역할로 봅니다.", Content: PoisonPrevention },
+  { id: "travel-safety", bookId: "child-safety", readId: "child-safety/travel-safety", number: "08", title: "차와 길에서 이동하기", heading: "한 설명서가 다른 조건까지 알려 줄까?", description: "제품·차량·아이 정보를 설치 판단과 구별합니다.", Content: TravelSafety },
   { id: "feelings-and-actions", bookId: "child-emotions", readId: "child-emotions/feelings-and-actions", number: "01", title: "감정과 행동을 나누어 보기", heading: "마음을 인정하면 모든 행동을 허용할까요?", description: "관찰과 잠정 해석, 행동의 안전 경계를 구분합니다.", Content: FeelingsAndActions },
   { id: "co-regulation", bookId: "child-emotions", readId: "child-emotions/co-regulation", number: "02", title: "곁에서 함께 진정하기", heading: "곁에서 돕는 것과 결과를 정하는 것은 다를까요?", description: "아이 신호·환경·보호자 반응과 미확인 결과를 나눕니다.", Content: CoRegulation },
   { id: "feeding-map", bookId: "child-feeding", readId: "child-feeding/feeding-map", number: "01", title: "먹는 일의 여러 역할", heading: "섭취량과 식사 경험은 같은 것일까?", description: "제시·탐색·섭취와 양의 미확인을 따로 읽습니다.", Content: FeedingMap },
@@ -726,7 +730,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–06장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
+  { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–08장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
   { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
   { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
