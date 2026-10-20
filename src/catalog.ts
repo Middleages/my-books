@@ -1,3 +1,5 @@
+import EmergencyBoundary from "./content/child-safety/EmergencyBoundary.mdx";
+import SharedSafetyPlan from "./content/child-safety/SharedSafetyPlan.mdx";
 import OutsidePreparedness from "./content/child-safety/OutsidePreparedness.mdx";
 import PreparingForCare from "./content/child-safety/PreparingForCare.mdx";
 import PoisonPrevention from "./content/child-safety/PoisonPrevention.mdx";
@@ -243,6 +245,8 @@ export const chapters: Chapter[] = [
   { id: "travel-safety", bookId: "child-safety", readId: "child-safety/travel-safety", number: "08", title: "차와 길에서 이동하기", heading: "한 설명서가 다른 조건까지 알려 줄까?", description: "제품·차량·아이 정보를 설치 판단과 구별합니다.", Content: TravelSafety },
   { id: "outside-and-preparedness", bookId: "child-safety", readId: "child-safety/outside-and-preparedness", number: "09", title: "집 밖과 화재 대비의 연결", heading: "사전 정보는 언제 다시 확인할까?", description: "방문 전 정보와 현장 재확인을 나눕니다.", Content: OutsidePreparedness },
   { id: "preparing-for-care", bookId: "child-safety", readId: "child-safety/preparing-for-care", number: "10", title: "진료에 가져갈 질문과 관찰", heading: "관찰과 추측을 어떻게 구별할까?", description: "합성 기록에서 사실·추측·모름을 구분합니다.", Content: PreparingForCare },
+  { id: "emergency-boundary", bookId: "child-safety", readId: "child-safety/emergency-boundary", number: "11", title: "응급 상황에서는 책을 멈추기", heading: "학습과 실제 도움은 어디서 나뉠까?", description: "신고 정보 범주와 교육 화면의 경계를 구분합니다.", Content: EmergencyBoundary },
+  { id: "shared-safety-plan", bookId: "child-safety", readId: "child-safety/shared-safety-plan", number: "12", title: "돌봄자가 바뀌어도 남는 안전 계획", heading: "담당 인수가 환경 확인도 대신할까?", description: "과거 기록·미확인·재확인과 담당 응답을 나눕니다.", Content: SharedSafetyPlan },
   { id: "feelings-and-actions", bookId: "child-emotions", readId: "child-emotions/feelings-and-actions", number: "01", title: "감정과 행동을 나누어 보기", heading: "마음을 인정하면 모든 행동을 허용할까요?", description: "관찰과 잠정 해석, 행동의 안전 경계를 구분합니다.", Content: FeelingsAndActions },
   { id: "co-regulation", bookId: "child-emotions", readId: "child-emotions/co-regulation", number: "02", title: "곁에서 함께 진정하기", heading: "곁에서 돕는 것과 결과를 정하는 것은 다를까요?", description: "아이 신호·환경·보호자 반응과 미확인 결과를 나눕니다.", Content: CoRegulation },
   { id: "feeding-map", bookId: "child-feeding", readId: "child-feeding/feeding-map", number: "01", title: "먹는 일의 여러 역할", heading: "섭취량과 식사 경험은 같은 것일까?", description: "제시·탐색·섭취와 양의 미확인을 따로 읽습니다.", Content: FeedingMap },
@@ -734,7 +738,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–10장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
+  { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–12장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
   { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–02장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
   { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
@@ -747,7 +751,7 @@ export const books: Book[] = [
 
   { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–12장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
   { id: "tax", categoryId: "money", volume: 5, title: "세금의 구조와 생활", category: "돈·경제 · 과세와 생활", cover: "TAX & EVERYDAY LIFE", description: "급여·소비·투자·재산 이전의 세금. 계산의 바탕과 실제 현금의 시계를 나누어 봅니다.", overview: "가상 장부와 조건 지도를 조작하며 원천징수·정산·공제·과세 시점과 공식 자료를 읽습니다.", future: "소개·01–12장 공개 · 과세 사건부터 생활 속 계산·시점·세금 자료 읽기까지 살펴봅니다.", Intro: TaxIntro },
-  { id: "insurance", categoryId: "money", volume: 4, title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–10장 공개 · 위험의 크기부터 계약·유지·해지·청구 시차와 설명서 읽기까지 연결합니다.", Intro: InsuranceIntro },
+  { id: "insurance", categoryId: "money", volume: 4, title: "보험과 위험 대비", category: "돈·경제 · 손실과 계약", cover: "INSURANCE & RISK", description: "같은 평균 뒤에 있는 다른 충격. 위험을 나누는 구조와 계약의 경계를 읽습니다.", overview: "손실 크기와 현금 여력, 공동 부담과 보장 조건을 가상 사례로 연결합니다.", future: "소개·01–12장 공개 · 위험의 크기부터 계약·유지·해지·청구 시차와 설명서 읽기까지 연결합니다.", Intro: InsuranceIntro },
   { id: "investing", categoryId: "money", volume: 3, title: "주식과 투자 자산의 원리", category: "돈·경제 · 소유와 현금흐름", cover: "OWNERSHIP & RETURNS", description: "주식으로 무엇을 소유하고, 수익은 어디에서 생길까? 돈과 지분의 움직임을 함께 살펴봅니다.", overview: "발행과 거래, 기업 장부와 가치 추정, 채권·분산·펀드의 구조를 가상 현금흐름으로 이해합니다.", future: "소개·01–12장 공개 · 권리와 현금흐름부터 과거 성과와 투자 설명 읽기까지 살펴봅니다.", Intro: InvestingIntro },
   { id: "economics", categoryId: "money", volume: 2, title: "경제 뉴스를 읽는 원리", category: "돈·경제 · 뉴스의 숫자와 조건", cover: "READING THE ECONOMY", description: "같은 가격 상승, 다른 이유. 거래의 흐름과 지표의 조건을 보고 경제 뉴스를 읽습니다.", overview: "금리·물가·환율·경기는 어떻게 연결될까요? 가상 시장을 조작하며 숫자가 말하는 것과 말하지 않는 것을 구분합니다.", future: "소개·01–12장 공개 · 가상 실험으로 경제 뉴스의 원리와 해석 조건을 익힙니다.", Intro: EconomicsIntro },
   {
