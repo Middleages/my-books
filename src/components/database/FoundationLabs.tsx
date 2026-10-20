@@ -96,7 +96,10 @@ export function FileWriteLab() {
 }
 
 const tableLabels:Record<TableName,string>={customers:"고객 · customers",products:"상품 · products",orders:"주문 · orders",order_items:"항목 · order_items"};
-function RelationScene({fixture,selectedCustomer,mobile}:{fixture:ReadonlyFixture;selectedCustomer:number;mobile:boolean}) {
+type RelationFocus = "customer" | "order" | "product" | "all";
+const relationLabels:Record<RelationFocus,string>={customer:"주문.customer_id → 고객.id",order:"항목.order_id → 주문.id",product:"항목.product_id → 상품.id",all:"전체 FK 함께 보기"};
+const relationColors={customer:"#32748c",order:"#745099",product:"#936020"};
+function RelationScene({fixture,selectedCustomer,mobile,focus}:{fixture:ReadonlyFixture;selectedCustomer:number;mobile:boolean;focus:RelationFocus}) {
   const marker=`rel-${useId().replace(/:/g,"")}`;
   const layouts:Record<TableName,{x:number;y:number;w:number}>=mobile ? {
     customers:{x:16,y:16,w:248},orders:{x:16,y:186,w:248},order_items:{x:16,y:376,w:248},products:{x:16,y:596,w:248},
@@ -117,40 +120,40 @@ function RelationScene({fixture,selectedCustomer,mobile}:{fixture:ReadonlyFixtur
     }
   }
   const mobileHeight=layouts.products.y+head+Math.max(1,rows.products.length)*rowHeight+12;
-  const edges=fixtureRelations(fixture).filter(e=>rows[e.from.table].find(r=>r.key===e.from.rowKey)?.active);
+  const kind=(table:TableName)=>table==="customers"?"customer":table==="orders"?"order":"product";
+  const edges=fixtureRelations(fixture).filter(e=>rows[e.from.table].find(r=>r.key===e.from.rowKey)?.active&&(focus==="all"||kind(e.to.table)===focus));
   const point=(table:TableName,key:string,side:"left"|"right"|"top"|"bottom")=>{const b=layouts[table],i=rows[table].findIndex(r=>r.key===key);return [b.x+(side==="left"?0:side==="right"?b.w:b.w/2), b.y+head+i*rowHeight+rowHeight/2] as const;};
   return <svg viewBox={mobile ? `0 0 280 ${mobileHeight}` : "0 0 548 412"} role="img" aria-label={`고객 ${selectedCustomer}에 연결된 주문·항목·상품의 키 관계`}>
-    <defs><marker id={marker} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#32748c"/></marker></defs>
+    <defs>{Object.entries(relationColors).map(([kind,color])=><marker key={kind} id={`${marker}-${kind}`} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill={color}/></marker>)}</defs>
     {(Object.keys(layouts) as TableName[]).map(table=>{const b=layouts[table];return <g key={table}>
       <rect x={b.x} y={b.y} width={b.w} height={head+rowHeight*Math.max(1,rows[table].length)+4} fill="#fff" stroke="#91acb9" rx="5"/>
       <path d={`M${b.x} ${b.y+head}h${b.w}`} stroke="#91acb9"/>
       <text x={b.x+10} y={b.y+20} className="db-svg-title">{tableLabels[table]}</text>
-      <text x={b.x+10} y={b.y+36} className="db-svg-small">{table==="order_items"?"PK (주문,줄) · FK 상품":table==="orders"?"PK 주문 id · FK 고객 id":"PK id · 이름"}</text>
+      <text x={b.x+10} y={b.y+36} className="db-svg-small">{table==="order_items"?"PK (주문,줄) · FK 주문·상품":table==="orders"?"PK 주문 id · FK 고객 id":"PK id · 이름"}</text>
       {rows[table].length===0 && <text x={b.x+10} y={b.y+head+20} className="db-svg-small">연결된 행 없음</text>}
       {rows[table].map((row,i)=><g key={row.key} data-row-key={row.key} data-selected={row.active}>
         <rect x={b.x+1} y={b.y+head+i*rowHeight} width={b.w-2} height={rowHeight} fill={row.active?"#e2f0ed":"#f8fafb"}/>
         <text x={b.x+10} y={b.y+head+i*rowHeight+20} fontWeight={row.active?700:400}>{row.label}</text>
-        <circle cx={b.x+(mobile?b.w-5:table==="customers"||table==="products"?b.w:0)} cy={b.y+head+i*rowHeight+rowHeight/2} r="3" fill={row.active?"#32748c":"#abbec7"}/>
       </g>)}
     </g>;})}
-    {edges.map((e,i)=>{let path:string;
-      if(mobile){const a=point(e.from.table,e.from.rowKey,"right"),b=point(e.to.table,e.to.rowKey,"right"),x=270+(i%2)*4;path=`M${a[0]-5} ${a[1]}H${x}V${b[1]}H${b[0]-5}`;}
-      else if(e.to.table==="orders"){const a=point(e.from.table,e.from.rowKey,"right"),b=point(e.to.table,e.to.rowKey,"right"),x=532+(i%2)*7;path=`M${a[0]} ${a[1]}H${x}V${b[1]}H${b[0]}`;}
-      else {const a=point(e.from.table,e.from.rowKey,"left"),b=point(e.to.table,e.to.rowKey,"right");path=`M${a[0]} ${a[1]} C${(a[0]+b[0])/2} ${a[1]} ${(a[0]+b[0])/2} ${b[1]} ${b[0]} ${b[1]}`;}
-      return <path key={e.id} d={path} stroke="#32748c" strokeWidth="2" fill="none" markerEnd={`url(#${marker})`} data-relation={e.id} data-from={e.from.rowKey} data-to={e.to.rowKey}/>;
+    {edges.map((e,i)=>{let path:string;const k=kind(e.to.table),color=relationColors[k];let a:readonly[number,number],b:readonly[number,number];
+      if(mobile){const right=k==="product";a=point(e.from.table,e.from.rowKey,right?"right":"left");b=point(e.to.table,e.to.rowKey,right?"right":"left");const x=right?270+(i%2)*4:4+(i%3)*4;path=`M${a[0]} ${a[1]}H${x}V${b[1]}H${b[0]}`;}
+      else if(e.to.table==="orders"){a=point(e.from.table,e.from.rowKey,"right");b=point(e.to.table,e.to.rowKey,"right");const x=532+(i%3)*5;path=`M${a[0]} ${a[1]}H${x}V${b[1]}H${b[0]}`;}
+      else {a=point(e.from.table,e.from.rowKey,"left");b=point(e.to.table,e.to.rowKey,"right");path=`M${a[0]} ${a[1]} C${(a[0]+b[0])/2} ${a[1]} ${(a[0]+b[0])/2} ${b[1]} ${b[0]} ${b[1]}`;}
+      return <g key={e.id}><path d={path} stroke={color} strokeWidth="2" strokeDasharray={k==="order"?"5 2":undefined} fill="none" markerEnd={`url(#${marker}-${k})`} data-relation={e.id} data-from={e.from.rowKey} data-to={e.to.rowKey} data-column={e.from.column}/><circle cx={a[0]} cy={a[1]} r="3" fill={color}/></g>;
     })}
   </svg>;
 }
 export function RelationshipMap(){
-  const [selected,setSelected]=useState(1),[renamed,setRenamed]=useState(false),[sameNames,setSameNames]=useState(false);
+  const [selected,setSelected]=useState(1),[renamed,setRenamed]=useState(false),[sameNames,setSameNames]=useState(false),[focus,setFocus]=useState<RelationFocus>("customer");
   let fixture=createFixture(sameNames?"same-name":"canonical");if(renamed)fixture=renameCustomer(fixture,1,"가람 문구");
   const summary=summarizeCustomer(fixture,selected);
   return <section className="db-lab" aria-label="표 사이의 키 관계" data-db-lab="relations"><p className="db-eyebrow">02 · 실제 값으로 잇는 관계</p><h2>이름을 바꿔도 선은 같은 id로 갑니다</h2>
-    <div className="db-controls"><label>관계를 따라갈 고객<select aria-label="관계를 따라갈 고객" value={selected} onChange={e=>setSelected(Number(e.target.value))}>{fixture.customers.map(c=><option key={c.id} value={c.id}>고객 {c.id} · {c.display_name}</option>)}</select></label><div><label className="db-checkbox"><input type="checkbox" checked={renamed} onChange={e=>setRenamed(e.target.checked)}/>고객1 이름 변경</label><label className="db-checkbox"><input type="checkbox" checked={sameNames} onChange={e=>setSameNames(e.target.checked)}/>이름이 같은 고객 둘</label></div></div>
-    <div className="db-current" role="status"><strong>선택한 고객 id {selected}</strong><p>선은 외래키에서 참조하는 기본키를 향합니다. 초록 행은 이 고객과 연결된 기록입니다. 취소 주문도 관계 자체는 남아 있습니다.</p></div>
-    <figure className="db-figure"><div className="db-desktop"><RelationScene fixture={fixture} selectedCustomer={selected} mobile={false}/></div><div className="db-mobile"><RelationScene fixture={fixture} selectedCustomer={selected} mobile/></div><figcaption>고객→여러 주문, 주문→여러 항목, 상품→여러 항목의 관계입니다. 화살표 방향은 자식 행의 FK에서 부모 행의 PK로 향합니다. 같은 색만으로 연결하지 않고 실제 키와 선 끝점을 함께 확인하세요. 좁은 화면은 선택 고객과 연결된 행만 펼칩니다.</figcaption></figure>
+    <div className="db-controls"><label>관계를 따라갈 고객<select aria-label="관계를 따라갈 고객" value={selected} onChange={e=>setSelected(Number(e.target.value))}>{fixture.customers.map(c=><option key={c.id} value={c.id}>고객 {c.id} · {c.display_name}</option>)}</select></label><label>따라갈 외래키<select aria-label="따라갈 외래키" value={focus} onChange={e=>setFocus(e.target.value as RelationFocus)}>{Object.entries(relationLabels).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label><div><label className="db-checkbox"><input type="checkbox" checked={renamed} onChange={e=>{setRenamed(e.target.checked);if(e.target.checked)setSameNames(false);}}/>고객1 이름 변경</label><label className="db-checkbox"><input type="checkbox" checked={sameNames} onChange={e=>{setSameNames(e.target.checked);if(e.target.checked)setRenamed(false);}}/>이름이 같은 고객 둘</label></div></div>
+    <div className="db-current" role="status"><strong>선택한 고객 id {selected} · {relationLabels[focus]}</strong><p>선은 외래키에서 참조하는 기본키를 향합니다. 초록 행은 이 고객과 연결된 기록입니다. 취소 주문도 관계 자체는 남아 있습니다.</p></div>
+    <figure className="db-figure"><div className="db-desktop"><RelationScene fixture={fixture} selectedCustomer={selected} mobile={false} focus={focus}/></div><div className="db-mobile"><RelationScene fixture={fixture} selectedCustomer={selected} mobile focus={focus}/></div><div className="db-legend">{Object.entries(relationColors).filter(([k])=>focus==="all"||focus===k).map(([k,color])=><span key={k}><i className="db-key-line" style={{borderTopColor:color,borderTopStyle:k==="order"?"dashed":"solid"}}/>{k==="customer"?"고객 FK":k==="order"?"주문 FK · 점선":"상품 FK"}</span>)}</div><figcaption>고객→여러 주문, 주문→여러 항목, 상품→여러 항목의 관계입니다. 화살표 방향은 자식 행의 FK에서 부모 행의 PK로 향합니다. 같은 색만으로 연결하지 않고 실제 키와 선 끝점을 함께 확인하세요. 외래키 종류를 바꿔 한 관계씩 따라가세요. 좁은 화면은 선택 고객과 연결된 행만 펼치며, 고객·주문 참조는 왼쪽, 상품 참조는 오른쪽을 지납니다.</figcaption></figure>
     <p className="db-relation-summary">선택 고객의 <strong>확정 주문 {summary.orderCount}건 · 항목 {summary.itemCount}행 · 수량 {summary.totalQty}개 · {summary.totalWon.toLocaleString("ko-KR")}원</strong>. 취소 주문은 이 합계에서 제외합니다.</p>
-    <button type="button" onClick={()=>{setSelected(1);setRenamed(false);setSameNames(false);}}>관계 그림 초기화</button>
+    <button type="button" onClick={()=>{setSelected(1);setRenamed(false);setSameNames(false);setFocus("customer");}}>관계 그림 초기화</button>
     <p className="db-model-note">행의 위치는 설명을 위한 배치이지 물리 저장 순서가 아닙니다. 이름을 바꿔도 FK의 값과 선 끝점은 유지됩니다. 실험은 DB를 변경하지 않습니다.</p>
   </section>;
 }

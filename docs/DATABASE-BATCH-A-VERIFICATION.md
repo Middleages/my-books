@@ -54,3 +54,14 @@
 ## 후속 실행 증거
 
 정확한 branch commit·Actions run·검사 결과·artifact·직접 본 PNG와 수정 사항은 결과가 확인된 뒤 이 절에 추가한다. 이 문서가 담길 미래 commit을 미리 만들어 적지 않는다.
+
+
+### 첫 production 실행과 직접 화면 검토
+
+[run39355424024](https://github.com/Middleages/my-books/actions/runs/39355424024), head `436b11dfe8c14dd74e951de7d57245498ae127ef` / PR merge `a02fa021445906e28d12b1be82b2e171e303a544`에서 build가 통과했다. DB 실제 Chromium 검사는 87개 통과·1개 실패였고 PNG 30개를 만들었다. 마지막 오류 집계에 URL이 없는 404 한 건이 남았으므로 전체 통과로 판정하지 않았다. 검증 서버의 기본 favicon 요청에 204를 명시하고, 다른 오류는 URL·HTTP 상태까지 기록하도록 보완했다. 실제 콘텐츠의 오류를 광범위하게 무시하지 않는다.
+
+[artifact12234833072](https://github.com/Middleages/my-books/actions/runs/39355424024/artifacts/12234833072)의 내려받은 ZIP SHA256은 `8817cf49b6f19b2ccb3dcbee4b19f7e82c881abb813fecfb3d4eb3ff92ca60fc`로 게시된 artifact digest와 일치했다. 직접 연 파일: `1440-files-race-final.png`, `320-files-race-final.png`, `320-files-database-final.png`, `1440-key-relationships.png`, `320-key-relationships.png`, `390-constraints-normal-true.png`, `320-constraints-null-qty-false.png`, `1440-constraints-missing-fk-true.png`. 교차 검토에서도 390px 관계와 320px 파일/NULL, 1440px 관계를 확인했다.
+
+파일의 사본/공유 값/확정 주문과 NULL 후보의 저장 경계 이동은 분명했다. 그러나 **모바일 관계도의 FK 레일이 한쪽에서 겹쳐 항목→주문의 소속을 찾기 어려웠다.** 모델에 모든 FK가 있고 기능 검사에 통과해도 설명력 게이트를 닫지 않았다. 외래키 종류를 선택해 한 관계씩 펼치고, 좁은 화면의 고객·주문 FK는 왼쪽, 상품 FK는 오른쪽으로 분리한다. 주문 FK는 점선·별도 색과 범례를 함께 사용하며 항목 헤더에 주문과 상품 FK를 모두 표기한다. 두 이름 실험의 조건도 동시에 모순된 표시가 되지 않게 하나씩 선택한다.
+
+보강한 QA는 고객 1/2/3 × FK 세 종류/전체를 모든 폭에서 순회하며 실제 선의 id·양 끝 row key·열 이름을 fixture와 대조한다. SVG 선 시작/끝의 실제 좌표가 해당 행 경계·수직 중앙에 붙는지도 측정한다. 이 보강판의 새 PNG를 보기 전까지 시각 합격은 대기다.
