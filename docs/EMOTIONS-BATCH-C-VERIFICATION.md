@@ -10,3 +10,6 @@ AAP 비폭력적 훈육 원문 및 CDC 감정 코칭 원문을 2026-10-20 열람
 
 ## 최신 A+B 통합 소스 검사
 A tree70fb6ff와 B tree896acc89를 보존한 local a18acb9 기준. node --test --test-concurrency=4 tests/*.test.mjs:1507/1507 통과. NODE_OPTIONS=--max-old-space-size=2048 npm run build: 통과. 로컬 Chromium은 알려진 환경제약으로 재시도하지 않는다. 정상 stacked PR CI와 원본 화면 검토는 대기. B 공개 전 C는 main/Pages에 반영하지 않는다.
+
+## 첫 CI와 원본 검토 수정
+PR100 run39472466230에서 build/unit/shared smoke와 감정58검사 통과. 원본1440/320 PNG 직접 검토에서 모바일 세로 재배치에도 경로 화살표가 가로로 남는 설명력 문제를 발견했다. 화살표와 막는 경계 방향을 모바일 세로 배치에 맞추고 QA에 실제 의사요소 방향 검사를 추가한다. 수정 후 CI와 원본 재검토 전 시각 게이트 통과로 표시하지 않는다.
