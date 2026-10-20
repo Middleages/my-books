@@ -33,6 +33,7 @@
 .ac-an-plot-wrap{display:flex;gap:8px;margin-top:20px}
 .ac-an-y-labels{display:flex;flex-direction:column;justify-content:space-between;height:220px;width:34px;flex:none;font-size:.875rem;line-height:1}
 .ac-an-plot{flex:1;min-width:0}
+.ac-an-plot-area{position:relative;height:220px}
 .ac-an-plot svg{display:block;width:100%;height:220px;overflow:visible}
 .ac-an-plot svg path,.ac-an-plot svg polyline,.ac-an-plot svg line{vector-effect:non-scaling-stroke;fill:none}
 .ac-an-axis{stroke:#405e52;stroke-width:1.5}
@@ -40,8 +41,9 @@
 .ac-an-revenue-line{stroke:#247761;stroke-width:3}
 .ac-an-cost-line{stroke:#9b6036;stroke-width:3;stroke-dasharray:7 4}
 .ac-an-gap{stroke:#75579b;stroke-width:4}
-.ac-an-plot circle{fill:#17473a;stroke:#fff;stroke-width:.4;vector-effect:non-scaling-stroke}
-.ac-an-plot circle.ac-an-selected{fill:#75579b}
+.ac-an-marker{position:absolute;display:block;width:8px;height:8px;box-sizing:border-box;transform:translate(-50%,-50%);pointer-events:none;background:#17473a;z-index:1}
+.ac-an-intersection{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.ac-an-selected{border:1px solid #fff;border-radius:50%;background:#75579b}
 .ac-an-x-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:.875rem}
 .ac-an-cvp-legend{font-size:.9rem}
 @container(max-width:680px){

@@ -1,6 +1,6 @@
 # 회계와 기업의 돈 · F 구현 및 검증
 
-기준: **2026-10-20**. 마지막11–12장의 소스와 가상 모델을 작성했다. **회계 unit/SSR100개, 최초 전체1190개·build416 및 최신 main 보존 뒤 전체1222개·build442 통과를 확인했으며 actual production, 새 원본 직접 검토, main 통합·Pages·exact-live·넓은 최종 회귀는 아직 대기다.** 구현 사실을 공개 배포 완료와 섞지 않는다.
+기준: **2026-10-20**. 마지막11–12장의 소스와 가상 모델을 작성했다. **첫 실제 production509/509·413 PNG와 직접 원본16개 검토를 마쳤다. 직접 검토에서 발견한 설명/표식 및 초기 학습 흐름을 보완하고 최종 재검사를 진행한다. 수정 전 전체1222개·build442는 통과했으며, 수정 후 실제 production·새 직접 검토·main 통합·Pages·exact-live·넓은 최종 회귀는 아직 대기다.** 구현 사실을 공개 배포 완료와 섞지 않는다.
 
 ## 범위와 병행 작업 보존
 
@@ -9,7 +9,7 @@
 - 실제 stable main `47c36cc06fad15d87afd040ac5c259b421714d52`, tree `09766eee17e80d322b382d544b99085f7450916a`를 분리 작업 트리에 병합했다. 이 main은 회계B·DB06·주거12·세금12까지의 공개 소스다. 뒤따르는 다른 신규 책의 로컬 후보는 가져오지 않았다.
 - 병합 로컬 `32bc71c4c631117af475c38523776004ba4b675b`에 E 음수0 수정을 연결한 `d511b82`가 F 작성 기준이다. 실제 main과 AGENTS/작성 기준이 같음을 확인했고, main47의 비회계 카탈로그 행과 다른 책 파일을 보존했다.
 - 충돌은 회계의 기존 C–E 추가와 main의 B를 대조해 해결했다. main의 회계B 실행 파일은 이전 B 검증본과 같았으며,04 다음 링크·소개 범위·회계 테스트/검증기는 더 최신인 E를 유지했다.
-- 기존 URL·readId·권차·저장 키·알 수 없는 읽음 ID는 유지한다. 소개와10 다음 링크만12장 범위에 맞췄다. 선택적 `ACCOUNTING-SESSION-PROMPTS.md`와 `ACCOUNTING-TEXTBOOK-PLAN.md`는 기존 공개 내용과 diff0이다. 다른 책의 공개 계획 변경은 main47에서 이미 공개된 상태를 그대로 보존한 것이며 회계의 거부된 선택적 변경을 옮긴 것이 아니다.
+- 기존 URL·readId·권차·저장 키·알 수 없는 읽음 ID는 유지한다. 소개와10 다음 링크만12장 범위에 맞췄다. 선택적 `ACCOUNTING-SESSION-PROMPTS.md`와 `ACCOUNTING-TEXTBOOK-PLAN.md`는 기존 공개 내용과 diff0이다. 다른 책의 공개 계획 변경은 main47에서 이미 공개된 상태를 그대로 보존한 것이며 회계의 선택적 계획 변경은 이번 소스에 포함하지 않았다.
 - main을 직접 쓰거나 자동 병합하지 않는다. 최종 게시 창은 기존 통합 담당과 조율한다.
 
 ## 11 · 비율의 구성과 해석
@@ -59,12 +59,12 @@ IAS2의 판매 재고 원가와 관련 수익 기간, 개념체계의 보고 경
 - 회계 unit/SSR **100/100 통과**. 신규18개에는 명시적 control 이름·12개 예약 ID·두 비교 패널·실제 포함 괄호·별도 CVP·미확인과 정적 전체 근거 SSR을 포함한다.
 - 전체 `node --test --test-concurrency=4 tests/*.test.mjs` **1190/1190 통과**. 실행 병렬도만4이고 기존 assertion을 삭제하지 않았다. Vite SSR의 기존 HMR 포트 경고와 테스트 결과를 구별한다.
 - `npm run build`의 TypeScript/Vite 전체 빌드 **416 modules 통과**. 기존 큰 번들 경고는 남아 있으며 기능 실패와 구별한다.
-- 브라우저 검증기에 기존 A–E assertion을 유지한 채11–12를 추가했다.320/390/1440,7조건×만기3종×관찰3단계, 실제 막대·총이익 괄호 기하, 분모3반례, CVP 수량5×가격2, 문서5패킷×주장6종×모든 단계·실제 문자열·상태·연결 배치,키보드·no-autoplay·조건 변경·정적·route 정리·normal/reduced-motion,768/900·읽음12가 대상이다. **작성된 검증 코드이며 실제 browser 결과는 아직 대기다.**
+- 브라우저 검증기에 기존 A–E assertion을 유지한 채11–12를 추가했다.320/390/1440,7조건×만기3종×관찰3단계, 실제 막대·총이익 괄호 기하, 분모3반례, CVP 수량5×가격2, 문서5패킷×주장6종×모든 단계·실제 문자열·상태·연결 배치,키보드·no-autoplay·조건 변경·정적·route 정리·normal/reduced-motion,768/900·읽음12가 대상이다. 첫 실제 browser 결과는 아래에 기록한다. 직접 검토 수정 후의 최종 실제 결과는 별도 확인한다.
 - console의 source URL, 실패 response/request URL·status, 알려진 host-root favicon과 앱 오류의 엄격한 분류, exact HTML/전체 JS/CSS bytes 대조를 보존한다.
 
 ## 아직 끝나지 않은 항목
 
-E는 최종 production332/332·새 원본20개 직접 검토를 마쳤다. F 실제 production·직접 PNG 검토, 최종 통합 main/Pages/exact-live, 전체 회계 편집 검토와 모든 등록 suite의 넓은 최종 회귀가 남아 있다. 자동 캡처 생성만으로 직접 검토를 완료했다고 쓰지 않는다.
+E는 최종 production332/332·새 원본20개 직접 검토를 마쳤다. F 수정 후 실제 production·새 직접 PNG 검토, 최종 통합 main/Pages/exact-live와 모든 등록 suite의 넓은 최종 회귀가 남아 있다. 전체 소개/01–12 원고의 작성자 연결 검토는 별도 BOOK-REVIEW 기록에 남겼다. 자동 캡처 생성만으로 직접 검토를 완료했다고 쓰지 않는다.
 
 넓은 최종 검사는 안정 main 창에 당시 전체 suite를 명시적으로 고정하고 한 build의 production/published를 대조한다. 가능한 수동 실행 수단 또는 read-only 검증 전용 브랜치를 쓰며, unknown-path를 일부러 만들거나 선택기를 바꿔 범위를 강제하지 않는다. 해당 검증이 실제 끝나기 전 ‘전체7권 완료’라고 보고하지 않는다. 실제 기기·Safari/Firefox·음성 스크린리더·학습효과는 미실행이다.
 
@@ -76,3 +76,24 @@ F draft PR을 만들기 전에 새 main `9c1df885218915bd368744e1420c3c17ce911fd
 병합 local `416b4e5f408809f22c6e7b75d8e6e9ad83b1dd76`에서 카탈로그를 구조적으로 대조했다. 회계 partition은 F 작성본과 같고, 비회계 모든 책 partition과 공통 정의는 main9c와 같다. 다른 책 실행 파일·선택기·표지·공통 스타일도 main9c를 그대로 보존한다. AGENTS와 작성 기준에는 변경이 없었다.
 
 분류기를 actual main9c 기준으로 실행한 결과는 `book-volumes, accounting`이다. 나머지10 suite는 이 affected 실행에서 생략되며 통과로 부르지 않는다. 최종 넓은 검사의 현재 등록 대상은12 suite이며, 실제 최종 안정 main에서 다시 확정한다. 새 main 보존 뒤 전체 `node --test --test-concurrency=4 tests/*.test.mjs`는 **1222/1222**, `npm run build`는 **442 modules**로 다시 통과했다. 소스 오류·실패0이며 기존 큰 번들 경고만 남는다. 소개/01–12 전체 본문을 순서대로 읽은 작성자 연결 검토는 `ACCOUNTING-BOOK-REVIEW.md`에 남겼고 실제 F 브라우저/게시/넓은 최종 회귀는 여전히 대기다.
+
+
+## 첫 브라우저 실행 중의 설명 흐름 추가 점검
+
+run39405591624는 최초 F 소스로 실제 성공했지만 아래 설명 개선 및 직접 검토 수정이 추가되어 최종 승인으로 표시하지 않는다. 소스/원고를 다시 읽으며11 첫 화면의 두 비교 패널이 동일한 정본이라 핵심 차이를 처음부터 보여 주지 못한다는 점을 확인했다. 초기/전체 초기화의 비교 조건을 회수0으로 두어 기준 현금225와 비교 현금65, 같은 유동자산565·유동부채150을 즉시 나란히 보이게 했다. 계산 모형의 정본과 모든 비교 조건은 그대로다. SSR에 첫 두 패널의 정확한 구성을 추가했고 브라우저의 초기/정지/조건 변경 기대도 해당 값으로 명시했다.
+
+12의 조작 안내에는 정상 정본 다음 ‘의도적 오류 · 판매 원가 누락’을 먼저 선택하라는 문장을 추가했다. 선택하지 않은 오류 묶음을 이미 보고 있다고 가정하지 않는다. 이 두 개선은 새 실제 렌더와 직접 검토 전까지 완료 gate를 다시 열어 둔다. 기존 숫자·기하·타이머 assertion은 삭제하지 않았다.
+
+이 추가 안내의 첫 로컬 전체 검사에서 따옴표를 감싼 Markdown 강조가 MDX에서 그대로 남는 것을 기존 `accounting-mdx-render`가 탐지했다(1221 통과/1 실패). 강조를 명시적 `strong` 요소로 고쳤고 해당 assertion을 유지한 채 전체1222/1222 및 build442를 다시 통과했다. 이 결과는 아래 이자 설명/표식 수정 전의 결과다. 실패했던 소스를 브라우저 통과나 최종 완료로 기록하지 않는다.
+
+
+## 첫 실제 production 및 직접 검토에서 찾은 수정
+
+- PR59 실행 소스 `5552158baec4a6511e7565804c9fed71672e3b1f`, actual checkout `a52e704bcc71bddbc512a49c093bc2bf14065768`, tree `80ee1b3bfba0a485858d675cc8ebb759f8e37f8e`. checkout의 변경 파일 없음.
+- [run39405591624](https://github.com/Middleages/my-books/actions/runs/39405591624): 전체 **1222/1222**, build **442 modules**, `book-volumes` 성공. 회계 실제 production **509/509**, **413 PNG**, page/console/resource/host 진단0. 실행10:08:00–10:16:26 UTC.
+- 원본 ZIP artifact `12258121024`,103273897 bytes, SHA-256 `489655685567d33c300dd6718cc3eb0e3c273cf5885dcd4dd526be7e496603d9`를 다운로드 후 대조했다. 실제 JS `index-tS17g3UZ.js`3278859 bytes, SHA `6c9bc3edaac78bf440e9cd6f3caf11372a7d345707683d85e467f4384910ec31`; CSS `index-BJ8An1Rd.css`392185 bytes, SHA `5cef5de730d896bf5458649664041f0b7b31c6e6e11c0dfb2460ffe26bbbb987`.
+- 직접 연 원본16개: `1440-ratios-no-collection-loan40-composition.png`, `320-ratios-base-loan280-margin.png`, `1440-documents-missing-cost-connection-final.png`, `320-documents-missing-cost-cost-final.png`, `320-cvp-price3-quantity45.png`, `1440-cvp-price5-quantity46.png`, `1440-documents-capital-revenue-capital-final.png`, `390-documents-next-month-cash-period-final.png`, `1440-documents-base-dividend-final.png`, `1440-documents-mixed-connection-final.png`, `1440-ratio-boundary-negative.png`, `320-ratio-boundary-zero.png`, `390-normal-motion-documents.png`, `390-normal-motion-ratios.png`, `1440-ratios-static.png`, `1440-documents-static.png`.
+- 같은565/150 안의225/65 현금 차이, 총이익 포함 괄호, 원가 누락의 등식 일치와 수불 충돌, 출자350 대 잘못된300, M2 회수400과 M1 영업−310의 분리, 법적 배당의 근거 부족과 범위 혼합 중지,0/음수 분모, 정적 대안의 분리를 확인했다. 긴 모바일/정적 전체 캡처는 배치와 연결 확인이며 축소된 모든 글자를 정밀하게 읽었다는 뜻은 아니다.
+- 직접 검토에서 마진 설명의 ‘이자5·세금의 생략’이 정본도 이자를 생략했다는 오해를 줄 수 있음을 발견했다. ‘영업이익에는 이자비용5가 포함되지 않고, 모형 전체의 세금은 생략했습니다’로 고쳤다. 정본 순이익65와 이자비용5를 변경하지 않았다. SSR/실제 브라우저에 정확한 문구 검사를 추가했다.
+- CVP44/45/46의 실제 좌표·차이는 맞았지만, 비등방 SVG 안의 원 표식이 가로로 늘어나45/46의 가까운 점을 과도하게 덮었다. 선·세로 차이는 기존 정확 좌표를 유지하고 표식만 같은 좌표의8 CSS px HTML 점으로 분리했다. 마름모는 분기점, 원은 선택 매출 위치로 범례를 추가했다. 표식의 크기는 금액이 아니며 근접·겹침은 정확한 숫자를 함께 읽도록 적었다. 브라우저 assertion은 표식의8×8 실제 크기와 모델 좌표 대비 화면 중심 위치를 대조한다. 검사를 제거하거나 차이를 확대해 그리지 않았다.
+- 수정 후 전체1222/1222 및 `NODE_OPTIONS=--max-old-space-size=2048 npm run build`442 modules도 통과했다. 실행 병렬도/메모리 한도만 조절했고 검사 범위는 줄이지 않았다. 수정 후 actual production과 새 원본 직접 검토는 아직 대기다. 첫509 통과를 수정 후 통과 또는 실제 게시 완료로 바꾸어 쓰지 않는다.
