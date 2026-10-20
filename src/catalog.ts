@@ -1,3 +1,27 @@
+import DisruptedDays from "./content/child-sleep/DisruptedDays.mdx";
+import CaregiverRest from "./content/child-sleep/CaregiverRest.mdx";
+import WakingAndCare from "./content/child-sleep/WakingAndCare.mdx";
+import SettlingOptions from "./content/child-sleep/SettlingOptions.mdx";
+import ChangingNaps from "./content/child-sleep/ChangingNaps.mdx";
+import BedtimeRoutine from "./content/child-sleep/BedtimeRoutine.mdx";
+import PressureAndRhythm from "./content/child-sleep/PressureAndRhythm.mdx";
+import DurationAndAge from "./content/child-sleep/DurationAndAge.mdx";
+import ChildSleepIntro from "./content/child-sleep/Intro.mdx";
+import SleepRecord from "./content/child-sleep/SleepRecord.mdx";
+import SafeSleepSpace from "./content/child-sleep/SafeSleepSpace.mdx";
+import ClosedNetworkTrust from "./content/authentication/ClosedNetworkTrust.mdx";
+import AuthDiagnosis from "./content/authentication/AuthDiagnosis.mdx";
+import RenewalAndLogout from "./content/authentication/RenewalAndLogout.mdx";
+import ReactFastapi from "./content/authentication/ReactFastapi.mdx";
+import SsoAndSessions from "./content/authentication/SsoAndSessions.mdx";
+import RbacAndObjectAccess from "./content/authentication/RbacAndObjectAccess.mdx";
+import OAuthDelegation from "./content/authentication/OAuthDelegation.mdx";
+import OidcCodeFlow from "./content/authentication/OidcCodeFlow.mdx";
+import BrowserBoundaries from "./content/authentication/BrowserBoundaries.mdx";
+import TokensAndJwt from "./content/authentication/TokensAndJwt.mdx";
+import AuthenticationIntro from "./content/authentication/Intro.mdx";
+import IdentityAndPermission from "./content/authentication/IdentityAndPermission.mdx";
+import CookiesAndSessions from "./content/authentication/CookiesAndSessions.mdx";
 import DatabaseIntro from "./content/database/Intro.mdx";
 import FilesAndDatabase from "./content/database/FilesAndDatabase.mdx";
 import TablesAndConstraints from "./content/database/TablesAndConstraints.mdx";
@@ -20,15 +44,6 @@ import MealtimeSafety from "./content/child-feeding/MealtimeSafety.mdx";
 import ChildFeedingIntro from "./content/child-feeding/Intro.mdx";
 import FeedingMap from "./content/child-feeding/FeedingMap.mdx";
 import Readiness from "./content/child-feeding/Readiness.mdx";
-import WakingAndCare from "./content/child-sleep/WakingAndCare.mdx";
-import SettlingOptions from "./content/child-sleep/SettlingOptions.mdx";
-import ChangingNaps from "./content/child-sleep/ChangingNaps.mdx";
-import BedtimeRoutine from "./content/child-sleep/BedtimeRoutine.mdx";
-import PressureAndRhythm from "./content/child-sleep/PressureAndRhythm.mdx";
-import DurationAndAge from "./content/child-sleep/DurationAndAge.mdx";
-import ChildSleepIntro from "./content/child-sleep/Intro.mdx";
-import SleepRecord from "./content/child-sleep/SleepRecord.mdx";
-import SafeSleepSpace from "./content/child-sleep/SafeSleepSpace.mdx";
 import ObservationPlan from "./content/child-development/ObservationPlan.mdx";
 import SeekSupport from "./content/child-development/SeekSupport.mdx";
 import SecondYear from "./content/child-development/SecondYear.mdx";
@@ -42,17 +57,6 @@ import MovementAndHands from "./content/child-development/MovementAndHands.mdx";
 import ChildDevelopmentIntro from "./content/child-development/Intro.mdx";
 import DevelopmentMap from "./content/child-development/DevelopmentMap.mdx";
 import AgeAndEvidence from "./content/child-development/AgeAndEvidence.mdx";
-import RenewalAndLogout from "./content/authentication/RenewalAndLogout.mdx";
-import ReactFastapi from "./content/authentication/ReactFastapi.mdx";
-import SsoAndSessions from "./content/authentication/SsoAndSessions.mdx";
-import RbacAndObjectAccess from "./content/authentication/RbacAndObjectAccess.mdx";
-import OAuthDelegation from "./content/authentication/OAuthDelegation.mdx";
-import OidcCodeFlow from "./content/authentication/OidcCodeFlow.mdx";
-import BrowserBoundaries from "./content/authentication/BrowserBoundaries.mdx";
-import TokensAndJwt from "./content/authentication/TokensAndJwt.mdx";
-import AuthenticationIntro from "./content/authentication/Intro.mdx";
-import IdentityAndPermission from "./content/authentication/IdentityAndPermission.mdx";
-import CookiesAndSessions from "./content/authentication/CookiesAndSessions.mdx";
 import ClosedNetwork from "./content/observability/ClosedNetwork.mdx";
 import ObservabilityDiagnosis from "./content/observability/Diagnosis.mdx";
 import Dashboards from "./content/observability/Dashboards.mdx";
@@ -225,6 +229,8 @@ export const chapters: Chapter[] = [
   { id: "bedtime-routine", bookId: "child-sleep", readId: "child-sleep/bedtime-routine", number: "06", title: "잠들기 전의 익숙한 순서", heading: "익숙한 순서는 무엇을 도울까?", description: "가족의 활동 순서와 바뀌지 않는 돌봄 경계를 살펴봅니다.", Content: BedtimeRoutine },
   { id: "waking-and-care", bookId: "child-sleep", readId: "child-sleep/waking-and-care", number: "07", title: "밤중 깨기와 필요한 돌봄", heading: "깼다는 사실과 이유를 안다는 것은 같을까?", description: "확인 사실과 추가로 살펴볼 맥락을 분리합니다.", Content: WakingAndCare },
   { id: "settling-options", bookId: "child-sleep", readId: "child-sleep/settling-options", number: "08", title: "재우는 방식과 가족의 선택", heading: "재우는 방법을 고를 때 효과만 물으면 될까?", description: "가상 가족의 여건과 안전·돌봄의 경계를 살펴봅니다.", Content: SettlingOptions },
+  { id: "disrupted-days", bookId: "child-sleep", readId: "child-sleep/disrupted-days", number: "09", title: "아픈 날과 일정이 달라진 날", heading: "평소와 다른 밤에는 무엇을 먼저 적을까?", description: "사건의 맥락과 확인 수면을 나누어 읽습니다.", Content: DisruptedDays },
+  { id: "caregiver-rest", bookId: "child-sleep", readId: "child-sleep/caregiver-rest", number: "10", title: "돌보는 사람도 쉬는 계획", heading: "아이의 잠과 보호자의 휴식은 같을까?", description: "담당과 휴식 기회, 돌봄 공백을 구분합니다.", Content: CaregiverRest },
   { id: "identity-and-permission", bookId: "authentication", readId: "authentication/identity-and-permission", number: "01", title: "누구인가와 무엇을 할 수 있는가", heading: "로그인 성공은 모든 문서의 열쇠일까요?", description: "주체 확인과 자원·행동 정책의 두 문을 구별합니다.", Content: IdentityAndPermission },
   { id: "cookies-and-sessions", bookId: "authentication", readId: "authentication/cookies-and-sessions", number: "02", title: "브라우저와 서버가 기억하는 것", heading: "새 요청에서도 서버는 나를 어떻게 알아볼까요?", description: "쿠키 전송과 서버 세션 기록·수명을 따로 관찰합니다.", Content: CookiesAndSessions },
   { id: "browser-boundaries", bookId: "authentication", readId: "authentication/browser-boundaries", number: "03", title: "브라우저의 경계 읽기", heading: "보냈는데 응답을 못 읽을 수 있을까요?", description: "origin·site·쿠키 범위와 세 결과를 분리합니다.", Content: BrowserBoundaries },
@@ -235,6 +241,8 @@ export const chapters: Chapter[] = [
   { id: "rbac-and-object-access", bookId: "authentication", readId: "authentication/rbac-and-object-access", number: "08", title: "역할과 자원별 권한", heading: "editor이면 누구의 문서든 고칠 수 있을까요?", description: "역할·조직·소유 정책과 오래된 권한 claim을 교차 검사합니다.", Content: RbacAndObjectAccess },
   { id: "renewal-and-logout", bookId: "authentication", readId: "authentication/renewal-and-logout", number: "09", title: "만료·갱신·로그아웃", heading: "로그아웃하면 기존 token도 끝날까요?", description: "네 수명과 회전·재사용·철회 정책을 나눕니다.", Content: RenewalAndLogout },
   { id: "react-fastapi", bookId: "authentication", readId: "authentication/react-fastapi", number: "10", title: "작은 팀의 로그인 구조 고르기", heading: "브라우저와 서버 중 누가 token을 가질까요?", description: "SPA와 BFF의 저장·호출·방어 책임을 비교합니다.", Content: ReactFastapi },
+  { id: "closed-network-trust", bookId: "authentication", readId: "authentication/closed-network-trust", number: "11", title: "폐쇄망에서 신뢰 연결하기", heading: "IdP는 보이는데 왜 로그인은 실패할까요?", description: "접속 주체·발급자·키·시간을 따로 확인합니다.", Content: ClosedNetworkTrust },
+  { id: "auth-diagnosis", bookId: "authentication", readId: "authentication/auth-diagnosis", number: "12", title: "안전한 증거로 로그인 문제 찾기", heading: "토큰 원문 없이 실패 경계를 찾을 수 있을까요?", description: "확인한 증거만 남기고 비밀 원문은 수집하지 않습니다.", Content: AuthDiagnosis },
   { id: "development-map", bookId: "child-development", readId: "child-development/development-map", number: "01", title: "발달은 한 줄의 순위가 아니다", heading: "몸·말·놀이·관계가 같은 속도로 발달할까?", description: "한 아이의 여러 영역과 관찰 상태를 점수 없이 읽습니다.", Content: DevelopmentMap },
   { id: "age-and-evidence", bookId: "child-development", readId: "child-development/age-and-evidence", number: "02", title: "개월수와 체크리스트를 읽는 법", heading: "생활 월령과 자료의 기준 연령은 어떻게 다를까?", description: "교정연령의 시간 관계와 원출처 연령의 경계를 살펴봅니다.", Content: AgeAndEvidence },
   { id: "observe-not-label", bookId: "child-development", readId: "child-development/observe-not-label", number: "03", title: "보이는 행동을 기록하기", heading: "잘 못해요 대신 무엇을 기록할까?", description: "상황·기회·행동·도움을 나누고 모르는 사실을 보존합니다.", Content: ObserveNotLabel },
@@ -689,8 +697,8 @@ type Book = {
 };
 export const books: Book[] = [
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–08장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
-  { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–08장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
-  { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–10장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
+  { id: "child-sleep", categoryId: "parenting", volume: 2, title: "잠과 생활 리듬", category: "육아·발달 · 수면과 돌봄", cover: "SLEEP AND DAILY RHYTHMS", description: "잠든 시간과 안전한 공간을 구분하고 가족의 생활 리듬을 생각합니다.", overview: "합성 기록과 공간 그림으로 수면의 관찰·안전·돌봄을 배웁니다.", future: "소개·01–10장 공개 · 교육용 합성 사례이며 진단·수면 처방·의학 전문가 감수를 대신하지 않습니다.", Intro: ChildSleepIntro },
+  { id: "authentication", categoryId: "technology", volume: 6, title: "눈으로 이해하는 인증·SSO", category: "IT·기술 · 주체와 신뢰", cover: "AUTHENTICATION & SSO", description: "로그인은 됐는데 왜 접근할 수 없을까요?", overview: "인증·인가와 브라우저·서버의 기억을 분리해 봅니다.", future: "소개·01–12장 공개 · 합성 교육 모델이며 실제 로그인·SSO 연결은 미실행입니다.", Intro: AuthenticationIntro },
   { id: "child-development", categoryId: "parenting", volume: 1, title: "0~36개월, 아이의 발달을 이해하는 법", category: "육아·발달 · 관찰과 관계", cover: "UNDERSTANDING CHILD DEVELOPMENT", description: "비교와 채점 대신 관찰에서 시작합니다. 월령 자료와 놀이, 상담 준비를 함께 배웁니다.", overview: "발달 영역과 시간의 기준을 구분하고, 일상의 장면에서 무엇을 알 수 있는지 살펴봅니다.", future: "소개·01–12장 공개 · 합성 교육 사례이며 표준 선별검사·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildDevelopmentIntro },
   { id: "observability", categoryId: "technology", volume: 5, title: "눈으로 이해하는 관측·로그·모니터링", category: "IT·기술 · 신호와 증거", cover: "OBSERVABILITY", description: "느림과 실패를 어떤 증거로 설명할까요?", overview: "로그·지표·트레이스와 수집·저장·조회의 경계를 눈으로 연결합니다.", future: "소개·01–12장 공개 · 합성 교육 모델이며 실제 관측 스택은 미실행입니다.", Intro: ObservabilityIntro },
   { id: "probability", categoryId: "money", volume: 8, title: "확률과 금융 의사결정", category: "돈·경제 · 숫자의 근거와 불확실성", cover: "PROBABILITY & FINANCIAL DECISIONS", description: "좋아 보이는 숫자를 어디까지 믿어도 될까? 분모·분포·빠진 자료와 감당할 손실을 읽습니다.", overview: "요약에서 조건부 확률·추정·공동 위험·선택의 착시와 경로까지, 가상 사례로 판단의 질문을 익힙니다.", future: "소개·01–12장 공개 · 가상 자료의 원리를 다루며 실제 수익률·개인 안전성·상품 선택을 예측하거나 추천하지 않습니다.", Intro: ProbabilityIntro },
