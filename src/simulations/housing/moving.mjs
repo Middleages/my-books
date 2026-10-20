@@ -12,7 +12,8 @@ export function movingFrames(input={}){
  for(const e of events){let arrival=0,payment=0;
   if(e.kind==='receipt'&&p.confirmed){arrival=p.receipt;received+=arrival;cash+=arrival;oldClaim-=arrival}
   if(e.kind==='due'){
-   const potential=!p.confirmed&&p.receiptDay<=p.dueDay?p.receipt:0;
+   const possiblyBeforeDue=p.receiptDay<p.dueDay||(p.receiptDay===p.dueDay&&p.order==='receipt-first');
+   const potential=!p.confirmed&&possiblyBeforeDue?p.receipt:0;
    const knownGap=Math.max(0,p.newDeposit-cash),minimumGap=Math.max(0,p.newDeposit-cash-potential);
    const status=p.newDeposit===0?'no-payment':knownGap===0?'paid':potential>0?(minimumGap>0?'minimum-shortage':'arrival-unknown'):'shortage';
    decision={status,day:e.day,beforeCash:cash,knownGap,minimumGap,exactGap:potential>0&&knownGap>0?null:knownGap,potential};
@@ -22,7 +23,7 @@ export function movingFrames(input={}){
  }
  record(45,'observe');return frames;
 }
-export const movingPresets={late:{},early:{receiptDay:15},before:{receiptDay:20},after:{receiptDay:20,order:'payment-first'},partial:{receipt:80e6,receiptDay:15},oneWon:{receipt:79999999,receiptDay:15},unknown:{receiptDay:20,confirmed:false},unknownShort:{receiptDay:20,receipt:70e6,confirmed:false}};
+export const movingPresets={late:{},early:{receiptDay:15},before:{receiptDay:20},after:{receiptDay:20,order:'payment-first'},partial:{receipt:80e6,receiptDay:15},oneWon:{receipt:79999999,receiptDay:15},unknown:{receiptDay:20,confirmed:false},unknownAfter:{receiptDay:20,confirmed:false,order:'payment-first'},unknownShort:{receiptDay:20,receipt:70e6,confirmed:false}};
 export const shockDefaults={mode:'joint',cash:2e6,funding:1200000,service:100000,repair:3e6};
 // Three contractual months after the existing month12 closing balance. No prepayment or fee.
 export function shockFrames(input={}){

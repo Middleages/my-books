@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {movingFrames,movingPresets,shockFrames,housingEquity,type MovingFrame,type ShockParams} from '../../simulations/housing/moving.mjs';
 import {Lab,Bar,Range,StaticTable,Prediction,amount,percent,usePlayback} from './shared';
 const presets={...movingPresets,independent:{receiptDay:20,confirmed:false,cash:90e6}};
-const names:Record<keyof typeof presets,string>={late:'20일 지급 · 30일 반환',early:'15일 먼저 반환',before:'같은20일 · 반환 먼저',after:'같은20일 · 지급 먼저',partial:'15일8,000만원만 반환',oneWon:'먼저 반환되지만1원 부족',unknown:'20일 반환 도착 미확인',unknownShort:'미확인 반환을 더해도 부족',independent:'반환 미확인 · 별도현금 충분'};
+const names:Record<keyof typeof presets,string>={late:'20일 지급 · 30일 반환',early:'15일 먼저 반환',before:'같은20일 · 반환 먼저',after:'같은20일 · 지급 먼저',partial:'15일8,000만원만 반환',oneWon:'먼저 반환되지만1원 부족',unknown:'20일 반환 도착 미확인',unknownAfter:'같은20일 지급 먼저 · 반환 미확인',unknownShort:'미확인 반환을 더해도 부족',independent:'반환 미확인 · 별도현금 충분'};
 const eventLabel:Record<string,string>={start:'시작',receipt:'기존 보증금 반환 관찰',due:'새 보증금 지급기일',observe:'마지막 관찰'};
 function decisionText(r:MovingFrame){const d=r.decision;if(!d)return '새 지급기일 전입니다. 청구액을 현재 현금으로 쓰지 않습니다.';switch(d.status){case'paid':return '이 모형의 새 보증금 지급 반영. 실제 계약 성립·이사 완료 판정은 아닙니다.';case'no-payment':return '새 지급액0. 이 관문에 지급할 돈이 없다는 뜻일 뿐입니다.';case'shortage':return `${d.day}일 지급 미실행 · 그때 부족 ${d.exactGap!.toLocaleString('ko-KR')}원. 뒤늦은 반환으로 자동 재시도하지 않습니다.`;case'minimum-shortage':return `도착 미확인. 가능한 반환까지 더해도 최소 ${amount(d.minimumGap)} 부족합니다. 실제 부족액은 확정하지 않습니다.`;case'arrival-unknown':return `도착 미확인. 확인된 현금 기준 차이는 ${amount(d.knownGap)}이며 실제 지급 가능 여부는 아직 알 수 없습니다.`}}
 export function MovingLab(){

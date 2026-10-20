@@ -289,7 +289,7 @@ async function scenarios(page, id) {
         assert.equal(Number(await scene.getAttribute('data-move-step')),step);assert.equal(Number(await scene.getAttribute('data-move-cash')),r.cash);assert.equal(Number(await scene.getAttribute('data-move-old')),r.oldClaim);assert.equal(Number(await scene.getAttribute('data-move-new')),r.newClaim);assert.equal(await scene.getAttribute('data-move-status'),r.decision?.status??'not-due');
         if(step<3)await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
       }
-      if(['partial','oneWon','unknown','unknownShort'].includes(kind))await capture(page,`${page.viewportSize().width}-moving-${kind}`,'[data-housing-lab="moving-and-shocks"]');
+      if(['partial','oneWon','unknown','unknownAfter','unknownShort'].includes(kind))await capture(page,`${page.viewportSize().width}-moving-${kind}`,'[data-housing-lab="moving-and-shocks"]');
     }
     await lab.locator('select').selectOption('late');const control=await lab.locator('.money-playback').boundingBox(),gate=await lab.locator('.housing-stage').boundingBox();assert(gate.y-(control.y+control.height)<100,'moving gate detached from controls');
     const shock=page.locator('[data-housing-lab="housing-shocks"]');

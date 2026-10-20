@@ -2,7 +2,7 @@ export type MovingParams={cash:number;oldDeposit:number;newDeposit:number;receip
 export type MoveDecision={status:'no-payment'|'paid'|'minimum-shortage'|'arrival-unknown'|'shortage';day:number;beforeCash:number;knownGap:number;minimumGap:number;exactGap:number|null;potential:number};
 export type MovingFrame=MovingParams&{step:number;day:number;event:string;arrival:number;payment:number;cash:number;oldClaim:number;newClaim:number;received:number;paid:number;decision:MoveDecision|null;total:number};
 export const movingDefaults:MovingParams;
-export const movingPresets:Record<'late'|'early'|'before'|'after'|'partial'|'oneWon'|'unknown'|'unknownShort',Partial<MovingParams>>;
+export const movingPresets:Record<'late'|'early'|'before'|'after'|'partial'|'oneWon'|'unknown'|'unknownAfter'|'unknownShort',Partial<MovingParams>>;
 export function movingFrames(p?:Partial<MovingParams>):MovingFrame[];
 export type ShockParams={mode:'baseline'|'rate'|'income'|'repair'|'joint';cash:number;funding:number;service:number;repair:number};
 export type ShockFrame=ShockParams&{month:number;step:number;openingDebt:number;cash:number;debt:number;funding:number;paidInterest:number;paidService:number;paidRepair:number;paidPrincipal:number;failure:{month:number;gap:number}|null;incoming:number;planned:{principal:number;interest:number;service:number;repair:number;total:number;closing:number;rate:number}|null;paid:boolean;net:number};
