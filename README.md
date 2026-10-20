@@ -169,10 +169,9 @@ GitHub Settings → Pages → Source를 **GitHub Actions**로 설정합니다. m
 
 [제작 계획](docs/INSURANCE-TEXTBOOK-PLAN.md)과 [배치별 실행 프롬프트](docs/INSURANCE-SESSION-PROMPTS.md)를 따라 소개·01–10을 `insurance`에 구현했다. 기대손실·공동 재원·계약 역할·지급 조건·중복 보장·납입과 보장·해약환급·청구 시차·설명서 읽기를 자체 가상 사례로 연결한다. 실제 보험료·개인 적정 보장액·상품 추천·건강정보 입력을 제공하지 않는다. A–C의 검증·게시 증거는 [A](docs/INSURANCE-BATCH-A-VERIFICATION.md)·[B](docs/INSURANCE-BATCH-B-VERIFICATION.md)·[C](docs/INSURANCE-BATCH-C-VERIFICATION.md), D의 첫 화면 결함과 수정 재검증은 [D 기록](docs/INSURANCE-BATCH-D-VERIFICATION.md), E 구현·전체 점검과 실제 게시 상태는 [E 기록](docs/INSURANCE-BATCH-E-VERIFICATION.md)과 [전체 점검](docs/INSURANCE-BOOK-REVIEW.md)에서 구분한다.
 
-
 ## 세금의 구조와 생활 · 5권
 
-현재 소개와 01–02장을 등록했습니다. 과세 사건·계산의 바탕·현금 시점·확인 조건을 설명합니다.
+현재 소개와 01–04장을 등록했습니다. 과세 사건·계산의 바탕·현금 시점·확인 조건을 설명합니다.
 금액·세율·정산월은 교육용 가정이며 실제 신고·개인별 세액 계산이나 절세 추천을 하지 않습니다.
 전체 계획은 12장이고 A–F마다 검증 후 순차 공개합니다.
-[계획](docs/TAX-TEXTBOOK-PLAN.md) · [배치 A 검증](docs/TAX-BATCH-A-VERIFICATION.md)
+[계획](docs/TAX-TEXTBOOK-PLAN.md) · [배치 B 검증](docs/TAX-BATCH-B-VERIFICATION.md)
