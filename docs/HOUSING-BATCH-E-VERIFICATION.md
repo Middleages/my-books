@@ -43,3 +43,13 @@ PR26 head `64e114ca36beb66395419847a861a971c1991a69`, 실제 checkout `aa3453a39
 첫 ZIP artifact12244975925 SHA-256 `723564a1fa5840bb443e9c1369b45131d1ff049ba0bcd2007f9956fb1efb8829`을 대조했다. 캡처154회와 저장된 고유PNG148개는 다르며, 생성만으로 직접 검토 완료를 뜻하지 않는다.
 
 두 번째 run39380467726(head986577d, checkout486c05d73fc6cf0f245da4e0d4b9556b14e9790a)은160/160·모든 진단0·160고유PNG로 통과했다. 주거비 비교·시장 장면의 수정은 직접 재검토와 독립3장 교차검토를 통과했다. 다만 남은 공급 reduced-motion 이미지에서 세로 단계가 길어 마지막 도착 집단이 제어에서 멀어지는 점을 발견했다. 세 단계 순서·100호 보존은 그대로 두고 모바일 각 단계를 짧은 두 열 행으로 재배치했으며 마지막 단계 근접성 검사를 추가했다. 이 마지막 CSS 수정의 실제 픽셀 검증은 다시 실행한다.
+
+## 최종 production·직접 시각 게이트 — 2026-10-20
+
+최종 앱 소스 head `443ed137880fb816b93ea082e117575fa0c72a7e`(대응 로컬 `890a16b0299df70b30571b02e9a65e0af31714a3`, tree `f9cd41f7a4a9731eb14bdafc4768ca18d369917e`)의 [run39381841110](https://github.com/Middleages/my-books/actions/runs/39381841110)이 build·housing·book-volumes 모두 통과했다. 실제 checkout은 `28f3474318fbc10a7c0ae12dda070182952dc622`, Chromium155.0.8059.39, 06:42:27–06:47:41 UTC이다. 주거160/160, errors/consoleDiagnostics/resourceDiagnostics/nonApplicationDiagnostics 모두0이다. 캡처169회·고유 원본PNG160개를 구분한다. artifact12244964753 ZIP SHA-256 `c74232aacd354139a7fdd2674df15de439b8cd762c56636976af74528ea42d45`를 다운로드 후 대조했다.
+
+최종 JS `index-BI0rw3GK.js` 2,523,289바이트 SHA-256 `0e50464ad9bfcef6c8e440f4584092cea16d710c52e18a190d439c22586e0dc7`, CSS `index-BVBiW5qc.css`326,802바이트 SHA-256 `c2cfd699ac14fb40fc81bf7cf6e5371785c786ebef0123d2138930e9b9526208`를 실제 제공 자산과 비교했다. 직전 직접 검토된 후보와 JS 바이트는 같고 마지막 변경은 좁은 공급 행 CSS와 해당 QA·기록이다. 전체938/938·housing47/47·TypeScript/Vite build·diff 검사 통과를 유지한다.
+
+직접 검토는 다음 범위에서 수행했다. 09의320 매수 인접 가격 선택·평가액,1440의39개월 원장 중단/40개월 부족과 예정60개월 정산 미표시,390 reduced-motion 정적 대안,10의320 거래 구성 변화와 자체 고정구성110 비교를 원본 또는 원본의 native 크기 부분에서 읽었다. 별도 교차검토자도320 매수 선택·320 거래 묶음·1440 부족의 세 장면을 직접 확인했다. 최종 CSS 후에는320 공급 초기·준공 및390 공급 reduced-motion 원본을 다시 열어 시간순 세 행·100호 보존·인접 제어·도착 집단의 가독성을 확인했다. 정적 표는 이름·포커스를 가진 가로 스크롤 영역이며 문서 전체 넘침은 없다. 모든PNG를 사람이 정밀 검토했다고 주장하지 않는다.
+
+앞 절의 ‘아직 미실행’은 당시 실행 전 기록이다. E production·핵심 실제 픽셀 게이트는 이제 통과했고 F의 독립 로컬 준비를 시작할 수 있다. E main 통합·Pages·게시 자산 대조는 아직 하지 않았으며 공개 순서는 D 다음 E로 유지한다. 실제 기기·Safari/Firefox·음성 스크린리더와 학습효과 미검증 범위는 변하지 않는다.
