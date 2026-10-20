@@ -23,8 +23,8 @@
 
 ## 실행 기록
 
-- cloud worktree `node --test tests/housing-*.test.mjs`: 최종 21/21 통과(모델18·진단3).
-- `npm test`: 최신 main `0071bff`를 별도 브랜치에 보존 통합한 뒤 최종 912/912 통과.
+- cloud worktree `node --test tests/housing-*.test.mjs`: 최종 22/22 통과(모델18·진단3·MDX1).
+- `npm test`: 최신 main `0071bff`를 별도 브랜치에 보존 통합한 뒤 최종 913/913 통과.
 - `npm run build`: TypeScript·Vite production 통과. 기존 큰 bundle 경고 유지.
 - verifier에 네 입금순서×6단계·1원부족·미확인 독립 현금경로, 3경계 모델값·0분모·심사금리 독립·음수예산·근접 제어 검사를 추가했다.
 - 본문·모델·표현의 독립 검토에서 추가 코드 차단 사항은 없다. 프리셋은 기존 조건이 달라져도 이름대로 대출·비용을 재설정한다.
@@ -34,3 +34,9 @@
 ## 남은 게이트
 
 정확한 production Chromium의 housing 영향 범위·권차 smoke, 실제 1440/850/390/320·reduced/static PNG 직접 검토. B 공개 후 최신 main 통합·영향 검사·Pages와 게시 자산/대표 화면 대조. Safari/Firefox·실기기 터치·음성 스크린리더·학습 효과는 미검증이다.
+
+## 첫 production 실행에서 발견한 렌더 수정
+
+PR21 `dfd6043`, run39371988388의 실제 Chromium에서 06의 괄호로 끝나는 강조3곳이 원시 별표로 남았다. 콘솔/자원 오류는0이고 05의 네 폭 시나리오는 통과했지만 06 render/table/scenario/reduced의13검사는 실패했다. 실제 실패 PNG와 320px 05 변경 장면을 직접 열어 확인했다. 해당3곳을 명시적 strong으로 고쳤고, MDX 컴파일 결과에 원시 별표가 남지 않는 housing 전 장 회귀를 추가했다. 또한1원 부족 프리셋의 시작현금 range 값/라벨을 정확한 원 단위로 바꿔12500만원 반올림을 없애고 브라우저 입력값·라벨을 검증한다. 앞선 실패를 최종 통과로 대체해 기록하지 않는다.
+
+렌더 수정 뒤 housing22/22, 전체913/913, TypeScript·Vite build와 diff-check를 다시 통과했다. 실제 재검증은 다음 후보의 별도 기록으로 남긴다.

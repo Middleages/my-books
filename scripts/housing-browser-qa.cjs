@@ -414,6 +414,8 @@ async function scenarios(page, id) {
     for(let i=0;i<5;i++) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
     assert.equal(await lab.locator('[data-purchase-failure]').getAttribute('data-purchase-failure'),'shortage');
     assert.equal(await lab.locator('[data-purchase-debt]').getAttribute('data-purchase-debt'),'80000000');
+    assert.equal(await lab.locator('input[type=range]').first().inputValue(),'124999999');
+    assert.match(await lab.locator('.housing-range').first().innerText(),/124,999,999원/);
     assert.match(await lab.locator('.housing-closing-gate').innerText(),/부족 1원/);
     assert.match(await lab.locator('.housing-closing-gate').innerText(),/당시 확인 현금 대비 부족액 1원/);
     assert.match(await lab.locator('.housing-closing-gate').innerText(),/144,999,999원/);
