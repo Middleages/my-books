@@ -191,11 +191,11 @@ Middleages/my-books의 『웹앱 개발자를 위한 데이터베이스』 작�
 
 고유 작업:
 1. 07은 HTTP 요청→대기열→번호 있는 pool 슬롯→DB 세션의 실제 연결과 요청 id를 유지해줘. 연결 대기·DB 사용·반환의 시간 구간을 나누고 lock wait는 DB 사용 안에 포함해 중복 합산하지 마.
-2. 기본은 동시 요청 4개·pool 2개·각 사용 2교육 단계로 완료 시점 2/2/4/4를 재현해줘. pool 1/2, 긴 트랜잭션, 반환 누락, 연결 실패를 비교해줘. FIFO·고정 시간은 모델 가정이지 실제 driver의 성능 보장이 아니야.
+2. 기본은 동시 요청 4개·pool 2개·각 사용 2교육 단계로 완료 시점 2/2/4/4를 재현해줘. pool 1/2, SQL 종료 뒤 앱의 긴 보유, 반환 누락, 연결 획득 실패를 비교해줘. 연결 상한 칸·실제 client·대여 관계를 분리하고 정상 반환 뒤 idle 연결은 남겨줘. 획득 실패에는 SQL/반환을 꾸미지 마. FIFO·고정 시간은 모델 가정이지 실제 driver의 성능 보장이 아니야.
 3. 슬롯당 소유자 1명·사용 중 수<=pool 크기·정상/오류 경로의 반환·한 트랜잭션의 동일 connection을 검증해줘. 앱 replica별 pool 합계와 DB 한도·관리 여유를 보여주되 큰 pool이 잠금·느린 SQL을 해결한다고 쓰지 마.
 4. node-postgres의 실제 예는 값 매개변수화, 동일 client의 BEGIN/COMMIT/ROLLBACK, finally 반환을 확인해줘. 임의의 여러 pool.query를 하나의 트랜잭션으로 만들지 마. DB 비밀정보를 브라우저에 넣지 마.
-5. 08은 scan→join→aggregate의 plan tree와 데이터 행 흐름을 그려줘. estimated는 외곽선, actual은 채움으로 같은 눈금에서 비교해줘. estimated 4/actual 40/loops 1, actual 2/loops 10 등의 plan fixture를 '교육용·서버 출력 아님'으로 표시하고 행 수·loops를 같은 모델에서 읽어줘.
-6. cost는 ms가 아니고 actual rows/time은 loops와 함께 읽는다는 점, 부모 시간을 모두 더하면 중복된다는 점을 설명해줘. 앱 N+1 호출은 plan loops와 다른 lane이야. 최신/낡은 통계 fixture의 비교는 실제 optimizer가 반드시 그 plan을 고른다는 약속이 아니야.
+5. 08은 필터를 포함한 scan→aggregate, 별도 nested-loop, 별도 streaming scan→LIMIT의 bounded plan을 그려줘. estimated는 익명 수량 외곽선, actual은 채움으로 같은 행 단위를 써줘. 64확인→scan 예상4/관측40→COUNT 값40인 결과1행, 원래 고객1의 항목2/1행→평균1.5×loops2=3, LIMIT의4확인/2출력/끝까지예상10 반례를 '교육용·서버 출력 아님'으로 표시해줘.
+6. cost는 ms가 아니고 actual rows/time은 loops와 함께 읽는다는 점, 부모 시간·BUFFERS를 모두 더하면 중복된다는 점을 설명해줘. BUFFERS는 누적이라 loops를 또 곱하지 마. actual time 두 수는 공통 시계의 시작/끝이 아니므로 포함 시간표는 별도 합성 도해로 표시해줘. 앱 N+1 호출은 plan loops와 다른 lane이야. 최신/낡은 통계 fixture의 비교는 실제 optimizer가 반드시 그 plan을 고른다는 약속이 아니야.
 7. EXPLAIN ANALYZE는 실제 실행이야. 기본 실제 관찰은 승인된 합성 DB의 부작용 없는 SELECT로 제한하고 임의 운영 쿼리·변경 SQL을 실행하지 마. rollback이 sequence·외부 부작용까지 모두 취소한다고 보장하지 마. 실제 plan을 수집하면 SQL·data·version·환경과 원출력을 보관해줘.
 8. 공개 범위는 01–08이며 WAL·백업은 E로 남겨줘.
 

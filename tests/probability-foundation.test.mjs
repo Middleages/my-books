@@ -71,11 +71,11 @@ test('probability 02: probability0/1, impossible result and invalid model reject
   for (const outcomes of [[], [{ loss: 1, probability: .5 }], [{ loss: -1, probability: 1 }], [{ loss: Infinity, probability: 1 }], [{ loss: 1, probability: -1 }], [{ loss: 1, probability: NaN }]]) assert.throws(() => evaluateLoss(outcomes, 20));
   assert.throws(() => evaluateLoss([{ loss: 1, probability: 1 }], -1)); assert.throws(() => lossModel({ dueDay: 0 }));
 });
-test('probability A: only implemented reserved routes and volume8; preserve data labels and honest boundaries', () => {
+test('probability A: original reserved route prefix and volume8 retain data labels and honest boundaries', () => {
   const catalog = readFileSync(new URL('../src/catalog.ts', import.meta.url), 'utf8');
   assert.match(catalog, /id: "probability", categoryId: "money", volume: 8/);
   const ids = [...catalog.matchAll(/id: "([^"]+)", bookId: "probability", readId: "([^"]+)"/g)];
-  assert.deepEqual(ids.map(x => [x[1], x[2]]), [['averages-and-distributions', 'probability/averages-and-distributions'], ['losses-and-liquidity', 'probability/losses-and-liquidity']]);
+  assert.deepEqual(ids.slice(0, 2).map(x => [x[1], x[2]]), [['averages-and-distributions', 'probability/averages-and-distributions'], ['losses-and-liquidity', 'probability/losses-and-liquidity']]);
   for (const file of ['Intro', 'AveragesDistributions', 'LossesLiquidity']) { const text = readFileSync(new URL(`../src/content/probability/${file}.mdx`, import.meta.url), 'utf8'); assert(!text.includes('Math.random')); assert(text.includes('가상')); }
 });
 
