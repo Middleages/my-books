@@ -1,0 +1,14 @@
+export type MortgagePathParams={principal:number;annualRate:number;resetRate:number;months:number;prepayment:number;feeRate:number};
+export type MortgagePathRow={month:number;rate:number;opening:number;regularPrincipal:number;interest:number;regularPayment:number;afterRegular:number;extra:number;fee:number;totalPayment:number;closing:number;cumulativePrincipal:number;cumulativeInterest:number;cumulativeFees:number;cumulativePayment:number;repriced:boolean};
+export type MortgagePath={rows:MortgagePathRow[];totalInterest:number;totalFees:number;totalPayment:number};
+export const mortgagePathDefaults:MortgagePathParams;
+export function mortgagePaths(p?:Partial<MortgagePathParams>):MortgagePathParams&{paths:{fixed:MortgagePath;reset:MortgagePath};bullet:{rows:{month:number;opening:number;interest:number;principal:number;payment:number;closing:number}[];totalInterest:number;totalPayment:number};assumedPrepaymentMonth:number;assumedResetMonth:number};
+export type ExternalCostParams={startCash:number;service:number;levy:number;documentation:'confirmed'|'unknown';refund:'waiting'|'assumed'};
+export type ExternalCostFrame=ExternalCostParams&{step:number;months:number;servicePaid:number;levyPaid:number;refundCash:number;claim:number|null;unclassified:number;cash:number;paidOut:number;refundStatus:'no-target'|'unknown'|'arrived'|'waiting'};
+export const externalCostDefaults:ExternalCostParams;
+export function externalCostFrames(p?:Partial<ExternalCostParams>):ExternalCostFrame[];
+export type OwnReserveParams={startCash:number;monthlyFunding:number;reserveTransfer:number;repairCost:number;repairMonth:number;responsibility:'assumed'|'unknown'};
+export type ReserveFailure={month:number;kind:'shortage'|'unconfirmed';gap:number|null};
+export type OwnReserveFrame=OwnReserveParams&{month:number;incoming:number;wallet:number;reserve:number;funding:number;spent:number;transferred:number;paidFromReserve:number;paidFromWallet:number;totalCash:number;failure:ReserveFailure|null;status:'not-due'|'no-payment'|'unconfirmed'|'unpaid'|'paid'};
+export const ownReserveDefaults:OwnReserveParams;
+export function ownReserveFrames(p?:Partial<OwnReserveParams>):OwnReserveFrame[];
