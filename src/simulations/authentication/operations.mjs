@@ -20,7 +20,7 @@ export function authDiagnosisFrame(step=0,scenario='audience'){
  const target=id==='csrf'?'callback':id==='loop'?'session':id==='jwks'?'validation':'api';
  const reason=token?.failed.join(' · ')??(cb?'로그인 요청과 state 연결 불일치':policy?'현재 역할에 update 없음':trust?'새 kid의 검증 키 확보 실패':'앱 세션을 다음 요청에서 찾지 못함');
  const denied=token?token.decision==='reject':cb?cb.decision==='reject':policy?policy.decision==='deny':trust?trust.decision==='reject':true;
- const gates=[['start','로그인 시작'],['callback','callback'],['exchange','code 교환'],['validation','로그인 검증'],['session','앱 session'],['api','API 인가']].map(([gate,label])=>({id:gate,label,status:s>=2&&gate===target?(denied?'fail':'pass'):'unknown'}));
+ const gates=[['start','로그인 시작'],['callback','callback'],['exchange','code 교환'],['validation','로그인 검증'],['session','앱 session'],['api','API 검증·인가']].map(([gate,label])=>({id:gate,label,status:s>=2&&gate===target?(denied?'fail':'pass'):'unknown'}));
  const correlationId='SIM-CORR-'+Object.keys(diagnosisCases).indexOf(id);
  const log=s>=3?{correlationId,stage:target,result:denied?'reject':'pass',reasonCategory:id}:null;
  return{step:s,scenario:id,symptom:diagnosisCases[id],gates,target,reason:s>=2?reason:null,correlationId,log,redactedFields:excludedFields,conclusion:s<2?'요약만으로 실패 원인을 확정할 수 없음':reason,next:id==='loop'?'cookie 전송 범위와 세션 저장소를 각각 확인. IdP 장애라고 단정하지 않음':id==='jwks'?'신뢰한 JWKS 경로·키 회전·cache 갱신 상태 확인. 서명 검사 생략 금지':id==='permission'?'현재 역할·객체·tenant 정책 확인. 재로그인이 권한 부여는 아님':id==='csrf'?'시작한 로그인 거래와 callback의 연결 확인. 검증 끄지 않음':'API의 용도·issuer·audience·시간 판정 구분. 토큰 원문 수집 금지',actionExecuted:false};
