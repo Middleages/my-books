@@ -44,3 +44,10 @@ Draft PR [#38](https://github.com/Middleages/my-books/pull/38), 원격 소스 `3
 ## 최종 인계
 
 소스·unit/build·첫 카테고리 전체 9-suite 및 위 원본 화면 검토 완료. 이 문서의 후속 갱신은 교육 소스를 바꾸지 않는 기록 변경이며, 실제 검사 대상 tree는 위에 명시했다. 최신 main 통합 시 병행 세금·주거·DB·회계 변경을 보존하고 범위 선택 및 exact-live 게이트를 다시 확인해야 한다. 본 브랜치에서 main/Pages를 직접 변경하지 않았다.
+
+
+## A 정확한 게시 완료 · 2026-10-20
+
+새4권 합본의 actual main `9c1df885218915bd368744e1420c3c17ce911fd1`, tree `5eaa478898fc3a7b4cab4bac2a54b13d584367ba`에서 [run39404076837](https://github.com/Middleages/my-books/actions/runs/39404076837)의 전체1166 단위/build·12 production·Pages·12 published가 모두 성공했다. 배포10:17:30 UTC, 전체 workflow 성공10:41:27 UTC, 최종 자산 검사 동안 main은 고정됐다. 육아 자체 production37 / published38 검사, 각각 원본41PNG, 앱 오류0이다. published의 정확한 host-root favicon4041건은 별도 진단으로 보존했다.
+
+작성자가 실제 게시 원본 `320-observation-2,390-age-before-due,1440-age-initial,390--child-development`를 직접 열어 앞서 검증한 의미관계·모바일 라벨과 조작부의 회귀가 없음을 해당 범위에서 확인했다. 전체 PNG나 실제기기/스크린리더·실제 시스템/개인 결과 검증으로 확대하지 않는다. 전체 ZIP digest·정확 JS/CSS·다른 suite·직접 검토 한계는 [새4권 합본 최종 기록](NEW-BOOKS-A-WAVE-VERIFICATION.md#정확한-mainpages실제-게시-게이트-완료--2026-10-20)에 남겼다. A 소개·01–02만 이 source에 포함되며 후속 배치 공개는 별도 순서를 따른다.

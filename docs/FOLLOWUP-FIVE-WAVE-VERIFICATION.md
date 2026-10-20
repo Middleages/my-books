@@ -1,6 +1,6 @@
 # 다섯 후속 배치 통합 검증
 
-작성: 2026-10-20 UTC. DB D07–08·회계 C05–06·확률 B03–04·관측 B03–04·육아 발달 B03–04의 독립 검증 소스를 합친 후보다. **아직 main/Pages/실제 게시 완료가 아니다.** 새 네 권 A 합본의 실제 게시 게이트가 닫히기 전에 이 후보를 main에 공개하지 않는다. 인증 B와 이 다섯 책의 더 뒤 배치는 포함하지 않는다.
+작성: 2026-10-20 UTC. DB D07–08·회계 C05–06·확률 B03–04·관측 B03–04·육아 발달 B03–04의 독립 검증 소스를 합친 후보다. **다음 첫 부분은 소스 후보 작성 당시 기록이며, 실제 main/Pages 완료 결과는 마지막 절에 있다.** 새 네 권 A 합본의 실제 게시 게이트가 닫히기 전에 이 후보를 main에 공개하지 않는다. 인증 B와 이 다섯 책의 더 뒤 배치는 포함하지 않는다.
 
 ## 보존 기준과 정확한 범위
 
@@ -54,3 +54,32 @@ JS `index-C-WWcxzg.js` SHA-256 `825846cd000f3e20dbe9af1003ae406379da5e703d4252c6
 
 
 추가 직접 검토와 알려진 편집 한계: 확률 작성자가 같은 PR57의320-frequency-zero-observed,320-frequency-theory,320-conditional-empty,320-conditional-tree,320-conditional-controls,320-conditional-static 원본6개를 다시 열어 관측0/100과 가정p, 양의 꼬리 확률, 빈0÷0, 네 칸의 건수와90/288을 확인했고 이 범위 차단점을 찾지 못했다. DB 작성자는 별도 SSR에서07의 첫 `연결 풀(connection pool)`과08의 `실행계획(plan)` 정의 두 곳의 Markdown 강조 별표가 글자로 남는 편집 문제를 발견했다. 모델·그림·문장 의미가 달라지는 오류는 아니지만 강조 렌더까지 완전하다고 주장하지 않는다. 검증된 이 후보의 앱 바이트를 임의로 바꾸지 않고, 앞 장의 같은 사례와 함께 후속 최종 편집 및 SSR 회귀에서 수정·재검증한다.
+
+
+## 실제 main·Pages·게시 게이트 완료 — 2026-10-20
+
+main `a2a017730aed91c416e8ba6535c62580a6646bf4`, tree `30229911e8630785ad95f98330bb545e3718c6aa`의 [Actions39410741375](https://github.com/Middleages/my-books/actions/runs/39410741375)에서 전체1225/1225·447 modules build, 선택6종 production1068검사·927PNG, Pages 배포(11:03:42 UTC), 선택6종 published1073검사·927PNG가 모두 성공했다. 마지막 DB 게시 job은11:15:51 UTC에 종료됐다. 합계2141검사·1854원본PNG이며 생략한 보험·투자·세금·쿠버네티스·주거·인증6종은 이 실행의 통과 수에 넣지 않는다.
+
+모든12개 원본 ZIP의 GitHub digest를 내려받은 바이트와 비교했고, 각 report의 source·clean·결과와 scope의 정확한 tree/선택6·생략6을 확인했다. tree 필드가 없는 DB report는 source SHA와 동일한 scope tree를 함께 사용한다. 실제 게시 JS `index-C-WWcxzg.js` 3271496 bytes·SHA256 `825846cd000f3e20dbe9af1003ae406379da5e703d4252c63994eca6199abf93`, CSS `index-DCxMGGOC.css` 390359 bytes·SHA256 `d7c9dbb3619fd2e8e0c93706df7c52e01b7fca876299b7125ad431b27aa2eddb`의 전체 bytes/해시가 빌드와 일치했다. PR57 검증 앱과도 동일하다.
+
+앱/page/console/resource 실패는0이다. 홈을 제외한 게시5종에서 정확한 호스트 루트 `https://middleages.github.io/favicon.ico`404 한 건씩은 별도 진단으로 보존했다. 이 비앱 진단까지0이라고 쓰지 않으며 다른 출처·상태·앱 자산 오류는 계속 실패 조건이다.
+
+| suite | 게시 검사 | 원본 PNG | artifact | ZIP SHA256 |
+| --- | --- | --- | --- | --- |
+| accounting | 201 | 173 | 12260476582 | `e7cd9f6154c0c8cc337423595e3d83451cba7518b27987bbe35a431453f56b44` |
+| book-volumes | 14 | 51 | 12260276294 | `4f7c767a7d01870a382c77a48c9284888109c8f1fb3917020e30178a354656d5` |
+| database | 512 | 405 | 12259988470 | `4f7f060f1e5e18f2ec7f7bd1b3716517285a397e2e141ab22c1c110f3f7ba04a` |
+| observability | 19 | 69 | 12259971437 | `eb327f1995882ec21f3f64dd4b8f00d419d11fb8c7562eca0eb65ce6a4f9da43` |
+| probability | 269 | 73 | 12259488688 | `5893ae8a176189c1e96fefb1006be6daf17c22a740bf1424d12715835a130bc5` |
+| child-development | 58 | 156 | 12259383595 | `28ecc9f4bb65548e6ab9a844e78f2f63b9d56b1601ca8b8bb450e41a607646f0` |
+
+### 실제 게시 원본 직접 검토
+
+- DB D07–08: `320-d07-pool1-leak-final,1440-d07-pool1-leak-dispatch-0,1440-d07-binding-split-update,320-d07-binding-split-final,1440-d08-nested-loop-true-low-final,320-d08-app-calls`(각각.png). 작성자가 원본6개와 nested 상단1200px native 범위를 직접 읽었다. SQL 종료≠반환과 대기, C2 확정이 C1취소 밖인 경계, 평균1.5×loops2=누적3, DB 반환합3/5와 앱 조립3이 유지된다.
+- 회계 C05–06: `1440-inventory-single-80-step-4,320-inventory-fifo-60-step-4,1440-inventory-average-60-step-4,320-working-stock-paid-160-step-6,320-working-due-before-160-step-6,1440-working-due-after-160-step-6`(각각.png). 통합 담당자가 원본6개를 직접 열었다.20/80 수량과60+240=300, 동일350 원가의 FIFO160/190 대 평균140/210, 추가 지급60의 현금240,12일 부족10이 이후510에도 남는 반례와20일 성공 후150을 읽었다.
+- 확률 B03–04: `320-frequency-zero-observed,320-frequency-theory,320-conditional-empty,320-conditional-tree,320-conditional-controls,320-conditional-static`(각각.png). 작성자가 원본6개를 직접 읽었다.0/100관측≠p0, 기대1과P0=36.6032%, 양의 작은 확률,0/0미정,90/10/198/9702와 분모288, 인접 제어와 정적 표를 확인했다.
+- 관측 B03–04: `320-logs-late,390-logs-duplicate,1440-logs-unsafe,320-metrics-gap`(각각.png). 작성자가 원본4개의 핵심 영역을 직접 열었다. 발생/도착 순서, 중복 사건과 요청 수, 수집 전 authorization/freeText 제외, gauge누락?와 원본 duration 표본의 구별이 유지된다.
+- 육아 발달 B03–04: `320-record-no-chance,1440-record-assisted,320-movement-grasp-near-1,1440-movement-release-near-1,320-movement-turn-near-1`(각각.png). 작성자가 원본5개를 직접 읽었다. 기회 없음과 도움받은 관찰이 분리되고 손-물체 접촉/분리·몸 방향이 그림과 라벨에 맞으며 실제 거리·능력 기준으로 제시하지 않는다.
+- 홈3원본:1440-home 전체,320-home 및390-reading-first의 native상단0–2000px.15권125장과 DB8·회계6·확률4·관측4·발달4·인증2, 고정 권차 및 읽는 책 우선 정렬을 확인했다.320 hero 한 글자 줄바꿈은 기존의 경미한 미관 한계다.
+
+이30개 실제 게시 원본의 명시한 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다.927개 전부·모든 표행·실제 기기/스크린리더·실제 DB/금융/관측/의료 검증을 뜻하지 않는다. 원본을 보존한 검토용 crop은 원본 PNG 수에 더하지 않았다. DB07·08의 앞서 기록한 Markdown 강조 별표 편집 한계는 후속 최종 편집에서 닫으며 이번에 앱을 임의 수정하지 않았다. main은 위 게시 검사와 직접 확인 동안 고정됐고 이후 배치만 순서대로 반영한다.

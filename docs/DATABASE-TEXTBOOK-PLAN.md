@@ -1,6 +1,6 @@
 # 웹앱 개발자를 위한 데이터베이스 — 교재 계획
 
-작성일·공식 자료 확인일: **2026-10-20 (KST)**. 상태: **A 소개·01–02와 B03–04는 main05602d24/Pages 공개 및 DB340개·권차14개 실제 공개 검사·직접 화면 검토 완료. C05–06은 main47c36cc/Pages·실제 DB416개 검사 및 핵심6원본 검토까지 완료했다. D07–08은 별도 PR39 production·직접 검토를 완료하고 최신 합본 검증을 준비 중이며 아직 main/Pages는 미게시다. E–G 본문은 이 트리에 포함하지 않는다. 실제 DB 미실행**.
+작성일·공식 자료 확인일: **2026-10-20 (KST)**. 상태: **A 소개·01–02와 B03–04는 main05602d24/Pages 공개 및 DB340개·권차14개 실제 공개 검사·직접 화면 검토 완료. C05–06은 main47c36cc/Pages·실제 DB416개 검사 및 핵심6원본 검토까지 완료했다. D07–08은 maina2a0177/Pages의 실제 게시512/512·대표6원본 검토까지 완료했다. E–G 본문은 이 트리에 포함하지 않는다. 실제 DB 미실행**.
 기획 시 확인한 main: `609e6f2cef1c449ee8760f92c98b01ace238d5e1`. 구현은 이 SHA에 고정하지 않고 항상 최신 main과 병행 작업을 확인한다.
 
 관련 기준: [AGENTS.md](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [네트워크 계획](NETWORK-TEXTBOOK-PLAN.md), [쿠버네티스 계획](KUBERNETES-TEXTBOOK-PLAN.md), [독립 실행 프롬프트](DATABASE-SESSION-PROMPTS.md).

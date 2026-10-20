@@ -32,3 +32,10 @@ A PR35 tree `b52b7a4774cd4e79827dbf2a7ddfe71262c9ea29`는 전체 unit/build, pro
 수정 후보 production 자체 게이트는 18개 검사묶음·69 PNG·오류/진단0으로 통과했다. artifact `12253545398`, ZIP SHA256 `94ecc4f1850aa7738a1e2e14aef0526a087db7e8d3c470578d066b994be83ee1`. report sourceTree는 위 `50d700de…`와 일치한다. 최종 1440px/320px 누락 장면 원본을 직접 열어 counter와 gauge가 모두20초를 물음표로 표시하고, 인접 증가율은 알 수 없음이며, 요청별 시간 막대가 수집값 복원이 아닌 실험 원본임을 밝히는지 확인했다. 320px 원본 해상도에서도 범례와 버튼이 잘리지 않았다. 앞선 동일 logs·나머지 metrics 분기 직접 검토와 함께 자체 시각 게이트를 닫는다. 전체9 browser 회귀는 여전히 진행 중이며 main/Pages/live는 미게시다.
 
 2026-10-20 09:28 UTC에 run `39397895387`의 completed/success를 확인했다. 수정 소스 tree `50d700deb8fa7944d6518dcf32e777fb82a8c46e`의 전체 unit1149/1149·build·9개 browser suite가 모두 통과했다. 자체 production와 직접 시각 검토는 앞선 기록대로이며, B는 A 이후 후속 통합 대상이다. main/Pages 게시 성공은 아직 주장하지 않는다.
+
+
+## 최신 합본의 실제 게시 완료 — 2026-10-20
+
+main `a2a017730aed91c416e8ba6535c62580a6646bf4` / tree `30229911e8630785ad95f98330bb545e3718c6aa`, [run39410741375](https://github.com/Middleages/my-books/actions/runs/39410741375)의 전체1225/build·선택6종 production→Pages→published가 성공했다. 이 책의 실제 게시 **19/19·69원본PNG**, 앱 오류0이며 정확한 host-root favicon404 한 건만 별도 진단으로 보존했다. artifact12259971437 ZIP SHA256 `eb327f1995882ec21f3f64dd4b8f00d419d11fb8c7562eca0eb65ce6a4f9da43` 일치. 실제 JS/CSS 전체 bytes·해시는 [합본 게시 기록](FOLLOWUP-FIVE-WAVE-VERIFICATION.md)의 정확한 main 빌드와 같고 source 변경은 없다.
+
+직접 연 실제 게시 원본: `320-logs-late,390-logs-duplicate,1440-logs-unsafe,320-metrics-gap`(각각.png). 작성자가 원본4개의 핵심 영역을 직접 열었다. 발생/도착 순서, 중복 사건과 요청 수, 수집 전 authorization/freeText 제외, gauge누락?와 원본 duration 표본의 구별이 유지된다. 검토한 범위에 새 잘림·겹침·의미 차단점을 찾지 못했다. 모든69개를 사람이 읽었다거나 실기기·스크린리더·실제 시스템/임상 검증을 수행했다고 주장하지 않는다. 앞선 미게시 문구는 당시 소스 검증 단계의 기록이며 이 절이 해당 배치의 main/Pages 완료 상태다. 후속 배치는 별도 검증과 순차 게시를 유지한다.
