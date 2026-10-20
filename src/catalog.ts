@@ -5,6 +5,8 @@ import RevenueAndCash from "./content/accounting/RevenueAndCash.mdx";
 import ExpensesAndTiming from "./content/accounting/ExpensesAndTiming.mdx";
 import InventoryAndCost from "./content/accounting/InventoryAndCost.mdx";
 import WorkingCapital from "./content/accounting/WorkingCapital.mdx";
+import EquipmentAndDepreciation from "./content/accounting/EquipmentAndDepreciation.mdx";
+import FinancingAndEquity from "./content/accounting/FinancingAndEquity.mdx";
 import PurchaseCash from "./content/housing/PurchaseCash.mdx";
 import MortgageLimits from "./content/housing/MortgageLimits.mdx";
 import RentalContract from "./content/housing/RentalContract.mdx";
@@ -121,6 +123,8 @@ export const chapters: Chapter[] = [
   { id: "expenses-and-timing", bookId: "accounting", readId: "accounting/expenses-and-timing", number: "04", title: "쓴 때와 낸 때", heading: "이번 달에 낸 돈이 모두 이번 달 비용일까?", description: "선급 권리·사용 비용·미지급 의무와 현금 지급을 같은 기록으로 나눕니다.", Content: ExpensesAndTiming },
   { id: "inventory-and-cost", bookId: "accounting", readId: "accounting/inventory-and-cost", number: "05", title: "창고에서 비용으로", heading: "물건을 사면 모두 비용이 될까?", description: "상품 수량과 원가의 보존, 판매와 지급, 원가 배분을 함께 관찰합니다.", Content: InventoryAndCost },
   { id: "working-capital", bookId: "accounting", readId: "accounting/working-capital", number: "06", title: "장사가 커질 때 묶이는 돈", heading: "더 팔았는데 왜 돈이 더 필요할까?", description: "채권·재고·매입채무와 지급일의 현금 부족을 같은 장부에서 연결합니다.", Content: WorkingCapital },
+  { id: "equipment-and-depreciation", bookId: "accounting", readId: "accounting/equipment-and-depreciation", number: "07", title: "설비를 사고 여러 달 쓰기", heading: "설비240을 샀는데 왜 이번 달 비용은10일까?", description: "취득 지급과 사용기간의 원가 배분, 누계액과 장부금액을 구별합니다.", Content: EquipmentAndDepreciation },
+  { id: "financing-and-equity", bookId: "accounting", readId: "accounting/financing-and-equity", number: "08", title: "빌린 돈과 맡긴 돈", heading: "원금·이자·배당은 왜 다른 기록일까?", description: "출자·차입과 원금 상환·이자 비용·소유주 분배를 같은 원장에 연결합니다.", Content: FinancingAndEquity },
   { id: "housing-rights", bookId: "housing", readId: "housing/housing-rights", number: "01", title: "집에 사는 것과 집을 소유하는 것", heading: "같은 집에 살아도 가진 권리는 같을까?", description: "거주·소유·반환청구권·채무와 현금의 이동을 구분합니다.", Content: HousingRights },
   { id: "rent-and-deposit", bookId: "housing", readId: "housing/rent-and-deposit", number: "02", title: "월세와 보증금의 두 가격", heading: "월세가 작으면 더 싼 계약일까?", description: "보증금 차이와 월세 감소, 자금 출처·기회비용·초기 부족을 나눕니다.", Content: RentAndDeposit },
   { id: "rental-contract", bookId: "housing", readId: "housing/rental-contract", number: "03", title: "계약부터 입주까지의 권리 지도", heading: "계약서를 썼다는 사실만으로 무엇이 보호될까?", description: "계약의 문장을 자료·권한·서로 다른 날짜의 사실에 연결합니다.", Content: RentalContract },
@@ -505,7 +509,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–06장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
+  { id: "accounting", categoryId: "money", volume: 7, title: "회계와 기업의 돈", category: "돈·경제 · 기업의 기록과 현금", cover: "ACCOUNTING & BUSINESS MONEY", description: "이익이 나는데 왜 현금이 부족할까? 한 회사의 거래와 장부를 따라갑니다.", overview: "회사 경계·복식 기록에서 재고·설비·자금 조달과 세 보고서의 연결을 살펴봅니다.", future: "소개·01–08장 공개 · 가상 거래로 시작하며 실제 회사 장부·신고·투자 판단은 하지 않습니다.", Intro: AccountingIntro },
   { id: "housing", categoryId: "money", volume: 6, title: "집과 주거의 경제", category: "돈·경제 · 거주와 계약", cover: "HOUSING & EVERYDAY CHOICES", description: "사거나 빌릴 때 달라지는 돈과 권리. 비용·대출·위험을 같은 조건에서 읽습니다.", overview: "보증금·거래 자금·상환·유지비·이사 시차와 생활 조건을 가상 사례로 연결합니다.", future: "소개·01–06장 공개 · 권리·계약·회수·거래 자금·생활 부담부터 임차·매수 비교, 주거 자료 읽기까지 차례로 살펴봅니다.", Intro: HousingIntro },
 
   { id: "database", categoryId: "technology", volume: 4, title: "웹앱 개발자를 위한 데이터베이스", category: "데이터베이스 · 데이터의 관계와 경계", cover: "DATABASES FOR WEB APPS", description: "저장됐는데 왜 틀리고, 조회는 왜 느릴까? 작은 상점의 데이터와 요청을 따라갑니다.", overview: "표·조회·변경·복구의 관계를 직접 조작하며 올바른 데이터와 진단의 근거를 이해합니다.", future: "소개·01–02장 공개 · 브라우저 교육 모델이며 실제 DB 실습은 미실행입니다.", Intro: DatabaseIntro },
