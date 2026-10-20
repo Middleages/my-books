@@ -82,3 +82,41 @@ PR82 head98f1cf8e5a92fa0acb949236d96588add203bd8b, tree91690a1f261377342ec7d8a1e
 작성자는 새 원본320-age-scenes-2,390-age-scenes-18,320-pointing-request/share,390-age-scenes-between-17,320-play-hide-2,1440-play-container-2,320-first-year-12-all의8개를 직접 열었다.50개 구체 장면의 책 태그·원출처 영역, 요청/관심 공유 선 종점, 비보간 안내와 기존 놀이 물체 관계·인접 제어를 확인했다.17개월 이미지는 안내 문단만이며 양쪽 그룹 동시 렌더는 DOM 검사,13개월은 모델 단위 검사로 구별한다.08은 기존 두 발췌 예시를 유지하며 더 풍부한08–10 연결은 별도 후속 검증 대상이다.
 
 통합 담당자는1440-home 전체와320-home/390-reading-first의 원본 native상단0–2000px를 열어17권155장, 육아 고정1/2/3권·수면/먹기0/4, 읽는 책 우선 뒤 네트워크2/돈1의1/15·1/10 진도를 확인했다. 이11개 고유 원본의 한정 범위에서 새 잘림·겹침·의미 회귀는 없었다. 기존320 hero의 마지막 한 글자 줄바꿈은 경미한 미관 한계다. 전체483원본의 사람 전수 검토·실기기·스크린리더·임상 감수·실제 게시 완료로 확대하지 않는다.
+
+
+## 정확한 main·Pages·실제 게시 게이트 — 2026-10-20
+
+최종 main `5b257ffccec0199c960a1ec25bec27e81351dc31`, tree `8addcb735c563962876bb6873c3b19d335932895`의 [run39425708305](https://github.com/Middleages/my-books/actions/runs/39425708305)에서 전체1342/1342 단위·527 modules build, 선택9종 production **1715검사·2031원본 PNG**, Pages 배포(13:08:22UTC), 같은9종 published **1723검사·2031원본 PNG**가 순서대로 성공했다. 20개 job이 모두 성공했으며 총3438검사·4062원본 캡처다. 보험·투자·세금·K8s·주거5종은 이 영향 검사에서 생략했다.
+
+모든 ZIP SHA256과 source/clean 상태, scope의 정확한 main/tree·선택9/생략5, 단일 build artifact12266555326을 검증했다. 위 PR82의 JS/CSS 이름·해시·크기를 그대로 유지하고 실제 배포가 제공한 전체 바이트까지 일치했다. 앱/page/console/resource 오류는0이다. 실제 게시에서 권차를 제외한8종에 각각1건 관측된 `https://middleages.github.io/favicon.ico`404만 정확한 호스트 기본 favicon 진단으로 별도 보존했으며, 이를 모든 콘솔 메시지가0이었다고 표현하지 않는다. 앱 경로/다른 URL·status·출처 없는 오류는 제외하지 않았다.
+
+| suite | production 검사 | published 검사 | mode당 원본 PNG | published artifact | published ZIP SHA256 |
+| --- | --- | --- | --- | --- | --- |
+| database | 576 | 577 | 581 | 12267741621 | `69af5c49328403b344eaae55c2a1ed045b72d80db16ab21fdb442baa34cd82aa` |
+| probability | 533 | 534 | 182 | 12267271353 | `33335d33fded96a80c0ed288d58d116104fd3e318f91c4ff625e267ccad2aed1` |
+| accounting | 332 | 333 | 297 | 12266892734 | `e6020354d482c9522d4e6e1130761cd29e7bbe052b49aea4e314514adddde0d7` |
+| authentication | 27 | 28 | 150 | 12266876825 | `c16f5be9f74a8e20214c124dacf4bc39387ae96f99195daf4a5b8f6e1c6d6413` |
+| observability | 34 | 35 | 144 | 12266832063 | `97294448fc6cd6bf2bb683234784c67725068842ea997691a0ea6adac30fc44a` |
+| child-development | 107 | 108 | 426 | 12266542713 | `d3dc0b8695f2bab5b72a1eb0a9e4f12d08efd25fa61d5487edbbc7c8b6717620` |
+| book-volumes | 14 | 14 | 57 | 12266458670 | `ff33583f30323c90c0d0aa2457b7510fe03c825694834f01f955f350cac44952` |
+| child-sleep | 50 | 51 | 109 | 12266392549 | `79e00830a99ee9127d13e77cfa00674097be8a0a3713130a38a6a121a522f2e4` |
+| child-feeding | 42 | 43 | 85 | 12266317685 | `b9de0f5c3152a1fffa97b5c4a2248cb70ab17fa4a3da4a9f41593940b5494c0b` |
+
+### 실제 게시 원본 직접 재검토
+
+다음은 실제 main5b 원본의 대표 범위만이며 전체4062캡처를 사람이 전수 검토했다는 뜻은 아니다.
+
+- 발달6:320-first-year-12-all,320-play-hide-2,1440-play-container-2,320-pointing-request/share,320-age-scenes-2. 기존08의 두 발췌와 소개·02의 풍부한 실제 행동 예시를 구별해 확인했다. 후속 PR84의08–10 다섯 영역 보강이 이 게시에 이미 포함됐다고 주장하지 않는다. 같은 물체의 가림/그릇 안팎, 다음 아이 반응 미확인, 요청/관심 공유 종점, 구체 예시·CDC 원출처 영역과 인접 제어가 유지된다.
+- 관측3:1440-delivery-ack-pending 전체,320-delivery-ack-retry/390-instrumentation-duplicate의 native y1700–3700. 저장3과pending3,6복사본과3고유사건, 요청1과span3을 별개로 읽을 수 있다. 모바일 ACK 방향과 제어가 유지된다.
+- 인증3:1440-oidc-nonce 전체,320-delegation-object-denied/390-oidc-normal의 native y1700–3700. nonce 실패의 세션 미실행, scope통과와객체 소유 거절, 브라우저/서버 왕복과 앱세션 쿠키 경계가 유지된다.
+- 수면3:320-caregiver-boundary,390-rhythm-rested-day,1440-reference-twelve. 보호자 취침 전 별도 적합 수면 공간 복귀·소파/푹신한 안락의자 동반수면 회피 두 문장, 독립 리듬 층과12개월 원문 구간 중첩/평균하지 않음이 읽힌다.
+- 먹기3:320-mealtime-unknown,1440-mealtime-moving,320-preparation-cut. 관찰 모름을 안전으로 채우지 않고 이동 중 식사 회피, 자르기≠부드러움, 단단함 빗금과 포커스를 확인했다.
+- 회계8:1440-statements-base-position,390-statements-full-collection-position,320-profit-cash-no-collection-profit-final,1440-profit-cash-full-collection-profit-final,320-profit-cash-service-paid-profit-final,390-profit-cash-long-life-profit-final,320-profit-cash-depreciation-step,1440-statements-period-mismatch. 작성자가 직접 열어795=390+405/225, 회수400의465와−0없는0, 무회수−310/65·서비스 완납−170/205·48개월상각5/이익70의 조건별 해설, 비현금상각과 기간 혼합 중지를 확인했다.
+- 공통 홈3:1440-home 전체와320/390-home native y0–2000.17권155장 및 대상 책의8/6/4 등 정확한 분모와 고정 분야 권차가 유지된다.320 hero 마지막 음절 줄바꿈은 기존 경미한 미관 한계이며 잘림은 아니다.
+
+확률D와DB E의 직접 재검토까지 완료했으며 아래에 범위를 구분한다. 임상/영양 전문가 감수·실기기·스크린리더 음성·실제 DB/SSO/관측 스택 및 개인 금융 판단은 이 교육용 브라우저 검사에 포함하지 않았다. native crop은 원본 캡처 수에 더하지 않는다.
+
+- 확률D7:320/390-dependence-static 및 static-end 네 원본,320-dependence-losses·mass20·association-standardized. 작성자가 정적표 양 끝의 확률/손실/기말 열,150 손실 비교선≠현금 청구, 기대손실40·꼬리20%, 재가중130/120과 원관측100/150을 직접 확인했다.
+- DB E6:1440-e09-uncommitted-page-final,390-e09-sync-after-flush-before-ack-final,320-e09-local-visibility,320-e10-physical-continuous-final,390-e10-missing-wal-final,1440-e10-validation-failure-final. 작성자가 여섯 원본과 긴10장 세 원본의 시간축/RTO/읽기 차단 native4구간을 직접 확인했다. 미확정page4/새조회5, WAL20확정복구4/앱응답불명, 근접 가시성 조작, 연속11→시간차4분/누락7→연속6·시간차9분, RTO21>20 및 읽기차단20분 미완료를 구별한다.
+
+총42개 고유 실제 게시 원본의 명시 범위에서 새 의미·겹침·잘림 차단점을 발견하지 않았다. 이 여덟 배치의 main·Pages·실제 게시 게이트를 완료했으며, 후속 장을 아직 게시했다고 기록하지 않는다. 다음 일곱 배치와08–10 구체 예시 연결은 [별도 후보 기록](FOLLOWUP-SEVEN-WAVE-VERIFICATION.md)을 따른다.

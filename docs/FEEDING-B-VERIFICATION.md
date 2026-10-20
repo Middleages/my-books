@@ -32,3 +32,10 @@ main/Pages는 직렬 게시 창의 별도 검증이다. 이 B 변경에는 다�
 [PR72/run39415697607](https://github.com/Middleages/my-books/actions/runs/39415697607), 실제 checkout `8142a5ba33b5ea19e8e1850384afc7ecebb346d9` / tree `943169b8a80ee63cb5d08d3ee58e30d94c447bf5`에서 전체1339 단위/build 및 선택9 production이 성공했다. 이 책은 **42/42 검사·85원본 PNG**, 앱 및 별도 호스트 진단0, clean source다. artifact12261546757 ZIP SHA256 `d85477f7de466fd274f0f7282990c5c06c449d7748d6ca44e7b2ed1321d81cbe` 일치. 정확한 공통 JS/CSS 바이트와 선택/생략 범위는 [합본 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md)에 남겼다.
 
 직접 연 새 원본: `320-mealtime-unknown.png, 1440-mealtime-moving.png, 320-preparation-cut.png`. 작성자가 세 원본에서14px 관찰/모름 라벨, 이동 중 식사 회피, 자르기≠부드러움을 직접 확인했다. 선택 범위에서 새 의미·겹침·잘림 차단점을 찾지 못했다. 모든 85개·모든 정적 표행을 사람이 읽은 것은 아니며 실제 시스템·실기기·스크린리더·임상/금융 판단 검증을 의미하지 않는다. 이 절은 **소스 합본 production** 결과다. 선행 배치의 실제 게시 게이트 이후 main/Pages 및 exact-published 확인은 별도로 수행한다.
+
+
+## 최신 합본 실제 게시 완료 — 2026-10-20
+
+정확한 main `5b257ffccec0199c960a1ec25bec27e81351dc31`, tree `8addcb735c563962876bb6873c3b19d335932895`의 [run39425708305](https://github.com/Middleages/my-books/actions/runs/39425708305)에서 전체1342단위·build, 선택9종 production→Pages(13:08:22UTC)→같은9종 published를 완료했다. 이 책 실제 게시 보고서는 **43/43검사·85원본PNG**, clean source·앱/page/console/resource 오류0이다. 정확한 호스트 루트 favicon404 한 건만 별도 진단으로 남겼다. 실제 제공된 JS/CSS 전체 바이트는 같은 단일 build 및 앞선 합본 production과 일치한다.
+
+published artifact12266317685, ZIP SHA256 `b9de0f5c3152a1fffa97b5c4a2248cb70ab17fa4a3da4a9f41593940b5494c0b`를 실제 다운로드와 대조했다. 이 책의 대표 원본을 직접 열어 확인한 정확한 파일/범위, 전체 선택9/생략5, 자산 해시와 다른 책의 순서는 [합본 최종 기록](FOLLOWUP-EIGHT-WAVE-VERIFICATION.md#정확한-mainpages실제-게시-게이트--2026-10-20)에 보존했다. 원본 전수 사람 검토·실기기·실제 서비스·임상 감수와 후속 배치 게시를 이 결과로 대신하지 않는다.

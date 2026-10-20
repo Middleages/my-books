@@ -1,0 +1,22 @@
+export type ValidationParams = { candidateCount: number; relation: 'independent' | 'identical' };
+export const validationDefaults: Readonly<ValidationParams>;
+export const validationWindows: Readonly<Record<'train' | 'tune' | 'holdout', readonly number[]>>;
+export type NoiseCandidate = { id: string; index: number; values: number[] };
+export function noiseCandidates(relation?: 'independent' | 'identical'): NoiseCandidate[];
+export function windowMean(values: number[], window: 'train' | 'tune' | 'holdout'): number;
+export function selectCandidate(rows: NoiseCandidate[], rule?: 'train' | 'tune'): { id: string; score: number };
+export function falseAlarmProbability(count: number, relation?: 'independent' | 'identical', alpha?: number): number;
+export type InformationTimeline = { selectionDay: number; selectionX: number; rows: { id: string; observedThrough: number; releasedDay: number; label: string; available: boolean; observedX: number; releasedX: number }[]; axis: number[] };
+export function informationTimeline(selectionDay?: number): InformationTimeline;
+export type ValidationState = { params: ValidationParams; phase: 'selection' | 'adjustment' | 'locked' | 'revealed'; rule: 'train' | 'tune'; lockedId: string | null; holdoutSeen: boolean; firstRevealAfterLock: boolean; history: { order: number; action: string; text: string }[] };
+export type ValidationAction = { type: 'conditions'; params: Partial<ValidationParams> } | { type: 'rule'; rule: 'train' | 'tune' } | { type: 'adjust' | 'lock' | 'reveal' | 'reset' };
+export function createValidationState(input?: Partial<ValidationParams>, previouslySeen?: boolean): ValidationState;
+export function validationTransition(state: ValidationState, action: ValidationAction): ValidationState;
+export type ValidationRow = { id: string; index: number; train: number; tune: number | null; holdout: number | null; selected: boolean; x: number; values: { period: number; window: string; value: number | null }[] };
+export function validationModel(state: ValidationState): {
+ state: ValidationState; rows: ValidationRow[]; initialSelected: ValidationRow; selected: ValidationRow; lockedId: string | null; tuningVisible: boolean; revealed: boolean; count: number; uniqueRecords: number;
+ points: { id: string; x: number; stack: number; selected: boolean; train: number }[]; bins: { index: number; score: number; count: number; fraction: number; x: number }[];
+ axis: { min: number; max: number; unit: string; maxCount: number }; windows: typeof validationWindows;
+ frames: { label: string; explanation: string; scores: boolean; selected: boolean }[];
+ alarm: { count: number; alpha: number; relation: 'independent' | 'identical'; probability: number }; timeline: InformationTimeline; evaluationLabel: string; verdict: string;
+};
