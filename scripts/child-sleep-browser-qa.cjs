@@ -70,7 +70,7 @@ async function audit(page){
   });
   await visit(page,'/child-sleep/changing-naps');const naps=page.locator('[data-sl-lab=naps]');
   await check(`${width} opportunities, confirmed sleep and estimates stay distinct`,async()=>{
-   assert.equal(await naps.locator('.sl-day').count(),3);
+   assert.equal(await naps.locator('.sl-day').count(),3);const tracks=await naps.locator('.sl-nap-track').evaluateAll(es=>es.map(e=>({left:e.getBoundingClientRect().left,width:e.getBoundingClientRect().width})));for(const t of tracks){assert(Math.abs(t.left-tracks[0].left)<.5);assert(Math.abs(t.width-tracks[0].width)<.5);}for(const font of await naps.locator('.sl-day figcaption,.sl-day .sl-axis').evaluateAll(es=>es.map(e=>parseFloat(getComputedStyle(e).fontSize))))assert(font>=14);
    for(const d of routine.napDays){await naps.getByLabel('강조할 날',{exact:true}).selectOption(d.id);assert((await naps.locator('.sl-day-selected').innerText()).includes(d.label));}
    assert((await naps.locator('[data-nap-day=second]').innerText()).includes('실제 수면 0분 아님'));assert((await naps.locator('[data-nap-day=third]').innerText()).includes('기회 기록 미확인'));
    assert.equal(await naps.locator('.sl-nap-track .sl-estimated').count(),0);await naps.getByLabel('추정 기록도 함께 보기',{exact:true}).check();assert.equal(await naps.locator('.sl-nap-track .sl-estimated').count(),1);
