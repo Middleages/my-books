@@ -18,3 +18,6 @@
 
 ## 실행 게이트
 전체 unit1,051개 통과/실패0, TypeScript/Vite production build 성공. 대형 bundle 경고는 기존 상태로 남아 있다. first registration 전용 child-feeding suite와 전체11 suite 회귀,320/390/850/1440 원본 직접검토는 아직 미실행이다. 로컬 Chromium 환경문제를 재시도하거나 우회하지 않고 정상 독립 PR CI를 사용한다. 소스·화면·main/Pages 게이트를 구분한다.
+
+## 최초 CI와 원본 검토에서 찾은 보강
+run39405804034의 전용26검사/53PNG/앱오류0은 통과했다. 그러나 원본850-experience-mouth에서 긴 ‘섭취로 확인한 양’ 라벨이 두 줄이 되어 같은 행의 막대 바닥이 조금 달라짐을 직접 발견했다. 자동검사 통과를 시각 완료로 쓰지 않고 라벨 행 높이를 고정하고 같은 행 막대 기준선 일치 검사를 추가한다.320-meal-unknown,390-meal-empty,1440-meal-known,320-readiness-preterm,390-readiness-posture,1440-readiness-observed,390-home-parenting도 직접 열어 미확인/상담 경계와 권차 보존을 확인했다. 수정본의 최종 소스·화면·전체 회귀는 대기다.
