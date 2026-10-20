@@ -1,0 +1,60 @@
+name: Database G focused source verification
+on:
+  push:
+    branches: [verify/database-g-source-20261020]
+permissions:
+  contents: read
+concurrency:
+  group: database-g-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node --test --test-concurrency=4 tests/*.test.mjs
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: database-g-source-build
+          path: dist
+          if-no-files-found: error
+  verify-source:
+    name: Focused source browser (${{ matrix.suite }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [book-volumes, database]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: database-g-source-build
+          path: dist
+      - name: Install isolated verifier
+        run: |
+          npm install --prefix "$RUNNER_TEMP/database-g-qa" --no-save --ignore-scripts playwright@1.56.1
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Verify exact source artifact; twelve unrelated suites intentionally untested
+        env:
+          NODE_PATH: ${{ runner.temp }}/database-g-qa/node_modules
+          CHROME_PATH: /usr/bin/google-chrome
+        run: node scripts/${{ matrix.suite }}-browser-qa.cjs
+      - name: Save focused evidence, not publication proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.suite }}-g-source
+          path: artifacts/${{ matrix.suite }}-browser/
+          if-no-files-found: warn
