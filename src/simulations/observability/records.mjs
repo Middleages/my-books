@@ -20,7 +20,7 @@ export function logFrame(step = 0, mode = 'normal', level = 'all') {
 export function metricFrame(step=0, mode='normal') {
   const time=[0,10,20,30], raw=mode==='reset'?[0,4,1,5]:[0,4,8,12];
   const n=clamp(step)+1;
-  const samples=time.slice(0,n).map((t,i)=>({time:t,counter:mode==='gap'&&i===2?null:mode==='zero'?0:raw[i],gauge:mode==='zero'?0:[0,3,1,2][i]}));
+  const samples=time.slice(0,n).map((t,i)=>({time:t,counter:mode==='gap'&&i===2?null:mode==='zero'?0:raw[i],gauge:mode==='gap'&&i===2?null:mode==='zero'?0:[0,3,1,2][i]}));
   const intervals=samples.slice(1).map((s,i)=>{const previous=samples[i];return {from:previous.time,to:s.time,reset:s.counter!==null&&previous.counter!==null&&s.counter<previous.counter,rate:s.counter===null||previous.counter===null?null:(s.counter<previous.counter?s.counter:s.counter-previous.counter)/(s.time-previous.time)};});
   const count=mode==='zero'?0:clamp(step)*4;
   const durations=Array.from({length:count},(_,i)=>mode==='tail'&&i>=10?1000:100);
