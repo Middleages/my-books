@@ -12,7 +12,15 @@ export function BookCover({ bookId }: { bookId: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {bookId === "insurance" ? (
+      {bookId === "database" ? (
+        <>
+          <ellipse cx="177" cy="32" rx="55" ry="16" fill="currentColor" fillOpacity=".14" />
+          <path d="M122 32v58c0 22 110 22 110 0V32M122 60c0 22 110 22 110 0" />
+          <path d="M30 26h56v66H30zM30 43h56M47 26v66M30 60h56M30 77h56" fill="currentColor" fillOpacity=".05" />
+          <path className="home-art-signal" d="M86 52h26m-7-6 7 6-7 6M232 72h22v23h-12" />
+          <circle cx="242" cy="95" r="5" fill="currentColor" fillOpacity=".2" />
+        </>
+      ) : bookId === "insurance" ? (
         <>
           <path d="M140 17 183 34v31c0 22-21 35-43 44-22-9-43-22-43-44V34Z" fill="currentColor" fillOpacity=".08" />
           <path d="M118 61h44M140 40v43" strokeWidth="5" />
