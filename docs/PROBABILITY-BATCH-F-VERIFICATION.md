@@ -79,3 +79,17 @@ PR74 최초 remote `9ef30b343a403d2fcdbb984faac32498be154a2f`, tree `a19b6a5c9d3
 
 - `index-Csr3cPjb.css`: 372604 bytes, SHA256 `c0330e6e6e4b5c3ab791fcaf958ce9cafa4c4972987468da87f6a815361b12dc`.
 - `index-uYmPzb8j.js`: 3049695 bytes, SHA256 `5691636d69627aece524b5e9b36b3572ad9442af183acc969a74346e65716262`.
+
+## 실제 지출 문구의 추가 회귀 · 12:37 UTC
+
+소규모 마감본 remote `b5f31965f416433fac247d104a44717e79576a6a`, local `3acc989f83f4e7aa3a32e75130e20ccdda704f4a`, tree `97b80656fd2936d56fc3816b916501c92e9d5a0f`의 CI `39421390626`도 실제 checkout `4e5ec32ebfc10ed71f6fc89b1c4809ccaa1098aa`/같은 tree/clean에서 전체unit1,123·build·probability672/672/357PNG·home14/14/42PNG·앱 오류0을 통과했다. probability artifact12263917675 SHA256 `e3fdf7c2711a9ad30c75ff9843ef48a81fc9d87a770f7383f7ad2ffaa6fbe86e`, home12263900976 `5a8ce42f3cb573c418a6c2f034b1613859163c8f6351f7ce92dd6b590d443776`, scope12263674296 `347382a9d7dac584adab2e5bca48aebe05e05641cb53b02da485880d9064b5dc`를확인했다. source자산은위새JS/CSS와일치했다.이전확률원본336/357와home42/42의바이트가같았다.
+
+변경 원본7장(320paths-static/static-end·order40,390paths-static·normal-paths,1440paths-order0,320decisions-static-unknown)을 직접 다시 열어 왼쪽 열과정적0·전단계안내가수정됨을확인했다. 그러나 그림의‘실제 지출’라벨이 정규0에 다시 음수를 붙여−0으로 보이는 한곳이 남았다. 계산과정적표가맞더라도 이표시를마감완료로하지않는다. 실제지출액은적용변화의절댓값으로표시하고, 미실행null은0으로바꾸지않는다. 브라우저는 단계별 실제지출문구를정확히대조하고−0문구를명시적으로금지한다.
+
+추가한TSX문자단위검사는실제컴포넌트·모델·포매터·정적표를유지하고hook상태/효과만제어해45경로상태와96결정상태의전체markup을렌더한다. 지출문구의개수/금액,정적−0부재,실패/미상/현금시점미확인과고정8을대조해2/2통과했다. 이전의잘못된라벨표현을메모리안에서만되돌린mutation은경로문자검사1개가예상대로실패해회귀검사의감지력을확인했다. 이것은화면픽셀·입력이벤트·타이머검사의대체가아니며별도browser를다시실행한다. 기존targeted22/22도통과했다. 새전체unit/build/PRbrowser결과는아래에추가한다.
+
+
+12:41:28 UTC 최종지출표현 수정뒤전체unit1,125/1,125·실패/건너뜀0과NODE2048 TypeScript/Vite build가성공했다. 실제TSX141상태의2검사,기존targeted22검사와비대상카탈로그보존·node syntax·diff검사도통과했다. 변경된지출표현의실제PRbrowser와원본0지출화면은새실행으로검토하며,아래자산을최종로컬기준으로쓴다.
+
+- `index-BNGhu3fT.js`: 3049735 bytes, SHA256 `a36814214b91052c5bb943ac637fc35f5289b3cc54342369b914d8cf463a74b5`.
+- `index-Csr3cPjb.css`: 372604 bytes, SHA256 `c0330e6e6e4b5c3ab791fcaf958ce9cafa4c4972987468da87f6a815361b12dc`.
