@@ -17,3 +17,5 @@ MDN CORS·Set-Cookie, OWASP CSRF, RFC8725, OIDC Core를2026-10-20에 열어 확�
 모델4개 테스트 작성. 전체 unit/build·production browser·직접 원본PNG·main/Pages/live는 각 게이트 결과를 후속 기록한다. 현재 후속 게이트 성공은 아직 주장하지 않는다.
 
 첫 로컬 구현 `515ffa8`에서 전체1079/1079·TypeScript/Vite build·verifier 문법·diff 검사 통과. 인증 A 최종 검증 branch를 기준으로 별도 stacked draft PR을 준비하며 production와 직접 PNG 검토는 아직 대기한다. 이 단계의 성공은 실제 브라우저 쿠키 보안 검증을 뜻하지 않는다.
+
+첫 production run39401576556에서 인증19검사·105 PNG·오류0과 book-volumes가 성공했다. artifact12254749647, SHA256 `00bb7085a9369e08dcff598d1caec24655accb2d3e6407786cd4b3e4eefb0fff`. 직접 desktop/320 원본에서 라벨과 실패 분리는 맞지만, 고정 설명 영역 때문에 재생 조작과 현재 변화가 멀리 떨어지는 문제를 발견했다. 조작을 현재 전송 단계·검증 단계 바로 앞에 옮기고 선택된 사례 전체 이름을 함께 표시한다. 이 수정본은 새 unit/build/production·원본 검토 전까지 완료가 아니다.
