@@ -15,6 +15,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: node --test tests/tax-browser-diagnostics.test.mjs
       - run: npm run build
       - name: Install isolated browser verifier
         run: |
