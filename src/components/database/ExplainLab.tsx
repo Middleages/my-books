@@ -3,7 +3,7 @@ import {explainFrames,appCallComparison,type ExplainCase,type ExplainEstimate,ty
 import {DbPlayback,DbCurrent,DbSteps,useDbPlayback} from './LabShared';
 import './explain.css';
 const cases:Record<ExplainCase,string>={'growth-count':'64행 scan과 COUNT','nested-loop':'두 주문의 반복 항목 조회','limit':'LIMIT가 먼저 멈춘 경우'};
-function PlanScene({frame:f,mobile,selected}:{frame:ExplainFrame;mobile:boolean;selected:string}) {
+export function PlanScene({frame:f,mobile,selected}:{frame:ExplainFrame;mobile:boolean;selected:string}) {
  const w=mobile?280:720,root=f.nodes.find(n=>n.id===f.rootId)!,children=f.nodes.filter(n=>n.id!==f.rootId),nw=mobile?(children.length===2?130:184):250,rw=mobile?190:300;
  const pos=(id:string)=>id===f.rootId?{x:(w-rw)/2,y:28,w:rw}:{x:children.length===1?(w-nw)/2:(id===children[0].id?4:w-nw-4),y:238,w:nw};
  const marker=`plan-${mobile}`;

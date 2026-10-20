@@ -1,0 +1,50 @@
+import {useMemo,useState} from 'react';
+import {diagnosisFrames,DIAGNOSIS_BOUNDARIES,type DiagnosisScenario,type DiagnosisFrame,type DiagnosisEvidence,type RetryPayload,type LookupSource} from '../../simulations/database/diagnosis.mjs';
+import {PoolScene,PoolTimeline} from './ConnectionLabs';
+import {LastItemScene} from './ConcurrencyLabs';
+import {PlanScene} from './ExplainLab';
+import {DbPlayback,DbCurrent,DbSteps,DbPrediction,useDbPlayback} from './LabShared';
+import './diagnosis.css';
+const names:Record<DiagnosisScenario,string>={'pool-wait':'연결을 기다리는 요청','row-lock':'같은 행을 기다리는 SQL','plan-estimate':'예상보다 많은 조회 행','commit-unknown':'확정 응답을 잃은 요청','compound':'반환과 계획의 복합 증거'};
+function EvidenceMap({frame:f,selected}:{frame:DiagnosisFrame;selected:DiagnosisEvidence|undefined}){
+ const y=(id:string)=>28+DIAGNOSIS_BOUNDARIES.findIndex(b=>b.id===id)*64;
+ return <svg viewBox="0 0 280 425" role="img" aria-label="관측한 경계와 아직 확인하지 않은 경계 지도" data-evidence-map>
+ <defs><marker id="diagnosis-map-arrow" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#497f83"/></marker></defs>
+ {f.executionLinks.map((e,i)=>{const a=y(e.from),b=y(e.to),adj=b-a===64;return <path key={e.id} data-diagnosis-path={e.id} data-from={e.from} data-to={e.to} data-run={e.runId} data-request={e.requestId} d={adj?`M145 ${a+42} V${b}`:`M30 ${a+21} H${10+i%3*5} V${b+21} H30`} fill="none" stroke="#497f83" strokeWidth="2" markerEnd="url(#diagnosis-map-arrow)"/>;})}
+ {DIAGNOSIS_BOUNDARIES.map(b=>{const unknown=f.unknownBoundaries.includes(b.id),count=f.evidence.filter(e=>e.boundary===b.id).length;return <g key={b.id} data-diagnosis-boundary={b.id} data-unknown={String(unknown)} data-focused={String(selected?.boundary===b.id)}><rect x="30" y={y(b.id)} width="240" height="42" rx="7" className="db-diagnosis-boundary"/><text x="42" y={y(b.id)+18} className="db-svg-title">{b.label}</text><text x="42" y={y(b.id)+35} className="db-svg-small">{unknown?'? 미관측 · 0 아님':count?`선택 가능한 증거 ${count}개`:b.id==='request'?'제보된 요청 · 원인 미확정':'관련 경로 확인'}</text></g>;})}
+ <text x="30" y="416" className="db-svg-small">선: 확인 경로 · 소유는 상세 그림</text>
+ </svg>;
+}
+function LookupScene({source:s}:{source:LookupSource}){
+ const bad=s.decision==='reject-payload';return <svg viewBox="0 0 280 420" role="img" aria-label="동일 요청 키와 내용 대조에서 기존 주문 항목 재고로 이어지는 관계" data-lookup-decision={s.decision}>
+ <defs><marker id="diagnosis-lookup-arrow" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#427f69"/></marker></defs>
+ <rect x="6" y="8" width="268" height="80" rx="8" fill="#edf3fb" stroke="#6b87aa"/><text x="16" y="29" className="db-svg-title">요청 키 {s.requestKey}</text><text x="16" y="50" className="db-svg-small">저장: 고객{s.storedPayload.customerId} · 상품{s.storedPayload.productId} · 수량{s.storedPayload.qty}</text><text x="16" y="72" className="db-svg-small" data-retry-qty={s.retryPayload.qty}>재시도: 같은 고객·상품 · 수량{s.retryPayload.qty}</text>
+ <path d="M140 88V135" fill="none" stroke={bad?'#b05443':'#427f69'} strokeWidth="3" strokeDasharray={bad?'5 3':undefined} markerEnd={bad?undefined:'url(#diagnosis-lookup-arrow)'} data-lookup-key-path/>{bad&&<path d="M127 115H153" stroke="#b05443" strokeWidth="5"/>}
+ <text x="150" y="116" className="db-svg-small">{s.decision==='not-yet'?'내용 대조 전':bad?'다른 내용 거절':'기존 결과 재사용'}</text>
+ <g data-lookup-order={s.order.id}><rect x="6" y="135" width="268" height="61" rx="7" fill="#edf7ef" stroke="#56866a"/><text x="16" y="158" className="db-svg-title">이미 확정된 주문 {s.order.id}</text><text x="16" y="180" className="db-svg-small">새 INSERT {s.insertedOrders}건 · 기존 행 보존</text></g>
+ <path d="M140 196V233" fill="none" stroke="#427f69" strokeWidth="2.5" markerEnd="url(#diagnosis-lookup-arrow)" data-lookup-edge="order-item"/>
+ {s.items.map(i=><g key={i.line_no} data-lookup-item={`${i.order_id}:${i.line_no}`}><rect x="6" y="233" width="268" height="60" rx="6" fill="#fff6e5" stroke="#aa8a48"/><text x="16" y="257" className="db-svg-title">항목({i.order_id}, {i.line_no})</text><text x="16" y="279" className="db-svg-small">상품{i.product_id} · 수량{i.qty} · 단가{i.unit_price_won.toLocaleString('ko-KR')}원</text></g>)}
+ <path d="M140 293V330" fill="none" stroke="#427f69" strokeWidth="2.5" markerEnd="url(#diagnosis-lookup-arrow)" data-lookup-edge="item-product"/>
+ <g data-lookup-product={s.product.id}><rect x="6" y="330" width="268" height="61" rx="7" fill="#eaf5f6" stroke="#468a91"/><text x="16" y="354" className="db-svg-title">상품{s.product.id} · 확정 재고{s.product.available_qty}</text><text x="16" y="377" className="db-svg-small">항목 수량{s.storedPayload.qty} · 또 차감하지 않음</text></g>
+ <text x="6" y="413" className="db-svg-small">선은 키의 관계 · 외부 결제 증거 아님</text></svg>;
+}
+function SourceScene({evidence:e}:{evidence:DiagnosisEvidence}){
+ if(e.sourceKind==='pool')return <><figure className="db-figure"><PoolScene frame={e.source} mobile selected="R2"/><figcaption>07장과 같은 frame·그림입니다. R2의 연결이 없으면 R2에서 DB로 가는 선도 없습니다. R1의 보유 선과 구별하세요.</figcaption></figure><PoolTimeline frame={e.source}/></>;
+ if(e.sourceKind==='lock'){const statement=e.source.statements.find(s=>s.id==='statement:06:B:reserve');return <><figure className="db-figure"><LastItemScene frame={e.source} mobile/><figcaption>자원→transaction 실선은 소유, transaction→자원 점선은 대기입니다. 위 파란 선은 완료된 과거 조회입니다. A/B 문장 추적을 함께 제공하므로 A의 미확정 버전도 보입니다. B가 그 값을 SELECT로 읽었거나 pg_locks가 그 값을 보여 준 것은 아닙니다.</figcaption></figure><p data-diagnosis-returned={statement?.affectedRows??'unknown'}>B의 조건부 UPDATE: {statement?.status==='waiting'?'대기 중 · 영향 행 수 미확정':`완료 · 영향 ${statement?.affectedRows}행`}</p></>;}
+ if(e.sourceKind==='plan')return <figure className="db-figure"><PlanScene frame={e.source} mobile selected="scan"/><figcaption>08장과 같은 frame·눈금입니다. 예상은 빈 막대, 관측은 채운 막대입니다. scan 출력과 COUNT 결과의 행 수를 구별하세요. cost는 시간이 아닙니다.</figcaption></figure>;
+ return <figure className="db-figure db-lookup-figure"><LookupScene source={e.source}/><figcaption>05장의 실제 합성 확정 상태를 재사용합니다. 이 예의 요청 내용 계약은 고객·상품·수량이며 다른 업무라면 통화·옵션 등 전체 의미를 포함해야 합니다.</figcaption></figure>;
+}
+export function DiagnosisLab(){
+ const[scenario,setScenario]=useState<DiagnosisScenario>('pool-wait'),[payload,setPayload]=useState<RetryPayload>('same'),[selected,setSelected]=useState(''),[prediction,setPrediction]=useState('');
+ const frames=useMemo(()=>diagnosisFrames({scenario,payload}),[scenario,payload]),player=useDbPlayback(frames.length),f=frames[player.index],evidence=f.evidence.find(e=>e.id===(selected||f.activeEvidenceId))??f.evidence.at(-1);
+ const playback:typeof player={...player,go:delta=>{setSelected('');player.go(delta);},reset:()=>{setSelected('');player.reset();},setPlaying:next=>{setSelected('');player.setPlaying(next);}};
+ const reset=()=>{player.reset();setScenario('pool-wait');setPayload('same');setSelected('');setPrediction('');};
+ return <section className="db-lab db-f-lab" data-db-lab="diagnosis"><p className="db-eyebrow">12 · 증거가 가리키는 경계</p><h2>같은 느림, 다른 대기 장소</h2><p>기본 장면은 처음에 원인을 숨깁니다. 관측 단계를 진행하면 그때 확인한 증거만 나타납니다. 증거 ID를 선택하면 재생을 멈추고 지도와 실제 관계 그림을 함께 바꿉니다. 단계를 옮기면 그 단계의 새 증거로 돌아갑니다.</p><div className="db-controls"><label>진단할 고정 사례<select aria-label="진단할 고정 사례" value={scenario} onChange={e=>{player.reset();setScenario(e.target.value as DiagnosisScenario);setSelected('');setPrediction('');}}>{Object.entries(names).map(([id,label])=><option key={id} value={id}>{label}</option>)}</select></label>{scenario==='commit-unknown'&&<label>같은 키로 다시 보낸 내용<select aria-label="같은 키로 다시 보낸 내용" value={payload} onChange={e=>{player.reset();setPayload(e.target.value as RetryPayload);setSelected('');setPrediction('');}}><option value="same">같은 고객·상품·수량2</option><option value="different">같은 고객·상품·다른 수량3</option></select></label>}</div>
+ <DbPrediction value={prediction} setValue={setPrediction}><option value="known">제보만으로 원인을 확정할 수 있다</option><option value="evidence">어느 요청·경계의 증거인지 더 필요하다</option></DbPrediction><DbPlayback player={playback} count={frames.length} reset={reset}/><DbCurrent frame={f}/>
+ <div className="db-diagnosis-grid"><figure className="db-figure db-diagnosis-map"><EvidenceMap frame={f} selected={evidence}/><figcaption>경계의 물음표는 관측되지 않았다는 뜻입니다. 선은 해당 실행·요청에서 확인한 경로의 요약 이력이며 지금의 소유 선은 오른쪽 또는 아래 상세 그림에 있습니다.</figcaption></figure>
+ <div className="db-diagnosis-detail"><div className="db-f-near-controls" role="group" aria-label="증거 그림 단계 조작"><button onClick={()=>playback.go(-1)} disabled={player.index===0}>증거 그림에서 이전 단계</button><button onClick={()=>playback.go(1)} disabled={player.index===frames.length-1}>증거 그림에서 다음 단계</button><span>{player.index+1} / {frames.length}단계</span></div>
+ {evidence?<><label className="db-evidence-select">이미 확인한 증거<select aria-label="이미 확인한 증거" value={evidence.id} onChange={e=>{player.setPlaying(false);setSelected(e.target.value);}}>{f.evidence.map(e=><option key={e.id} value={e.id}>{e.label}</option>)}</select></label><p className="db-evidence-provenance" data-evidence-id={evidence.id} data-source-kind={evidence.sourceKind} data-source-step={evidence.sourceStep} data-evidence-run={evidence.runId}><strong>{evidence.id}</strong><br/>실행 {evidence.runId} · 요청 {evidence.requestId}<br/>{evidence.observedAt} · 실제 서버 측정 아님</p><SourceScene evidence={evidence}/></>:<div className="db-unobserved" data-no-evidence><strong>? 아직 관측한 원인 자료가 없습니다.</strong><p>숨은 정답을 미리 그리지 않습니다. ‘다음 단계’로 확인 가능한 증거를 보세요.</p></div>}
+ </div></div>
+ <div className="db-diagnosis-verdict" data-diagnosis-verdict={f.verdict}><h3>지금 근거로 말할 수 있는 것</h3>{f.supportedHypotheses.length?<ul>{f.supportedHypotheses.map(x=><li key={x}>{x}</li>)}</ul>:<p>원인은 아직 확정할 수 없습니다.</p>}<h3>다음 확인과 변경의 위험</h3><ul>{f.nextChecks.map(x=><li key={x}>{x}</li>)}</ul></div>
+ <p className="db-model-note">서로 다른 실행 A·B·Q·L·T와 요청의 시간을 더하지 않습니다. active라는 session 상태만으로 CPU 작업 중이라고 단정하지 않습니다. 보이는 정보는 관측 권한·시점에 따라 다르며 실제 서버·결제·재시작·세션 종료를 실행하지 않습니다.</p><p className="db-answer-reveal-note">아래 모든 단계는 정답을 포함한 전체 해설입니다. 펼치면 아직 조작하지 않은 단계의 증거와 결과도 읽습니다.</p><DbSteps frames={frames}/></section>;
+}

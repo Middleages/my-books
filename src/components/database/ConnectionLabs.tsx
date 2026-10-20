@@ -4,7 +4,7 @@ import {DbPlayback,DbCurrent,DbSteps,DbPrediction,useDbPlayback} from './LabShar
 import './connections.css';
 const scenarioNames:Record<PoolScenario,string>={'normal':'정상 반환','long-hold':'SQL 뒤 앱이 오래 보유','leak':'SQL 뒤 반환 누락','acquire-failure':'R1 연결 획득 실패'};
 const statusNames:Record<PoolFrame['requests'][number]['status'],string>={'queued':'연결 대기','db-work':'SQL 사용','app-held':'앱 보유','completed':'반환 완료','acquire-error':'획득 실패'};
-function PoolScene({frame:f,mobile,selected}:{frame:PoolFrame;mobile:boolean;selected:string}) {
+export function PoolScene({frame:f,mobile,selected}:{frame:PoolFrame;mobile:boolean;selected:string}) {
  const w=mobile?280:720,rx=8,rw=mobile?80:170,cx=mobile?122:300,cw=mobile?64:150,sx=mobile?210:545,sw=mobile?64:160;
  const ry=(id:string)=>45+(Number(id.slice(1))-1)*76,cy=(slot:string)=>f.size===1?175:85+(Number(slot.slice(1))-1)*170;
  const marker=`pool-arrow-${mobile}`;
@@ -26,7 +26,7 @@ function PoolScene({frame:f,mobile,selected}:{frame:PoolFrame;mobile:boolean;sel
   <text x="8" y="397" className="db-svg-small">요청→client 대여 · client→세션 연결</text>
  </svg>;
 }
-function PoolTimeline({frame:f}:{frame:PoolFrame}) {
+export function PoolTimeline({frame:f}:{frame:PoolFrame}) {
  const labels={acquireWait:'연결 대기',dbWork:'SQL 사용',appHeld:'앱 보유'};
  return <figure className="db-figure"><svg viewBox="0 0 280 200" role="img" aria-label="같은 교육 tick 축의 요청별 대기 사용 보유 시간" data-pool-timeline>
   <text x="6" y="16" className="db-svg-small">가상 tick · 같은0–12 눈금</text>
