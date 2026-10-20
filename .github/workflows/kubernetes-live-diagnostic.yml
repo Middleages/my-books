@@ -1,0 +1,37 @@
+name: Focused Kubernetes live diagnosis
+on:
+  push:
+    branches: [fix/kubernetes-published-diagnostics]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kubernetes-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Install isolated browser verifier
+        run: |
+          npm install --prefix "$RUNNER_TEMP/kubernetes-live-qa" --no-save --ignore-scripts playwright@1.56.1
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Diagnose exact published Kubernetes assets and interactions
+        env:
+          NODE_PATH: ${{ runner.temp }}/kubernetes-live-qa/node_modules
+          CHROME_PATH: /usr/bin/google-chrome
+          LIVE_URL: https://middleages.github.io/my-books/
+        run: node scripts/kubernetes-browser-qa.cjs
+      - name: Save diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kubernetes-live-diagnostic
+          path: artifacts/kubernetes-browser/
+          if-no-files-found: error
