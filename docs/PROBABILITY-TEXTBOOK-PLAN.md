@@ -1,9 +1,9 @@
 # 확률과 금융 의사결정 — 돈·경제 시리즈 8권 제작 계획
 
 작성·자료 확인: **2026-10-20 UTC/KST**. 기준: `origin/main` **7a935e1114a4260181891664fff4a453508784fc**.
-상태: **계획만 작성. 본문·모델·UI·카탈로그·표지·읽음 분모·배포는 변경하지 않았다. 공개 PR/main 반영은 별도 승인 전 진행하지 않는다.**
+상태: **추가 구현·공개 요청에 따라 A 소개·01–02의 본문·모델·UI·단독 production·직접 화면 검토를 완료했다. 최신 합본의 main·Pages·실제 게시 게이트는 대기 중이며 [A 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에서 증거와 미검증을 구분한다.**
 
-상위 [시리즈 계획](MONEY-TEXTBOOK-PLAN.md)의 8권 질문을 구체화한다. [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [변경 범위별 브라우저 검증](BROWSER-VERIFICATION-SCOPE.md)을 따른다. [독립 A–F 실행 프롬프트](PROBABILITY-SESSION-PROMPTS.md)는 후속 집필용이며 지금의 구현 승인이나 완료 기록이 아니다. 착수 때 최신 main·병행 작업·실제 공개 상태를 다시 확인한다. 기준 SHA를 영구 기준으로 고정하지 않는다.
+상위 [시리즈 계획](MONEY-TEXTBOOK-PLAN.md)의 8권 질문을 구체화한다. [AGENTS](../AGENTS.md), [콘텐츠 작성 기준](CONTENT-AUTHORING.md), [홈 정보 구조](HOME-INFORMATION-ARCHITECTURE.md), [변경 범위별 브라우저 검증](BROWSER-VERIFICATION-SCOPE.md)을 따른다. [독립 A–F 실행 프롬프트](PROBABILITY-SESSION-PROMPTS.md)는 후속 집필용이며 이 문서 자체가 새 작업의 승인이나 완료 기록은 아니다. 착수 때 최신 main·병행 작업·실제 공개 상태를 다시 확인한다. 기준 SHA를 영구 기준으로 고정하지 않는다.
 
 ## 1. 목적: 좋아 보이는 숫자를 어디까지 믿어도 될까?
 

@@ -6,13 +6,13 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import scope from '../scripts/browser-verification-scope.cjs';
 
-const all = ['insurance', 'investing', 'tax', 'book-volumes', 'database', 'kubernetes', 'housing', 'accounting'];
+const all = ['insurance', 'investing', 'tax', 'book-volumes', 'database', 'kubernetes', 'housing', 'accounting', 'probability', 'observability', 'child-development', 'authentication'];
 const classify = (files, extra = {}) => scope.classify({ files, available: all, ...extra });
 const catalog = readFileSync(new URL('../src/catalog.ts', import.meta.url), 'utf8');
 const selected = (...books) => all.filter(suite => ['book-volumes', ...books].includes(suite));
 
 test('book-local source, scenarios, verifier and unit tests select complete affected suites plus mandatory smoke', () => {
-  for (const book of ['insurance', 'investing', 'tax', 'database', 'kubernetes', 'housing', 'accounting']) {
+  for (const book of ['insurance', 'investing', 'tax', 'database', 'kubernetes', 'housing', 'accounting', 'probability', 'observability', 'child-development', 'authentication']) {
     for (const file of [
       `src/content/${book}/NewChapter.mdx`, `src/components/${book}/Lab.tsx`,
       `src/components/${book}/lab.css`, `src/simulations/${book}/model.mjs`,
@@ -141,4 +141,13 @@ test('manual final-book runs and unavailable history always choose every availab
     rmSync(join(root, 'scripts/book-volumes-browser-qa.cjs'));
     assert.throws(() => scope.availableSuites(root), /mandatory/);
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('all registered original and new A suites remain present in the integrated registry', () => {
+  const root = new URL('../', import.meta.url).pathname;
+  assert.deepEqual(scope.availableSuites(root), all);
+  assert.deepEqual(classify(['scripts/browser-verification-scope.cjs']).selected, all);
+  for (const book of ['probability', 'observability', 'child-development', 'authentication']) {
+    assert.deepEqual(classify([`src/content/${book}/New.mdx`]).selected, selected(book));
+  }
 });
