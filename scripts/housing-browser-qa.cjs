@@ -293,6 +293,53 @@ async function scenarios(page, id) {
       if(i<3) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
     }
   }
+  if(id === 'rental-contract') {
+    for(const caseId of Object.keys(model.contractCases)) {
+      await lab.locator('select').selectOption(caseId);
+      const frames=model.contractFrames(caseId);
+      for(let i=0;i<4;i++) {
+        assert.equal(await lab.locator('[data-contract-step]').getAttribute('data-contract-step'),String(i));
+        if(i<=1) {
+          assert.equal(await lab.locator('[data-address-match]').getAttribute('data-address-match'),String(frames[i].addressMatch));
+          assert.equal(await lab.locator('[data-authority-shown]').getAttribute('data-authority-shown'),String(frames[i].authorityShown));
+        }
+        if(i===2) assert.equal(await lab.locator('[data-new-entry]').getAttribute('data-new-entry'),String(frames[i].newEntry));
+        if(i===3) assert.equal(await lab.locator('.housing-event.observed').count(),4);
+        if(i<3) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+      }
+    }
+    await lab.getByRole('button',{name:'처음부터',exact:true}).click();
+    await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    const control=await lab.locator('.money-playback').boundingBox(), scene=await lab.locator('.housing-record-history').boundingBox();
+    assert(scene.y-(control.y+control.height)<100,'contract controls detached from changing evidence');
+  }
+  if(id === 'deposit-risk') {
+    for(const guarantee of ['none','unknown','assumed']) for(const arrivalDay of [60,120]) {
+      await lab.locator('select').nth(0).selectOption(guarantee);
+      await lab.locator('select').nth(1).selectOption(String(arrivalDay));
+      const frames=model.recoveryFrames({guarantee,arrivalDay});
+      for(let i=0;i<frames.length;i++) {
+        const f=frames[i];
+        assert.equal(await lab.locator('[data-recovery-step]').getAttribute('data-recovery-step'),String(i));
+        assert.equal(Number(await lab.locator('[data-cash-arrived]').getAttribute('data-cash-arrived')),f.totalCash);
+        assert.equal(Number(await lab.locator('[data-institution-claim]').getAttribute('data-institution-claim')),f.institutionClaim);
+        assert.deepEqual(await lab.locator('.housing-fill').evaluateAll(es=>es.map(e=>+e.dataset.value)),[f.proceeds,f.unrecovered,f.totalCash,f.remainingClaim]);
+        await bars(page);
+        if(i<frames.length-1) await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+      }
+    }
+    await setRange(lab,0,0);
+    assert.equal(await lab.locator('[data-allocated]').getAttribute('data-allocated'),'0');
+    await setRange(lab,0,16000);
+    await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    await lab.getByRole('button',{name:'한 단계 진행',exact:true}).click();
+    assert.equal(await lab.locator('[data-cash-arrived]').getAttribute('data-cash-arrived'),'110000000');
+    const control=await lab.locator('.money-playback').boundingBox(), scene=await lab.locator('.housing-payment-tracks').boundingBox();
+    assert(scene.y-(control.y+control.height)<240,'recovery controls detached from changing cash scene');
+    assert.match(await lab.innerText(),/양도와 현금 입금은 별개/);
+  }
   await audit(page);
   return {id,verified:true};
 }
@@ -331,9 +378,7 @@ async function assets() {
       [2, 4, 6, 8, 10, 12].includes(chapters.length),
       "published chapters must be a complete batch",
     );
-    model = await import(
-        pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href
-      );
+    model = {...await import(pathToFileURL(path.join(root, "src/simulations/housing/foundations.mjs")).href), ...await import(pathToFileURL(path.join(root, "src/simulations/housing/contracts.mjs")).href)};
     if (process.env.LIVE_URL) base = process.env.LIVE_URL.replace(/\/?$/, "/");
     else {
       server = http.createServer((req, res) => {
