@@ -1,0 +1,40 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { selectionModel, summarizeCohort } from '../src/simulations/probability/selection.mjs';
+import { noiseCandidates, windowMean, selectCandidate, falseAlarmProbability, informationTimeline, createValidationState, validationTransition, validationModel } from '../src/simulations/probability/validation.mjs';
+const close=(a,b)=>assert(Math.abs(a-b)<1e-12,`${a} != ${b}`);
+const reveal=s=>['adjust','lock','reveal'].reduce((s,type)=>validationTransition(s,{type}),s);
+test('survivor filtering changes the denominator but preserves all ten original records',()=>{
+ const all=selectionModel({filter:'all'}),surv=selectionModel();assert.equal(all.all.ending,900);assert.equal(all.all.initial,1000);assert.equal(all.all.totalReturn,-.1);assert.equal(surv.selected.count,8);assert.equal(surv.selected.ending,830);assert.equal(surv.selected.meanEnding,103.75);assert.equal(surv.selected.totalReturn,.0375);assert.equal(surv.rows.filter(r=>!r.included).length,2);assert.deepEqual(surv.rows.map(r=>r.ending),all.rows.map(r=>r.ending));assert.deepEqual(all.counts,{initial:10,active:8,closed:2,unconfirmed:0});assert.deepEqual(selectionModel(),surv);
+});
+test('missing endpoints are unknown rather than zero and sensitivity bounds need an assumption',()=>{
+ const bounded=selectionModel({information:'bounded'}),unknown=selectionModel({information:'unknown'});for(const m of[bounded,unknown]){assert.equal(m.all.ending,null);assert.equal(m.all.totalReturn,null);assert.equal(m.all.knownEnding,830);assert.equal(m.all.missing,2);assert.equal(m.rows.filter(r=>r.ending===null).length,2);assert.equal(m.survivors.totalReturn,.0375);assert(m.rows.filter(r=>r.ending===null).every(r=>r.endingFraction===null));}assert.equal(unknown.all.bounds,null);assert.equal(bounded.all.bounds.lower,-.17);assert.equal(bounded.all.bounds.upper,.03);assert.equal(bounded.all.bounds.kind,'assumption-sensitivity');
+ assert.equal(summarizeCohort([{initial:100,status:'closed',ending:0}]).totalReturn,-1);assert.equal(summarizeCohort([{initial:100,status:'closed',ending:0}],'survivors').totalReturn,null);assert.equal(summarizeCohort([]).meanEnding,null);assert.equal(summarizeCohort([{initial:100,status:'active',ending:100}],'survivors').totalReturn,0);assert.throws(()=>summarizeCohort([{initial:0,status:'active',ending:0}]));assert.throws(()=>summarizeCohort([], 'all',[100,0]));
+});
+test('fixed-seed noise has stable prefixes and all candidate periods remain explicitly partitioned',()=>{
+ const all=noiseCandidates(),again=noiseCandidates();assert.deepEqual(all,again);assert.equal(all.length,100);assert(all.every(r=>r.values.length===48&&r.values.every(v=>[-2,2].includes(v))));assert.deepEqual(all[0].values.slice(0,24),[2,-2,-2,-2,2,-2,-2,-2,-2,-2,-2,2,-2,-2,2,-2,2,2,2,-2,2,-2,2,-2]);
+ let previous=-Infinity;for(const count of[1,10,100]){const m=validationModel(createValidationState({candidateCount:count}));assert.deepEqual(m.rows.map(r=>r.id),all.slice(0,count).map(r=>r.id));assert(m.initialSelected.train>=previous);previous=m.initialSelected.train;assert.equal(m.bins.reduce((s,r)=>s+r.count,0),count);assert.equal(m.rows.flatMap(r=>r.values).filter(r=>r.value!==null).length,count*24);assert(m.rows.every(r=>r.tune===null&&r.holdout===null));assert.equal(m.rows[0].values.filter(r=>r.window==='train').length,24);assert.equal(m.rows[0].values.filter(r=>r.window==='tune').length,12);assert.equal(m.rows[0].values.filter(r=>r.window==='holdout').length,12);}
+ assert.equal(selectCandidate(all.slice(0,100)).id,'R034');assert.equal(selectCandidate(noiseCandidates('identical')).id,'R001');assert(noiseCandidates('identical').every(r=>JSON.stringify(r.values)===JSON.stringify(all[0].values)));
+});
+test('selection never reads holdout values and ties use stable IDs',()=>{
+ const rows=noiseCandidates().slice(0,10),before=selectCandidate(rows),changed=rows.map(r=>({...r,values:r.values.map((v,i)=>i>=36?100000*r.index:v)}));assert.deepEqual(selectCandidate(changed),before);assert.deepEqual(selectCandidate(changed,'tune'),selectCandidate(rows,'tune'));
+ const ties=[{id:'R002',index:1,values:Array(48).fill(0)},{id:'R001',index:0,values:Array(48).fill(0)}];assert.equal(selectCandidate(ties).id,'R001');assert.throws(()=>selectCandidate(rows,'holdout'));assert.throws(()=>windowMean([], 'train'));
+});
+test('manual adjustment, freeze and reveal preserve the seen-data history on reuse/reset',()=>{
+ let s=createValidationState();assert.throws(()=>validationTransition(s,{type:'reveal'}));assert.throws(()=>validationTransition(s,{type:'lock'}));s=validationTransition(s,{type:'adjust'});assert(validationModel(s).rows.every(r=>r.tune!==null&&r.holdout===null));s=validationTransition(s,{type:'rule',rule:'tune'});s=validationTransition(s,{type:'lock'});const locked=s.lockedId;assert(locked);assert.throws(()=>validationTransition(s,{type:'rule',rule:'train'}));s=validationTransition(s,{type:'reveal'});assert.equal(s.lockedId,locked);assert.equal(s.holdoutSeen,true);assert.equal(s.firstRevealAfterLock,true);assert(validationModel(s).rows.every(r=>r.holdout!==null&&r.values.every(v=>v.value!==null)));
+ s=validationTransition(s,{type:'rule',rule:'train'});s=validationTransition(s,{type:'lock'});s=validationTransition(s,{type:'reveal'});assert.equal(s.firstRevealAfterLock,false);assert(validationModel(s).evaluationLabel.includes('재사용'));const length=s.history.length;s=validationTransition(s,{type:'reset'});assert.equal(s.holdoutSeen,true);assert.equal(s.history.length,length+1);assert.equal(s.phase,'selection');assert(validationModel(s).rows.every(r=>r.holdout===null));s=reveal(s);assert.equal(s.firstRevealAfterLock,false);assert.equal(createValidationState({},true).holdoutSeen,true);
+});
+test('held-out results are actual generated values, not forced to fall or to equal zero',()=>{
+ for(const n of[1,10,100]){const m=validationModel(reveal(createValidationState({candidateCount:n}))),raw=noiseCandidates().find(r=>r.id===m.selected.id);assert.equal(m.selected.holdout,windowMean(raw.values,'holdout'));}
+ const rows=noiseCandidates();assert(rows.some(r=>windowMean(r.values,'holdout')>windowMean(r.values,'train')));assert(rows.some(r=>windowMean(r.values,'holdout')<windowMean(r.values,'train')));
+});
+test('independent false alarms and identical repeated alarms use different probability models',()=>{
+ close(falseAlarmProbability(1),.05);close(falseAlarmProbability(10),.4012630607616211);close(falseAlarmProbability(100),.994079470779666);assert.equal(falseAlarmProbability(0),0);assert.equal(falseAlarmProbability(100,'identical'),.05);assert.equal(falseAlarmProbability(0,'identical',1),0);assert.equal(falseAlarmProbability(100,'independent',1),1);assert.equal(falseAlarmProbability(100,'independent',0),0);assert.throws(()=>falseAlarmProbability(-1));assert.throws(()=>falseAlarmProbability(1,'unknown'));
+});
+test('available information follows publication time rather than the period the record describes',()=>{
+ assert.deepEqual(informationTimeline(24).rows.map(r=>r.available),[true,false]);assert.deepEqual(informationTimeline(25).rows.map(r=>r.available),[true,true]);assert.deepEqual(informationTimeline(23).rows.map(r=>r.available),[false,false]);assert.throws(()=>informationTimeline(31));
+});
+
+test('E catalog publishes exactly ten stable chapter IDs and preserves prior identities',async()=>{
+ const{readFileSync}=await import('node:fs');const catalog=readFileSync(new URL('../src/catalog.ts',import.meta.url),'utf8');const rows=[...catalog.matchAll(/id:\s*"([^"]+)"\s*,\s*bookId:\s*"probability"\s*,\s*readId:\s*"([^"]+)"/g)].map(m=>[m[1],m[2]]);assert.deepEqual(rows.map(r=>r[0]),['averages-and-distributions','losses-and-liquidity','frequency-and-probability','conditional-evidence','samples-and-variation','intervals-and-prediction','association-and-causes','dependence-and-diversification','selection-and-survivors','search-and-validation']);assert.equal(new Set(rows.map(r=>r[1])).size,10);assert(!catalog.includes('bookId: "probability", readId: "probability-sequence-and-survival"'));
+});

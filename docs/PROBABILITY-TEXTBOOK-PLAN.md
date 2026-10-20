@@ -7,7 +7,7 @@
 
 ## 현재 구현 기록 — 2026-10-20
 
-후속 승인에 따라 A 소개·01–02는 PR36의 전체 unit1,049·build·9개 browser suite와 원본 화면 검토를 완료했다. 최신 main 통합/게시 여부는 [A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에 따로 남긴다. B 03–04는 PR44의 full unit 1,081·build·선택된 4개 production suite와 원본 화면 검토를 마쳤다. C 05–06은 PR52에서 검증하는 별도 후보이며 실제 등록 분모는 6이다. 아래 12장 계획은 완성 범위가 아니고, [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)과 [C 검증 기록](PROBABILITY-BATCH-C-VERIFICATION.md)이 source 검증과 실제 main/Pages 게시를 구분한다. D는07–08을 추가하는 별도 후보로 진행하며 등록 분모는8이다. [D 검증 기록](PROBABILITY-BATCH-D-VERIFICATION.md)에서 실제 실행·게시를 구분한다. E–F는 이 후보에 등록하지 않았다.
+후속 승인에 따라 A 소개·01–02는 PR36의 전체 unit1,049·build·9개 browser suite와 원본 화면 검토를 완료했다. 최신 main 통합/게시 여부는 [A 검증 기록](PROBABILITY-BATCH-A-VERIFICATION.md)에 따로 남긴다. B 03–04는 PR44의 full unit 1,081·build·선택된 4개 production suite와 원본 화면 검토를 마쳤다. C 05–06은 PR52에서 검증하는 별도 후보이며 실제 등록 분모는 6이다. 아래 12장 계획은 완성 범위가 아니고, [B 검증 기록](PROBABILITY-BATCH-B-VERIFICATION.md)과 [C 검증 기록](PROBABILITY-BATCH-C-VERIFICATION.md)이 source 검증과 실제 main/Pages 게시를 구분한다. D는07–08을 추가하는 별도 후보로 진행하며 등록 분모는8이다. [D 검증 기록](PROBABILITY-BATCH-D-VERIFICATION.md)에서 실제 실행·게시를 구분한다. E는 09–10을 추가하는 별도 후보이며 소개·실제 등록 분모를 10으로 맞췄다. [E 검증 기록](PROBABILITY-BATCH-E-VERIFICATION.md)에 실행과 게시를 따로 기록한다. F는 이 후보에 등록하지 않았다.
 
 ## 1. 목적: 좋아 보이는 숫자를 어디까지 믿어도 될까?
 
@@ -328,3 +328,7 @@
 ### D 구현의 의미 보정 — 2026-10-20
 
 08의 기존 계획에 적힌 ‘현금 경계150’는 구현에서 ‘손실 비교선150단위’로 명확히 바꾼다. 자산 평가 손실이 자동으로 즉시 납부할 현금 청구를 만든다고 오해하지 않게 하기 위해서다. 초과확률 계산은 같은 엄격부등호 손실>150이며 값은 보존된다. 별도 현금을 만들어 최초1,000과 이중 계산하지 않는다. 실제 납기·유동성은02/11의 별도 조건이다.07의 관측 단위는 매장·일200건이며 독립200일·실제 무작위 배정으로 해석하지 않는다.
+
+### E 구현 구체화 · 2026-10-20
+
+09의 미상 회수액은 실제0과 구별하고 추가 가정이 있을 때만 민감도 범위를 계산한다. 10은 같은 고정 수열의 prefix를 쓰며, 최초 선택 그림과 조정 후 현재 선택을 분리한다. 극단적 R034 기록을 전형적 표본이라고 제시하지 않으며 보류 하락을 강제하지 않는다. 보류 열람 이력은 같은 페이지의 초기화·장 이동 뒤에도 유지한다. source/PR의 등록10장을 main/Pages 완료로 확대하지 않는다.
