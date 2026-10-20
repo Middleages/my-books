@@ -24,3 +24,12 @@ test('E browser assertions add actual text/geometry/lifecycle coverage without c
  for(const name of['assertESvgText','assertDurabilityFrame','assertRecoveryFrame','exerciseEPlayback','runBatchE'])assert(qa.includes(`async function ${name}(`));for(const token of['E explicit named selector preflight','E SVG label leaves scene','RPO loss intervals preserve a common geometric minute','RTO overflow must extend beyond goal, never saturate','data-read-permission-gate','await runBatchE(page,width,walModel,recoveryModel)','E10 reading preserves previous and unknown IDs'])assert(qa.includes(token),token);
  assert(qa.includes('assert.deepEqual(report.resourceErrors,[])'));assert(qa.includes('assert.deepEqual(report.consoleErrors,[])'));assert(qa.includes('assert.deepEqual(report.pageErrors,[])'));
 });
+test('E keeps source links breakable and clock legend inside a padded scene without weakening browser bounds',()=>{
+ for(const body of[body9,body10])assert.equal(body.match(/className="prose db-e-prose"/g)?.length,2);
+ assert.match(read('src/components/database/recovery.css'),/\.db-e-prose a\{overflow-wrap:anywhere;word-break:normal;white-space:normal\}/);
+ assert.match(restore,/viewBox="0 0 280 170" role="img" aria-label="장애 이후/);
+ assert.match(restore,/<text x="8" y="156" className="db-svg-small">길이 = 경과 분/);
+ assert(qa.includes("assertExplanationBounds(page,'.db-e-prose .sources li')"));
+ assert(wal.includes('onStep={player.go}'));assert(wal.includes('가시성 그림에서 다음 단계'));assert(qa.includes('E09 local visibility keyboard controls share one frame and pause'));
+ assert(qa.includes('s.bottom<=s.height+2'));assert(qa.includes('E rendered MDX must not retain literal emphasis markers'));
+});

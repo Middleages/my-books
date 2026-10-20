@@ -13,3 +13,6 @@
 .db-recovery-proof[data-outcome=pending]{border-color:#7890a1;background:#f1f5f8}.db-recovery-timing>button{margin-bottom:.5rem}.db-recovery-transfer figcaption{overflow-wrap:anywhere}
 
 .db-recovery-timing svg .db-interval-number{font-size:10px}.db-recovery-timing>button{font:inherit;font-size:.85rem;border:1px solid #809bad;border-radius:6px;padding:.55rem;background:white;color:#203b49;min-height:40px}
+.db-e-prose{min-width:0}.db-e-prose a{overflow-wrap:anywhere;word-break:normal;white-space:normal}
+
+.db-e-local-playback{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}.db-e-local-playback button{font:inherit;font-size:.85rem;min-height:40px;padding:.55rem;border:1px solid #809bad;border-radius:6px;background:white;color:#203b49}.db-e-local-playback button:disabled{opacity:.45}.db-e-local-playback span{font-size:.8rem;margin-left:auto}.db-lab .db-e-local-current{font-size:.85rem;font-weight:650;margin:.5rem 0}

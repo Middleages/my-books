@@ -22,12 +22,12 @@ function CoverageScene({frame:f}:{frame:RecoveryFrame}){
 }
 function RestoreClock({frame:f,onNext,canNext}:{frame:RecoveryFrame;onNext:()=>void;canNext:boolean}){
  const unit=10,x=(minute:number)=>20+minute*unit,colors=['#cbdbe9','#accbd6','#8ebdaf','#b8cee5','#d1c0e0','#efcd95'];
- return <figure className="db-figure db-recovery-timing"><button type="button" onClick={onNext} disabled={!canNext}>시간 축에서 다음 단계</button><svg viewBox="0 0 280 150" role="img" aria-label="장애 이후 실제 지난 단계 시간과 RTO20분 목표">
+ return <figure className="db-figure db-recovery-timing"><button type="button" onClick={onNext} disabled={!canNext}>시간 축에서 다음 단계</button><svg viewBox="0 0 280 170" role="img" aria-label="장애 이후 실제 지난 단계 시간과 RTO20분 목표">
  <text x="8" y="18" className="db-svg-title">장애 뒤 경과 축 · 분</text>
  <line x1={x(0)} y1="112" x2={x(24)} y2="112" stroke="#6b8598"/>{[0,5,10,15,20,24].map(t=><g key={t}><line x1={x(t)} y1="108" x2={x(t)} y2="116" stroke="#6b8598"/><text x={x(t)} y="131" textAnchor="middle" className="db-svg-small">{t}</text></g>)}
  <line data-rto-goal={f.rtoTargetMinutes} x1={x(f.rtoTargetMinutes)} y1="41" x2={x(f.rtoTargetMinutes)} y2="115" stroke="#8d72a4" strokeWidth="2" strokeDasharray="3 2"/><text x={x(f.rtoTargetMinutes)} y="35" textAnchor="middle" className="db-svg-small">목표20분</text>
  {f.steps.map((s,i)=><g key={s.id} data-restore-stage={s.id} data-start={s.start} data-end={s.end} data-status={s.status}><rect x={x(s.start)} y="64" width={s.duration*unit} height="34" fill={s.status==='blocked'?'#f8d8b0':colors[i]} stroke="#708b9d"/><text x={x((s.start+s.end)/2)} y="86" textAnchor="middle" className="db-interval-number">{i+1}</text></g>)}
- <text x="8" y="149" className="db-svg-small">길이 = 경과 분 · 안의 숫자 = 단계 번호</text>
+ <text x="8" y="156" className="db-svg-small">길이 = 경과 분 · 안의 숫자 = 단계 번호</text>
  </svg><ol className="db-e-stage-list">{f.steps.map(s=><li key={s.id}>{s.label}: {s.start}–{s.end}분{s.status==='blocked'?' · 여기서 중단':''}</li>)}</ol><figcaption>{f.serviceUp?`서비스 복구 소요${f.recoveryDuration}분. 목표20분을 넘은1분도 같은 눈금으로 표시합니다.`:`현재${f.elapsed}분 경과했지만 서비스는 미복구입니다. 완료 소요와 남은 시간은 아직 확정하지 않습니다.`}</figcaption></figure>;
 }
 function TransferScene({frame:f}:{frame:RecoveryFrame}){

@@ -2,7 +2,7 @@ import { DurabilityLab } from '../../components/database/DurabilityLab';
 import { DbGlossary, DbSource } from '../../components/database/LabShared';
 import { Check } from '../network/shared';
 
-<section className="prose">
+<section className="prose db-e-prose">
 
 ## 성공 응답과 데이터 페이지는 다른 증거입니다
 
@@ -12,7 +12,7 @@ import { Check } from '../network/shared';
 
 상품101의 재고를5에서4로 바꿨고 앱이 COMMIT 성공을 받았습니다. 그런데 저장 장치의 데이터 페이지에는 여전히5가 있습니다. 이것만으로 DB가 거짓말했다고 결론 내릴 수 있을까요?
 
-DB는 변경할 **페이지 사본을 메모리의 버퍼**에 둘 수 있습니다. 버퍼의 내용과 저장 장치의 페이지가 매 순간 같아야 하는 것은 아닙니다. 대신 장애 때 되살릴 변경 기록을 먼저 남기는 규칙이 필요합니다. **WAL(Write-Ahead Log)**은 데이터 페이지를 쓰기 전에 내구화해야 하는 변경 로그입니다.
+DB는 변경할 **페이지 사본을 메모리의 버퍼**에 둘 수 있습니다. 버퍼의 내용과 저장 장치의 페이지가 매 순간 같아야 하는 것은 아닙니다. 대신 장애 때 되살릴 변경 기록을 먼저 남기는 규칙이 필요합니다. <strong>WAL(Write-Ahead Log)</strong>은 데이터 페이지를 쓰기 전에 내구화해야 하는 변경 로그입니다.
 
 그림에서 P1은 같은 페이지의 정체성이고, RAM과 내구 영역의 P1은 서로 다른 사본입니다. v0·v1은 같은 상품 행의 이전·새 버전입니다. 앱의 응답은 저장 영역 밖에 둡니다. 무엇이 남았는지와 무엇을 앱이 들었는지를 섞지 않기 위해서입니다.
 
@@ -20,7 +20,7 @@ DB는 변경할 **페이지 사본을 메모리의 버퍼**에 둘 수 있습니
 
 <DurabilityLab />
 
-<section className="prose">
+<section className="prose db-e-prose">
 
 ## 세 번의 ‘저장’을 구분합니다
 
