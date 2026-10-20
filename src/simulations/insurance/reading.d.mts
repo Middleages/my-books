@@ -1,0 +1,17 @@
+export type ReadingClassification = 'documented' | 'assumption' | 'unresolved';
+export type ReadingChoice = ReadingClassification | '';
+export type ReadingParams = { eventDay: number | null; coveredEvent: boolean | null; loss: number; selections: Record<string, ReadingChoice> };
+export type ReadingOptions = Partial<ReadingParams>;
+export type ReadingDocument = { id: string; name: string; structure: 'indemnity' | 'fixed'; start: number; end: number; deductible?: number; limit?: number; fixedBenefit?: number; premium?: number; refundDay?: number; refund?: number; clauses: readonly { id: string; text: string }[] };
+export type ReadingStatement = { id: string; number: number; contractId: string; text: string; classification: ReadingClassification; clauseIds: readonly string[]; why: string };
+export type ReadingAssessment = ReadingStatement & { choice: ReadingChoice; correct: boolean | null; classificationLabel: string; evidence: { documentId: string; clauseId: string; text: string }[]; feedback: string };
+export type ReadingContract = { id: string; name: string; structure: 'indemnity' | 'fixed'; dateState: 'unknown' | 'renewal-unknown' | 'inside' | 'outside'; status: 'unresolved' | 'assumed-outside' | 'date-outside' | 'conditional'; statusLabel: string; conditionalAmount: number | null; actualPayable: null; received: null; segments: { id: string; label: string; amount: number; leftFraction: number; fraction: number }[]; questions: string[]; detail: string; links: { id: string; kind: ReadingClassification; label: string }[] };
+export type ReadingFrame = { index: number; phase: string; label: string; detail: string; assessments: (ReadingAssessment & { revealed: boolean })[]; verdict: string | null };
+export type ReadingResult = { params: ReadingParams; documents: readonly ReadingDocument[]; contracts: ReadingContract[]; assessments: ReadingAssessment[]; timeline: { min: number; max: number; eventDay: number | null; eventFraction: number | null; windows: { id: string; start: number; end: number; leftFraction: number; fraction: number; unknownAfter: { start: number; end: number; leftFraction: number; fraction: number } | null }[] }; frames: ReadingFrame[]; verdict: string; predictionAnswer: 'unresolved'; scenario: { loss: number; eventDay: number | null; coveredEvent: boolean | null; actualPayable: null; received: null; combinedIndemnity: null; assumptions: string[] } };
+export const readingClassifications: Readonly<Record<ReadingClassification, string>>;
+export const readingDocuments: readonly Readonly<ReadingDocument>[];
+export const readingStatements: readonly Readonly<ReadingStatement>[];
+export const readingDefaults: Readonly<ReadingParams>;
+export function classifyReadingStatement(id: string, choice?: ReadingChoice): ReadingAssessment;
+export function projectReading(options?: ReadingOptions): ReadingResult;
+export function readingBoundaryCases(): ReadingResult[];

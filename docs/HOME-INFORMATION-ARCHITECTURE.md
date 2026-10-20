@@ -100,3 +100,6 @@ E 게시 검사는 production132/게시133개를 통과했고 실제 자산 바�
 
 
 2026-10-20 보험 배치 D:07 timelines·08 surrender를 등록해 공개 목차·읽음 분모를 소개·01–08과 맞춘다. C의 실제 게시 게이트를 확인한 뒤 진행하며 기존7권·분야·표지·URL·읽음 키·알 수 없는 ID를 보존한다. 실행·게시 결과는 [D 기록](INSURANCE-BATCH-D-VERIFICATION.md)을 따른다.
+
+
+2026-10-20 보험 배치 E:09 claims·10 reading-insurance를 등록해 공개 목차·읽음 분모·안내를 소개·01–10과 일치시킨다. 기존 분야·7권 표지·URL·저장 키·알 수 없는 ID를 보존한다. 배포/실제 화면과 전체 편집 결과는 [E 기록](INSURANCE-BATCH-E-VERIFICATION.md)·[전체 점검](INSURANCE-BOOK-REVIEW.md)에 별도로 기록한다.
