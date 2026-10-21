@@ -1,0 +1,3 @@
+export function supportFrame(selected?:string):{scenarioId:string;ageBand:string;sourceIds:string[];observedFacts:string[];hypotheses:string[];unknowns:string[];step:string;selectedOption:string;need:string;service:string;conditions:{id:string;label:string;note:string;status:string;selected:boolean}[];question:string;result:string};
+export function reviewFrame(change?:string):{scenarioId:string;ageBand:string;sourceIds:string[];observedFacts:string[];hypotheses:string[];unknowns:string[];step:string;selectedOption:string;days:string[];rows:{id:string;label:string;cells:{day:string;text:string;state:string}[]}[];question:string;result:string};
+export const blankReviewRows:string[];
