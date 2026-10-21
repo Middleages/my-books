@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {adjustmentFrame} from '../src/simulations/child-family/adjustment.mjs';
@@ -10,3 +11,10 @@ test('agreement preference moves nodes but never changes fixed boundary or rule 
 test('institution answer changes only relevant evidence without fabricating consent',()=>{const a=agreementFrame(),b=agreementFrame('separate',true);assert.equal(a.rule.known,false);assert.equal(b.rule.known,true);assert.deepEqual(a.choices,b.choices);assert.deepEqual(a.hypotheses,b.hypotheses);assert.equal(b.observedFacts.length,1);assert.equal(a.observedFacts.length,0);assert.equal(b.agreement,a.agreement);});
 test('both frames provide common contract and deterministic fresh reset',()=>{for(const make of [adjustmentFrame,agreementFrame]){const original=make(),other=make();for(const key of ['scenarioId','ageBand','sourceIds','observedFacts','hypotheses','unknowns','step','selectedOption'])assert(key in original);other.unknowns.push('mutation');assert.deepEqual(make(),original);}});
 test('invalid observations and flags reject rather than coerce real inputs',()=>{for(const day of [-1,3,0.5,NaN,null,'0'])assert.throws(()=>adjustmentFrame(day),RangeError);for(const flag of [0,1,null,'yes']){assert.throws(()=>adjustmentFrame(0,flag),RangeError);assert.throws(()=>agreementFrame('shared',flag),RangeError);}for(const option of ['',null,'actual'])assert.throws(()=>agreementFrame(option),RangeError);});
+
+test('C select accessible names remain independent of option text',()=>{
+ for(const [file,label] of [['AdjustmentLab.tsx','가상 기록 선택'],['AgreementsLab.tsx','인사 방식 제안']]){
+  const source=readFileSync(new URL('../src/components/child-family/'+file,import.meta.url),'utf8');
+  assert(source.includes('<select aria-label="'+label+'"'));
+ }
+});
