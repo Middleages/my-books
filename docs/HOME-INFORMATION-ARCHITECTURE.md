@@ -155,3 +155,8 @@ IT·기술6권 authentication의 소개·01 identity-and-permission·02 cookies-
 ## 육아 5권 A 후보 (2026-10-20)
 
 child-safety는 기존 parenting 분류의 명시적 volume 5다. 소개와 safety-layers·reach-and-movement 두 장만 등록하며 1–3권과 후속 통합되는 4권의 기존 ID를 보존한다. 안전 점수·개인 자료·처치 게임을 제공하지 않는다. 원격 CI·화면·게시 상태는 별도 검증 기록을 따른다.
+
+
+## 육아 6권 A 후보 (2026-10-20)
+
+child-family는 기존 parenting 분류의 명시적 volume 6이다. 소개와 care-network·care-work 두 장만 등록한다. 기존 1–5권의 ID/등록을 보존한다. 실제 가족 자료·자동 배정·법적 권한 판정·가족 점수 없음. 정확 소스·CI·원본 화면·게시 검증은 별도 기록한다.
