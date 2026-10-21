@@ -31,3 +31,6 @@ B는 F5의 미확인 국내 제도나 행정 규정에 의존하지 않는다. �
 ## C 재확인 (2026-10-21)
 F2: AAP HealthyChildren / Preparing Your Child for Child Care / 위 URL / checkedAt 2026-10-21 / 미국 / 영아·아동 / reviewedScope 사전 방문·소통·변화 준비 / chapterIds childcare-adjustment. 2022-03-08 표시. 자체 관찰 띠의 효능·적응 완료 판단 근거가 아니며 작은 장난감을 권하지 않는다.
 F1: UNICEF / Support for parenting / 위 URL / checkedAt 2026-10-21 / 국제 / 보호자 전반 / reviewedScope 자원·지원 개요 / chapterIds care-agreements. 기관·법적·안전 규정의 근거가 아니며 훈련 활동 복제 없음. 전문가 감수 미실행.
+
+## D 재확인 (2026-10-21)
+F3 구조화 메타데이터는 src/simulations/child-family/sibling.mjs의 siblingSource에 기록했다. AAP HealthyChildren / Preparing Your Older Child for a New Baby / 위 공식 URL / checkedAt 2026-10-21 / updatedAt 2026-02-10 / 미국 / 1–2세 및 2–4세 중 2–3세만 사용 / reviewedScope 생활 변화 설명·기존 아이의 관심과 시간 / chapterIds before-new-sibling, living-with-sibling. 임상 예측·질투 해소·적응 기간·영아 돌봄 방법은 제외한다. 전문가 감수 미실행.

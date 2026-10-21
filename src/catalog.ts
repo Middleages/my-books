@@ -1,3 +1,5 @@
+import BeforeNewSibling from "./content/child-family/BeforeNewSibling.mdx";
+import LivingWithSibling from "./content/child-family/LivingWithSibling.mdx";
 import ChildcareAdjustment from "./content/child-family/ChildcareAdjustment.mdx";
 import CareAgreements from "./content/child-family/CareAgreements.mdx";
 import ChildFamilyIntro from "./content/child-family/Intro.mdx";
@@ -258,6 +260,8 @@ export const chapters: Chapter[] = [
   { id: "before-childcare", bookId: "child-family", readId: "child-family/before-childcare", number: "04", title: "어린이집을 만나기 전", heading: "두 공간 사이에 어떤 질문을 놓을까?", description: "가정과 기관의 경험·답변·미정을 나눕니다.", Content: BeforeChildcare },
 { id: "childcare-adjustment", bookId: "child-family", readId: "child-family/childcare-adjustment", number: "05", title: "적응을 관찰하고 함께 조정하기", heading: "문 앞의 울음만으로 하루를 알 수 있을까?", description: "등원·돌봄 중·재회의 관찰과 빈칸을 함께 봅니다.", Content: ChildcareAdjustment },
 { id: "care-agreements", bookId: "child-family", readId: "child-family/care-agreements", number: "06", title: "다른 방식 사이에서 합의하기", heading: "방식이 다르면 모두 절충하면 될까?", description: "안전 경계·선호·기관에 물을 질문을 구분합니다.", Content: CareAgreements },
+  { id: "before-new-sibling", bookId: "child-family", readId: "child-family/before-new-sibling", number: "07", title: "동생을 기다리는 시간", heading: "아이에게 말하는 준비와 어른끼리 하는 준비", description: "새 동생 전후의 돌봄자·자리·시간 연결을 비교합니다.", Content: BeforeNewSibling },
+  { id: "living-with-sibling", bookId: "child-family", readId: "child-family/living-with-sibling", number: "08", title: "동생과 함께 사는 첫날들", heading: "두 아이의 필요와 성인의 책임", description: "두 아이의 서로 다른 필요와 성인 담당을 나누어 봅니다.", Content: LivingWithSibling },
   { id: "safety-layers", bookId: "child-safety", readId: "child-safety/safety-layers", number: "01", title: "안전은 아이의 주의력만이 아니다", heading: "주의하라는 말과 환경 변경은 어떻게 다를까?", description: "물건의 접근선과 남아 있는 보호 층을 구분합니다.", Content: SafetyLayers },
   { id: "reach-and-movement", bookId: "child-safety", readId: "child-safety/reach-and-movement", number: "02", title: "아이의 이동이 바꾸는 집", heading: "어제의 배치가 오늘도 같은 뜻일까?", description: "새 움직임과 가구 배치의 연결을 안전 점수 없이 살핍니다.", Content: ReachAndMovement },
   { id: "falls-and-entrapment", bookId: "child-safety", readId: "child-safety/falls-and-entrapment", number: "03", title: "추락·끼임·넘어짐 살피기", heading: "어떤 연결을 바꾸고 무엇을 더 확인할까?", description: "높이 차이·발판·문 주변의 겹침을 구분합니다.", Content: FallsAndEntrapment },
@@ -771,7 +775,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-family", categoryId: "parenting", volume: 6, title: "함께 키우는 생활", category: "육아·발달 · 함께 돌보기", cover: "CARING TOGETHER", description: "돌봄의 역할·정보·지원 연결을 가족 평가 없이 살핍니다.", overview: "합성 돌봄 팀과 과제에서 제안·수락·미확인 역할을 구분합니다.", future: "소개·01–06장 공개 · 가족 평가·법적 권한 판단·전문가 감수를 대신하지 않습니다.", Intro: ChildFamilyIntro },
+  { id: "child-family", categoryId: "parenting", volume: 6, title: "함께 키우는 생활", category: "육아·발달 · 함께 돌보기", cover: "CARING TOGETHER", description: "돌봄의 역할·정보·지원 연결을 가족 평가 없이 살핍니다.", overview: "합성 돌봄 팀과 과제에서 제안·수락·미확인 역할을 구분합니다.", future: "소개·01–08장 공개 · 가족 평가·법적 권한 판단·전문가 감수를 대신하지 않습니다.", Intro: ChildFamilyIntro },
   { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–12장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
   { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–12장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },
