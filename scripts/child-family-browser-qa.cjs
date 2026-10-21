@@ -115,9 +115,43 @@ await check(`${width} agreement moves preference not safety boundary or unanswer
  assert.equal(await select.inputValue(),'separate');assert(!(await answer.isChecked()));await audit(page);
 });
 
+// Insert within width loop, before reading preservation checks. Uses existing visit/audit/snap/check helpers.
+for (const [route, kind] of [['before-new-sibling','before'], ['living-with-sibling','living']]) {
+ await visit(page,`/child-family/${route}`);
+ const sibling=page.locator(`[data-sibling-lab=${kind}]`);
+ await check(`${width} ${route} adult responsibility, age, static, keyboard and reset`,async()=>{
+  const models=await model('sibling'),frame=kind==='before'?models.beforeSiblingFrame:models.livingSiblingFrame;
+  const initialExplanation=frame('1–2세').explanation;assert((await sibling.locator('[role=status]').innerText()).includes(initialExplanation));
+  const initialNeeds=await sibling.locator('.sibling-needs>div>span:first-of-type').allTextContents();
+  const initial=await sibling.innerText();
+  const initialPaths=await sibling.locator('svg').evaluateAll(es=>es.map(e=>e.innerHTML));
+  await page.waitForTimeout(350);assert.equal(await sibling.innerText(),initial);
+  await sibling.getByLabel('기존 아이 연령',{exact:true}).selectOption('2–3세');
+  assert.deepEqual(await sibling.locator('svg').evaluateAll(es=>es.map(e=>e.innerHTML)),initialPaths);
+  const changedExplanation=frame('2–3세').explanation;assert.notEqual(changedExplanation,initialExplanation);assert((await sibling.locator('[role=status]').innerText()).includes(changedExplanation));assert(!(await sibling.locator('[role=status]').innerText()).includes(initialExplanation));
+  await snap(page,`${width}-${route}-initial`,sibling);
+  const shared=sibling.getByRole('button',{name:kind==='before'?'지원 역할 수락 예':'지원 성인과 나누는 예',exact:true});
+  await sibling.getByLabel('기존 아이 연령',{exact:true}).focus();await page.keyboard.press('Tab');await page.keyboard.press('Tab');assert(await shared.evaluate(e=>e===document.activeElement));assert.notEqual(await shared.evaluate(e=>getComputedStyle(e).outlineStyle),'none');
+  await page.keyboard.press('Enter');assert.equal(await shared.getAttribute('aria-pressed'),'true');
+  assert.notDeepEqual(await sibling.locator('svg').evaluateAll(es=>es.map(e=>e.innerHTML)),initialPaths);
+  assert((await sibling.locator('.sibling-connections').last().innerText()).includes('성인 B → 기존 아이'));
+  assert((await sibling.locator('.sibling-connections').last().innerText()).includes('성인 A → 새 아기'));
+  await sibling.locator('summary').click();
+  const alternate=await sibling.locator('details').innerText();
+  for(const line of await sibling.locator('.sibling-connections li').allTextContents())assert(alternate.includes(line));
+  assert((await sibling.locator('.sibling-facts').innerText()).includes('아직 모르는 것'));
+  if(kind==='living'){assert.equal(await sibling.locator('.sibling-needs>div').count(),2);assert.deepEqual(await sibling.locator('.sibling-needs>div>span:first-of-type').allTextContents(),initialNeeds);const f=frame('2–3세','shared');for(const n of f.needs){assert(alternate.includes(`${n.label}: ${n.need} → ${n.owner}: ${n.action}`));}}
+  await snap(page,`${width}-${route}-shared-static`,sibling);await audit(page);
+  const reset=sibling.getByRole('button',{name:'처음으로',exact:true});await reset.focus();await page.keyboard.press('Enter');
+  assert.equal(await sibling.getByLabel('기존 아이 연령',{exact:true}).inputValue(),'1–2세');
+  assert.deepEqual(await sibling.locator('svg').evaluateAll(es=>es.map(e=>e.innerHTML)),initialPaths);
+  await sibling.locator('summary').click();await snap(page,`${width}-${route}-reset`,sibling);await audit(page);
+ });
+}
+
   await check(`${width} volume six, dynamic implemented chapters, reading preservation`,async()=>{
-   await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','child-development/development-map'])));await visit(page,'/');await page.reload();await page.getByRole('button',{name:/^육아·발달/}).click();const card=page.locator('a.home-book[href="#/child-family"]');assert.equal(await card.locator('.home-book-volume').innerText(),'육아·발달 6권');await card.click();assert.equal(await page.locator('.book-volume').innerText(),'육아·발달 6권');assert.equal(chapters.length,6);await visit(page,'/child-family/care-work');await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));for(const id of ['unknown/keep','child-development/development-map','child-family/care-work'])assert(saved.includes(id));await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).click();await page.reload();assert(!(await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')))).includes('child-family/care-work'));await audit(page);
-   for(const chapter of chapters){await visit(page,`/child-family/${chapter.id}`);await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();const all=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(all.includes(chapter.readId));assert(all.includes('unknown/keep'));assert(all.includes('child-development/development-map'));}
+   await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','child-development/development-map'])));await visit(page,'/');await page.reload();await page.getByRole('button',{name:/^육아·발달/}).click();const card=page.locator('a.home-book[href="#/child-family"]');assert.equal(await card.locator('.home-book-volume').innerText(),'육아·발달 6권');await card.click();assert.equal(await page.locator('.book-volume').innerText(),'육아·발달 6권');assert.equal(chapters.length,8);await visit(page,'/child-family/care-work');await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));for(const id of ['unknown/keep','child-development/development-map','child-family/care-work'])assert(saved.includes(id));await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).click();await page.reload();assert(!(await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')))).includes('child-family/care-work'));await audit(page);
+   for(const chapter of chapters){await visit(page,`/child-family/${chapter.id}`);await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();const all=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(all.includes(chapter.readId));assert(all.includes('unknown/keep'));assert(all.includes('child-development/development-map'));await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).click();await page.reload();const removed=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(!removed.includes(chapter.readId));for(const id of all.filter(id=>id!==chapter.readId))assert(removed.includes(id));await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();assert((await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')))).includes(chapter.readId));}
   });await context.close();
  }
  const context=await browser.newContext({viewport:{width:390,height:900},reducedMotion:'no-preference'}),page=await context.newPage();observe(page,'normal');await check('normal motion same content and no autoplay',async()=>{for(const route of routes){await visit(page,route);const before=await page.locator('main').innerText();await page.waitForTimeout(700);assert.equal(await page.locator('main').innerText(),before);await audit(page);}});await context.close();
