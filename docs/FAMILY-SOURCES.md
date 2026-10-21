@@ -20,3 +20,10 @@
 돌봄 작업을 알아차림/준비/실행/마무리로 나눈 모형, 수신/수락 상태, 공백·휴식 보드는 이해를 위한 자체 설계다. 심리 검사나 가족 치료 모형이 아니며 결과 예측 근거로 사용할 수 없다. 실제 가족 자료·메시지 발송·일정 연동·자동 담당 배정은 없다. 가족 다양성은 성별·혼인·혈연·거주 형태를 전제로 하지 않는 설계 원칙이며 법적 보호자/인계 권한은 따로 확인한다.
 
 A 소개·01–02 앱 소스 구현. 브라우저 검증·원격 게시 상태는 배치별 검증 기록을 따른다. 현장 사용자 평가·전문 감수는 미실행. 보호자 질환의 진단·치료와 위기 자동 감시는 범위 밖이다.
+
+## B 재확인 및 구조화 메타데이터 (2026-10-21)
+
+- publisher: UNICEF; title: Support for parenting; url: https://www.unicef.org/support-parenting; checkedAt: 2026-10-21; country: 국제; targetAge: 보호자 전반·영유아 포함; reviewedScope: 보호자에게 자원·서비스·지원이 필요하다는 개요; limitations: 자체 인계 네 단계의 효능이나 공식 절차를 뒷받침하지 않음, 훈련 자료 복제 없음; chapterIds: handover.
+- publisher: American Academy of Pediatrics / HealthyChildren; title: Preparing Your Child for Child Care; url: https://www.healthychildren.org/English/family-life/work-and-child-care/Pages/preparing-your-child-for-child-care.aspx; checkedAt: 2026-10-21; country: 미국; targetAge: 영아와 그 이후 아이, 본문은 0–36개월 보호자의 질문 준비만; reviewedScope: 2022-03-08 표시, 사전 방문과 돌봄자 소통의 일반 방향; limitations: 월령별 적응 예측·작은 장난감 권고·미국 제도·한국 기관 규정은 적용하지 않음; chapterIds: before-childcare.
+
+B는 F5의 미확인 국내 제도나 행정 규정에 의존하지 않는다. 실제 기관 문서가 없는 상태에서 자격·비용·등원·투약·인계 규정을 확정하지 않고 질문 준비만 다룬다. 합성 답변은 실제 기관 답변이 아니다.
