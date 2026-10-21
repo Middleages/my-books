@@ -27,3 +27,7 @@ A 소개·01–02 앱 소스 구현. 브라우저 검증·원격 게시 상태�
 - publisher: American Academy of Pediatrics / HealthyChildren; title: Preparing Your Child for Child Care; url: https://www.healthychildren.org/English/family-life/work-and-child-care/Pages/preparing-your-child-for-child-care.aspx; checkedAt: 2026-10-21; country: 미국; targetAge: 영아와 그 이후 아이, 본문은 0–36개월 보호자의 질문 준비만; reviewedScope: 2022-03-08 표시, 사전 방문과 돌봄자 소통의 일반 방향; limitations: 월령별 적응 예측·작은 장난감 권고·미국 제도·한국 기관 규정은 적용하지 않음; chapterIds: before-childcare.
 
 B는 F5의 미확인 국내 제도나 행정 규정에 의존하지 않는다. 실제 기관 문서가 없는 상태에서 자격·비용·등원·투약·인계 규정을 확정하지 않고 질문 준비만 다룬다. 합성 답변은 실제 기관 답변이 아니다.
+
+## C 재확인 (2026-10-21)
+F2: AAP HealthyChildren / Preparing Your Child for Child Care / 위 URL / checkedAt 2026-10-21 / 미국 / 영아·아동 / reviewedScope 사전 방문·소통·변화 준비 / chapterIds childcare-adjustment. 2022-03-08 표시. 자체 관찰 띠의 효능·적응 완료 판단 근거가 아니며 작은 장난감을 권하지 않는다.
+F1: UNICEF / Support for parenting / 위 URL / checkedAt 2026-10-21 / 국제 / 보호자 전반 / reviewedScope 자원·지원 개요 / chapterIds care-agreements. 기관·법적·안전 규정의 근거가 아니며 훈련 활동 복제 없음. 전문가 감수 미실행.

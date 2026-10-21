@@ -8,6 +8,7 @@ const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
 const report={started:new Date().toISOString(),mode:process.env.LIVE_URL?'published':'production',sourceSha:git('rev-parse','HEAD'),sourceTree:git('rev-parse','HEAD^{tree}'),sourceChanges:git('status','--porcelain'),checks:[],screenshots:[],pageErrors:[],consoleErrors:[],resourceErrors:[],hostDiagnostics:[],visualReview:'PNGs require a separate direct visual review.'};
 const catalog=fs.readFileSync(path.join(root,'src/catalog.ts'),'utf8');
 const chapters=[...catalog.matchAll(/id:\s*"([^"]+)"\s*,\s*bookId:\s*"child-family"\s*,\s*readId:\s*"([^"]+)"\s*,\s*number:\s*"([^"]+)"[^}]*?heading:\s*"([^"]+)"/g)].map(m=>({id:m[1],readId:m[2],number:m[3],heading:m[4]}));
+const model=async name=>import(pathToFileURL(path.join(root,'src/simulations/child-family',name+'.mjs')).href);
 const routes=['/child-family',...chapters.map(c=>`/child-family/${c.id}`)];
 let browser,server,base;
 function checkpoint(){fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({...report,passed:report.checks.filter(c=>c.status==='passed').length,failed:report.checks.filter(c=>c.status==='failed').length},null,2));}
@@ -64,11 +65,61 @@ async function audit(page){
    for(const topic of ['visit','contact','routine']){await childcare.getByLabel('준비할 질문',{exact:true}).selectOption(topic);assert(!(await reply.isChecked()));assert.equal(await childcare.locator('[data-replied=false]').count(),1);await reply.focus();assert.notEqual(await reply.evaluate(e=>getComputedStyle(e).outlineStyle),'none');await page.keyboard.press('Space');assert(await reply.isChecked());assert.equal(await childcare.locator('[data-replied=true]').count(),1);assert((await childcare.locator('.cf-result').innerText()).includes('아이의 적응 기간·결과'));await snap(page,`${width}-childcare-${topic}`,childcare);}
    await childcare.locator('summary').click();assert((await childcare.locator('details').innerText()).includes(await childcare.locator('.cf-inbound strong').innerText()));await childcare.getByRole('button',{name:'전체 초기화',exact:true}).click();assert(!(await reply.isChecked()));assert.equal(await childcare.getByLabel('준비할 질문',{exact:true}).inputValue(),'visit');await audit(page);
   });
+await visit(page,'/child-family/childcare-adjustment');
+const adjustment=page.locator('[data-cf-lab=adjustment]');
+await check(`${width} adjustment contexts remain distinct and missing record cannot become success`,async()=>{
+ const {adjustmentFrame}=await model('adjustment');
+ const parity=async(day,shared)=>{const f=adjustmentFrame(Number(day),shared);assert.deepEqual(await adjustment.locator('.cfc-observation p').allTextContents(),f.slots.map(x=>x.text));await adjustment.locator('details').evaluate(e=>e.open=true);assert.deepEqual(await adjustment.locator('details li').allTextContents(),f.slots.map(x=>`${x.context}: ${x.text}`));assert((await adjustment.locator('details').innerText()).includes(f.question));await adjustment.locator('details').evaluate(e=>e.open=false);};
+ const select=adjustment.getByLabel('가상 기록 선택',{exact:true});
+ const shared=adjustment.getByLabel('교사 기록 함께 보기',{exact:true});
+ for(const day of ['0','1','2']){
+  await select.selectOption(day);await shared.uncheck();await parity(day,false);
+  assert.equal(await adjustment.locator('[data-context="1"]').getAttribute('data-known'),'false');
+  await snap(page,`${width}-adjustment-${day}-gap`,adjustment);
+  await shared.focus();assert.notEqual(await shared.evaluate(e=>getComputedStyle(e).outlineStyle),'none');await page.keyboard.press('Space');
+  assert.equal(await adjustment.locator('[data-context="1"]').getAttribute('data-known'),day==='1'?'false':'true');
+  await parity(day,true);
+  assert.equal(await adjustment.locator('.cfc-time-link.cfc-connected').count(),day==='1'?0:2);
+  await snap(page,`${width}-adjustment-${day}-shared`,adjustment);
+ }
+ await adjustment.locator('summary').click();
+ assert.equal(await adjustment.locator('details li').count(),3);
+ assert((await adjustment.locator('details').innerText()).includes('이후의 적응 경과'));
+ await adjustment.getByRole('button',{name:'전체 초기화',exact:true}).focus();await page.keyboard.press('Enter');
+ assert.equal(await select.inputValue(),'0');assert(!(await shared.isChecked()));await audit(page);
+});
+await visit(page,'/child-family/care-agreements');
+const agreements=page.locator('[data-cf-lab=agreements]');
+await check(`${width} agreement moves preference not safety boundary or unanswered institution rule`,async()=>{
+ const {agreementFrame}=await model('agreements');
+ const parity=async(option,answer)=>{const f=agreementFrame(option,answer);assert.deepEqual(await agreements.locator('.cfc-choice span').allTextContents(),f.choices.map(x=>x.label));await agreements.locator('details').evaluate(e=>e.open=true);assert.deepEqual(await agreements.locator('details li').allTextContents(),f.choices.map(x=>`${x.owner}: ${x.label}`));assert((await agreements.locator('details').innerText()).includes(f.rule.label));await agreements.locator('details').evaluate(e=>e.open=false);};
+ await parity('separate',false);
+ const select=agreements.getByLabel('인사 방식 제안',{exact:true});
+ const answer=agreements.getByLabel('가상 기관의 장소 답변 보기',{exact:true});
+ const boundary=await agreements.locator('.cfc-boundary-label').innerText();
+ assert.equal(await agreements.locator('.cfc-choice').count(),2);
+ const before=await agreements.locator('.cfc-choice').first().boundingBox();
+ await snap(page,`${width}-agreements-separate`,agreements);
+ await select.selectOption('shared');await parity('shared',false);assert.equal(await agreements.locator('.cfc-choice').count(),1);
+ const after=await agreements.locator('.cfc-choice').first().boundingBox();assert.notDeepEqual(before,after);
+ assert.equal(await agreements.locator('.cfc-boundary-label').innerText(),boundary);
+ assert.equal(await agreements.locator('.cfc-rule').getAttribute('data-rule-known'),'false');
+ await snap(page,`${width}-agreements-shared-question`,agreements);
+ await answer.focus();assert.notEqual(await answer.evaluate(e=>getComputedStyle(e).outlineStyle),'none');await page.keyboard.press('Space');
+ assert.equal(await agreements.locator('.cfc-rule').getAttribute('data-rule-known'),'true');
+ await parity('shared',true);await select.selectOption('separate');await parity('separate',true);assert(await answer.isChecked());
+ await agreements.locator('summary').click();
+ assert((await agreements.locator('details').innerText()).includes('실제 기관의 규칙'));
+ await snap(page,`${width}-agreements-answer-static`,agreements);
+ await agreements.getByRole('button',{name:'전체 초기화',exact:true}).focus();await page.keyboard.press('Enter');
+ assert.equal(await select.inputValue(),'separate');assert(!(await answer.isChecked()));await audit(page);
+});
+
   await check(`${width} volume six, dynamic implemented chapters, reading preservation`,async()=>{
-   await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','child-development/development-map'])));await visit(page,'/');await page.reload();await page.getByRole('button',{name:/^육아·발달/}).click();const card=page.locator('a.home-book[href="#/child-family"]');assert.equal(await card.locator('.home-book-volume').innerText(),'육아·발달 6권');await card.click();assert.equal(await page.locator('.book-volume').innerText(),'육아·발달 6권');assert.equal(chapters.length,4);await visit(page,'/child-family/care-work');await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));for(const id of ['unknown/keep','child-development/development-map','child-family/care-work'])assert(saved.includes(id));await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).click();await page.reload();assert(!(await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')))).includes('child-family/care-work'));await audit(page);
+   await page.evaluate(()=>localStorage.setItem('my-books:read:v1',JSON.stringify(['unknown/keep','child-development/development-map'])));await visit(page,'/');await page.reload();await page.getByRole('button',{name:/^육아·발달/}).click();const card=page.locator('a.home-book[href="#/child-family"]');assert.equal(await card.locator('.home-book-volume').innerText(),'육아·발달 6권');await card.click();assert.equal(await page.locator('.book-volume').innerText(),'육아·발달 6권');assert.equal(chapters.length,6);await visit(page,'/child-family/care-work');await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));for(const id of ['unknown/keep','child-development/development-map','child-family/care-work'])assert(saved.includes(id));await page.getByRole('button',{name:'✓ 읽음 · 표시 취소',exact:true}).click();await page.reload();assert(!(await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')))).includes('child-family/care-work'));await audit(page);
    for(const chapter of chapters){await visit(page,`/child-family/${chapter.id}`);await page.getByRole('button',{name:'읽음으로 표시',exact:true}).click();await page.reload();const all=await page.evaluate(()=>JSON.parse(localStorage.getItem('my-books:read:v1')));assert(all.includes(chapter.readId));assert(all.includes('unknown/keep'));assert(all.includes('child-development/development-map'));}
   });await context.close();
  }
- const context=await browser.newContext({viewport:{width:390,height:900},reducedMotion:'no-preference'}),page=await context.newPage();observe(page,'normal');await check('normal motion same content and no autoplay',async()=>{await visit(page,'/child-family/care-work');const before=await page.locator('[data-cf-lab=work]').innerText();await page.waitForTimeout(700);assert.equal(await page.locator('[data-cf-lab=work]').innerText(),before);await audit(page);});await context.close();
+ const context=await browser.newContext({viewport:{width:390,height:900},reducedMotion:'no-preference'}),page=await context.newPage();observe(page,'normal');await check('normal motion same content and no autoplay',async()=>{for(const route of routes){await visit(page,route);const before=await page.locator('main').innerText();await page.waitForTimeout(700);assert.equal(await page.locator('main').innerText(),before);await audit(page);}});await context.close();
  await check('no application or unknown errors',async()=>{assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.consoleErrors,[]);assert.deepEqual(report.resourceErrors,[]);});
  }catch(error){report.fatal=String(error.stack||error);process.exitCode=1;}finally{await browser?.close();if(server)await new Promise(r=>server.close(r));report.finished=new Date().toISOString();report.passed=report.checks.filter(c=>c.status==='passed').length;report.failed=report.checks.filter(c=>c.status==='failed').length;fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({passed:report.passed,failed:report.failed,fatal:report.fatal,screenshots:report.screenshots.length}));if(report.failed||report.fatal)process.exitCode=1;}})();
