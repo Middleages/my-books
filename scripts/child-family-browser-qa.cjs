@@ -131,7 +131,7 @@ for (const [route, kind] of [['before-new-sibling','before'], ['living-with-sibl
   const changedExplanation=frame('2–3세').explanation;assert.notEqual(changedExplanation,initialExplanation);assert((await sibling.locator('[role=status]').innerText()).includes(changedExplanation));assert(!(await sibling.locator('[role=status]').innerText()).includes(initialExplanation));
   await snap(page,`${width}-${route}-initial`,sibling);
   const shared=sibling.getByRole('button',{name:kind==='before'?'지원 역할 수락 예':'지원 성인과 나누는 예',exact:true});
-  await shared.focus();assert.notEqual(await shared.evaluate(e=>getComputedStyle(e).outlineStyle),'none');
+  await sibling.getByLabel('기존 아이 연령',{exact:true}).focus();await page.keyboard.press('Tab');await page.keyboard.press('Tab');assert(await shared.evaluate(e=>e===document.activeElement));assert.notEqual(await shared.evaluate(e=>getComputedStyle(e).outlineStyle),'none');
   await page.keyboard.press('Enter');assert.equal(await shared.getAttribute('aria-pressed'),'true');
   assert.notDeepEqual(await sibling.locator('svg').evaluateAll(es=>es.map(e=>e.innerHTML)),initialPaths);
   assert((await sibling.locator('.sibling-connections').last().innerText()).includes('성인 B → 기존 아이'));
