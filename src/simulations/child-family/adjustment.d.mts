@@ -1,0 +1,2 @@
+export interface AdjustmentFrame {scenarioId:string;ageBand:string;sourceIds:string[];step:number;selectedOption:string;dayLabel:string;slots:{id:number;context:string;known:boolean;text:string;source:string}[];links:{from:number;to:number;connected:boolean}[];observedFacts:string[];hypotheses:string[];unknowns:string[];question:string;summary:string}
+export function adjustmentFrame(day?:number,shared?:boolean):AdjustmentFrame;

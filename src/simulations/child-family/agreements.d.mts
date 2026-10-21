@@ -1,0 +1,2 @@
+export interface AgreementFrame {scenarioId:string;ageBand:string;sourceIds:string[];step:number;selectedOption:string;observedFacts:string[];hypotheses:string[];unknowns:string[];boundary:string;choices:{owner:string;label:string;lane:string}[];rule:{known:boolean;label:string;question:string};agreement:string;summary:string}
+export function agreementFrame(option?:string,answer?:boolean):AgreementFrame;
