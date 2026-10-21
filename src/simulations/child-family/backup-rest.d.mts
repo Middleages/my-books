@@ -1,0 +1,3 @@
+interface Meta {scenarioId:string;ageBand:string;sourceIds:string[];observedFacts:string[];hypotheses:string[];unknowns:string[];step:string;selectedOption:string}
+export function backupFrame(absent?:string,stage?:string,range?:string):Meta & {absent:string;stage:string;range:string;cells:{time:string;original:string;owner:string|null;status:string;gap:boolean}[];route:{label:string;active:boolean}[];gapTimes:string[];result:string};
+export function restFrame(slot?:number,accepted?:boolean,handedOver?:boolean):Meta & {slot:number;accepted:boolean;handedOver:boolean;covered:boolean;cells:{time:string;requested:boolean;adult:string;activity:string;status:string}[];result:string};
