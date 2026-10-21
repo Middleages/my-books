@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {backupFrame,restFrame} from '../src/simulations/child-family/backup-rest.mjs';
+test('candidate and contact do not cover missing care',()=>{for(const stage of ['candidate','contact'])assert.deepEqual(backupFrame('B',stage).gapTimes,['17–18시','18–19시']);});
+test('acceptance fills only requested missing interval',()=>{const f=backupFrame('B','accepted');assert.deepEqual(f.gapTimes,['18–19시']);assert.deepEqual(f.cells.map(c=>c.owner),['A','C',null]);assert.equal(backupFrame('B','accepted','full').gapTimes.length,0);});
+test('changed absence preserves unaffected person and uncovered time',()=>{assert.deepEqual(backupFrame('A','accepted').cells.map(c=>c.owner),[null,'B','B']);});
+test('rest needs acceptance and confirmed handover',()=>{for(const [a,h] of [[false,false],[true,false],[false,true]]){const f=restFrame(1,a,h);assert.equal(f.covered,false);assert.equal(f.cells[1].adult,'A');}assert.equal(restFrame(1,true,true).cells[1].adult,'B');});
+test('every slot changes only selected time and returns independent frames',()=>{for(let i=0;i<3;i++){const f=restFrame(i,true,true);assert.equal(f.cells.filter(c=>c.adult==='B').length,1);assert.equal(f.cells[i].requested,true);}const a=backupFrame();a.cells[0].owner='X';assert.equal(backupFrame().cells[0].owner,'A');assert.deepEqual(restFrame(),restFrame());});
+test('reject unknown options and out of bounds rather than invent data',()=>{assert.throws(()=>backupFrame('child'));assert.throws(()=>backupFrame('A','sent'));assert.throws(()=>restFrame(-1));assert.throws(()=>restFrame(3));assert.throws(()=>restFrame(1,'yes'));});

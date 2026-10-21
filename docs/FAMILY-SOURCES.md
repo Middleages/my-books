@@ -34,3 +34,6 @@ F1: UNICEF / Support for parenting / 위 URL / checkedAt 2026-10-21 / 국제 / �
 
 ## D 재확인 (2026-10-21)
 F3 구조화 메타데이터는 src/simulations/child-family/sibling.mjs의 siblingSource에 기록했다. AAP HealthyChildren / Preparing Your Older Child for a New Baby / 위 공식 URL / checkedAt 2026-10-21 / updatedAt 2026-02-10 / 미국 / 1–2세 및 2–4세 중 2–3세만 사용 / reviewedScope 생활 변화 설명·기존 아이의 관심과 시간 / chapterIds before-new-sibling, living-with-sibling. 임상 예측·질투 해소·적응 기간·영아 돌봄 방법은 제외한다. 전문가 감수 미실행.
+
+## E 재확인 (2026-10-21)
+F1 UNICEF Support for parenting 및 F4 UNICEF Caring for the Caregiver 소개를 2026-10-21 직접 열람한 후보 자료에 기반한다. URL은 위 목록 참조. 국제 보호자 지원의 시간·자원·서비스 필요성과 보호자 안녕의 개요만 사용한다. chapterIds: backup-care, caregiver-rest. F4 패키지·활동·훈련 절차는 내려받거나 각색하지 않았다. 독립 합성 보드는 효능·치료 근거가 아니며 전문가 감수 미실행. F5는 국내 공식 확인 출발점일 뿐 자격·비용·일정·혜택을 검증하거나 보장하지 않는다.
