@@ -1,3 +1,5 @@
+import FindingSupport from "./content/child-family/FindingSupport.mdx";
+import FamilyReview from "./content/child-family/FamilyReview.mdx";
 import BackupCare from "./content/child-family/BackupCare.mdx";
 import FamilyCaregiverRest from "./content/child-family/CaregiverRest.mdx";
 import BeforeNewSibling from "./content/child-family/BeforeNewSibling.mdx";
@@ -266,6 +268,8 @@ export const chapters: Chapter[] = [
   { id: "living-with-sibling", bookId: "child-family", readId: "child-family/living-with-sibling", number: "08", title: "동생과 함께 사는 첫날들", heading: "두 아이의 필요와 성인의 책임", description: "두 아이의 서로 다른 필요와 성인 담당을 나누어 봅니다.", Content: LivingWithSibling },
 { id: "backup-care", bookId: "child-family", readId: "child-family/backup-care", number: "09", title: "계획이 바뀌었을 때의 돌봄", heading: "계획이 바뀌면 어느 시간이 빌까요?", description: "공백과 후보·연락·시간 범위 수락을 구분합니다.", Content: BackupCare },
 { id: "caregiver-rest", bookId: "child-family", readId: "child-family/caregiver-rest", number: "10", title: "보호자의 휴식도 계획 안에", heading: "쉬라는 말과 쉴 수 있는 조건은 어떻게 다를까요?", description: "희망 휴식과 확인된 성인 돌봄의 연결을 살핍니다.", Content: FamilyCaregiverRest },
+{ id: "finding-support", bookId: "child-family", readId: "child-family/finding-support", number: "11", title: "가족 밖의 도움을 찾는 질문", heading: "도움의 이름만 알면 이용할 수 있을까요?", description: "가상 지원 안내에서 아직 확인하지 않은 조건을 찾습니다.", Content: FindingSupport },
+{ id: "family-review", bookId: "child-family", readId: "child-family/family-review", number: "12", title: "우리 가족의 한 주를 다시 보기", heading: "한 주를 채점하지 않고 무엇을 다시 볼까요?", description: "한 가지 변경과 남은 질문을 전후 보드로 비교합니다.", Content: FamilyReview },
   { id: "safety-layers", bookId: "child-safety", readId: "child-safety/safety-layers", number: "01", title: "안전은 아이의 주의력만이 아니다", heading: "주의하라는 말과 환경 변경은 어떻게 다를까?", description: "물건의 접근선과 남아 있는 보호 층을 구분합니다.", Content: SafetyLayers },
   { id: "reach-and-movement", bookId: "child-safety", readId: "child-safety/reach-and-movement", number: "02", title: "아이의 이동이 바꾸는 집", heading: "어제의 배치가 오늘도 같은 뜻일까?", description: "새 움직임과 가구 배치의 연결을 안전 점수 없이 살핍니다.", Content: ReachAndMovement },
   { id: "falls-and-entrapment", bookId: "child-safety", readId: "child-safety/falls-and-entrapment", number: "03", title: "추락·끼임·넘어짐 살피기", heading: "어떤 연결을 바꾸고 무엇을 더 확인할까?", description: "높이 차이·발판·문 주변의 겹침을 구분합니다.", Content: FallsAndEntrapment },
@@ -779,7 +783,7 @@ type Book = {
   Intro?: ComponentType;
 };
 export const books: Book[] = [
-  { id: "child-family", categoryId: "parenting", volume: 6, title: "함께 키우는 생활", category: "육아·발달 · 함께 돌보기", cover: "CARING TOGETHER", description: "돌봄의 역할·정보·지원 연결을 가족 평가 없이 살핍니다.", overview: "합성 돌봄 팀과 과제에서 제안·수락·미확인 역할을 구분합니다.", future: "소개·01–10장 공개 · 가족 평가·법적 권한 판단·전문가 감수를 대신하지 않습니다.", Intro: ChildFamilyIntro },
+  { id: "child-family", categoryId: "parenting", volume: 6, title: "함께 키우는 생활", category: "육아·발달 · 함께 돌보기", cover: "CARING TOGETHER", description: "돌봄의 역할·정보·지원 연결을 가족 평가 없이 살핍니다.", overview: "합성 돌봄 팀과 과제에서 제안·수락·미확인 역할을 구분합니다.", future: "소개·01–12장 공개 · 가족 평가·법적 권한 판단·전문가 감수를 대신하지 않습니다.", Intro: ChildFamilyIntro },
   { id: "child-safety", categoryId: "parenting", volume: 5, title: "안전과 도움을 요청하는 법", category: "육아·발달 · 안전과 도움", cover: "SAFETY AND ASKING FOR HELP", description: "아이의 주의력보다 환경의 연결과 보호 층을 먼저 봅니다.", overview: "합성 공간에서 접근 경로·관찰·미확인 조건을 나누어 살핍니다.", future: "소개·01–12장 공개 · 안전 인증·응급 분류·전문가 감수를 대신하지 않습니다.", Intro: ChildSafetyIntro },
   { id: "child-emotions", categoryId: "parenting", volume: 4, title: "감정과 관계를 배우는 시간", category: "육아·발달 · 감정과 관계", cover: "EMOTIONS AND CONNECTION", description: "마음을 단정하지 않고 안전한 경계와 곁에서 돕는 돌봄을 배웁니다.", overview: "관찰·해석·행동을 분리하고 아이와 보호자의 신호를 연결합니다.", future: "소개·01–12장 공개 · 합성 교육 사례이며 진단·치료·전문가 감수를 대신하지 않습니다.", Intro: EmotionsIntro },
   { id: "child-feeding", categoryId: "parenting", volume: 3, title: "먹는 법을 배우는 시간", category: "육아·발달 · 식사와 돌봄", cover: "LEARNING TO EAT", description: "먹는 양 뒤에 있는 신호·기술·안전을 함께 살핍니다.", overview: "합성 식사 기록으로 제시량과 섭취, 준비 관찰과 상담 질문을 구분합니다.", future: "소개·01–12장 공개 · 교육용 합성 사례이며 개인 영양 처방·진단·전문가 감수를 대신하지 않습니다.", Intro: ChildFeedingIntro },

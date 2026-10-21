@@ -1,0 +1,14 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {supportFrame,reviewFrame,blankReviewRows} from '../src/simulations/child-family/support-review.mjs';
+test('selecting a condition never confirms or invents benefits',()=>{for(const key of ['region','target','cost','hours','current']){const f=supportFrame(key);assert.equal(f.conditions.filter(c=>c.selected).length,1);assert.ok(f.conditions.every(c=>c.status==='미확인'));assert.equal(f.unknowns.length,5);}});
+test('handover updates both execution and handover without changing rest',()=>{const before=reviewFrame(),after=reviewFrame('handover');assert.equal(after.rows[0].cells[2].text,'성인 B 돌봄');assert.equal(after.rows[1].cells[2].text,'성인 B 인수 확인');assert.deepEqual(before.rows[2],after.rows[2]);assert.deepEqual(before.rows[3],after.rows[3]);});
+test('rest change requires the synthetic confirmed adult coverage and preserves other days',()=>{const before=reviewFrame(),after=reviewFrame('rest');assert.equal(after.rows[0].cells[3].text,'성인 B 돌봄');assert.equal(after.rows[2].cells[3].state,'rest');assert.deepEqual(before.rows[1],after.rows[1]);assert.equal(after.rows[2].cells[0].text,'휴식 기록 없음');});
+test('frames are fresh and blank form contains only fixed prompts',()=>{const f=reviewFrame();f.rows[0].cells[0].text='modified';assert.equal(reviewFrame().rows[0].cells[0].text,'성인 A 돌봄');assert.equal(blankReviewRows.length,6);assert.ok(blankReviewRows.every(x=>typeof x==='string'));assert.deepEqual(reviewFrame(),reviewFrame());});
+test('invalid choices are rejected',()=>{assert.throws(()=>supportFrame('eligible'));assert.throws(()=>reviewFrame('score'));});
+
+// Source regression complements (does not replace) CI's real Chromium print PDF.
+test('blank-form print removes only sibling branches in the verified reader DOM',async()=>{
+ const {readFile}=await import('node:fs/promises');const css=await readFile(new URL('../src/components/child-family/support-review.css',import.meta.url),'utf8');const print=css.split('@media print{')[1].split('@media(prefers-reduced-motion')[0];
+ for(const branch of ['#root > :not(.reader)','#root > .reader > :not(#main-content)','#main-content > :not(.prose:has(> .cf-blank-review))','#main-content > .prose:has(> .cf-blank-review) > :not(.cf-blank-review)'])assert.ok(print.includes(branch));
+ assert.match(print,/display:none!important;visibility:hidden!important/);assert.match(print,/page:family-review-sheet;position:static/);assert.doesNotMatch(print,/position:absolute/);assert.match(css,/@page family-review-sheet\{size:A4;margin:12mm\}/);
+ const app=await readFile(new URL('../src/main.tsx',import.meta.url),'utf8');assert.match(app,/className="reader"/);assert.match(app,/<main id="main-content"[^>]*className="chapter"/);const mdx=await readFile(new URL('../src/content/child-family/FamilyReview.mdx',import.meta.url),'utf8');assert.match(mdx,/<section className="prose">/);assert.match(mdx,/<BlankFamilyReview \/>/);
+});
